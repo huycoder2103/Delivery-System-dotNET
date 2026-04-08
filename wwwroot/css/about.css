@@ -1,0 +1,327 @@
+.about-container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    line-height: 1.7;
+}
+
+.about-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 40px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.about-header h1 { margin: 0; font-size: 2.5rem; }
+.about-header p { opacity: 0.9; font-size: 1.1rem; margin-top: 10px; }
+
+.guide-section {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border-left: 5px solid #1a73e8;
+}
+
+.guide-section h2 {
+    color: #1a73e8;
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.step-list {
+    list-style: none;
+    padding: 0;
+}
+
+.step-list li {
+    margin-bottom: 15px;
+    padding-left: 30px;
+    position: relative;
+}
+
+.step-list li::before {
+    content: "✔️";
+    position: absolute;
+    left: 0;
+    color: #27ae60;
+}
+
+.rule-box {
+    background: #fff5f5;
+    border: 1px solid #feb2b2;
+    padding: 20px;
+    border-radius: 8px;
+    color: #c53030;
+}
+
+.rule-box h3 { margin-top: 0; color: #9b2c2c; }
+
+.role-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-right: 5px;
+}
+.badge-ad { background: #fed7d7; color: #9b2c2c; }
+.badge-st { background: #ebf8ff; color: #2b6cb0; }
+
+.admin-only-section {
+    background: #fffafa;
+    border: 2px dashed #e53e3e;
+    padding: 25px;
+    border-radius: 12px;
+    margin-top: 30px;
+    position: relative;
+}
+
+.admin-badge-top {
+    position: absolute;
+    top: -15px;
+    right: 20px;
+    background: #e53e3e;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.feature-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 30px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    border-color: #1a73e8;
+    box-shadow: 0 10px 15px rgba(26, 115, 232, 0.1);
+}
+
+.feature-card h4 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #1a202c;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.feature-card .card-hint {
+    font-size: 0.85rem;
+    color: #1a73e8;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+/* Phần nội dung chi tiết bị ẩn */
+.feature-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out, margin-top 0.3s;
+    border-top: 1px solid transparent;
+}
+
+.feature-card.active {
+    border-left: 8px solid #1a73e8;
+    background: #f8faff;
+}
+
+.feature-card.active .feature-details {
+    max-height: 1000px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px dashed #cbd5e0;
+}
+
+.detail-step {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.step-number {
+    background: #1a73e8;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.step-content b { color: #2d3748; display: block; margin-bottom: 4px; }
+.step-content p { margin: 0; color: #4a5568; font-size: 0.95rem; }
+
+/* Styles cho tiểu mục bên trong thẻ chính */
+.sub-feature-container {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sub-feature-item {
+    background: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: 8px;
+    padding: 12px 15px;
+    transition: all 0.2s;
+}
+
+.sub-feature-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    color: #2d3748;
+    cursor: pointer;
+}
+
+.sub-feature-header:hover { color: #1a73e8; }
+
+.sub-feature-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    font-size: 0.9rem;
+    color: #4a5568;
+    padding-left: 10px;
+    border-left: 2px solid #e2e8f0;
+    margin-top: 0;
+}
+
+.sub-feature-item.open {
+    border-color: #bee3f8;
+    background: #ebf8ff;
+}
+
+.sub-feature-item.open .sub-feature-content {
+    max-height: 500px;
+    margin-top: 10px;
+    padding-bottom: 5px;
+}
+
+.btn-icon-guide {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: white;
+    margin: 0 4px;
+}
+
+.requirement-list {
+    background: #1a202c;
+    color: #edf2f7;
+    padding: 40px;
+    border-radius: 20px;
+    margin-top: 40px;
+}
+
+.requirement-list h2 { color: #63b3ed; }
+
+.feedback-section {
+    margin-top: 50px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.feedback-form textarea {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-family: inherit;
+    resize: vertical;
+    margin-bottom: 15px;
+    transition: border-color 0.2s;
+}
+
+.feedback-form textarea:focus {
+    border-color: #1a73e8;
+    outline: none;
+}
+
+.feedback-list {
+    margin-top: 30px;
+    border-top: 2px solid #edf2f7;
+    padding-top: 20px;
+}
+
+.feedback-item {
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border-left: 4px solid #cbd5e0;
+}
+
+.feedback-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+}
+
+.fb-user { font-weight: bold; color: #2d3748; }
+.fb-date { color: #a0aec0; }
+
+.btn-delete-fb {
+    background: #fed7d7;
+    color: #e53e3e;
+    border: none;
+    padding: 2px 10px;
+    border-radius: 5px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-delete-fb:hover {
+    background: #feb2b2;
+    transform: scale(1.05);
+}
+
+.fb-content { color: #4a5568; line-height: 1.5; }
+
+.footer-contact {
+    text-align: center;
+    margin-top: 50px;
+    padding: 20px;
+    color: #718096;
+    border-top: 1px solid #e2e8f0;
+}

@@ -1,0 +1,19 @@
+body { background:#f4f7f6; font-family:'Segoe UI',sans-serif; }
+.page-wrap { max-width:1200px; margin:16px auto 30px; background:#fff; border-radius:6px; border:1px solid #ddd; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+.hdr { background:linear-gradient(135deg,#27ae60,#2ecc71); color:#fff; padding:13px 20px; border-radius:6px 6px 0 0; }
+.hdr h3 { margin:0; font-size:.95rem; }
+.hdr .meta { margin-top:5px; font-size:.8rem; opacity:.9; }
+.hdr .badge { background:rgba(255,255,255,.22); padding:2px 8px; border-radius:10px; margin-right:6px; font-weight:700; }
+.body { padding:16px 20px 22px; }
+.info { background:#eafaf1; border:1px solid #a9dfbf; border-left:4px solid #27ae60; padding:9px 14px; border-radius:4px; margin-bottom:14px; font-size:.85rem; color:#1a6b3a; }
+table { width:100%; border-collapse:collapse; font-size:.86rem; }
+th { background:#27ae60; color:#fff; padding:10px 12px; text-align:left; font-size:.78rem; text-transform:uppercase; }
+td { padding:9px 12px; border-bottom:1px solid #eee; }
+tr:hover td { background:#f0fff5; }
+.money { color:#27ae60; font-weight:700; }
+.badge-pending { background:#fdebd0; color:#a04000; padding:2px 9px; border-radius:9px; font-size:.74rem; font-weight:700; }
+.btn-assign { background:#3498db; color:#fff; border:none; padding:5px 14px; border-radius:4px; font-weight:700; font-size:.8rem; cursor:pointer; }
+.btn-assign:hover { background:#2980b9; }
+.no-data { text-align:center; padding:32px; color:#888; }
+.btn-back { background:#6c757d; color:#fff; border:none; padding:8px 18px; border-radius:4px; cursor:pointer; font-weight:600; margin-top:14px; }
+.btn-back:hover { background:#545b62; }

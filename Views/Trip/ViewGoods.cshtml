@@ -1,0 +1,89 @@
+@model IEnumerable<Delivery_System.Models.TblOrder>
+
+@{
+    ViewData["Title"] = "Danh Sách Hàng Trên Xe";
+    var trip = ViewBag.Trip as Delivery_System.Models.VwTripList;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css">
+    <link rel="stylesheet" href="~/css/common_styles.css">
+    <style>
+        .page-wrap { max-width:1200px; margin:16px auto 30px; background:#fff; border-radius:6px; border:1px solid #ddd; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+        .hdr { background:linear-gradient(135deg,#34495e,#2c3e50); color:#fff; padding:13px 20px; border-radius:6px 6px 0 0; }
+        .hdr h3 { margin:0; font-size:.95rem; }
+        .hdr .meta { margin-top:5px; font-size:.8rem; opacity:.9; }
+        .hdr .badge { background:rgba(255,255,255,.22); padding:2px 8px; border-radius:10px; margin-right:6px; font-weight:700; }
+        .body { padding:16px 20px 22px; }
+        table { width:100%; border-collapse:collapse; font-size:.86rem; }
+        th { background:#34495e; color:#fff; padding:10px 12px; text-align:left; font-size:.78rem; text-transform:uppercase; }
+        td { padding:9px 12px; border-bottom:1px solid #eee; color: #333; }
+        tr:hover td { background:#f9f9f9; }
+        .btn-back { background:#6c757d; color:#fff; border:none; padding:8px 18px; border-radius:4px; cursor:pointer; font-weight:600; margin-top:14px; }
+    </style>
+}
+
+<div class="page-wrap">
+    <div class="hdr">
+        <h3>📋 DANH SÁCH HÀNG TRÊN CHUYẾN XE</h3>
+        @if (trip != null)
+        {
+            <div class="meta">
+                <span class="badge">Chuyến: @trip.TripId</span>
+                <span class="badge">Lộ trình: @trip.RouteInfo</span>
+                <span class="badge">Biển số: @trip.LicensePlate</span>
+            </div>
+        }
+    </div>
+
+    <div class="body">
+        @if (Model != null && Model.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Mã Đơn</th>
+                        <th>Tên Hàng</th>
+                        <th>Người Gửi</th>
+                        <th>Người Nhận</th>
+                        <th>Trạm Nhận</th>
+                        <th>Cước (K)</th>
+                        <th>Trạng Thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int i = 1; }
+                    @foreach (var o in Model)
+                    {
+                        <tr>
+                            <td>@(i++)</td>
+                            <td><strong style="color:#2980b9">@o.OrderId</strong></td>
+                            <td><strong>@o.ItemName</strong></td>
+                            <td>@o.SenderName <br><small style="color:#888">@o.SenderPhone</small></td>
+                            <td>@o.ReceiverName <br><small style="color:#888">@o.ReceiverPhone</small></td>
+                            <td>@o.ReceiveStation</td>
+                            <td style="font-weight:bold; color:#27ae60;">@string.Format("{0:N0}", o.Amount ?? 0)</td>
+                            <td>
+                                <span class="badge @(o.ShipStatus == "Đã chuyển" ? "badge-success" : "badge-warning")">
+                                    @o.ShipStatus
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="no-data" style="text-align:center; padding:40px; color:#888;">
+                <div style="font-size:2rem;margin-bottom:8px;">📭</div>
+                <p>Hiện chưa có đơn hàng nào trên chuyến xe này.</p>
+            </div>
+        }
+
+        <div style="margin-top: 20px;">
+            <a asp-controller="Trip" asp-action="List" class="btn-back" style="text-decoration:none; display:inline-block; text-align:center;">⬅ Quay lại DS Chuyến Xe</a>
+        </div>
+    </div>
+</div>

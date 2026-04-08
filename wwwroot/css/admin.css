@@ -1,0 +1,182 @@
+/* ═══════════════════════════════════════════════════════
+    ADMIN DASHBOARD STYLE - OPTIMIZED
+   ═══════════════════════════════════════════════════════ */
+
+body {
+    background-color: #f4f7f6;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #2c3e50;
+}
+
+/* 1. Layout Containers */
+.admin-container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #3c8dbc;
+}
+
+/* 2. KPI Cards Section */
+.kpi-row {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.kpi-mini {
+    flex: 1;
+    background: #fff;
+    border-radius: 8px;
+    padding: 14px 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    text-align: center;
+    border-top: 3px solid #3498db; /* Mặc định Blue */
+}
+
+.kpi-mini.green { border-top-color: #27ae60; }
+.kpi-mini.red   { border-top-color: #e74c3c; }
+
+.kpi-mini .v { font-size: 1.6rem; font-weight: 900; color: #2c3e50; }
+.kpi-mini .l { font-size: .75rem; color: #aaa; font-weight: 600; text-transform: uppercase; }
+
+/* 3. Search Bar */
+.search-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+/* Gom nhóm các Input dạng Text */
+.search-bar input[type="text"], .inp {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s;
+    box-sizing: border-box;
+}
+
+.search-bar input[type="text"] { min-width: 240px; }
+.inp { width: 100%; }
+
+.search-bar input:focus, .inp:focus { border-color: #3498db; }
+
+/* 4. Table Styles */
+.table-responsive { overflow-x: auto; }
+
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 15px; 
+}
+
+th, td { 
+    border: 1px solid #ddd; 
+    padding: 11px 12px; 
+    text-align: center; 
+}
+
+th { 
+    background: #3498db; 
+    color: white; 
+    font-weight: 600; 
+    font-size: 0.85rem; 
+    text-transform: uppercase; 
+}
+
+tr:hover { background: #f9f9f9; }
+
+/* 5. Buttons & Badges */
+/* Base style cho tất cả các nút */
+.btn-action, .btn-search, .btn-clear, .btn-cyan {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: .88rem;
+    transition: filter 0.2s;
+    display: inline-block;
+}
+
+.btn-action:hover, .btn-search:hover, .btn-clear:hover, .btn-cyan:hover { 
+    filter: brightness(0.9); 
+}
+
+/* Màu sắc cụ thể */
+.btn-search, .btn-blue, .btn-cyan { background: #3498db; }
+.btn-red    { background: #e74c3c; }
+.btn-orange { background: #e67e22; }
+.btn-green  { background: #27ae60; }
+.btn-clear  { background: #95a5a6; }
+
+/* Badges phân quyền */
+.badge-admin, .badge-user {
+    padding: 3px 10px; 
+    border-radius: 12px; 
+    font-size: 0.8rem; 
+    color: white;
+}
+.badge-admin { background: #e74c3c; font-weight: bold; }
+.badge-user  { background: #3498db; }
+
+/* Trạng thái */
+.status-active   { color: #27ae60; font-weight: bold; }
+.status-inactive { color: #e74c3c; font-weight: bold; }
+
+/* 6. Modal System */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    justify-content: center; 
+    align-items: center;
+}
+
+.modal-content {
+    background: #fff; 
+    padding: 30px; 
+    border-radius: 8px;
+    width: 480px; 
+    max-width: 95%;
+    box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+}
+
+.modal-content h3 { 
+    margin-top: 0; 
+    border-bottom: 2px solid #3498db; 
+    padding-bottom: 10px; 
+}
+
+.group { margin-bottom: 16px; }
+.group label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; }
+
+.modal-footer {
+    display: flex; 
+    justify-content: flex-end;
+    gap: 10px; 
+    margin-top: 20px;
+}
+
+/* 7. Utilities */
+.highlight { background: #fff3cd; border-radius: 3px; padding: 0 2px; }
+#noResult { text-align: center; padding: 28px; color: #aaa; display: none; }
+.result-count { font-size: .82rem; color: #888; margin-left: 6px; }

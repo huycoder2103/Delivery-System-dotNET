@@ -1,0 +1,135 @@
+@model IEnumerable<Delivery_System.Models.VwTripList>
+
+@{
+    ViewData["Title"] = "Chuyến Xe Đến";
+    var stationList = ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/create_arrival_trip.css" />
+}
+
+<div style="max-width: 1550px; margin: 20px auto; padding: 0 20px;">
+    
+    <div class="modern-page-header" style="background: linear-gradient(135deg, #1a73e8, #1557b0);">
+        <div>
+            <h3>📥 DANH SÁCH CHUYẾN XE ĐẾN</h3>
+            <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Quản lý và tiếp nhận các chuyến xe đang về trạm</div>
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+            <a asp-controller="Order" asp-action="List" class="btn-modern" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); text-decoration: none;">
+                📦 Quản Lý Đơn Hàng
+            </a>
+            <a asp-controller="Trip" asp-action="List" class="btn-modern" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); text-decoration: none;">
+                📤 Chuyến Xe Đi
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success" style="background:#d4edda; color:#155724; padding:10px; border-radius:8px; margin-bottom:20px;">
+            ✅ @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <div class="modern-card" style="margin-top: 20px;">
+        <form asp-action="ArrivalList" method="GET" style="display:flex; gap:10px; flex-wrap: wrap; align-items: center;">
+            <select name="departureFilter" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+                <option value="">-- Từ Trạm (Đi) --</option>
+                @if (stationList != null)
+                {
+                    foreach (var s in stationList)
+                    {
+                        <option value="@s.StationName">@s.StationName</option>
+                    }
+                }
+            </select>
+
+            <select name="destinationFilter" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+                <option value="">-- Đến Trạm (Dừng) --</option>
+                @if (stationList != null)
+                {
+                    foreach (var s in stationList)
+                    {
+                        <option value="@s.StationName">@s.StationName</option>
+                    }
+                }
+            </select>
+
+            <input type="submit" value="🔍 Lọc Xe Đến" class="btn-modern" style="background: #1a73e8; color: white; border: none;">
+            <a asp-action="ArrivalList" class="btn-modern" style="background: #6c757d; color: white; text-decoration: none; padding-top: 10px;">🔄 Làm mới</a>
+        </form>
+    </div>
+
+    <div class="modern-card" style="padding: 0; overflow: hidden; margin-top: 20px;">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th>Mã Chuyến</th>
+                    <th>Trạm Đi</th>
+                    <th>Trạm Đến</th>
+                    <th>Biển Số Xe</th>
+                    <th>Giờ Đi</th>
+                    <th>Tài Xế</th>
+                    <th>Trạng Thái</th>
+                    <th>NV Tạo</th>
+                    <th>Thời Gian Tạo</th>
+                    <th>Thao Tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var t in Model)
+                    {
+                        <tr>
+                            <td><strong style="color: #1a73e8;">@t.TripId</strong></td>
+                            <td style="color: #d93025; font-weight: 500;">@t.Departure</td>
+                            <td style="color: #188038; font-weight: 500;">@t.Destination</td>
+                            <td style="font-weight: 600;">@t.LicensePlate</td>
+                            <td>@t.DepartureTime</td>
+                            <td>@t.DriverName</td>
+                            <td>
+                                @if (t.Status == "Đã đến")
+                                {
+                                    <span class="badge-status-m" style="background: #e6f4ea; color: #1e8e3e; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem;">
+                                        🏁 Đã cập bến
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge-status-m" style="background: #e8f0fe; color: #1a73e8; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem;">
+                                        🚛 Đang trên đường
+                                    </span>
+                                }
+                            </td>
+                            <td>@t.StaffCreatedName</td>
+                            <td style="font-size: 0.8rem; color: #666;">@t.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                @if (t.Status != "Đã đến")
+                                {
+                                    <form asp-action="Arrive" method="POST" style="display:inline;">
+                                        <input type="hidden" name="id" value="@t.TripId" />
+                                        <button type="submit" class="btn-action-trip" style="background: #188038; color: white; border: none; padding: 5px 15px; border-radius: 4px; cursor: pointer;" onclick="return confirm('Xác nhận xe đã về trạm?')">✅ Tiếp nhận</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <button class="btn-disabled" disabled style="background:#ccc; color:#fff; border:none; padding:5px 15px; border-radius:4px;">Đã xong</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="10" style="padding: 50px; color: #999; text-align: center;">📭 Hiện tại không có chuyến xe nào đang đến trạm.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

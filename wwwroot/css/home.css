@@ -1,0 +1,133 @@
+/* web/css/home.css */
+
+body {
+    background-color: #f0f2f5;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding-top: 80px;
+}
+
+.home-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* Welcome Box - Khối màu xanh Gradient */
+.welcome-box {
+    text-align: center;
+    margin-bottom: 50px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    padding: 60px 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(26, 115, 232, 0.3);
+}
+
+.welcome-box h1 {
+    font-size: 2.8rem;
+    margin: 0 0 10px 0;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+.welcome-box p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 25px;
+}
+
+.user-chip {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 20px;
+    border-radius: 50px;
+    backdrop-filter: blur(5px);
+}
+
+.user-chip span {
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.user-chip small {
+    opacity: 0.8;
+    font-size: 0.85rem;
+}
+
+/* Menu Grid */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+/* Menu Card - Các thẻ trắng */
+.menu-card {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid transparent;
+    cursor: pointer; /* Cho phép click toàn bộ thẻ */
+}
+
+.menu-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    border-color: #1a73e8;
+}
+
+.card-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.menu-card h3 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin: 0 0 15px 0;
+}
+
+.menu-card p {
+    color: #7f8c8d;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    flex-grow: 1;
+}
+
+/* Nút bấm trong card */
+.btn-card-action {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+    pointer-events: none; /* Để card nhận sự kiện click thay vì nút */
+}
+
+/* Disabled State */
+.menu-card.disabled {
+    opacity: 0.7;
+    background: #f8f9fa;
+    cursor: not-allowed;
+}
+
+.menu-card.disabled .card-icon { filter: grayscale(1); }
+.menu-card.disabled .btn-card-action { background: #bdc3c7; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .welcome-box h1 { font-size: 2rem; }
+    .menu-grid { grid-template-columns: 1fr; }
+}

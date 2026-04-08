@@ -1,0 +1,61 @@
+@model Delivery_System.Models.TblUser
+
+@{
+    Layout = null; // Không dùng Layout chung vì trang Login có giao diện riêng biệt
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - Delivery System</title>
+    @* Dùng dấu ~/ để .NET tự hiểu đường dẫn từ wwwroot *@
+    <link rel="stylesheet" href="~/css/login.css">
+</head>
+<body>
+    <div class="brand">HỆ THỐNG GIAO HÀNG</div>
+    <div class="login-box">
+        <h2 class="title">ĐĂNG NHẬP</h2>
+
+        <form asp-controller="Account" asp-action="Login" method="POST">
+            <div class="group">
+                <span class="label">User ID</span>
+                <input type="text" name="userID" class="inp" placeholder="Nhập tài khoản" required 
+                       value="@ViewBag.UserID">
+            </div>
+
+            <div class="group">
+                <span class="label">Password</span>
+                <input type="password" name="password" class="inp" placeholder="Nhập mật khẩu" required>
+            </div>
+
+            <input type="submit" value="Đăng nhập" class="btn-main">
+        </form>
+
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="err">@ViewBag.ErrorMessage</div>
+        }
+
+        <div class="social-grp">
+            <button class="btn-sn gg">Google</button>
+            <button class="btn-sn fb">Facebook</button>
+        </div>
+
+        <div class="footer">
+            <a href="javascript:void(0)" onclick="showMsg()" class="link-qmk">Quên mật khẩu?</a>
+            <div id="notice" class="notice">
+                Liên hệ Ban Quản Lý để được cấp lại mật khẩu.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showMsg() {
+            var x = document.getElementById("notice");
+            x.style.display = (x.style.display === "block") ? "none" : "block";
+        }
+    </script>
+</body>
+</html>

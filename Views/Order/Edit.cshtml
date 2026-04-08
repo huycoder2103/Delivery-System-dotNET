@@ -1,0 +1,134 @@
+@model Delivery_System.Models.TblOrder
+
+@{
+    ViewData["Title"] = "Chỉnh Sửa Đơn Hàng";
+    var stationList = ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/edit_order.css" />
+}
+
+<div class="edit-wrap">
+    <div class="edit-title">
+        <h2>CHỈNH SỬA ĐƠN HÀNG</h2>
+        <div style="font-size: 0.85rem; color: #666; margin-top: 5px;">Mã đơn: <strong>@Model.OrderId</strong></div>
+    </div>
+
+    <form asp-action="Edit" method="POST" onsubmit="return validateEditForm()">
+        @* Các trường ẩn để giữ nguyên dữ liệu gốc *@
+        <input type="hidden" asp-for="OrderId" />
+        <input type="hidden" asp-for="StaffInput" />
+        <input type="hidden" asp-for="ReceiveDate" />
+        <input type="hidden" asp-for="CreatedAt" />
+        <input type="hidden" asp-for="IsDeleted" />
+        <input type="hidden" asp-for="TripId" />
+        <input type="hidden" asp-for="ShipStatus" />
+        <input type="hidden" asp-for="Amount" />
+
+        <div class="toolbar">
+            <div class="toolbar-tab">Thông tin hàng hóa</div>
+            <input type="submit" value="Lưu Thay Đổi" class="btn-save">
+        </div>
+
+        <div class="form-body">
+            <div class="field" style="margin-bottom: 14px;">
+                <label>Tên Hàng Gửi <span style="color:red">*</span></label>
+                <input asp-for="ItemName" type="text" required placeholder="Nhập tên hàng hóa...">
+            </div>
+
+            <div class="row2">
+                <div class="field">
+                    <label>Trạm Gửi</label>
+                    <select asp-for="SendStation" required>
+                        @if (stationList != null)
+                        {
+                            foreach (var s in stationList)
+                            {
+                                <option value="@s.StationName">@s.StationName</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Trạm Nhận</label>
+                    <select asp-for="ReceiveStation" required>
+                        @if (stationList != null)
+                        {
+                            foreach (var s in stationList)
+                            {
+                                <option value="@s.StationName">@s.StationName</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="section-label">Thông tin khách hàng</div>
+            <div class="row2">
+                <div class="field">
+                    <label>Người Gửi</label>
+                    <input asp-for="SenderName" type="text" placeholder="Tên người gửi...">
+                </div>
+                <div class="field">
+                    <label>SĐT Gửi <span style="color:red">*</span></label>
+                    <input asp-for="SenderPhone" id="senderPhone" type="text" required placeholder="Số điện thoại người gửi...">
+                </div>
+            </div>
+
+            <div class="row2">
+                <div class="field">
+                    <label>Người Nhận</label>
+                    <input asp-for="ReceiverName" type="text" placeholder="Tên người nhận...">
+                </div>
+                <div class="field">
+                    <label>SĐT Nhận <span style="color:red">*</span></label>
+                    <input asp-for="ReceiverPhone" id="receiverPhone" type="text" required placeholder="Số điện thoại người nhận...">
+                </div>
+            </div>
+
+            <div class="section-label">Thanh toán (đơn vị K)</div>
+            <div class="row2">
+                <div class="field">
+                    <label>Đã Thanh Toán (Tr)</label>
+                    <input asp-for="Tr" id="trField" type="text" placeholder="Nhập tiền đã trả (nếu có)">
+                </div>
+                <div class="field">
+                    <label>Chưa Thanh Toán (Ct)</label>
+                    <input asp-for="Ct" id="ctField" type="text" placeholder="Nhập tiền nợ (nếu có)">
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="field">
+                <label>Ghi Chú</label>
+                <textarea asp-for="Note" rows="3" placeholder="Ghi chú thêm..."></textarea>
+            </div>
+        </div>
+    </form>
+
+    <div class="footer-bar">
+        <a asp-action="List" class="btn-back" style="text-decoration:none; text-align:center;">⬅ Quay lại</a>
+    </div>
+</div>
+
+<script>
+    function validateEditForm() {
+        var tr = document.getElementById("trField").value.trim();
+        var ct = document.getElementById("ctField").value.trim();
+        var sPhone = document.getElementById("senderPhone").value.trim();
+        var rPhone = document.getElementById("receiverPhone").value.trim();
+
+        if (sPhone === "" || rPhone === "") {
+            alert("❌ Số điện thoại người gửi và người nhận không được để trống!");
+            return false;
+        }
+
+        if (tr === "" && ct === "") {
+            alert("❌ Bạn phải nhập thông tin tiền thanh toán (Trả rồi) hoặc chưa thanh toán (Chưa trả)!");
+            return false;
+        }
+        return true;
+    }
+</script>

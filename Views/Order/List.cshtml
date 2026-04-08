@@ -1,0 +1,183 @@
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@model IEnumerable<Delivery_System.Models.TblOrder>
+
+@{
+    ViewData["Title"] = "Danh Sách Đơn Hàng";
+    var currentUserRole = HttpContextAccessor.HttpContext.Session.GetString("Role");
+    var currentUserID = HttpContextAccessor.HttpContext.Session.GetString("UserID");
+    var stationList = ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/list_order.css" />
+}
+
+<div style="max-width: 1750px; margin: 20px auto; padding: 0 20px;">
+    
+    <div class="modern-page-header">
+        <div>
+            <h3>📦 Quản Lý Đơn Hàng</h3>
+            <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Tổng: @(Model?.Count() ?? 0) đơn</div>
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+            <a asp-controller="Trip" asp-action="List" class="btn-modern" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); text-decoration: none;">
+                📤 Chuyến Xe Đi
+            </a>
+            <a asp-controller="Trip" asp-action="ArrivalList" class="btn-modern" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); text-decoration: none;">
+                📥 Chuyến Xe Đến
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert-success">✅ @TempData["SuccessMessage"]</div>
+    }
+
+    <div class="modern-card">
+        <form asp-action="List" method="GET" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <select name="sendStationFilter" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+                <option value="">-- Từ Trạm (Gửi) --</option>
+                @if (stationList != null)
+                {
+                    foreach (var s in stationList)
+                    {
+                        <option value="@s.StationName">@s.StationName</option>
+                    }
+                }
+            </select>
+
+            <select name="receiveStationFilter" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+                <option value="">-- Đến Trạm (Nhận) --</option>
+                @if (stationList != null)
+                {
+                    foreach (var s in stationList)
+                    {
+                        <option value="@s.StationName">@s.StationName</option>
+                    }
+                }
+            </select>
+
+            <input type="date" name="dateFilter" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+            <input type="submit" value="🔍 Lọc Dữ Liệu" class="btn-modern btn-primary-modern">
+            <a asp-action="Create" class="btn-modern btn-success-modern" style="text-decoration:none; display: inline-block; padding-top: 10px;">➕ Nhập Hàng Gửi</a>
+            <a asp-action="Trash" class="btn-modern btn-secondary-modern" style="text-decoration:none; display: inline-block; padding-top: 10px;">🗑 Thùng rác</a>
+        </form>
+
+        <form asp-action="List" method="GET" style="margin-top: 10px;">
+            <input type="text" name="searchPhone" placeholder="Tìm theo SĐT người gửi/nhận..." 
+                   value="@ViewBag.SearchPhone" style="width: 300px; padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+            <input type="submit" value="🔎 Tìm Kiếm" class="btn-modern btn-primary-modern">
+            <a asp-action="List" class="btn-modern btn-secondary-modern" style="text-decoration:none; display: inline-block; padding-top: 10px;">🔄 Làm mới</a>
+        </form>
+    </div>
+
+    <div class="modern-card" style="padding: 0; overflow-x: auto;">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th>Mã Đơn</th>
+                    <th>Tên Hàng</th>
+                    <th>Trạm Gửi</th>
+                    <th>Trạm Nhận</th>
+                    <th>Người Gửi</th>
+                    <th>SĐT Gửi</th>
+                    <th>Người Nhận</th>
+                    <th>SĐT Nhận</th>
+                    <th>NV Nhập</th>
+                    <th>Phí TR</th>
+                    <th>Phí CT</th>
+                    <th>Ghi chú</th>
+                    <th>Ngày Nhận</th>
+                    <th>Thời Gian Tạo</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var o in Model)
+                    {
+                        bool canEdit = currentUserRole == "AD" || o.StaffInput == currentUserID;
+                        <tr>
+                            <td><strong style="color: #1a73e8;">@o.OrderId</strong></td>
+                            <td style="font-weight: 600;">@o.ItemName</td>
+                            <td class="station-label">@o.SendStation</td>
+                            <td class="station-label">@o.ReceiveStation</td>
+                            <td>@o.SenderName</td>
+                            <td style="font-weight: 600;">@o.SenderPhone</td>
+                            <td>@o.ReceiverName</td>
+                            <td style="font-weight: 600;">@o.ReceiverPhone</td>
+                            <td style="color: #5f6368; font-weight: 700;">@o.StaffInput</td>
+                            
+                            <td>
+                                @if (!string.IsNullOrEmpty(o.Tr))
+                                {
+                                    <span class="badge badge-success">@(o.Tr)k</span>
+                                }
+                                else { <span style="color:#ccc">—</span> }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(o.Ct))
+                                {
+                                    <span class="badge badge-danger">@(o.Ct)k</span>
+                                }
+                                else { <span style="color:#ccc">—</span> }
+                            </td>
+                            
+                            <td style="max-width:150px; font-size: 0.8rem; color: #666; font-style: italic;">@o.Note</td>
+                            <td style="font-size: 0.8rem; font-weight: 600;">
+                                @(DateTime.TryParse(o.ReceiveDate, out DateTime rd) ? rd.ToString("dd/MM/yyyy") : o.ReceiveDate)
+                            </td>
+                            <td style="font-size: 0.75rem; color: #888;">
+                                @o.CreatedAt?.ToString("dd/MM/yyyy HH:mm")
+                            </td>
+                            <td>
+                                @if (string.IsNullOrEmpty(o.TripId))
+                                {
+                                    <span class="badge badge-warning">Chưa chuyển</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-info">Đã chuyển</span>
+                                    <br><small style="color:#1a73e8; font-weight:700;">@o.TripId</small>
+                                }
+                            </td>
+                            <td style="min-width: 110px;">
+                                <div class="action-btns-grid">
+                                    @if (string.IsNullOrEmpty(o.TripId))
+                                    {
+                                        <a asp-action="Ship" asp-route-id="@o.OrderId" class="btn-action-text btn-s-ship" style="text-decoration:none;">🚚 Chuyển</a>
+                                    }
+                                    
+                                    @if (canEdit)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@o.OrderId" class="btn-action-text btn-s-edit" style="text-decoration:none;">✏️ Sửa đơn</a>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn-action-text btn-disabled" title="Bạn không có quyền sửa đơn này">🔒 Sửa đơn</button>
+                                    }
+
+                                    <form asp-action="Delete" method="POST" style="display:inline;">
+                                        <input type="hidden" name="id" value="@o.OrderId" />
+                                        <button type="submit" class="btn-action-text btn-s-delete" onclick="return confirm('Đưa đơn này vào thùng rác?')">🗑️ Xóa</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="16" style="padding: 50px; color: #999; text-align: center;">📭 Không tìm thấy đơn hàng nào phù hợp!</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

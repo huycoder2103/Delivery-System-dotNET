@@ -1,0 +1,116 @@
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "Trang Chủ";
+    var fullName = HttpContextAccessor.HttpContext.Session.GetString("FullName") ?? "Nhân viên";
+    var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
+    var currentShift = ViewBag.CurrentShift as Delivery_System.Models.TblWorkShift;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css" />
+    <style>
+        .shift-widget {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .shift-info h4 { margin: 0; color: #333; }
+        .shift-status { margin-top: 5px; font-weight: bold; }
+        .status-active { color: #28a745; }
+        .status-inactive { color: #6c757d; }
+        .shift-stats { display: flex; gap: 20px; margin-top: 10px; }
+        .stat-item { background: #f8f9fa; color:black; padding: 5px 15px; border-radius: 20px; font-size: 0.9em; }
+        .btn-shift { padding: 10px 25px; border-radius: 25px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; text-decoration: none; display: inline-block; }
+        .btn-start { background: #28a745; color: white; }
+        .btn-start:hover { background: #218838; color: white; }
+        .btn-end { background: #dc3545; color: white; }
+        .btn-end:hover { background: #c82333; color: white; }
+    </style>
+}
+
+<div class="home-container">
+    <!-- --- SHIFT MANAGEMENT WIDGET --- -->
+    <div class="shift-widget">
+        <div class="shift-info">
+            <h4>Ca làm việc hiện tại</h4>
+            <div class="shift-status">
+                @if (currentShift != null)
+                {
+                    <span class="status-active">🟢 Đang trong ca (Mã ca: #@currentShift.ShiftId)</span>
+                    <div class="shift-stats">
+                        <div class="stat-item">✅ Đã giao: <b>@ViewBag.DeliveredCount</b></div>
+                        <div class="stat-item">💰 Doanh thu: <b>@string.Format("{0:N0}", ViewBag.TotalRevenue) K</b></div>
+                    </div>
+                }
+                else
+                {
+                    <span class="status-inactive">⚪ Chưa bắt đầu ca làm việc</span>
+                }
+            </div>
+        </div>
+        <div class="shift-actions">
+            @if (currentShift == null)
+            {
+                <a asp-controller="Shift" asp-action="Start" class="btn-shift btn-start">🚀 BẮT ĐẦU CA</a>
+            }
+            else
+            {
+                <a asp-controller="Shift" asp-action="End" class="btn-shift btn-end" onclick="return confirm('Bạn muốn kết thúc ca làm việc này?')">🛑 KẾT THÚC CA</a>
+            }
+        </div>
+    </div>
+
+    <div class="welcome-box">
+        <h1>CHÀO MỪNG QUAY TRỞ LẠI!</h1>
+        <p>Hệ thống quản lý hàng hóa & vận chuyển nội bộ</p>
+        <div class="user-chip">
+            <span>@fullName</span>
+            <small>(@role)</small>
+        </div>
+    </div>
+
+    <div class="menu-grid">
+        <!-- 1. Quản lý hàng hóa -->
+        <a asp-controller="Goods" asp-action="Index" class="menu-card" style="text-decoration:none; color:inherit;">
+            <div class="card-icon">📦</div>
+            <h3>Quản lý hàng hóa</h3>
+            <p>Nhập đơn hàng, bộ phận hàng, quản lý đơn hàng.</p>
+            <button type="button" class="btn-card-action">Truy cập</button>
+        </a>
+
+        <!-- 2. Báo cáo & Thống kê -->
+        <a asp-controller="Report" asp-action="Index" class="menu-card" style="text-decoration:none; color:inherit;">
+            <div class="card-icon">📊</div>
+            <h3>Báo cáo & Thống kê</h3>
+            <p>Xem doanh thu, số lượng đơn theo ngày/tháng.</p>
+            <button type="button" class="btn-card-action">Xem báo cáo</button>
+        </a>
+
+        <!-- 3. Hệ thống quản trị -->
+        @if (role == "AD")
+        {
+            <a asp-controller="Admin" asp-action="Index" class="menu-card admin-card" style="text-decoration:none; color:inherit;">
+                <div class="card-icon">🛡️</div>
+                <h3>Hệ thống quản trị</h3>
+                <p>Quản lý nhân viên, cấu hình trạm xe, bảo mật.</p>
+                <button type="button" class="btn-card-action">Vào quản trị</button>
+            </a>
+        }
+        else
+        {
+            <div class="menu-card disabled">
+                <div class="card-icon">🔒</div>
+                <h3>Hệ thống quản trị</h3>
+                <p>Chức năng dành riêng cho Quản trị viên hệ thống.</p>
+                <button type="button" class="btn-card-action" disabled>Bị khóa</button>
+            </div>
+        }
+    </div>
+</div>

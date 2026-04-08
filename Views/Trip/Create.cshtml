@@ -1,0 +1,125 @@
+@model Delivery_System.Models.TblTrip
+
+@{
+    ViewData["Title"] = "Thêm Chuyến Xe Đi";
+    var stationList = ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>;
+    var truckList = ViewBag.TruckList as IEnumerable<Delivery_System.Models.TblTruck>;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/create_trip.css" />
+}
+
+<div class="trip-container">
+    <form asp-action="Create" method="POST" onsubmit="return validateTripStations()">
+        <div class="trip-toolbar">
+            <div class="tab-active">Thêm Chuyến Xe Đi</div>
+            <input type="submit" value="💾 Lưu Chuyến Xe" class="btn-save">
+        </div>
+
+        <div class="trip-body">
+            <div class="form-row">
+                <!-- Biển số xe -->
+                <div class="form-col">
+                    <label>Biển Số Xe <span class="required-star">*</span></label>
+                    <select asp-for="TruckId" required>
+                        <option value="">-- Chọn Xe --</option>
+                        @if (truckList != null)
+                        {
+                            foreach (var truck in truckList)
+                            {
+                                string statusLabel = (truck.Status == true) ? "" : " (Đang đi)";
+                                <option value="@truck.TruckId">
+                                    @truck.LicensePlate @statusLabel
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- Trạm đi -->
+                <div class="form-col">
+                    <label>Trạm Đi <span class="required-star">*</span></label>
+                    <select asp-for="Departure" id="departure" required>
+                        <option value="">-- Chọn Trạm Đi --</option>
+                        @if (stationList != null)
+                        {
+                            foreach (var s in stationList)
+                            {
+                                <option value="@s.StationName">@s.StationName</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- Trạm đến -->
+                <div class="form-col">
+                    <label>Trạm Đến <span class="required-star">*</span></label>
+                    <select asp-for="Destination" id="destination" required>
+                        <option value="">-- Chọn Trạm Đến --</option>
+                        @if (stationList != null)
+                        {
+                            foreach (var s in stationList)
+                            {
+                                <option value="@s.StationName">@s.StationName</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- Giờ đi -->
+                <div class="form-col">
+                    <label>Giờ Xuất Phát <span class="required-star">*</span></label>
+                    <input asp-for="DepartureTime" type="time" required>
+                </div>
+            </div>
+
+            <script>
+                function validateTripStations() {
+                    var dep = document.getElementById("departure").value;
+                    var dest = document.getElementById("destination").value;
+                    if (dep === dest && dep !== "") {
+                        alert("❌ Trạm đi và trạm đến không được trùng nhau!");
+                        return false;
+                    }
+                    return true;
+                }
+            </script>
+
+            <div class="form-row">
+                <div class="form-col">
+                    <label>Tài Xế</label>
+                    <input asp-for="DriverName" type="text" placeholder="Nhập tên tài xế...">
+                </div>
+                <div class="form-col">
+                    <label>Phụ Xe</label>
+                    <input asp-for="AssistantName" type="text" placeholder="Nhập tên phụ xe...">
+                </div>
+            </div>
+
+            <div id="noteSection" style="display:none;">
+                <label>Ghi Chú</label>
+                <textarea asp-for="Notes" placeholder="Nhập ghi chú..."></textarea>
+            </div>
+            <button type="button" class="btn-toggle-note" onclick="toggleNote()">📝 Thêm Ghi Chú</button>
+        </div>
+    </form>
+
+    <div class="back-trip-container">
+        <a asp-action="List" class="btn-back" style="text-decoration:none; display:inline-block; text-align:center;">⬅ Quay lại DS Chuyến Xe</a>
+    </div>
+</div>
+
+<script>
+    function toggleNote() {
+        var s = document.getElementById("noteSection");
+        var b = event.target;
+        if (s.style.display === "none" || s.style.display === "") {
+            s.style.display = "block";
+            b.textContent = "🙈 Ẩn Ghi Chú";
+        } else {
+            s.style.display = "none";
+            b.textContent = "📝 Thêm Ghi Chú";
+        }
+    }
+</script>

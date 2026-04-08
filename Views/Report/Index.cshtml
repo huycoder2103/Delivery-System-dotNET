@@ -1,0 +1,315 @@
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "Báo Cáo Hệ Thống";
+    var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
+    var reportDate = ViewBag.ReportDate;
+    var shiftHistory = ViewBag.ShiftHistory as IEnumerable<Delivery_System.Models.TblWorkShift>;
+    var shiftOrders = ViewBag.ShiftOrders as IEnumerable<Delivery_System.Models.TblOrder>;
+    var viewShiftId = ViewBag.ViewShiftId;
+    var selectedStaffId = ViewBag.SelectedStaffId;
+}
+
+@section Styles {
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #f4f7f6; 
+            padding-top: 90px;
+        }
+        .navbar { 
+            position: fixed !important; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+        }
+        .report-card { border: none; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: 0.3s; }
+        .report-card:hover { transform: translateY(-5px); }
+        .nav-tabs .nav-link { color: #495057; font-weight: 600; border: none !important; padding: 12px 25px; }
+        .nav-tabs .nav-link.active { color: #0d6efd !important; border-bottom: 3px solid #0d6efd !important; background: none !important; }
+        .stat-value { font-size: 1.8rem; font-weight: 700; color: #333; }
+        .stat-label { font-size: 0.9rem; color: #6c757d; text-transform: uppercase; letter-spacing: 1px; }
+        .staff-link { color: #212529; text-decoration: none; transition: 0.2s; }
+        .staff-link:hover { color: #0d6efd; text-decoration: underline; }
+    </style>
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark">📊 BÁO CÁO & THỐNG KÊ</h2>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-sm">← Quay lại</a>
+    </div>
+
+    <!-- TABS NAVIGATION -->
+    <ul class="nav nav-tabs mb-4" id="reportTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link @(viewShiftId == null ? "active" : "")" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button">Tổng Quan</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link @(viewShiftId != null ? "active" : "")" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button">Lịch Sử Ca Làm</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="reportTabsContent">
+        <!-- ========================== TAB 1: TỔNG QUAN ========================== -->
+        <div class="tab-pane fade @(viewShiftId == null ? "show active" : "")" id="summary">
+            @if (role == "AD")
+            {
+                <div class="card report-card mb-4 p-3 shadow-sm border-0 bg-white">
+                    <form asp-action="Index" method="GET" class="row align-items-end g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-secondary small">CHỌN NGÀY XEM BÁO CÁO</label>
+                            <input type="date" name="reportDate" class="form-control border-primary" value="@reportDate">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100 fw-bold">🔍 XEM BÁO CÁO</button>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <span class="badge bg-light text-dark border p-2">📅 Đang xem dữ liệu ngày: <strong>@reportDate</strong></span>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="card report-card p-3 text-center border-start border-primary border-4 shadow-sm">
+                            <div class="stat-label">Doanh thu (@reportDate)</div>
+                            <div class="stat-value text-primary">@string.Format("{0:N0}", ViewBag.RevenueDateVal) K</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card report-card p-3 text-center border-start border-info border-4 shadow-sm">
+                            <div class="stat-label">Số đơn (@reportDate)</div>
+                            <div class="stat-value text-info">@ViewBag.OrdersDateVal</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card report-card p-3 text-center border-start border-success border-4 shadow-sm">
+                            <div class="stat-label">Tổng doanh thu (Tạm tính)</div>
+                            <div class="stat-value text-success">--- K</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card report-card p-3 text-center border-start border-warning border-4 shadow-sm">
+                            <div class="stat-label">NV đang làm việc</div>
+                            <div class="stat-value text-warning">@ViewBag.ActiveStaffCount</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <div class="card report-card p-4 h-100">
+                            <h5 class="fw-bold mb-3">Tăng trưởng doanh thu (7 ngày)</h5>
+                            <canvas id="adminRevenueChart" style="max-height: 300px;"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card report-card p-4 h-100">
+                            <h5 class="fw-bold mb-3">Hiệu suất hôm nay</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr><th>Nhân viên</th><th class="text-end">Đơn</th><th class="text-end">Tiền</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (ViewBag.StaffPerformance != null)
+                                        {
+                                            foreach (var p in ViewBag.StaffPerformance)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <a href="@Url.Action("Index", new { targetStaffId = p.StaffId })#history" class="staff-link fw-bold">@p.StaffName</a>
+                                                        <small class="d-block @(p.IsWorking ? "text-success" : "text-muted")">
+                                                            @(p.IsWorking ? "● Đang làm" : "○ Nghỉ")
+                                                        </small>
+                                                    </td>
+                                                    <td class="text-end">@p.TotalOrders</td>
+                                                    <td class="text-end text-success fw-bold">@string.Format("{0:N0}", p.TotalRevenue) K</td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card report-card p-4">
+                    <h4 class="fw-bold mb-4">Kết quả làm việc của bạn</h4>
+                    @if (ViewBag.CurrentShift != null)
+                    {
+                        <div class="alert alert-info d-flex justify-content-between align-items-center">
+                            <span>🟢 Bạn đang trong ca làm việc số <strong>#@ViewBag.CurrentShift.ShiftId</strong></span>
+                            <a asp-controller="Shift" asp-action="End" class="btn btn-danger btn-sm">Kết thúc ca</a>
+                        </div>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="card report-card p-4 text-center border-bottom border-success border-3">
+                                    <div class="stat-label">Đã giao thành công</div>
+                                    <div class="stat-value text-success">@ViewBag.DeliveredOrders</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card report-card p-4 text-center border-bottom border-danger border-3">
+                                    <div class="stat-label">Doanh thu tạm tính</div>
+                                    <div class="stat-value text-danger">@string.Format("{0:N0}", ViewBag.TotalRevenue) K</div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <h4 class="text-muted">Bạn chưa bắt đầu ca làm việc nào.</h4>
+                            <a asp-controller="Shift" asp-action="Start" class="btn btn-primary mt-3">Bắt đầu ca ngay</a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- ========================== TAB 2: LỊCH SỬ CA LÀM ========================== -->
+        <div class="tab-pane fade @(viewShiftId != null ? "show active" : "")" id="history">
+            <div class="row">
+                <div class="col-md-@(viewShiftId != null ? "5" : "12")">
+                    <div class="card report-card p-4 shadow-sm border-0 bg-white">
+                        <h5 class="fw-bold mb-3 text-secondary">
+                            📜 Lịch sử 20 ca làm việc gần nhất
+                            @if (role == "AD") { <small class="text-primary font-monospace">(Nhân viên: @selectedStaffId)</small> }
+                        </h5>
+                        
+                        @if (shiftHistory != null && shiftHistory.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Mã Ca</th>
+                                            <th>Bắt đầu</th>
+                                            <th>Kết thúc</th>
+                                            <th>Trạng thái</th>
+                                            <th>Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var s in shiftHistory)
+                                        {
+                                            <tr class="@(s.ShiftId == viewShiftId ? "table-info" : "")">
+                                                <td><strong>#@s.ShiftId</strong></td>
+                                                <td style="font-size: 0.85rem;">@s.StartTime.ToString("dd/MM/yyyy HH:mm")</td>
+                                                <td style="font-size: 0.85rem;">@(s.EndTime?.ToString("dd/MM/yyyy HH:mm") ?? "---")</td>
+                                                <td>
+                                                    <span class="badge @(s.Status == "ACTIVE" ? "bg-success" : "bg-secondary")">
+                                                        @(s.Status == "ACTIVE" ? "Đang hoạt động" : "Đã đóng")
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a href="@Url.Action("Index", new { viewShiftId = s.ShiftId, targetStaffId = selectedStaffId })#history" 
+                                                       class="btn btn-sm @(s.ShiftId == viewShiftId ? "btn-primary" : "btn-outline-primary")">
+                                                       @(s.ShiftId == viewShiftId ? "Đang xem" : "Chi tiết")
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-light text-center border">
+                                <p class="mb-0 text-muted">Không có dữ liệu ca làm việc nào để hiển thị.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                @if (viewShiftId != null)
+                {
+                    <div class="col-md-7">
+                        <div class="card report-card p-4 shadow-sm border-0 bg-white">
+                            <h5 class="fw-bold mb-3 text-primary d-flex justify-content-between">
+                                <span>📦 ĐƠN HÀNG TRONG CA #@viewShiftId</span>
+                                <span class="badge bg-primary">@(shiftOrders?.Count() ?? 0) đơn</span>
+                            </h5>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered table-hover">
+                                    <thead class="table-light text-secondary">
+                                        <tr>
+                                            <th>Mã Đơn</th>
+                                            <th>Tên Hàng</th>
+                                            <th>Người Nhận</th>
+                                            <th class="text-end">Cước</th>
+                                            <th class="text-center">Trạng Thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (shiftOrders != null && shiftOrders.Any())
+                                        {
+                                            foreach (var o in shiftOrders)
+                                            {
+                                                <tr>
+                                                    <td><code class="fw-bold">@o.OrderId</code></td>
+                                                    <td>@o.ItemName</td>
+                                                    <td>@o.ReceiverName</td>
+                                                    <td class="text-end text-success fw-bold">@string.Format("{0:N0}", o.Amount ?? 0) K</td>
+                                                    <td class="text-center">
+                                                        <span class="badge @(o.ShipStatus == "Đã chuyển" ? "bg-success" : "bg-warning")">
+                                                            @o.ShipStatus
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr><td colspan="5" class="text-center py-4 text-muted">Ca này chưa xử lý đơn hàng nào.</td></tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Placeholder cho biểu đồ
+        const ctx = document.getElementById('adminRevenueChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+                    datasets: [{
+                        label: 'Doanh thu (K)',
+                        data: [1200, 1900, 3000, 5000, 2000, 3000, 4500],
+                        borderColor: '#0d6efd',
+                        fill: true,
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        tension: 0.4
+                    }]
+                }
+            });
+        }
+
+        // Logic để giữ Tab active sau khi load trang (nếu dùng fragment #history)
+        window.addEventListener('load', function() {
+            if (window.location.hash === '#history') {
+                var historyTab = new bootstrap.Tab(document.getElementById('history-tab'));
+                historyTab.show();
+            }
+        });
+    </script>
+}

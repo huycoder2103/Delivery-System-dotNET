@@ -1,0 +1,68 @@
+/* Hiệu ứng Sticky cho Header và Toolbar Chuyến Xe */
+.modern-page-header {
+    position: sticky;
+    top: 70px;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    background: linear-gradient(135deg, rgba(26, 115, 232, 0.95), rgba(13, 71, 161, 0.95));
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.header-arrival {
+    background: linear-gradient(135deg, rgba(52, 168, 83, 0.95), rgba(27, 94, 32, 0.95));
+}
+
+.modern-card:first-of-type {
+    position: sticky;
+    top: 155px;
+    z-index: 99;
+    background: rgba(255, 255, 255, 0.98);
+    border-bottom: 2px solid #1a73e8;
+    border-radius: 0 0 15px 15px;
+    margin-top: -20px;
+}
+
+.action-btns-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.btn-action-trip {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    background: #a9dfbf;
+    color: #3c4043;
+    margin-bottom: 4px;
+}
+
+.btn-action-trip:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    filter: brightness(0.85); /* Làm đậm màu */
+}
+
+.btn-action-trip:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.4);
+}
+
+.btn-assign-goods { background: #e8f0fe; color: #1a73e8; }
+.btn-done-trip { background: #e6f4ea; color: #1e8e3e; }
+
+.badge-status-m {
+    padding: 4px 10px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.badge-going { background: #fff7e0; color: #b06000; }
+.badge-arrived { background: #e6f4ea; color: #1e8e3e; }
+.badge-info { background: #e8f0fe; color: #1a73e8; }

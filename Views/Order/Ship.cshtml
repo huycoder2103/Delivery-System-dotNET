@@ -1,0 +1,98 @@
+@model IEnumerable<Delivery_System.Models.VwTripList>
+
+@{
+    ViewData["Title"] = "Chọn Chuyến Xe Chuyển Hàng";
+    var order = ViewBag.OrderForShip as Delivery_System.Models.TblOrder;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/ship_order.css">
+}
+
+<div class="page-wrap">
+    <div class="hdr">
+        <h3>🚚 CHUYỂN HÀNG — CHỌN CHUYẾN XE</h3>
+        @if (order != null)
+        {
+            <div class="meta">
+                <span class="badge">Đơn: @order.OrderId</span>
+                <span class="badge">Hàng: @order.ItemName</span>
+                <span class="badge">Trạm gửi: @order.SendStation</span>
+            </div>
+        }
+    </div>
+
+    <div class="body">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div style="background:#d4edda;color:#155724;padding:9px 14px;border-radius:4px;margin-bottom:12px;font-weight:600;">
+                ✅ @TempData["SuccessMessage"]
+            </div>
+        }
+
+        <div class="info">
+            Hiển thị các chuyến xe có trạm xuất phát là <strong>"@order?.SendStation"</strong>
+            — phù hợp để chuyển đơn hàng này.
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Mã Chuyến</th>
+                        <th>Lộ Trình</th>
+                        <th>Biển Số</th>
+                        <th>Tài Xế</th>
+                        <th>Giờ Đi</th>
+                        <th>Trạng Thái</th>
+                        <th>Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int i = 1; }
+                    @foreach (var t in Model)
+                    {
+                        bool done = t.Status == "Đã đến";
+                        <tr>
+                            <td>@(i++)</td>
+                            <td><strong>@t.TripId</strong></td>
+                            <td style="color:#2980b9;font-weight:600;">@t.RouteInfo</td>
+                            <td>@(t.LicensePlate ?? "-")</td>
+                            <td>@(t.DriverName ?? "-")</td>
+                            <td>@(t.DepartureTime ?? "-")</td>
+                            <td><span class="@(done ? "st-done" : "st-going")">@(t.Status ?? "Đang đi")</span></td>
+                            <td>
+                                @if (!done)
+                                {
+                                    <form asp-action="AssignToTrip" method="POST" style="display:inline;"
+                                          onsubmit="return confirm('Xác nhận chuyển hàng lên chuyến @t.TripId?');">
+                                        <input type="hidden" name="orderId" value="@order?.OrderId">
+                                        <input type="hidden" name="tripId" value="@t.TripId">
+                                        <input type="hidden" name="source" value="ship">
+                                        <input type="submit" value="✓ Chọn chuyến này" class="btn-pick">
+                                    </form>
+                                }
+                                else
+                                {
+                                    <button class="btn-disabled" disabled>Chuyến đã đến</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="no-data">
+                <div style="font-size:2rem;margin-bottom:8px;">🔍</div>
+                <p>Không tìm thấy chuyến xe từ trạm <strong>"@order?.SendStation"</strong>.</p>
+                <p style="font-size:.82rem;color:#aaa;">Vui lòng tạo chuyến xe mới hoặc kiểm tra lại trạm gửi của đơn hàng.</p>
+            </div>
+        }
+
+        <a asp-action="List" class="btn-back" style="text-decoration:none; display:inline-block; text-align:center;">⬅ Quay lại DS Hàng</a>
+    </div>
+</div>

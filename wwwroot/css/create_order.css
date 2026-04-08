@@ -1,0 +1,118 @@
+/* 
+    Created on : Feb 15, 2026, 8:29:45 PM
+    Author     : HuyNHSE190240
+*/
+
+/* create_order.css */
+
+.order-container {
+    background: white;
+    margin: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.order-header {
+    text-align: center;
+    padding: 10px;
+    border-bottom: 2px solid #333;
+}
+
+.order-header h2 {
+    text-decoration: underline;
+    font-weight: bold;
+    margin: 0;
+}
+
+.order-toolbar {
+    background: #00c0ef;
+    padding: 5px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Nút Lưu (input submit) */
+.btn-save {
+    background: #00a65a;
+    color: white;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-save:hover {
+    background: #008d4c;
+}
+
+.form-body {
+    padding: 20px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.form-group input, .form-group select, .form-group textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+}
+
+.form-group input:focus {
+    border-color: #3c8dbc;
+}
+
+.input-addon {
+    display: flex;
+    align-items: center;
+}
+
+.input-addon input {
+    flex: 1;
+    border-right: none;
+    border-radius: 4px 0 0 4px;
+}
+.input-addon span {
+    background: #eee;
+    border: 1px solid #ccc;
+    padding: 8px;
+    font-size: 0.8rem;
+    border-radius: 0 4px 4px 0;
+}
+
+.back-container {
+    margin: 20px;
+}
+
+.btn-back {
+    padding: 10px 20px; 
+    background: #6c757d; 
+    color: white; 
+    border: none; 
+    border-radius: 4px; 
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-back:hover {
+    background: #5a6268;
+}

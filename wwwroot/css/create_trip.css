@@ -1,0 +1,165 @@
+/* 
+    Created on : Feb 15, 2026, 8:33:14 PM
+    Author     : HuyNHSE190240
+*/
+
+/* create_trip.css */
+body {
+    background-color: #f4f7f6; /* Màu xám xanh rất nhạt, tạo cảm giác sạch sẽ */
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.trip-container {
+    background: white;
+    margin: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.trip-toolbar {
+    background: #f9f9f9;
+    padding: 0 15px;
+    border-bottom: 2px solid #ff851b;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 45px;
+}
+
+.tab-active {
+    background: white;
+    padding: 8px 20px;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    position: relative;
+    top: 7px;
+}
+
+/* Nút lưu đã đổi sang input submit */
+.btn-save {
+    background: #00a65a;
+    color: white;
+    border: none;
+    padding: 8px 25px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-save:hover { background: #008d4c; }
+
+.trip-body { padding: 30px 20px; }
+
+.form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.form-col { flex: 1; }
+
+.form-col label {
+    display: block;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.form-col select, .form-col input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#noteSection {
+    margin-top: 15px;
+}
+
+#noteSection label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+#noteSection textarea {
+    width: 100%;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #3c8dbc;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.btn-toggle-note {
+    display: block;
+    margin: 20px auto 0;
+    padding: 8px 20px;
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #333;
+}
+
+.error-msg {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 10px 20px;
+    font-weight: bold;
+}
+
+.required-star {
+    color: red;
+}
+
+.back-trip-container {
+    padding: 0 20px 20px;
+}
+
+.btn-back {
+    padding: 9px 20px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-back:hover {
+    background: #5a6268;
+}
+
+/* Đảm bảo input time và textarea có style chuẩn */
+.form-col input[type="time"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+#noteSection {
+    display: none; /* Mặc định ẩn, JS sẽ điều khiển */
+    margin-top: 15px;
+}
+
+#noteSection label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+}
+
+#noteSection textarea {
+    width: 100%;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #3c8dbc;
+    border-radius: 4px;
+    resize: vertical;
+    box-sizing: border-box;
+}

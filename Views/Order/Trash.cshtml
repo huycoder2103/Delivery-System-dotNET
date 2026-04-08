@@ -1,0 +1,77 @@
+@model IEnumerable<Delivery_System.Models.TblOrder>
+
+@{
+    ViewData["Title"] = "Thùng Rác Đơn Hàng";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/trash_order.css" />
+}
+
+<div style="max-width: 1550px; margin: 20px auto; padding: 0 20px;">
+    
+    <div class="trash-page-header">
+        <div>
+            <h3>🗑 THÙNG RÁC ĐƠN HÀNG</h3>
+            <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Danh sách đơn hàng đã bị xóa tạm thời</div>
+        </div>
+        <a asp-action="List" class="btn-modern-back" style="text-decoration:none;">📦 Quay lại Danh Sách</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert-success-modern">✅ @TempData["SuccessMessage"]</div>
+    }
+
+    <div class="modern-card-trash">
+        <table class="trash-table">
+            <thead>
+                <tr>
+                    <th>Mã Đơn</th>
+                    <th>Tên Hàng</th>
+                    <th>Trạm Gửi</th>
+                    <th>Trạm Nhận</th>
+                    <th>Người Gửi</th>
+                    <th>Người Nhận</th>
+                    <th>Ngày Nhận</th>
+                    <th>Thao Tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var o in Model)
+                    {
+                        <tr>
+                            <td><strong>@o.OrderId</strong></td>
+                            <td>@o.ItemName</td>
+                            <td>@o.SendStation</td>
+                            <td>@o.ReceiveStation</td>
+                            <td>@o.SenderName <br><small>@o.SenderPhone</small></td>
+                            <td>@o.ReceiverName <br><small>@o.ReceiverPhone</small></td>
+                            <td>@o.ReceiveDate</td>
+                            <td>
+                                <div style="display: flex; gap: 5px;">
+                                    <form asp-action="Restore" method="POST">
+                                        <input type="hidden" name="id" value="@o.OrderId" />
+                                        <button type="submit" class="btn-restore">🔄 Khôi phục</button>
+                                    </form>
+                                    <form asp-action="HardDelete" method="POST" onsubmit="return confirm('Xác nhận xóa VĨNH VIỄN đơn hàng này?')">
+                                        <input type="hidden" name="id" value="@o.OrderId" />
+                                        <button type="submit" class="btn-hard-delete">💀 Xóa vĩnh viễn</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" style="padding: 100px; text-align: center; color: #999;">Thùng rác trống rỗng.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
