@@ -84,85 +84,85 @@ wwwroot\lib\jquery\dist\jquery.slim.js
 wwwroot\lib\jquery\dist\jquery.slim.min.js
 wwwroot\lib\jquery\dist\jquery.slim.min.map
 wwwroot\lib\jquery\LICENSE.txt
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\site.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\favicon.ico
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\js\site.js
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap.css.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.js
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.js.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.js
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.min.js
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\jquery-validation\dist\additional-methods.js
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\jquery-validation\dist\additional-methods.min.js
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\jquery-validation\dist\jquery.validate.js
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\jquery-validation\dist\jquery.validate.min.js
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\jquery-validation\LICENSE.md
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\jquery\dist\jquery.js
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\jquery\dist\jquery.min.js
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\jquery\dist\jquery.min.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\jquery\dist\jquery.slim.js
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\jquery\dist\jquery.slim.min.js
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\jquery\dist\jquery.slim.min.map
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\lib\jquery\LICENSE.txt
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\about.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\admin.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\assign_goods.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\common_styles.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\create_arrival_trip.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\create_order.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\create_trip.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\edit_order.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\error.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\global.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\goods.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\home.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\list_order.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\list_trip.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\login.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\report.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\ship_order.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\css\trash_order.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\includes\footer.css
-E:\NetBean-Web\ntXuanSystem - Copy\Delivery-System\wwwroot\includes\navbar.css
+E:\C#\Delivery-System\wwwroot\css\about.css
+E:\C#\Delivery-System\wwwroot\css\admin.css
+E:\C#\Delivery-System\wwwroot\css\assign_goods.css
+E:\C#\Delivery-System\wwwroot\css\common_styles.css
+E:\C#\Delivery-System\wwwroot\css\create_arrival_trip.css
+E:\C#\Delivery-System\wwwroot\css\create_order.css
+E:\C#\Delivery-System\wwwroot\css\create_trip.css
+E:\C#\Delivery-System\wwwroot\css\edit_order.css
+E:\C#\Delivery-System\wwwroot\css\error.css
+E:\C#\Delivery-System\wwwroot\css\global.css
+E:\C#\Delivery-System\wwwroot\css\goods.css
+E:\C#\Delivery-System\wwwroot\css\home.css
+E:\C#\Delivery-System\wwwroot\css\list_order.css
+E:\C#\Delivery-System\wwwroot\css\list_trip.css
+E:\C#\Delivery-System\wwwroot\css\login.css
+E:\C#\Delivery-System\wwwroot\css\report.css
+E:\C#\Delivery-System\wwwroot\css\ship_order.css
+E:\C#\Delivery-System\wwwroot\css\site.css
+E:\C#\Delivery-System\wwwroot\css\trash_order.css
+E:\C#\Delivery-System\wwwroot\favicon.ico
+E:\C#\Delivery-System\wwwroot\includes\footer.css
+E:\C#\Delivery-System\wwwroot\includes\navbar.css
+E:\C#\Delivery-System\wwwroot\js\site.js
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap.css
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap.css.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.js
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.js.map
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js
+E:\C#\Delivery-System\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map
+E:\C#\Delivery-System\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.js
+E:\C#\Delivery-System\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.min.js
+E:\C#\Delivery-System\wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt
+E:\C#\Delivery-System\wwwroot\lib\jquery-validation\dist\additional-methods.js
+E:\C#\Delivery-System\wwwroot\lib\jquery-validation\dist\additional-methods.min.js
+E:\C#\Delivery-System\wwwroot\lib\jquery-validation\dist\jquery.validate.js
+E:\C#\Delivery-System\wwwroot\lib\jquery-validation\dist\jquery.validate.min.js
+E:\C#\Delivery-System\wwwroot\lib\jquery-validation\LICENSE.md
+E:\C#\Delivery-System\wwwroot\lib\jquery\dist\jquery.js
+E:\C#\Delivery-System\wwwroot\lib\jquery\dist\jquery.min.js
+E:\C#\Delivery-System\wwwroot\lib\jquery\dist\jquery.min.map
+E:\C#\Delivery-System\wwwroot\lib\jquery\dist\jquery.slim.js
+E:\C#\Delivery-System\wwwroot\lib\jquery\dist\jquery.slim.min.js
+E:\C#\Delivery-System\wwwroot\lib\jquery\dist\jquery.slim.min.map
+E:\C#\Delivery-System\wwwroot\lib\jquery\LICENSE.txt

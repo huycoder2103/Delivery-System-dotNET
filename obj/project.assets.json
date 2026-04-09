@@ -1984,11 +1984,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\NetBean-Web\\ntXuanSystem - Copy\\Delivery-System\\Delivery-System.csproj",
+      "projectUniqueName": "E:\\C#\\Delivery-System\\Delivery-System.csproj",
       "projectName": "Delivery-System",
-      "projectPath": "E:\\NetBean-Web\\ntXuanSystem - Copy\\Delivery-System\\Delivery-System.csproj",
+      "projectPath": "E:\\C#\\Delivery-System\\Delivery-System.csproj",
       "packagesPath": "C:\\Users\\jayke\\.nuget\\packages\\",
-      "outputPath": "E:\\NetBean-Web\\ntXuanSystem - Copy\\Delivery-System\\obj\\",
+      "outputPath": "E:\\C#\\Delivery-System\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
