@@ -2,15 +2,11 @@
 @inject IHttpContextAccessor HttpContextAccessor
 
 @{
-    // Lấy thông tin từ Session (Tương đương session.getAttribute trong Java)
     var fullName = HttpContextAccessor.HttpContext.Session.GetString("FullName") ?? "Người dùng";
     var email = HttpContextAccessor.HttpContext.Session.GetString("Email") ?? "Chưa cập nhật email";
     var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
     var initial = !string.IsNullOrEmpty(fullName) ? fullName.Substring(0, 1).ToUpper() : "U";
-    
-    // Lấy tên Controller/Action hiện tại để làm menu active
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
-    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
 }
 
 <!DOCTYPE html>
@@ -20,12 +16,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Delivery System</title>
     
-    @* Nhúng toàn bộ CSS cũ của bạn *@
     <link rel="stylesheet" href="~/css/common_styles.css" />
     <link rel="stylesheet" href="~/includes/navbar.css" />
     <link rel="stylesheet" href="~/includes/footer.css" />
     
-    @* CSS riêng cho từng trang sẽ được đẩy vào đây *@
+    <!-- Nạp SweetAlert2 ở đầu để các trang con dùng được ngay -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     @RenderSection("Styles", required: false)
 </head>
 <body>
@@ -98,21 +95,17 @@
             </div>
             <div class="footer-row contact-row">
                 <div class="contact-info-large">
-                    <div>
-                        <span class="contact-label">Kỹ thuật & Bảo mật</span>
-                        <span class="contact-value">📧 jayker03212k5@gmail.com</span>
-                    </div>
-                    <div>
-                        <span class="contact-label">Liên hệ hổ trợ</span>
-                        <span class="contact-value">☎ 0366 424 978 (Hoàng Huy)</span>
-                    </div>
+                    <div><span class="contact-label">Kỹ thuật & Bảo mật</span><span class="contact-value">📧 jayker03212k5@gmail.com</span></div>
+                    <div><span class="contact-label">Liên hệ hổ trợ</span><span class="contact-value">☎ 0366 424 978 (Hoàng Huy)</span></div>
                 </div>
                 <div class="dev-credit">Built by Hoang Huy</div>
             </div>
         </div>
     </footer>
 
-    @* JS của Navbar được giữ nguyên *@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
         const navLinks = document.querySelectorAll('.nav-links li a');
         const indicator = document.getElementById('navIndicator');

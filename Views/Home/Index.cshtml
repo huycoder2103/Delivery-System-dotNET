@@ -10,29 +10,6 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/home.css" />
-    <style>
-        .shift-widget {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .shift-info h4 { margin: 0; color: #333; }
-        .shift-status { margin-top: 5px; font-weight: bold; }
-        .status-active { color: #28a745; }
-        .status-inactive { color: #6c757d; }
-        .shift-stats { display: flex; gap: 20px; margin-top: 10px; }
-        .stat-item { background: #f8f9fa; color:black; padding: 5px 15px; border-radius: 20px; font-size: 0.9em; }
-        .btn-shift { padding: 10px 25px; border-radius: 25px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; text-decoration: none; display: inline-block; }
-        .btn-start { background: #28a745; color: white; }
-        .btn-start:hover { background: #218838; color: white; }
-        .btn-end { background: #dc3545; color: white; }
-        .btn-end:hover { background: #c82333; color: white; }
-    </style>
 }
 
 <div class="home-container">
@@ -114,3 +91,22 @@
         }
     </div>
 </div>
+
+<script>
+    function confirmEndShift() {
+        Swal.fire({
+            title: 'Kết thúc ca làm?',
+            text: "Hệ thống sẽ chốt số lượng đơn và doanh thu trong ca này của bạn!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: '🛑 Kết thúc ngay',
+            cancelButtonText: 'Tiếp tục làm'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('endShiftForm').submit();
+            }
+        })
+    }
+</script>

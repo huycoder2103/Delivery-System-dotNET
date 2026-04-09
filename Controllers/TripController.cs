@@ -21,31 +21,67 @@ namespace Delivery_System.Controllers
             if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
 
             ViewBag.StationList = await _context.TblStations.Where(s => s.IsActive == true).ToListAsync();
-            var query = _context.VwTripLists.Where(t => t.TripType == "depart").AsQueryable();
+            var query = _context.VwTripLists.AsQueryable(); // Lấy tất cả chuyến xe
 
             if (!string.IsNullOrEmpty(departureFilter)) query = query.Where(t => t.Departure == departureFilter);
             if (!string.IsNullOrEmpty(destinationFilter)) query = query.Where(t => t.Destination == destinationFilter);
             if (!string.IsNullOrEmpty(searchTruck)) query = query.Where(t => t.LicensePlate.Contains(searchTruck));
 
             var list = await query.OrderByDescending(t => t.CreatedAt).ToListAsync();
+            
+            // Tính số lượng đơn hàng cho mỗi chuyến xe trong danh sách
+            var tripIds = list.Select(t => t.TripId).ToList();
+            var orderCounts = await _context.TblOrders
+                .Where(o => tripIds.Contains(o.TripId ?? ""))
+                .GroupBy(o => o.TripId)
+                .Select(g => new { TripId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.TripId, x => x.Count);
+            
+            ViewBag.OrderCounts = orderCounts;
             ViewBag.SearchTruck = searchTruck;
+            ViewBag.IsArrivalPage = false;
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_TripTableBody", list);
+            }
+
             return View(list);
         }
 
         // 2. Chuyến xe đến
         [HttpGet]
-        public async Task<IActionResult> ArrivalList(string departureFilter, string destinationFilter)
+        public async Task<IActionResult> ArrivalList(string departureFilter, string destinationFilter, string searchTruck)
         {
             var userId = HttpContext.Session.GetString("UserID");
             if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
 
             ViewBag.StationList = await _context.TblStations.Where(s => s.IsActive == true).ToListAsync();
-            var query = _context.VwTripLists.Where(t => t.TripType == "arrival").AsQueryable();
+            var query = _context.VwTripLists.AsQueryable(); // Đổ dữ liệu giống hệt trang Chuyến xe đi
 
             if (!string.IsNullOrEmpty(departureFilter)) query = query.Where(t => t.Departure == departureFilter);
             if (!string.IsNullOrEmpty(destinationFilter)) query = query.Where(t => t.Destination == destinationFilter);
+            if (!string.IsNullOrEmpty(searchTruck)) query = query.Where(t => t.LicensePlate.Contains(searchTruck));
 
             var list = await query.OrderByDescending(t => t.CreatedAt).ToListAsync();
+
+            // Tính số lượng đơn hàng cho mỗi chuyến xe trong danh sách
+            var tripIds = list.Select(t => t.TripId).ToList();
+            var orderCounts = await _context.TblOrders
+                .Where(o => tripIds.Contains(o.TripId ?? ""))
+                .GroupBy(o => o.TripId)
+                .Select(g => new { TripId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.TripId, x => x.Count);
+            
+            ViewBag.OrderCounts = orderCounts;
+            ViewBag.SearchTruck = searchTruck;
+            ViewBag.IsArrivalPage = true;
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_TripTableBody", list);
+            }
+
             return View(list);
         }
 

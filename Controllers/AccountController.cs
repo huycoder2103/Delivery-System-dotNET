@@ -21,6 +21,16 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string userID, string password)
         {
+            if (string.IsNullOrEmpty(userID) || string.IsNullOrEmpty(password))
+            {
+                ViewBag.ErrorMessage = "Vui lòng nhập đầy đủ thông tin!";
+                return View();
+            }
+
+            // Chuẩn hóa dữ liệu: Cắt khoảng trắng đầu/cuối
+            userID = userID.Trim();
+            password = password.Trim();
+
             string hashedPassword = HashSha256(password);
             var user = await _context.TblUsers
                 .FirstOrDefaultAsync(u => u.UserId == userID && u.Password == hashedPassword && u.Status == true);

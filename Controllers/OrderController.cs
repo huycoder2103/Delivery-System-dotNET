@@ -13,9 +13,9 @@ namespace Delivery_System.Controllers
             _context = context;
         }
 
-        // 1. Danh sách đơn hàng
+        // 1. Danh sách đơn hàng (Hỗ trợ lọc theo 3 nhóm hàng)
         [HttpGet]
-        public async Task<IActionResult> List(string sendStationFilter, string receiveStationFilter, string searchPhone)
+        public async Task<IActionResult> List(string sendStationFilter, string receiveStationFilter, string searchPhone, string dateFilter, string statusFilter = "all")
         {
             var userId = HttpContext.Session.GetString("UserID");
             if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
@@ -23,12 +23,43 @@ namespace Delivery_System.Controllers
             ViewBag.StationList = await _context.TblStations.Where(s => s.IsActive == true).ToListAsync();
             var query = _context.TblOrders.Where(o => o.IsDeleted == false || o.IsDeleted == null).AsQueryable();
 
+            // Phân loại hàng theo yêu cầu
+            if (statusFilter == "pending") // Đơn đã nhập nhưng chưa giao (TripId trống)
+            {
+                query = query.Where(o => string.IsNullOrEmpty(o.TripId));
+            }
+            else if (statusFilter == "shipped") // Đơn đã chuyển lên xe
+            {
+                query = query.Where(o => !string.IsNullOrEmpty(o.TripId));
+            }
+
             if (!string.IsNullOrEmpty(sendStationFilter)) query = query.Where(o => o.SendStation == sendStationFilter);
             if (!string.IsNullOrEmpty(receiveStationFilter)) query = query.Where(o => o.ReceiveStation == receiveStationFilter);
-            if (!string.IsNullOrEmpty(searchPhone)) query = query.Where(o => o.SenderPhone.Contains(searchPhone) || o.ReceiverPhone.Contains(searchPhone));
+            if (!string.IsNullOrEmpty(searchPhone)) query = query.Where(o => o.SenderPhone.Contains(searchPhone) || o.ReceiverPhone.Contains(searchPhone) || o.OrderId.Contains(searchPhone));
+            
+            if (!string.IsNullOrEmpty(dateFilter))
+            {
+                if (DateTime.TryParse(dateFilter, out DateTime dt))
+                {
+                    query = query.Where(o => o.CreatedAt != null && o.CreatedAt.Value.Date == dt.Date);
+                }
+            }
 
             var list = await query.OrderByDescending(o => o.OrderId).ToListAsync();
+            
+            // Tính số lượng cho các nhãn nút
+            ViewBag.CountAll = await _context.TblOrders.CountAsync(o => o.IsDeleted == false || o.IsDeleted == null);
+            ViewBag.CountPending = await _context.TblOrders.CountAsync(o => (o.IsDeleted == false || o.IsDeleted == null) && string.IsNullOrEmpty(o.TripId));
+            ViewBag.CountShipped = await _context.TblOrders.CountAsync(o => (o.IsDeleted == false || o.IsDeleted == null) && !string.IsNullOrEmpty(o.TripId));
+            
             ViewBag.SearchPhone = searchPhone;
+            ViewBag.CurrentStatus = statusFilter;
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_OrderTableBody", list);
+            }
+
             return View(list);
         }
 
@@ -36,8 +67,18 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> Ship(string id)
         {
+            var userId = HttpContext.Session.GetString("UserID");
+            var role = HttpContext.Session.GetString("Role");
+            if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
+
             var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == id);
             if (order == null) return NotFound();
+
+            if (role != "AD" && order.StaffInput != userId)
+            {
+                TempData["ErrorMessage"] = "Bạn không có quyền chuyển đơn hàng này!";
+                return RedirectToAction("List");
+            }
 
             var matchingTrips = await _context.VwTripLists
                 .Where(t => t.Departure == order.SendStation && t.Status == "Đang đi")
@@ -51,10 +92,20 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> AssignToTrip(string orderId, string tripId, string source)
         {
+            var userId = HttpContext.Session.GetString("UserID");
+            var role = HttpContext.Session.GetString("Role");
+
             var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == orderId);
             if (order != null)
             {
+                if (role != "AD" && order.StaffInput != userId)
+                {
+                    TempData["ErrorMessage"] = "Hành động bị từ chối do thiếu quyền hạn!";
+                    return RedirectToAction("List");
+                }
+
                 order.TripId = tripId;
+                order.ShipStatus = "Đang chuyển";
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = $"Gán đơn hàng {orderId} lên chuyến {tripId} thành công!";
             }
@@ -74,7 +125,6 @@ namespace Delivery_System.Controllers
             var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == id);
             if (order == null) return NotFound();
 
-            // KIỂM TRA QUYỀN: Chỉ người tạo đơn hoặc Admin mới được sửa
             if (role != "AD" && order.StaffInput != userId)
             {
                 TempData["ErrorMessage"] = "Bạn không có quyền sửa đơn hàng do người khác tạo!";
@@ -85,14 +135,21 @@ namespace Delivery_System.Controllers
             return View(order);
         }
 
-        // 5. Xử lý lưu chỉnh sửa
         [HttpPost]
         public async Task<IActionResult> Edit(TblOrder order)
         {
+            var userId = HttpContext.Session.GetString("UserID");
+            var role = HttpContext.Session.GetString("Role");
+
             var existing = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == order.OrderId);
             if (existing == null) return NotFound();
 
-            // Cập nhật các trường cho phép sửa
+            if (role != "AD" && existing.StaffInput != userId)
+            {
+                TempData["ErrorMessage"] = "Hành động bị từ chối do thiếu quyền hạn!";
+                return RedirectToAction("List");
+            }
+
             existing.ItemName = order.ItemName;
             existing.SendStation = order.SendStation;
             existing.ReceiveStation = order.ReceiveStation;
@@ -114,9 +171,18 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
+            var userId = HttpContext.Session.GetString("UserID");
+            var role = HttpContext.Session.GetString("Role");
+
             var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == id);
             if (order != null)
             {
+                if (role != "AD" && order.StaffInput != userId)
+                {
+                    TempData["ErrorMessage"] = "Bạn không có quyền xóa đơn hàng này!";
+                    return RedirectToAction("List");
+                }
+
                 order.IsDeleted = true;
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Đã đưa đơn hàng vào thùng rác!";
@@ -135,12 +201,14 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(TblOrder order)
         {
-            order.OrderId = "ORD-" + DateTime.Now.ToString("HHmmss");
+            var vniTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
+
+            order.OrderId = "ORD-" + vniTime.ToString("HHmmss");
             order.StaffInput = HttpContext.Session.GetString("UserID");
-            order.ReceiveDate = DateTime.Now.ToString("dd/MM/yyyy");
+            order.ReceiveDate = null;
             order.ShipStatus = "Chưa Chuyển";
             order.IsDeleted = false;
-            order.CreatedAt = DateTime.Now;
+            order.CreatedAt = vniTime;
             
             _context.TblOrders.Add(order);
             await _context.SaveChangesAsync();
@@ -180,6 +248,15 @@ namespace Delivery_System.Controllers
                 TempData["SuccessMessage"] = "Đã xóa vĩnh viễn đơn hàng!";
             }
             return RedirectToAction("Trash");
+        }
+
+        // 13. In biên nhận đơn hàng
+        [HttpGet]
+        public async Task<IActionResult> PrintReceipt(string id)
+        {
+            var order = await _context.TblOrders.FindAsync(id);
+            if (order == null) return NotFound();
+            return View(order);
         }
     }
 }

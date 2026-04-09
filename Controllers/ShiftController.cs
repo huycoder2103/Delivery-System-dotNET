@@ -50,8 +50,9 @@ namespace Delivery_System.Controllers
 
             if (activeShift != null)
             {
+                var vniTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
                 activeShift.Status = "ENDED";
-                activeShift.EndTime = DateTime.Now;
+                activeShift.EndTime = vniTime;
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Đã kết thúc ca làm việc!";
             }

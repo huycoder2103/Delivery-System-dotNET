@@ -11,14 +11,38 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/list_order.css" />
+    <style>
+        .loading-overlay { opacity: 0.5; pointer-events: none; transition: opacity 0.2s; }
+        .status-tab-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        .btn-status-tab {
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 2px solid #e8f0fe;
+            background: white;
+            color: #5f6368;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-status-tab.active {
+            background: #1a73e8;
+            color: white;
+            border-color: #1a73e8;
+            box-shadow: 0 4px 10px rgba(26, 115, 232, 0.2);
+        }
+        .btn-status-tab:hover:not(.active) { background: #f8faff; border-color: #d2e3fc; }
+    </style>
 }
 
-<div style="max-width: 1750px; margin: 20px auto; padding: 0 20px;">
+<div class="order-list-container">
     
     <div class="modern-page-header">
         <div>
             <h3>📦 Quản Lý Đơn Hàng</h3>
-            <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Tổng: @(Model?.Count() ?? 0) đơn</div>
+            <div id="orderCount" style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Tổng: @(Model?.Count() ?? 0) đơn</div>
         </div>
         
         <div style="display: flex; gap: 10px;">
@@ -35,10 +59,27 @@
     {
         <div class="alert-success">✅ @TempData["SuccessMessage"]</div>
     }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger" style="border-radius:12px; margin-bottom:15px; padding: 15px;">❌ @TempData["ErrorMessage"]</div>
+    }
 
-    <div class="modern-card">
-        <form asp-action="List" method="GET" style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <select name="sendStationFilter" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+    <div class="modern-card sticky-filter-bar" style="top: 155px; border-radius: 15px !important; border: 2px solid #1a73e8;">
+        
+        <div class="status-tab-group">
+            <button class="btn-status-tab @(ViewBag.CurrentStatus == "all" ? "active" : "")" onclick="changeStatus('all')">
+                🌐 Tất cả đơn hàng
+            </button>
+            <button class="btn-status-tab @(ViewBag.CurrentStatus == "pending" ? "active" : "")" onclick="changeStatus('pending')">
+                📥 Chờ giao (Tại kho)
+            </button>
+            <button class="btn-status-tab @(ViewBag.CurrentStatus == "shipped" ? "active" : "")" onclick="changeStatus('shipped')">
+                🚛 Đã lên xe
+            </button>
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+            <select id="filterSendStation" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
                 <option value="">-- Từ Trạm (Gửi) --</option>
                 @if (stationList != null)
                 {
@@ -49,7 +90,7 @@
                 }
             </select>
 
-            <select name="receiveStationFilter" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+            <select id="filterReceiveStation" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
                 <option value="">-- Đến Trạm (Nhận) --</option>
                 @if (stationList != null)
                 {
@@ -60,124 +101,100 @@
                 }
             </select>
 
-            <input type="date" name="dateFilter" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
-            <input type="submit" value="🔍 Lọc Dữ Liệu" class="btn-modern btn-primary-modern">
-            <a asp-action="Create" class="btn-modern btn-success-modern" style="text-decoration:none; display: inline-block; padding-top: 10px;">➕ Nhập Hàng Gửi</a>
-            <a asp-action="Trash" class="btn-modern btn-secondary-modern" style="text-decoration:none; display: inline-block; padding-top: 10px;">🗑 Thùng rác</a>
-        </form>
+            <input type="date" id="filterDate" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+            
+            <div style="position: relative;">
+                <input type="text" id="filterSearchPhone" placeholder="Tìm SĐT hoặc Mã đơn..." 
+                       value="@ViewBag.SearchPhone" style="width: 200px; padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd;">
+            </div>
 
-        <form asp-action="List" method="GET" style="margin-top: 10px;">
-            <input type="text" name="searchPhone" placeholder="Tìm theo SĐT người gửi/nhận..." 
-                   value="@ViewBag.SearchPhone" style="width: 300px; padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
-            <input type="submit" value="🔎 Tìm Kiếm" class="btn-modern btn-primary-modern">
-            <a asp-action="List" class="btn-modern btn-secondary-modern" style="text-decoration:none; display: inline-block; padding-top: 10px;">🔄 Làm mới</a>
-        </form>
+            <a asp-action="Create" class="btn-modern btn-success-modern" style="text-decoration:none;">➕ Nhập Hàng</a>
+            <a asp-action="Trash" class="btn-modern btn-secondary-modern" style="text-decoration:none;">🗑 Thùng rác</a>
+            <button onclick="resetFilters()" class="btn-modern btn-secondary-modern">🔄 Làm mới</button>
+        </div>
     </div>
 
     <div class="modern-card" style="padding: 0; overflow-x: auto;">
-        <table class="modern-table">
+        <table class="modern-table" id="orderTable">
             <thead>
                 <tr>
                     <th>Mã Đơn</th>
-                    <th>Tên Hàng</th>
-                    <th>Trạm Gửi</th>
-                    <th>Trạm Nhận</th>
-                    <th>Người Gửi</th>
-                    <th>SĐT Gửi</th>
-                    <th>Người Nhận</th>
-                    <th>SĐT Nhận</th>
+                    <th class="col-item-name">Tên Hàng</th>
+                    <th class="col-station">Trạm Gửi</th>
+                    <th class="col-station">Trạm Nhận</th>
+                    <th class="col-customer">Người Gửi</th>
+                    <th class="col-customer">Người Nhận</th>
                     <th>NV Nhập</th>
                     <th>Phí TR</th>
                     <th>Phí CT</th>
                     <th>Ghi chú</th>
-                    <th>Ngày Nhận</th>
                     <th>Thời Gian Tạo</th>
                     <th>Trạng thái</th>
                     <th>Thao tác</th>
                 </tr>
             </thead>
-            <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    foreach (var o in Model)
-                    {
-                        bool canEdit = currentUserRole == "AD" || o.StaffInput == currentUserID;
-                        <tr>
-                            <td><strong style="color: #1a73e8;">@o.OrderId</strong></td>
-                            <td style="font-weight: 600;">@o.ItemName</td>
-                            <td class="station-label">@o.SendStation</td>
-                            <td class="station-label">@o.ReceiveStation</td>
-                            <td>@o.SenderName</td>
-                            <td style="font-weight: 600;">@o.SenderPhone</td>
-                            <td>@o.ReceiverName</td>
-                            <td style="font-weight: 600;">@o.ReceiverPhone</td>
-                            <td style="color: #5f6368; font-weight: 700;">@o.StaffInput</td>
-                            
-                            <td>
-                                @if (!string.IsNullOrEmpty(o.Tr))
-                                {
-                                    <span class="badge badge-success">@(o.Tr)k</span>
-                                }
-                                else { <span style="color:#ccc">—</span> }
-                            </td>
-                            <td>
-                                @if (!string.IsNullOrEmpty(o.Ct))
-                                {
-                                    <span class="badge badge-danger">@(o.Ct)k</span>
-                                }
-                                else { <span style="color:#ccc">—</span> }
-                            </td>
-                            
-                            <td style="max-width:150px; font-size: 0.8rem; color: #666; font-style: italic;">@o.Note</td>
-                            <td style="font-size: 0.8rem; font-weight: 600;">
-                                @(DateTime.TryParse(o.ReceiveDate, out DateTime rd) ? rd.ToString("dd/MM/yyyy") : o.ReceiveDate)
-                            </td>
-                            <td style="font-size: 0.75rem; color: #888;">
-                                @o.CreatedAt?.ToString("dd/MM/yyyy HH:mm")
-                            </td>
-                            <td>
-                                @if (string.IsNullOrEmpty(o.TripId))
-                                {
-                                    <span class="badge badge-warning">Chưa chuyển</span>
-                                }
-                                else
-                                {
-                                    <span class="badge badge-info">Đã chuyển</span>
-                                    <br><small style="color:#1a73e8; font-weight:700;">@o.TripId</small>
-                                }
-                            </td>
-                            <td style="min-width: 110px;">
-                                <div class="action-btns-grid">
-                                    @if (string.IsNullOrEmpty(o.TripId))
-                                    {
-                                        <a asp-action="Ship" asp-route-id="@o.OrderId" class="btn-action-text btn-s-ship" style="text-decoration:none;">🚚 Chuyển</a>
-                                    }
-                                    
-                                    @if (canEdit)
-                                    {
-                                        <a asp-action="Edit" asp-route-id="@o.OrderId" class="btn-action-text btn-s-edit" style="text-decoration:none;">✏️ Sửa đơn</a>
-                                    }
-                                    else
-                                    {
-                                        <button type="button" class="btn-action-text btn-disabled" title="Bạn không có quyền sửa đơn này">🔒 Sửa đơn</button>
-                                    }
-
-                                    <form asp-action="Delete" method="POST" style="display:inline;">
-                                        <input type="hidden" name="id" value="@o.OrderId" />
-                                        <button type="submit" class="btn-action-text btn-s-delete" onclick="return confirm('Đưa đơn này vào thùng rác?')">🗑️ Xóa</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="16" style="padding: 50px; color: #999; text-align: center;">📭 Không tìm thấy đơn hàng nào phù hợp!</td>
-                    </tr>
-                }
+            <tbody id="orderTableBody">
+                <partial name="_OrderTableBody" model="Model" />
             </tbody>
         </table>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        let searchTimeout;
+        let currentStatus = '@(ViewBag.CurrentStatus ?? "all")';
+
+        document.getElementById('filterSendStation').addEventListener('change', triggerSearch);
+        document.getElementById('filterReceiveStation').addEventListener('change', triggerSearch);
+        document.getElementById('filterDate').addEventListener('change', triggerSearch);
+        document.getElementById('filterSearchPhone').addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(triggerSearch, 300);
+        });
+
+        function changeStatus(status) {
+            currentStatus = status;
+            document.querySelectorAll('.btn-status-tab').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            triggerSearch();
+        }
+
+        function triggerSearch() {
+            const sendStation = document.getElementById('filterSendStation').value;
+            const receiveStation = document.getElementById('filterReceiveStation').value;
+            const date = document.getElementById('filterDate').value;
+            const phone = document.getElementById('filterSearchPhone').value;
+
+            const tableBody = document.getElementById('orderTableBody');
+            const tableContainer = document.getElementById('orderTable');
+            tableContainer.classList.add('loading-overlay');
+
+            const url = `@Url.Action("List", "Order")?sendStationFilter=${encodeURIComponent(sendStation)}&receiveStationFilter=${encodeURIComponent(receiveStation)}&searchPhone=${encodeURIComponent(phone)}&dateFilter=${encodeURIComponent(date)}&statusFilter=${currentStatus}`;
+
+            fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(response => response.text())
+            .then(html => {
+                tableBody.innerHTML = html;
+                tableContainer.classList.remove('loading-overlay');
+                const rowCount = tableBody.querySelectorAll('tr:not(:has(.no-data-msg))').length;
+                document.getElementById('orderCount').innerText = `Tổng: ${rowCount} đơn`;
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                tableContainer.classList.remove('loading-overlay');
+            });
+        }
+
+        function resetFilters() {
+            document.getElementById('filterSendStation').value = '';
+            document.getElementById('filterReceiveStation').value = '';
+            document.getElementById('filterDate').value = '';
+            document.getElementById('filterSearchPhone').value = '';
+            currentStatus = 'all';
+            document.querySelectorAll('.btn-status-tab').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.btn-status-tab:first-child').classList.add('active');
+            triggerSearch();
+        }
+    </script>
+}

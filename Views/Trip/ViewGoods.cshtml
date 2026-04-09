@@ -58,12 +58,12 @@
                     {
                         <tr>
                             <td>@(i++)</td>
-                            <td><strong style="color:#2980b9">@o.OrderId</strong></td>
+                            <td><strong class="text-blue-600">@o.OrderId</strong></td>
                             <td><strong>@o.ItemName</strong></td>
-                            <td>@o.SenderName <br><small style="color:#888">@o.SenderPhone</small></td>
-                            <td>@o.ReceiverName <br><small style="color:#888">@o.ReceiverPhone</small></td>
+                            <td>@o.SenderName <br><small class="text-muted-small">@o.SenderPhone</small></td>
+                            <td>@o.ReceiverName <br><small class="text-muted-small">@o.ReceiverPhone</small></td>
                             <td>@o.ReceiveStation</td>
-                            <td style="font-weight:bold; color:#27ae60;">@string.Format("{0:N0}", o.Amount ?? 0)</td>
+                            <td class="text-green-bold">@string.Format("{0:N0}", o.Amount ?? 0)</td>
                             <td>
                                 <span class="badge @(o.ShipStatus == "Đã chuyển" ? "badge-success" : "badge-warning")">
                                     @o.ShipStatus
@@ -73,6 +73,7 @@
                     }
                 </tbody>
             </table>
+
         }
         else
         {

@@ -20,8 +20,12 @@ namespace Delivery_System.Controllers
             var role = HttpContext.Session.GetString("Role");
             if (role != "AD") return RedirectToAction("Index", "Home");
 
+            // Lấy giờ Việt Nam chuẩn (GMT+7)
+            var vniTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
+            var today = vniTime.Date;
+
             ViewBag.RevenueToday = await _context.TblOrders
-                .Where(o => o.ShipStatus == "Đã chuyển" && (o.IsDeleted == false || o.IsDeleted == null))
+                .Where(o => o.CreatedAt != null && o.CreatedAt.Value.Date == today && o.ShipStatus == "Đã chuyển" && (o.IsDeleted == false || o.IsDeleted == null))
                 .SumAsync(o => o.Amount ?? 0);
 
             ViewBag.ActiveStaffCount = await _context.TblWorkShifts.CountAsync(s => s.Status == "ACTIVE");

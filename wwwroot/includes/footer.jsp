@@ -16,7 +16,7 @@
         <div class="footer-row links-row">
             <h3>Hệ sinh thái chức năng</h3>
             <div class="quick-links-grid">
-                <a href="MainController?GoHome=true">Trang chủ</a>
+                <a href="MainController?GoHome=true">🏠Trang chủ</a>
                 <a href="MainController?ViewAbout=true">📘 Hướng dẫn</a>
                 <a href="MainController?ViewOrderList=true">📦 Quản Lý Đơn Hàng</a>
                 <a href="MainController?ViewTripList=true">🚛 Chuyến Xe Đi</a>

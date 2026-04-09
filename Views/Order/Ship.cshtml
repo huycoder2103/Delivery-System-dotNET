@@ -62,21 +62,23 @@
                             <td>@(t.LicensePlate ?? "-")</td>
                             <td>@(t.DriverName ?? "-")</td>
                             <td>@(t.DepartureTime ?? "-")</td>
-                            <td><span class="@(done ? "st-done" : "st-going")">@(t.Status ?? "Đang đi")</span></td>
                             <td>
-                                @if (!done)
+                                @if (done) { <span class="st-done">🏁 Đã đến</span> }
+                                else { <span class="st-going">🚛 Đang đi</span> }
+                            </td>
+                            <td>
+                                @if (!done && order != null)
                                 {
-                                    <form asp-action="AssignToTrip" method="POST" style="display:inline;"
-                                          onsubmit="return confirm('Xác nhận chuyển hàng lên chuyến @t.TripId?');">
-                                        <input type="hidden" name="orderId" value="@order?.OrderId">
+                                    <button type="button" class="btn-pick" onclick="confirmShip('@order.OrderId', '@t.TripId')">✓ Chọn chuyến này</button>
+                                    <form id="shipForm-@t.TripId" asp-action="AssignToTrip" method="POST" style="display:none;">
+                                        <input type="hidden" name="orderId" value="@order.OrderId">
                                         <input type="hidden" name="tripId" value="@t.TripId">
                                         <input type="hidden" name="source" value="ship">
-                                        <input type="submit" value="✓ Chọn chuyến này" class="btn-pick">
                                     </form>
                                 }
                                 else
                                 {
-                                    <button class="btn-disabled" disabled>Chuyến đã đến</button>
+                                    <button class="btn-disabled" disabled>Không khả dụng</button>
                                 }
                             </td>
                         </tr>
@@ -89,10 +91,30 @@
             <div class="no-data">
                 <div style="font-size:2rem;margin-bottom:8px;">🔍</div>
                 <p>Không tìm thấy chuyến xe từ trạm <strong>"@order?.SendStation"</strong>.</p>
-                <p style="font-size:.82rem;color:#aaa;">Vui lòng tạo chuyến xe mới hoặc kiểm tra lại trạm gửi của đơn hàng.</p>
             </div>
         }
 
-        <a asp-action="List" class="btn-back" style="text-decoration:none; display:inline-block; text-align:center;">⬅ Quay lại DS Hàng</a>
+        <a asp-action="List" class="btn-back" style="text-decoration:none; display:inline-block; text-align:center; margin-top: 20px;">⬅ Quay lại DS Hàng</a>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function confirmShip(orderId, tripId) {
+            Swal.fire({
+                title: 'Xác nhận chuyển hàng?',
+                text: "Chuyển đơn " + orderId + " lên chuyến " + tripId + "?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#1a73e8',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Đúng, chuyển ngay!',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('shipForm-' + tripId).submit();
+                }
+            })
+        }
+    </script>
+}

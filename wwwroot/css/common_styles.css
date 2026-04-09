@@ -56,23 +56,44 @@ body {
     background: #f8f9fa;
     color: #5f6368;
     font-weight: 700;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     padding: 12px 15px;
     text-transform: uppercase;
     border-bottom: 2px solid #edf2f7;
     text-align: center;
 }
 
+.modern-table th:first-child, 
+.modern-table td:first-child {
+    min-width: 130px; /* Tăng chiều rộng cột ID */
+    text-align: center;
+}
+
 .modern-table tbody td {
     padding: 12px 15px;
     border-bottom: 1px solid #f0f0f0;
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: #3c4043;
     text-align: center;
 }
 
 .modern-table tbody tr:hover {
     background-color: #f8faff;
+}
+
+/* Thông báo hệ thống */
+.alert-success {
+    background: #e6f4ea;
+    color: #1e8e3e;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin: 15px 0;
+    font-weight: 600;
+    border: 1px solid #ceead6;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 /* Badge (Nhãn trạng thái) */
@@ -154,4 +175,38 @@ body {
 
 .btn-home:active, .btn-back:active, .btn-secondary-modern:active {
     transform: translateY(0);
+}
+
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 768px) {
+    body { padding-top: 140px !important; } /* Tăng padding vì Navbar mobile cao hơn */
+
+    .modern-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 15px 20px;
+    }
+
+    .modern-page-header h3 { font-size: 1.1rem; }
+
+    .modern-card { padding: 15px; }
+
+    /* Bảng dữ liệu di động */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 1rem;
+    }
+
+    .modern-table thead th, .modern-table tbody td {
+        padding: 10px 8px;
+        font-size: 0.85rem;
+    }
+
+    /* Các nút bấm di động */
+    .btn-modern {
+        width: 100%;
+        padding: 12px;
+    }
 }

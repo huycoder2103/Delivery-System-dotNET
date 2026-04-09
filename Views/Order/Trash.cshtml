@@ -33,7 +33,6 @@
                     <th>Trạm Nhận</th>
                     <th>Người Gửi</th>
                     <th>Người Nhận</th>
-                    <th>Ngày Nhận</th>
                     <th>Thao Tác</th>
                 </tr>
             </thead>
@@ -49,17 +48,16 @@
                             <td>@o.ReceiveStation</td>
                             <td>@o.SenderName <br><small>@o.SenderPhone</small></td>
                             <td>@o.ReceiverName <br><small>@o.ReceiverPhone</small></td>
-                            <td>@o.ReceiveDate</td>
                             <td>
                                 <div style="display: flex; gap: 5px;">
                                     <form asp-action="Restore" method="POST">
                                         <input type="hidden" name="id" value="@o.OrderId" />
                                         <button type="submit" class="btn-restore">🔄 Khôi phục</button>
                                     </form>
-                                    <form asp-action="HardDelete" method="POST" onsubmit="return confirm('Xác nhận xóa VĨNH VIỄN đơn hàng này?')">
+                                    <form id="hardDeleteForm-@o.OrderId" asp-action="HardDelete" method="POST" style="display:none;">
                                         <input type="hidden" name="id" value="@o.OrderId" />
-                                        <button type="submit" class="btn-hard-delete">💀 Xóa vĩnh viễn</button>
                                     </form>
+                                    <button type="button" class="btn-hard-delete" onclick="confirmHardDelete('@o.OrderId')">💀 Xóa vĩnh viễn</button>
                                 </div>
                             </td>
                         </tr>
@@ -75,3 +73,22 @@
         </table>
     </div>
 </div>
+
+<script>
+    function confirmHardDelete(id) {
+        Swal.fire({
+            title: 'Xóa vĩnh viễn?',
+            text: "Dữ liệu đơn hàng " + id + " sẽ không thể khôi phục lại!",
+            icon: 'error',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: '💀 Xóa ngay',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('hardDeleteForm-' + id).submit();
+            }
+        })
+    }
+</script>

@@ -9,26 +9,26 @@
     <link rel="stylesheet" href="~/css/create_order.css" />
 }
 
-<div class="order-container">
-    <div class="order-header">
-        <h2>NHẬP HÀNG GỬI</h2>
-    </div>
-
-    <form asp-action="Create" method="POST" onsubmit="return validateOrderForm()">
-        <div class="order-toolbar">
-            <span>Thông tin hàng gửi mới</span>
-            <input type="submit" value="Lưu đơn hàng" class="btn-save">
+<div class="order-container-modern">
+    <form id="orderForm" asp-action="Create" method="POST" onsubmit="return validateOrderForm()">
+        
+        <div class="modern-page-header">
+            <div>
+                <h2>📦 NHẬP HÀNG GỬI MỚI</h2>
+                <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Điền đầy đủ thông tin đơn hàng bên dưới</div>
+            </div>
         </div>
 
-        <div class="form-body">
+        <div class="modern-card">
+            <div class="section-title">✨ Thông tin hàng hóa</div>
             <div class="form-group">
-                <label>Tên Hàng Gửi <span style="color:red">*</span></label>
-                <input asp-for="ItemName" type="text" placeholder="Nhập Tên Hàng Gửi..." required>
+                <label>Tên Hàng Gửi <span class="required-star">*</span></label>
+                <input asp-for="ItemName" type="text"  required>
             </div>
 
-            <div class="form-row">
+            <div class="form-row" style="margin-top: 20px;">
                 <div class="form-group">
-                    <label>Trạm Gửi</label>
+                    <label>Trạm Gửi <span class="required-star">*</span></label>
                     <select asp-for="SendStation" id="sendStation" required>
                         <option value="">-- Chọn Trạm Gửi --</option>
                         @if (stationList != null)
@@ -41,7 +41,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Trạm Nhận</label>
+                    <label>Trạm Nhận <span class="required-star">*</span></label>
                     <select asp-for="ReceiveStation" id="receiveStation" required>
                         <option value="">-- Chọn Trạm Nhận --</option>
                         @if (stationList != null)
@@ -54,50 +54,57 @@
                     </select>
                 </div>
             </div>
+        </div>
 
+        <div class="modern-card">
+            <div class="section-title">👤 Thông tin khách hàng</div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Người Gửi</label>
-                    <input asp-for="SenderName" type="text" placeholder="Tên người gửi...">
+                    <input asp-for="SenderName" type="text" placeholder="Tên khách hàng gửi...">
                 </div>
                 <div class="form-group">
-                    <label>SĐT Gửi <span style="color:red">*</span></label>
-                    <input asp-for="SenderPhone" id="senderPhone" type="text" required placeholder="SĐT người gửi...">
+                    <label>Số Điện Thoại Gửi <span class="required-star">*</span></label>
+                    <input asp-for="SenderPhone" id="senderPhone" type="text" required placeholder="Nhập SĐT người gửi...">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label>Người Nhận</label>
-                    <input asp-for="ReceiverName" type="text" placeholder="Tên người nhận...">
+                    <input asp-for="ReceiverName" type="text" placeholder="Tên khách hàng nhận...">
                 </div>
                 <div class="form-group">
-                    <label>SĐT Nhận <span style="color:red">*</span></label>
-                    <input asp-for="ReceiverPhone" id="receiverPhone" type="text" required placeholder="SĐT người nhận...">
+                    <label>Số Điện Thoại Nhận <span class="required-star">*</span></label>
+                    <input asp-for="ReceiverPhone" id="receiverPhone" type="text" required placeholder="Nhập SĐT người nhận...">
                 </div>
             </div>
+        </div>
 
+        <div class="modern-card">
+            <div class="section-title">💰 Thanh toán & Ghi chú</div>
             <div class="form-row">
                 <div class="form-group">
-                    <label>Đã Thanh Toán (Tr)</label>
-                    <input asp-for="Tr" id="trField" type="text" placeholder="Ví dụ: 50">
+                    <label>Đã Thanh Toán (Tr) - Đơn vị K</label>
+                    <input asp-for="Tr" id="trField" type="number" placeholder="0">
                 </div>
                 <div class="form-group">
-                    <label>Chưa Thanh Toán (Ct)</label>
-                    <input asp-for="Ct" id="ctField" type="text" placeholder="Ví dụ: 100">
+                    <label>Chưa Thanh Toán (Ct) - Đơn vị K</label>
+                    <input asp-for="Ct" id="ctField" type="number" placeholder="0">
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Ghi Chú</label>
-                <textarea asp-for="Note" rows="3" placeholder="Ghi chú nếu có..."></textarea>
+                <label>Ghi Chú Đơn Hàng</label>
+                <textarea asp-for="Note" rows="3" placeholder="Nhập các lưu ý đặc biệt về hàng hóa..."></textarea>
             </div>
         </div>
     </form>
-</div>
 
-<div class="back-container">
-    <a asp-action="List" class="btn-back" style="text-decoration:none; display:inline-block; text-align:center;">⬅ Quay lại</a>
+    <div style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center;">
+        <a asp-action="List" class="btn-modern-back" style="text-decoration: none;">⬅ Quay lại danh sách</a>
+        <input type="submit" form="orderForm" value="💾 Lưu Đơn Hàng" class="btn-modern-save" style="padding: 12px 40px; min-width: 200px;">
+    </div>
 </div>
 
 <script>
@@ -110,17 +117,17 @@
         var receive = document.getElementById("receiveStation").value;
 
         if (send === receive && send !== "") {
-            alert("❌ Trạm gửi và trạm nhận không được trùng nhau!");
+            Swal.fire({ icon: 'error', title: 'Trùng trạm', text: 'Trạm gửi và trạm nhận không được trùng nhau!' });
             return false;
         }
 
         if (sPhone === "" || rPhone === "") {
-            alert("❌ Số điện thoại người gửi và người nhận không được để trống!");
+            Swal.fire({ icon: 'warning', title: 'Thiếu thông tin', text: 'Số điện thoại người gửi và người nhận không được để trống!' });
             return false;
         }
 
         if (tr === "" && ct === "") {
-            alert("❌ Bạn phải nhập thông tin tiền thanh toán (Tr) hoặc chưa thanh toán (Ct)!");
+            Swal.fire({ icon: 'info', title: 'Thanh toán', text: 'Bạn phải nhập thông tin tiền thanh toán (Tr) hoặc chưa thanh toán (Ct)!' });
             return false;
         }
         return true;

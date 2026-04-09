@@ -10,36 +10,36 @@
     <link rel="stylesheet" href="~/css/create_trip.css" />
 }
 
-<div class="trip-container">
-    <form asp-action="Create" method="POST" onsubmit="return validateTripStations()">
-        <div class="trip-toolbar">
-            <div class="tab-active">Thêm Chuyến Xe Đi</div>
-            <input type="submit" value="💾 Lưu Chuyến Xe" class="btn-save">
+<div class="trip-container-modern">
+    <form id="tripForm" asp-action="Create" method="POST" onsubmit="return validateTripStations()">
+        
+        <div class="modern-page-header">
+            <div>
+                <h2>🚛 THÊM CHUYẾN XE MỚI</h2>
+                <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Khởi tạo lộ trình vận chuyển hàng hóa</div>
+            </div>
         </div>
 
-        <div class="trip-body">
+        <div class="modern-card">
+            <!-- Dòng 1: Xe và Trạm -->
             <div class="form-row">
-                <!-- Biển số xe -->
                 <div class="form-col">
                     <label>Biển Số Xe <span class="required-star">*</span></label>
                     <select asp-for="TruckId" required>
-                        <option value="">-- Chọn Xe --</option>
+                        <option value="">-- Chọn Xe Vận Chuyển --</option>
                         @if (truckList != null)
                         {
                             foreach (var truck in truckList)
                             {
                                 string statusLabel = (truck.Status == true) ? "" : " (Đang đi)";
-                                <option value="@truck.TruckId">
-                                    @truck.LicensePlate @statusLabel
-                                </option>
+                                <option value="@truck.TruckId">@truck.LicensePlate @statusLabel</option>
                             }
                         }
                     </select>
                 </div>
 
-                <!-- Trạm đi -->
                 <div class="form-col">
-                    <label>Trạm Đi <span class="required-star">*</span></label>
+                    <label>Trạm Xuất Phát <span class="required-star">*</span></label>
                     <select asp-for="Departure" id="departure" required>
                         <option value="">-- Chọn Trạm Đi --</option>
                         @if (stationList != null)
@@ -52,9 +52,8 @@
                     </select>
                 </div>
 
-                <!-- Trạm đến -->
                 <div class="form-col">
-                    <label>Trạm Đến <span class="required-star">*</span></label>
+                    <label>Trạm Đích <span class="required-star">*</span></label>
                     <select asp-for="Destination" id="destination" required>
                         <option value="">-- Chọn Trạm Đến --</option>
                         @if (stationList != null)
@@ -66,60 +65,115 @@
                         }
                     </select>
                 </div>
+            </div>
 
-                <!-- Giờ đi -->
-                <div class="form-col">
+            <!-- Dòng 2: Đồng hồ bên trái, Tên lái/phụ bên phải xếp chồng -->
+            <div class="form-row" style="align-items: flex-start; gap: 60px;">
+                <!-- Cột trái: Đồng hồ -->
+                <div class="form-col" style="flex: 0 0 auto; width: 300px;">
                     <label>Giờ Xuất Phát <span class="required-star">*</span></label>
-                    <input asp-for="DepartureTime" type="time" required>
+                    <input type="hidden" asp-for="DepartureTime" id="finalDepartureTime" required>
+                    
+                    <div class="modern-time-picker">
+                        <div class="time-unit-box">
+                            <button type="button" class="arrow-btn" onclick="adjustTime('hourInp', 1)">▲</button>
+                            <input type="number" id="hourInp" class="time-input-modern" min="1" max="12" value="08" oninput="validateInput(this, 1, 12)">
+                            <button type="button" class="arrow-btn" onclick="adjustTime('hourInp', -1)">▼</button>
+                        </div>
+
+                        <div class="time-separator-modern">:</div>
+
+                        <div class="time-unit-box">
+                            <button type="button" class="arrow-btn" onclick="adjustTime('minuteInp', 1)">▲</button>
+                            <input type="number" id="minuteInp" class="time-input-modern" min="0" max="59" value="00" oninput="validateInput(this, 0, 59)">
+                            <button type="button" class="arrow-btn" onclick="adjustTime('minuteInp', -1)">▼</button>
+                        </div>
+
+                        <div class="ampm-switch">
+                            <button type="button" class="btn-ampm-modern active" id="btnAM" onclick="setAMPM('AM')">AM</button>
+                            <button type="button" class="btn-ampm-modern" id="btnPM" onclick="setAMPM('PM')">PM</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột phải: Tài xế (trên) và Phụ xe (dưới) -->
+                <div class="form-col" style="gap: 15px; max-width: 400px; flex: 1;">
+                    <div style="display: flex; flex-direction: column;">
+                        <label>Tài Xế Phụ Trách</label>
+                        <input asp-for="DriverName" type="text" placeholder="Họ tên tài xế..." style="width: 100%;">
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <label>Nhân Viên Phụ Xe</label>
+                        <input asp-for="AssistantName" type="text" placeholder="Họ tên phụ xe..." style="width: 100%;">
+                    </div>
                 </div>
             </div>
 
-            <script>
-                function validateTripStations() {
-                    var dep = document.getElementById("departure").value;
-                    var dest = document.getElementById("destination").value;
-                    if (dep === dest && dep !== "") {
-                        alert("❌ Trạm đi và trạm đến không được trùng nhau!");
-                        return false;
-                    }
-                    return true;
-                }
-            </script>
-
-            <div class="form-row">
-                <div class="form-col">
-                    <label>Tài Xế</label>
-                    <input asp-for="DriverName" type="text" placeholder="Nhập tên tài xế...">
-                </div>
-                <div class="form-col">
-                    <label>Phụ Xe</label>
-                    <input asp-for="AssistantName" type="text" placeholder="Nhập tên phụ xe...">
-                </div>
+            <!-- Ghi chú luôn hiển thị -->
+            <div class="form-group" style="margin-top: 25px;">
+                <label style="font-weight: 700; font-size: 0.85rem; color: #5f6368; text-transform: uppercase; display: block; margin-bottom: 8px;">Ghi Chú Chuyến Xe</label>
+                <textarea asp-for="Notes" rows="3" placeholder="Nhập các lưu ý quan trọng về chuyến xe này (nếu có)..." style="width: 100%; padding: 12px 15px; border: 1px solid #dadce0; border-radius: 10px; background: #f8f9fa; transition: 0.3s; resize: vertical;"></textarea>
             </div>
-
-            <div id="noteSection" style="display:none;">
-                <label>Ghi Chú</label>
-                <textarea asp-for="Notes" placeholder="Nhập ghi chú..."></textarea>
-            </div>
-            <button type="button" class="btn-toggle-note" onclick="toggleNote()">📝 Thêm Ghi Chú</button>
         </div>
     </form>
 
-    <div class="back-trip-container">
-        <a asp-action="List" class="btn-back" style="text-decoration:none; display:inline-block; text-align:center;">⬅ Quay lại DS Chuyến Xe</a>
+    <div style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center;">
+        <a asp-action="List" class="btn-modern-back" style="text-decoration:none;">⬅ Quay lại danh sách</a>
+        <input type="submit" form="tripForm" value="💾 Lưu Chuyến Xe" class="btn-modern-save" style="padding: 12px 40px; min-width: 200px;">
     </div>
 </div>
 
 <script>
-    function toggleNote() {
-        var s = document.getElementById("noteSection");
-        var b = event.target;
-        if (s.style.display === "none" || s.style.display === "") {
-            s.style.display = "block";
-            b.textContent = "🙈 Ẩn Ghi Chú";
-        } else {
-            s.style.display = "none";
-            b.textContent = "📝 Thêm Ghi Chú";
-        }
+    let currentAMPM = 'AM';
+
+    function setAMPM(val) {
+        currentAMPM = val;
+        document.getElementById('btnAM').classList.toggle('active', val === 'AM');
+        document.getElementById('btnPM').classList.toggle('active', val === 'PM');
+        updateFinalValue();
     }
+
+    function adjustTime(id, amount) {
+        const inp = document.getElementById(id);
+        let val = parseInt(inp.value) + amount;
+        
+        if (id === 'hourInp') {
+            if (val > 12) val = 1;
+            if (val < 1) val = 12;
+        } else {
+            if (val > 59) val = 0;
+            if (val < 0) val = 59;
+        }
+        
+        inp.value = val.toString().padStart(2, '0');
+        updateFinalValue();
+    }
+
+    function validateInput(inp, min, max) {
+        let val = parseInt(inp.value);
+        if (isNaN(val)) return;
+        if (val < min && inp.value.length >= 2) inp.value = min.toString().padStart(2, '0');
+        if (val > max) inp.value = max.toString().padStart(2, '0');
+        updateFinalValue();
+    }
+
+    function updateFinalValue() {
+        const h = document.getElementById('hourInp').value.padStart(2, '0');
+        const m = document.getElementById('minuteInp').value.padStart(2, '0');
+        document.getElementById('finalDepartureTime').value = `${h}:${m} ${currentAMPM}`;
+    }
+
+    function validateTripStations() {
+        var dep = document.getElementById("departure").value;
+        var dest = document.getElementById("destination").value;
+        if (dep === dest && dep !== "") {
+            Swal.fire({ icon: 'error', title: 'Lỗi chọn trạm', text: 'Trạm đi và trạm đến không được trùng nhau!' });
+            return false;
+        }
+        return true;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        updateFinalValue();
+    });
 </script>

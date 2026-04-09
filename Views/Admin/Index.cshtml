@@ -2,7 +2,6 @@
 
 @{
     ViewData["Title"] = "Quản Lý Admin";
-    var announcements = ViewBag.Announcements as IEnumerable<Delivery_System.Models.TblAnnouncement>;
 }
 
 @section Styles {
@@ -33,13 +32,13 @@
 
 @if (TempData["ErrorMessage"] != null)
 {
-    <div style="background:#f8d7da;color:#721c24;padding:10px 20px;text-align:center;font-weight:bold;margin-bottom:10px;">
+    <div style="background:#f8d7da;color:#721c24;padding:10px 20px;text-align:center;font-weight:bold;margin-bottom:10px; border-radius: 8px;">
         ❌ @TempData["ErrorMessage"]
     </div>
 }
 @if (TempData["SuccessMessage"] != null)
 {
-    <div style="background:#d4edda;color:#155724;padding:10px 20px;text-align:center;font-weight:bold;margin-bottom:10px;">
+    <div style="background:#d4edda;color:#155724;padding:10px 20px;text-align:center;font-weight:bold;margin-bottom:10px; border-radius: 8px;">
         ✅ @TempData["SuccessMessage"]
     </div>
 }
@@ -52,11 +51,11 @@
 
     <div class="kpi-row">
         <div class="kpi-mini">
-            <div class="v" id="kpiTotal">@Model.Count()</div>
+            <div class="v">@Model.Count()</div>
             <div class="l">Tổng nhân viên</div>
         </div>
         <div class="kpi-mini green">
-            <div class="v" id="kpiActive">@Model.Count(u => u.Status == true)</div>
+            <div class="v">@Model.Count(u => u.Status == true)</div>
             <div class="l">Đang hoạt động</div>
         </div>
         <div class="kpi-mini red">
@@ -68,12 +67,11 @@
     <div class="search-bar">
         <input type="text" id="staffSearch" placeholder="🔍 Tìm theo tên hoặc SĐT..." oninput="filterStaff(this.value)">
         <button class="btn-search">Tìm kiếm</button>
-        <button class="btn-clear" onclick="clearSearch()">✕ Xóa</button>
         <span class="result-count" id="resultCount"></span>
     </div>
 
     <div class="table-responsive">
-        <table id="staffTable">
+        <table>
             <thead>
                 <tr>
                     <th>#</th>
@@ -85,15 +83,15 @@
                     <th>Thao Tác</th>
                 </tr>
             </thead>
-            <tbody id="staffBody">
+            <tbody>
                 @{ int count = 1; }
                 @foreach (var user in Model)
                 {
                     <tr class="staff-row" data-name="@user.FullName.ToLower()" data-phone="@user.Phone">
                         <td>@(count++)</td>
                         <td><strong>@user.UserId</strong></td>
-                        <td class="col-name">@user.FullName</td>
-                        <td class="col-phone">@(string.IsNullOrEmpty(user.Phone) ? "-" : user.Phone)</td>
+                        <td>@user.FullName</td>
+                        <td>@(string.IsNullOrEmpty(user.Phone) ? "-" : user.Phone)</td>
                         <td>
                             <span class="badge-@(user.RoleId == "AD" ? "admin" : "user")">
                                 @(user.RoleId == "AD" ? "Admin" : "Nhân Viên")
@@ -105,19 +103,23 @@
                             </span>
                         </td>
                         <td>
-                            <form asp-action="ToggleUser" method="POST" style="display:inline;">
-                                <input type="hidden" name="userID" value="@user.UserId">
-                                <input type="submit" value="@(user.Status == true ? "Khóa" : "Mở khóa")" 
-                                       class="btn-action @(user.Status == true ? "btn-orange" : "btn-green")">
-                            </form>
-                            <button class="btn-action btn-blue" onclick="showChangePassModal('@user.UserId', '@user.FullName')">Đổi MK</button>
-                            @if (user.UserId != "admin")
-                            {
-                                <form asp-action="DeleteUser" method="POST" style="display:inline;" onsubmit="return confirm('Xác nhận xóa nhân viên này?');">
+                            <div style="display: flex; gap: 5px; justify-content: center;">
+                                <form asp-action="ToggleUser" method="POST" style="display:inline;">
                                     <input type="hidden" name="userID" value="@user.UserId">
-                                    <input type="submit" value="Xóa" class="btn-action btn-red">
+                                    <input type="submit" value="@(user.Status == true ? "Khóa" : "Mở")" 
+                                           class="btn-action @(user.Status == true ? "btn-orange" : "btn-green")" style="width: 60px;">
                                 </form>
-                            }
+                                <button class="btn-action btn-blue" onclick="showChangePassModal('@user.UserId', '@user.FullName')" style="width: 70px;">Đổi MK</button>
+                                
+                                @if (user.UserId != "admin")
+                                {
+                                    <button type="button" class="btn-action" style="background:#fce8e6; color:#d93025; border:none; border-radius:4px; cursor:pointer;" 
+                                            onclick="confirmDeleteUser('@user.UserId')">🗑️ Xóa</button>
+                                    <form id="deleteUserForm-@user.UserId" asp-action="DeleteUser" method="POST" style="display:none;">
+                                        <input type="hidden" name="userID" value="@user.UserId" />
+                                    </form>
+                                }
+                            </div>
                         </td>
                     </tr>
                 }
@@ -188,53 +190,65 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    // JS Logic giữ nguyên từ admin.jsp
-    function showAddModal() { document.getElementById('addModal').style.display = 'flex'; }
-    function hideAddModal() { document.getElementById('addModal').style.display = 'none'; }
-    
-    function showChangePassModal(userID, fullName) {
-        document.getElementById('cpUserID').value = userID;
-        document.getElementById('cpUserLabel').textContent = 'Nhân viên: ' + fullName + ' (' + userID + ')';
-        document.getElementById('changePassModal').style.display = 'flex';
-    }
-    function hideChangePassModal() { document.getElementById('changePassModal').style.display = 'none'; }
-
-    function validateAddForm() {
-        const p1 = document.getElementById('newPassword').value;
-        const p2 = document.getElementById('newConfirmPassword').value;
-        if (p1 !== p2) { document.getElementById('addPassErr').style.display = 'block'; return false; }
-        return true;
-    }
-
-    function validateChangePassForm() {
-        const p1 = document.getElementById('cpNewPassword').value;
-        const p2 = document.getElementById('cpConfirmPassword').value;
-        if (p1 !== p2) { document.getElementById('cpPassErr').style.display = 'block'; return false; }
-        return true;
-    }
-
-    function filterStaff(keyword) {
-        const kw = keyword.toLowerCase();
-        const rows = document.querySelectorAll('.staff-row');
-        rows.forEach(row => {
-            const name = row.getAttribute('data-name');
-            const phone = row.getAttribute('data-phone');
-            row.style.display = (name.includes(kw) || phone.includes(kw)) ? '' : 'none';
-        });
-    }
-
-    function clearSearch() {
-        document.getElementById('staffSearch').value = '';
-        filterStaff('');
-    }
-
-    // Đóng modal khi click ra ngoài
-    window.onclick = function (e) {
-        if (e.target.className === 'modal') {
-            hideAddModal();
-            hideChangePassModal();
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function confirmDeleteUser(id) {
+            Swal.fire({
+                title: 'Xóa nhân viên?',
+                text: "Tài khoản " + id + " sẽ bị xóa khỏi hệ thống!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Xác nhận xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteUserForm-' + id).submit();
+                }
+            })
         }
-    };
-</script>
+
+        function showAddModal() { document.getElementById('addModal').style.display = 'flex'; }
+        function hideAddModal() { document.getElementById('addModal').style.display = 'none'; }
+        
+        function showChangePassModal(userID, fullName) {
+            document.getElementById('cpUserID').value = userID;
+            document.getElementById('cpUserLabel').textContent = 'Nhân viên: ' + fullName + ' (' + userID + ')';
+            document.getElementById('changePassModal').style.display = 'flex';
+        }
+        function hideChangePassModal() { document.getElementById('changePassModal').style.display = 'none'; }
+
+        function validateAddForm() {
+            const p1 = document.getElementById('newPassword').value;
+            const p2 = document.getElementById('newConfirmPassword').value;
+            if (p1 !== p2) { document.getElementById('addPassErr').style.display = 'block'; return false; }
+            return true;
+        }
+
+        function validateChangePassForm() {
+            const p1 = document.getElementById('cpNewPassword').value;
+            const p2 = document.getElementById('cpConfirmPassword').value;
+            if (p1 !== p2) { document.getElementById('cpPassErr').style.display = 'block'; return false; }
+            return true;
+        }
+
+        function filterStaff(keyword) {
+            const kw = keyword.toLowerCase();
+            const rows = document.querySelectorAll('.staff-row');
+            rows.forEach(row => {
+                const name = row.getAttribute('data-name');
+                const phone = row.getAttribute('data-phone');
+                row.style.display = (name.includes(kw) || phone.includes(kw)) ? '' : 'none';
+            });
+        }
+
+        window.onclick = function (e) {
+            if (e.target.className === 'modal') {
+                hideAddModal();
+                hideChangePassModal();
+            }
+        };
+    </script>
+}

@@ -114,21 +114,22 @@
 </div>
 
 <script>
-    function validateEditForm() {
+    function validateOrderForm() {
         var tr = document.getElementById("trField").value.trim();
         var ct = document.getElementById("ctField").value.trim();
         var sPhone = document.getElementById("senderPhone").value.trim();
         var rPhone = document.getElementById("receiverPhone").value.trim();
 
         if (sPhone === "" || rPhone === "") {
-            alert("❌ Số điện thoại người gửi và người nhận không được để trống!");
+            Swal.fire({ icon: 'warning', title: 'Thiếu SĐT', text: 'Số điện thoại người gửi và người nhận không được để trống!' });
             return false;
         }
 
         if (tr === "" && ct === "") {
-            alert("❌ Bạn phải nhập thông tin tiền thanh toán (Trả rồi) hoặc chưa thanh toán (Chưa trả)!");
+            Swal.fire({ icon: 'info', title: 'Thanh toán', text: 'Bạn phải nhập thông tin tiền thanh toán (Trả rồi) hoặc chưa thanh toán (Chưa trả)!' });
             return false;
         }
         return true;
     }
+
 </script>

@@ -1,0 +1,61 @@
+@model IEnumerable<Delivery_System.Models.VwTripList>
+
+@if (Model != null && Model.Any())
+{
+    foreach (var t in Model)
+    {
+        <tr>
+            <td><strong style="color: #1a73e8;">@t.TripId</strong></td>
+            <td style="color: #d93025; font-weight: 600;">@t.Departure</td>
+            <td style="color: #188038; font-weight: 600;">@t.Destination</td>
+            <td style="font-weight: 600;">@t.LicensePlate</td>
+            <td>@t.DepartureTime</td>
+            <td>@t.DriverName</td>
+            <td>
+                @if (t.Status == "Đang đi")
+                {
+                    <span class="badge-status-m badge-going">🚛 Đang đi</span>
+                }
+                else
+                {
+                    <span class="badge-status-m badge-arrived">🏁 Đã cập bến</span>
+                }
+            </td>
+            <td style="font-weight: 600;">@t.StaffCreatedName</td>
+            <td style="font-size: 1rem;">@t.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+            <td style="min-width: 130px;">
+                <div class="action-btns-grid" style="display: flex; flex-direction: column; gap: 5px; align-items: center;">
+                    @{
+                        var orderCounts = ViewBag.OrderCounts as Dictionary<string, int>;
+                        int count = (orderCounts != null && orderCounts.ContainsKey(t.TripId)) ? orderCounts[t.TripId] : 0;
+                    }
+                    
+                    @* Nút xác nhận đến (Dùng SweetAlert2) *@
+                    @if (ViewBag.IsArrivalPage == true && t.Status == "Đang đi")
+                    {
+                        <button type="button" class="btn-action-trip" style="background:#e6f4ea; color:#1e8e3e; border:none; padding:8px 12px; border-radius:8px; font-weight:700; cursor:pointer; width: 110px;"
+                                onclick="confirmArrive('@t.TripId')">🏁 Đã đến</button>
+                        
+                        <form id="arriveForm-@t.TripId" asp-action="Arrive" method="POST" style="display:none;">
+                            <input type="hidden" name="id" value="@t.TripId" />
+                        </form>
+                    }
+
+                    @if (t.Status == "Đang đi" && ViewBag.IsArrivalPage != true)
+                    {
+                        <a asp-action="AssignGoods" asp-route-id="@t.TripId" class="btn-action-trip" style="text-decoration: none; background:#fff3cd; color:#856404; border:none; padding:8px 12px; border-radius:8px; font-weight:700; cursor:pointer; width: 110px; display: inline-block; text-align: center;">📦 Thêm hàng</a>
+                    }
+                    <a asp-action="ViewGoods" asp-route-id="@t.TripId" class="btn-action-trip" style="text-decoration: none; background:#e8f0fe; color:#1a73e8; border:none; padding:8px 12px; border-radius:8px; font-weight:700; cursor:pointer; width: 110px; display: inline-block; text-align: center;">
+                        📋 Xem hàng (@count)
+                    </a>
+                </div>
+            </td>
+        </tr>
+    }
+}
+else
+{
+    <tr>
+        <td colspan="10" style="padding: 50px; color: #999; text-align: center;">📭 Không tìm thấy chuyến xe nào phù hợp!</td>
+    </tr>
+}

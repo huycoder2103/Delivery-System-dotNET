@@ -65,12 +65,11 @@
                             <td class="money">@string.Format("{0:N0}", o.Amount ?? 0)đ</td>
                             <td><span class="badge-pending">@o.Tr</span></td>
                             <td>
-                                <form asp-controller="Order" asp-action="AssignToTrip" method="POST" style="display:inline;"
-                                      onsubmit="return confirm('Gán đơn @o.OrderId lên chuyến @trip?.TripId?');">
+                                <button type="button" class="btn-assign" onclick="confirmAssign('@o.OrderId', '@trip?.TripId')">📦 Gán lên xe</button>
+                                <form id="assignForm-@o.OrderId" asp-controller="Order" asp-action="AssignToTrip" method="POST" style="display:none;">
                                     <input type="hidden" name="orderId" value="@o.OrderId">
                                     <input type="hidden" name="tripId" value="@trip?.TripId">
                                     <input type="hidden" name="source" value="trip">
-                                    <input type="submit" value="📦 Gán lên xe" class="btn-assign">
                                 </form>
                             </td>
                         </tr>
@@ -89,3 +88,22 @@
         <a asp-controller="Trip" asp-action="List" class="btn-back" style="text-decoration:none; display:inline-block; text-align:center;">⬅ Quay lại DS Chuyến Xe</a>
     </div>
 </div>
+
+<script>
+    function confirmAssign(orderId, tripId) {
+        Swal.fire({
+            title: 'Gán hàng lên xe?',
+            text: "Gán đơn hàng " + orderId + " lên chuyến " + tripId + "?",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#34a853',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '📦 Gán ngay!',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('assignForm-' + orderId).submit();
+            }
+        })
+    }
+</script>

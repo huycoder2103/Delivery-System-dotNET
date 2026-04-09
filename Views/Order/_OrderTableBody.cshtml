@@ -1,0 +1,103 @@
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@model IEnumerable<Delivery_System.Models.TblOrder>
+
+@{
+    var currentUserRole = HttpContextAccessor.HttpContext.Session.GetString("Role");
+    var currentUserID = HttpContextAccessor.HttpContext.Session.GetString("UserID");
+}
+
+@if (Model != null && Model.Any())
+{
+    foreach (var o in Model)
+    {
+        bool canEdit = currentUserRole == "AD" || o.StaffInput == currentUserID;
+        <tr>
+            <td><strong class="text-order-id">@o.OrderId</strong></td>
+            <td class="col-item-name">@o.ItemName</td>
+            <td class="col-station text-station-send">@o.SendStation</td>
+            <td class="col-station text-station-receive">@o.ReceiveStation</td>
+            <td class="col-customer">
+                <div class="customer-info-box">
+                    <div class="customer-name">@o.SenderName</div>
+                    <div class="customer-phone">@o.SenderPhone</div>
+                </div>
+            </td>
+            <td class="col-customer">
+                <div class="customer-info-box">
+                    <div class="customer-name">@o.ReceiverName</div>
+                    <div class="customer-phone">@o.ReceiverPhone</div>
+                </div>
+            </td>
+            <td class="staff-input-badge">@o.StaffInput</td>
+            
+            <td>
+                @if (!string.IsNullOrEmpty(o.Tr))
+                {
+                    <span class="badge badge-success">@(o.Tr)k</span>
+                }
+                else { <span style="color:#ccc">—</span> }
+            </td>
+            <td>
+                @if (!string.IsNullOrEmpty(o.Ct))
+                {
+                    <span class="badge badge-danger">@(o.Ct)k</span>
+                }
+                else { <span style="color:#ccc">—</span> }
+            </td>
+            
+            <td class="note-cell">@o.Note</td>
+            <td class="time-cell">
+                @o.CreatedAt?.ToString("dd/MM/yyyy HH:mm")
+            </td>
+            <td>
+                @if (string.IsNullOrEmpty(o.TripId))
+                {
+                    <span class="badge badge-warning">Chưa chuyển</span>
+                }
+                else
+                {
+                    <span class="badge badge-info">Đã chuyển</span>
+                    <br><small class="trip-id-link">@o.TripId</small>
+                }
+            </td>
+            <td class="col-order-id">
+                <div class="action-btns-grid">
+                    <a asp-action="PrintReceipt" asp-route-id="@o.OrderId" target="_blank" class="btn-action-text btn-s-print">🖨️ Xem & In</a>
+
+                    @if (string.IsNullOrEmpty(o.TripId))
+                    {
+                        if (canEdit)
+                        {
+                            <a asp-action="Ship" asp-route-id="@o.OrderId" class="btn-action-text btn-s-ship">🚚 Chuyển</a>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn-action-text btn-disabled" title="Chỉ người tạo đơn mới được chuyển hàng">🔒 Chuyển</button>
+                        }
+                    }
+                    
+                    @if (canEdit)
+                    {
+                        <a asp-action="Edit" asp-route-id="@o.OrderId" class="btn-action-text btn-s-edit">✏️ Sửa đơn</a>
+                        
+                        @* <form asp-action="Delete" method="POST" style="display:inline;">
+                            <input type="hidden" name="id" value="@o.OrderId" />
+                            <button type="submit" class="btn-action-text btn-s-delete" onclick="return confirm('Đưa đơn này vào thùng rác?')">🗑️ Xóa</button>
+                        </form> *@
+                    }
+                    else
+                    {
+                        <button type="button" class="btn-action-text btn-disabled" title="Bạn không có quyền sửa đơn này">🔒 Sửa đơn</button>
+                    }
+                </div>
+            </td>
+        </tr>
+    }
+}
+else
+{
+    <tr>
+        <td colspan="16" class="no-data-msg">📭 Không tìm thấy đơn hàng nào phù hợp!</td>
+    </tr>
+}
