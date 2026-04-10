@@ -25,7 +25,7 @@
     <div class="body">
         @if (TempData["SuccessMessage"] != null)
         {
-            <div style="background:#d4edda;color:#155724;padding:9px 14px;border-radius:4px;margin-bottom:12px;font-weight:600;">
+            <div class="alert-success-custom">
                 ✅ @TempData["SuccessMessage"]
             </div>
         }
@@ -58,7 +58,7 @@
                         <tr>
                             <td>@(i++)</td>
                             <td><strong>@t.TripId</strong></td>
-                            <td style="color:#2980b9;font-weight:600;">@t.RouteInfo</td>
+                            <td class="route-info-cell">@t.RouteInfo</td>
                             <td>@(t.LicensePlate ?? "-")</td>
                             <td>@(t.DriverName ?? "-")</td>
                             <td>@(t.DepartureTime ?? "-")</td>
@@ -89,12 +89,12 @@
         else
         {
             <div class="no-data">
-                <div style="font-size:2rem;margin-bottom:8px;">🔍</div>
+                <div class="no-data-icon">🔍</div>
                 <p>Không tìm thấy chuyến xe từ trạm <strong>"@order?.SendStation"</strong>.</p>
             </div>
         }
 
-        <a asp-action="List" class="btn-back" style="text-decoration:none; display:inline-block; text-align:center; margin-top: 20px;">⬅ Quay lại DS Hàng</a>
+        <a asp-action="List" class="btn-back btn-back-link">⬅ Quay lại DS Hàng</a>
     </div>
 </div>
 

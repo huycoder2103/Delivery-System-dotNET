@@ -15,7 +15,7 @@
         <div class="modern-page-header">
             <div>
                 <h2>📦 NHẬP HÀNG GỬI MỚI</h2>
-                <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Điền đầy đủ thông tin đơn hàng bên dưới</div>
+                <div class="modern-page-header-desc">Điền đầy đủ thông tin đơn hàng bên dưới</div>
             </div>
         </div>
 
@@ -26,7 +26,7 @@
                 <input asp-for="ItemName" type="text"  required>
             </div>
 
-            <div class="form-row" style="margin-top: 20px;">
+            <div class="form-row mt-20">
                 <div class="form-group">
                     <label>Trạm Gửi <span class="required-star">*</span></label>
                     <select asp-for="SendStation" id="sendStation" required>
@@ -101,9 +101,9 @@
         </div>
     </form>
 
-    <div style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center;">
-        <a asp-action="List" class="btn-modern-back" style="text-decoration: none;">⬅ Quay lại danh sách</a>
-        <input type="submit" form="orderForm" value="💾 Lưu Đơn Hàng" class="btn-modern-save" style="padding: 12px 40px; min-width: 200px;">
+    <div class="order-actions-footer">
+        <a asp-action="List" class="btn-modern-back">⬅ Quay lại danh sách</a>
+        <input type="submit" form="orderForm" value="💾 Lưu Đơn Hàng" class="btn-modern-save btn-footer">
     </div>
 </div>
 

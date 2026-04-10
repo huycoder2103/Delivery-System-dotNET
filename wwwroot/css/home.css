@@ -76,6 +76,8 @@ body {
     align-items: center;
     border: 1px solid transparent;
     cursor: pointer; /* Cho phép click toàn bộ thẻ */
+    text-decoration: none;
+    color: inherit;
 }
 
 .menu-card:hover {

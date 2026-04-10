@@ -1,5 +1,28 @@
 /* CSS for Trash Order page - Modern Version */
 
+.trash-container {
+    max-width: 1550px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.trash-page-header-desc {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-top: 4px;
+}
+
+.trash-actions-group {
+    display: flex;
+    gap: 5px;
+}
+
+.trash-no-data-cell {
+    padding: 100px;
+    text-align: center;
+    color: #999;
+}
+
 .trash-page-header {
     background: linear-gradient(135deg, #e74c3c, #c0392b);
     color: white;

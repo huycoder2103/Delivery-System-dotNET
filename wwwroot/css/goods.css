@@ -30,6 +30,11 @@ body {
     letter-spacing: 1px;
 }
 
+.page-header p {
+    opacity: 0.9;
+    margin-top: 10px;
+}
+
 /* Grid Menu */
 .goods-grid {
     display: grid;
@@ -51,6 +56,8 @@ body {
     align-items: center;
     cursor: pointer;
     border: 1px solid transparent;
+    text-decoration: none;
+    color: inherit;
 }
 
 .goods-card:hover {
@@ -89,7 +96,12 @@ body {
 
 .back-btn-container {
     text-align: center;
-    margin-top: 40px;
+    margin-top: 30px;
+}
+
+.btn-home {
+    text-decoration: none;
+    display: inline-block;
 }
 
 @media (max-width: 600px) {

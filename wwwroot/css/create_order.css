@@ -26,6 +26,28 @@
     letter-spacing: 0.5px;
 }
 
+.modern-page-header-desc {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-top: 4px;
+}
+
+.form-row.mt-20 {
+    margin-top: 20px;
+}
+
+.order-actions-footer {
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-modern-save.btn-footer {
+    padding: 12px 40px;
+    min-width: 200px;
+}
+
 .modern-card {
     background: white;
     border-radius: 15px;

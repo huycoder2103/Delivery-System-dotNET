@@ -11,30 +11,6 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/list_order.css" />
-    <style>
-        .loading-overlay { opacity: 0.5; pointer-events: none; transition: opacity 0.2s; }
-        .status-tab-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        .btn-status-tab {
-            padding: 10px 20px;
-            border-radius: 12px;
-            border: 2px solid #e8f0fe;
-            background: white;
-            color: #5f6368;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-status-tab.active {
-            background: #1a73e8;
-            color: white;
-            border-color: #1a73e8;
-            box-shadow: 0 4px 10px rgba(26, 115, 232, 0.2);
-        }
-        .btn-status-tab:hover:not(.active) { background: #f8faff; border-color: #d2e3fc; }
-    </style>
 }
 
 <div class="order-list-container">
@@ -42,14 +18,14 @@
     <div class="modern-page-header">
         <div>
             <h3>📦 Quản Lý Đơn Hàng</h3>
-            <div id="orderCount" style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Tổng: @(Model?.Count() ?? 0) đơn</div>
+            <div id="orderCount" class="modern-page-header-meta">Tổng: @(Model?.Count() ?? 0) đơn</div>
         </div>
         
-        <div style="display: flex; gap: 10px;">
-            <a asp-controller="Trip" asp-action="List" class="btn-modern" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); text-decoration: none;">
+        <div class="header-actions">
+            <a asp-controller="Trip" asp-action="List" class="btn-modern btn-header-action">
                 📤 Chuyến Xe Đi
             </a>
-            <a asp-controller="Trip" asp-action="ArrivalList" class="btn-modern" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); text-decoration: none;">
+            <a asp-controller="Trip" asp-action="ArrivalList" class="btn-modern btn-header-action">
                 📥 Chuyến Xe Đến
             </a>
         </div>
@@ -61,10 +37,10 @@
     }
     @if (TempData["ErrorMessage"] != null)
     {
-        <div class="alert alert-danger" style="border-radius:12px; margin-bottom:15px; padding: 15px;">❌ @TempData["ErrorMessage"]</div>
+        <div class="alert alert-danger alert-danger-custom">❌ @TempData["ErrorMessage"]</div>
     }
 
-    <div class="modern-card sticky-filter-bar" style="top: 155px; border-radius: 15px !important; border: 2px solid #1a73e8;">
+    <div class="modern-card sticky-filter-bar">
         
         <div class="status-tab-group">
             <button class="btn-status-tab @(ViewBag.CurrentStatus == "all" ? "active" : "")" onclick="changeStatus('all')">
@@ -78,8 +54,8 @@
             </button>
         </div>
 
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-            <select id="filterSendStation" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+        <div class="filter-controls-group">
+            <select id="filterSendStation" class="filter-input">
                 <option value="">-- Từ Trạm (Gửi) --</option>
                 @if (stationList != null)
                 {
@@ -90,7 +66,7 @@
                 }
             </select>
 
-            <select id="filterReceiveStation" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+            <select id="filterReceiveStation" class="filter-input">
                 <option value="">-- Đến Trạm (Nhận) --</option>
                 @if (stationList != null)
                 {
@@ -101,20 +77,20 @@
                 }
             </select>
 
-            <input type="date" id="filterDate" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+            <input type="date" id="filterDate" class="filter-input">
             
-            <div style="position: relative;">
-                <input type="text" id="filterSearchPhone" placeholder="Tìm SĐT hoặc Mã đơn..." 
-                       value="@ViewBag.SearchPhone" style="width: 200px; padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd;">
+            <div class="search-input-wrapper">
+                <input type="text" id="filterSearchPhone" class="search-input" placeholder="Tìm SĐT hoặc Mã đơn..." 
+                       value="@ViewBag.SearchPhone">
             </div>
 
-            <a asp-action="Create" class="btn-modern btn-success-modern" style="text-decoration:none;">➕ Nhập Hàng</a>
-            <a asp-action="Trash" class="btn-modern btn-secondary-modern" style="text-decoration:none;">🗑 Thùng rác</a>
+            <a asp-action="Create" class="btn-modern btn-success-modern btn-link-modern">➕ Nhập Hàng</a>
+            <a asp-action="Trash" class="btn-modern btn-secondary-modern btn-link-modern">🗑 Thùng rác</a>
             <button onclick="resetFilters()" class="btn-modern btn-secondary-modern">🔄 Làm mới</button>
         </div>
     </div>
 
-    <div class="modern-card" style="padding: 0; overflow-x: auto;">
+    <div class="modern-card table-wrapper">
         <table class="modern-table" id="orderTable">
             <thead>
                 <tr>

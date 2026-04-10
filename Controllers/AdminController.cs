@@ -84,8 +84,9 @@ namespace Delivery_System.Controllers
             var user = await _context.TblUsers.FindAsync(userID);
             if (user != null && userID != "admin")
             {
-                _context.TblUsers.Remove(user);
+                user.Status = false; // Chỉ khóa tài khoản, không xóa khỏi DB
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"Đã khóa tài khoản {userID} thành công.";
             }
             return RedirectToAction("Index");
         }

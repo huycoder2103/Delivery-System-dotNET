@@ -121,8 +121,21 @@ hr.divider { border: none; border-top: 1px dashed #e0e0e0; margin: 14px 0; }
     font-size: 0.88rem;
 }
 .btn-back:hover { background: #545b62; }
-.readonly-field {
-    background: #f8f9fa;
-    color: #6c757d;
-    cursor: not-allowed;
+.edit-title-meta {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+.field.mb-14 {
+    margin-bottom: 14px;
+}
+
+.required-star {
+    color: red;
+}
+
+.btn-back-link {
+    text-decoration: none;
+    text-align: center;
 }

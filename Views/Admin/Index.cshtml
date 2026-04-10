@@ -9,36 +9,36 @@
 }
 
 <!-- --- ADMIN DASHBOARD --- -->
-<div class="admin-container" style="margin-bottom: 20px; background: #fdfdfd;">
+<div class="admin-container admin-dashboard-header">
     <div class="admin-header">
         <h2>BẢNG ĐIỀU KHIỂN HỆ THỐNG</h2>
     </div>
     <div class="kpi-row">
-        <div class="kpi-mini blue" style="background: #e7f3ff; border: 1px solid #b3d7ff;">
-            <div class="v" style="color: #007bff;">
+        <div class="kpi-mini blue-light">
+            <div class="v">
                 @string.Format("{0:N0}", ViewBag.RevenueToday) K
             </div>
             <div class="l">Doanh thu hôm nay</div>
         </div>
-        <div class="kpi-mini green" style="background: #e6fffa; border: 1px solid #b2f5ea;">
-            <div class="v" style="color: #38b2ac;">@ViewBag.ActiveStaffCount</div>
+        <div class="kpi-mini green-light">
+            <div class="v">@ViewBag.ActiveStaffCount</div>
             <div class="l">Nhân viên đang trong ca làm</div>
         </div>
-        <div class="kpi-mini" style="flex: 2; background: white; padding: 10px;">
-            <canvas id="revenueChart" style="max-height: 120px; width: 100%;"></canvas>
+        <div class="kpi-mini chart-container">
+            <canvas id="revenueChart"></canvas>
         </div>
     </div>
 </div>
 
 @if (TempData["ErrorMessage"] != null)
 {
-    <div style="background:#f8d7da;color:#721c24;padding:10px 20px;text-align:center;font-weight:bold;margin-bottom:10px; border-radius: 8px;">
+    <div class="alert-msg alert-error">
         ❌ @TempData["ErrorMessage"]
     </div>
 }
 @if (TempData["SuccessMessage"] != null)
 {
-    <div style="background:#d4edda;color:#155724;padding:10px 20px;text-align:center;font-weight:bold;margin-bottom:10px; border-radius: 8px;">
+    <div class="alert-msg alert-success">
         ✅ @TempData["SuccessMessage"]
     </div>
 }
@@ -103,18 +103,18 @@
                             </span>
                         </td>
                         <td>
-                            <div style="display: flex; gap: 5px; justify-content: center;">
+                            <div class="action-group">
                                 <form asp-action="ToggleUser" method="POST" style="display:inline;">
                                     <input type="hidden" name="userID" value="@user.UserId">
                                     <input type="submit" value="@(user.Status == true ? "Khóa" : "Mở")" 
-                                           class="btn-action @(user.Status == true ? "btn-orange" : "btn-green")" style="width: 60px;">
+                                           class="btn-action btn-toggle-status @(user.Status == true ? "btn-orange" : "btn-green")">
                                 </form>
-                                <button class="btn-action btn-blue" onclick="showChangePassModal('@user.UserId', '@user.FullName')" style="width: 70px;">Đổi MK</button>
+                                <button class="btn-action btn-blue btn-change-pass" onclick="showChangePassModal('@user.UserId', '@user.FullName')">Đổi MK</button>
                                 
-                                @if (user.UserId != "admin")
+                                @if (user.UserId != "admin" && user.Status == true)
                                 {
-                                    <button type="button" class="btn-action" style="background:#fce8e6; color:#d93025; border:none; border-radius:4px; cursor:pointer;" 
-                                            onclick="confirmDeleteUser('@user.UserId')">🗑️ Xóa</button>
+                                    <button type="button" class="btn-action btn-delete-staff" 
+                                            onclick="confirmDeleteUser('@user.UserId')">🔒 Khóa</button>
                                     <form id="deleteUserForm-@user.UserId" asp-action="DeleteUser" method="POST" style="display:none;">
                                         <input type="hidden" name="userID" value="@user.UserId" />
                                     </form>
@@ -135,11 +135,11 @@
         <form asp-action="SaveUser" method="POST" onsubmit="return validateAddForm()">
             <div class="group">
                 <label>Mã Tài Khoản <span style="color:red">*</span></label>
-                <input type="text" name="newUserID" id="newUserID" class="inp" required placeholder="VD: NV05">
+                <input type="text" name="newUserID" id="newUserID" class="inp" required>
             </div>
             <div class="group">
                 <label>Họ Tên <span style="color:red">*</span></label>
-                <input type="text" name="newFullName" class="inp" required placeholder="Nguyễn Văn A">
+                <input type="text" name="newFullName" class="inp" required>
             </div>
             <div class="group">
                 <label>Mật Khẩu <span style="color:red">*</span></label>
@@ -152,7 +152,7 @@
             </div>
             <div class="group">
                 <label>Số Điện Thoại</label>
-                <input type="tel" name="newPhone" class="inp" placeholder="0901234567">
+                <input type="tel" name="newPhone" class="inp" required placeholder="0901234567">
             </div>
             <div class="group">
                 <label>Email</label>
@@ -170,7 +170,7 @@
 <div id="changePassModal" class="modal">
     <div class="modal-content">
         <h3>🔑 ĐỔI MẬT KHẨU</h3>
-        <p id="cpUserLabel" style="color:#555;margin-bottom:15px;"></p>
+        <p id="cpUserLabel" class="modal-info-text"></p>
         <form asp-action="ChangePassword" method="POST" onsubmit="return validateChangePassForm()">
             <input type="hidden" name="cpUserID" id="cpUserID">
             <div class="group">
@@ -195,13 +195,13 @@
     <script>
         function confirmDeleteUser(id) {
             Swal.fire({
-                title: 'Xóa nhân viên?',
-                text: "Tài khoản " + id + " sẽ bị xóa khỏi hệ thống!",
+                title: 'Khóa nhân viên?',
+                text: "Tài khoản " + id + " sẽ bị tạm khóa và không thể đăng nhập!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Xác nhận xóa',
+                confirmButtonText: 'Xác nhận khóa',
                 cancelButtonText: 'Hủy'
             }).then((result) => {
                 if (result.isConfirmed) {

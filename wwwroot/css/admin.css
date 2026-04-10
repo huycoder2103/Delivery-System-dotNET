@@ -180,3 +180,66 @@ tr:hover { background: #f9f9f9; }
 .highlight { background: #fff3cd; border-radius: 3px; padding: 0 2px; }
 #noResult { text-align: center; padding: 28px; color: #aaa; display: none; }
 .result-count { font-size: .82rem; color: #888; margin-left: 6px; }
+
+/* 8. Custom Classes for Admin Index (Refactored from inline styles) */
+.admin-dashboard-header {
+    margin-bottom: 20px;
+    background: #fdfdfd;
+}
+
+.kpi-mini.blue-light {
+    background: #e7f3ff;
+    border: 1px solid #b3d7ff;
+    border-top: 3px solid #007bff;
+}
+.kpi-mini.blue-light .v { color: #007bff; }
+
+.kpi-mini.green-light {
+    background: #e6fffa;
+    border: 1px solid #b2f5ea;
+    border-top: 3px solid #38b2ac;
+}
+.kpi-mini.green-light .v { color: #38b2ac; }
+
+.kpi-mini.chart-container {
+    flex: 2;
+    background: white;
+    padding: 10px;
+}
+
+#revenueChart {
+    max-height: 120px;
+    width: 100%;
+}
+
+.alert-msg {
+    padding: 10px 20px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+.alert-error { background: #f8d7da; color: #721c24; }
+.alert-success { background: #d4edda; color: #155724; }
+
+.action-group {
+    display: flex;
+    gap: 5px;
+    justify-content: left;
+}
+
+.btn-toggle-status { width: 60px; }
+.btn-change-pass { width: 90px; }
+
+.btn-delete-staff {
+    background: #fce8e6;
+    color: #d93025;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modal-info-text {
+    color: #555;
+    margin-bottom: 15px;
+}
