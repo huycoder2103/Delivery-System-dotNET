@@ -23,14 +23,16 @@ namespace Delivery_System.Controllers
             // Lấy giờ Việt Nam chuẩn (GMT+7)
             var vniTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
             var today = vniTime.Date;
+            var tomorrow = today.AddDays(1);
 
             ViewBag.RevenueToday = await _context.TblOrders
-                .Where(o => o.CreatedAt != null && o.CreatedAt.Value.Date == today && o.ShipStatus == "Đã chuyển" && (o.IsDeleted == false || o.IsDeleted == null))
+                .AsNoTracking()
+                .Where(o => o.CreatedAt >= today && o.CreatedAt < tomorrow && o.ShipStatus == "Đã chuyển" && (o.IsDeleted == false || o.IsDeleted == null))
                 .SumAsync(o => o.Amount ?? 0);
 
-            ViewBag.ActiveStaffCount = await _context.TblWorkShifts.CountAsync(s => s.Status == "ACTIVE");
-            var userList = await _context.TblUsers.OrderBy(u => u.RoleId).ToListAsync();
-            ViewBag.Announcements = await _context.TblAnnouncements.Include(a => a.CreatedByNavigation).OrderByDescending(a => a.CreatedAt).ToListAsync();
+            ViewBag.ActiveStaffCount = await _context.TblWorkShifts.AsNoTracking().CountAsync(s => s.Status == "ACTIVE");
+            var userList = await _context.TblUsers.OrderBy(u => u.RoleId).AsNoTracking().ToListAsync();
+            ViewBag.Announcements = await _context.TblAnnouncements.Include(a => a.CreatedByNavigation).OrderByDescending(a => a.CreatedAt).AsNoTracking().ToListAsync();
 
             return View(userList);
         }

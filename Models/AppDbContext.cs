@@ -123,6 +123,12 @@ public partial class AppDbContext : DbContext
 
             entity.HasIndex(e => e.StaffReceive, "staffReceive");
 
+            entity.HasIndex(e => e.TripId, "idx_orders_tripID");
+
+            entity.HasIndex(e => e.SendStation, "idx_orders_sendStation");
+
+            entity.HasIndex(e => e.ReceiveStation, "idx_orders_receiveStation");
+
             entity.Property(e => e.OrderId)
                 .HasMaxLength(20)
                 .HasColumnName("orderID");

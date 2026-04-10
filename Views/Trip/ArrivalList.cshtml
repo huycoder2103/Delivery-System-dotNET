@@ -7,21 +7,6 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/list_trip.css" />
-    <style>
-        .sticky-filter-bar {
-            position: sticky;
-            top: 155px;
-            z-index: 800;
-            background: rgba(255, 255, 255, 0.98) !important;
-            backdrop-filter: blur(10px);
-            border: 2px solid #1a73e8;
-            margin-top: -10px;
-            border-radius: 15px !important;
-            padding: 15px 20px !important;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-        .loading-overlay { opacity: 0.5; pointer-events: none; transition: opacity 0.2s; }
-    </style>
 }
 
 <div style="max-width: 1550px; margin: 20px auto; padding: 0 20px;">
@@ -29,7 +14,7 @@
     <div class="modern-page-header" style="background: linear-gradient(135deg, #1a73e8, #0d47a1);">
         <div>
             <h3>📥 DANH SÁCH CHUYẾN XE ĐẾN</h3>
-            <div id="tripCount" style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Tổng: @(Model?.Count() ?? 0) chuyến</div>
+            <div id="tripCount" style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Tổng: @(ViewBag.TotalItems ?? Model?.Count() ?? 0) chuyến</div>
         </div>
         
         <div style="display: flex; gap: 10px;">
@@ -103,6 +88,37 @@
         </table>
     </div>
 
+    <!-- UI PHÂN TRANG -->
+    <div class="pagination-container mt-4" id="paginationUI" style="background: white; padding: 15px; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        @if (ViewBag.TotalPages > 1)
+        {
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="pagination-info">
+                    Trang <strong>@ViewBag.CurrentPage</strong> / @ViewBag.TotalPages 
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-pagination" onclick="changePage(@(ViewBag.CurrentPage - 1))" @(ViewBag.CurrentPage == 1 ? "disabled" : "") style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ddd; background: white; cursor: pointer;">
+                        &laquo; Trước
+                    </button>
+                    
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        if (i == 1 || i == ViewBag.TotalPages || (i >= ViewBag.CurrentPage - 2 && i <= ViewBag.CurrentPage + 2))
+                        {
+                            <button class="btn-pagination" onclick="changePage(@i)" style="padding: 6px 12px; border-radius: 6px; border: 1px solid @(i == ViewBag.CurrentPage ? "#1a73e8" : "#ddd"); background: @(i == ViewBag.CurrentPage ? "#1a73e8" : "white"); color: @(i == ViewBag.CurrentPage ? "white" : "#333"); cursor: pointer;">
+                                @i
+                            </button>
+                        }
+                    }
+
+                    <button class="btn-pagination" onclick="changePage(@(ViewBag.CurrentPage + 1))" @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "") style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ddd; background: white; cursor: pointer;">
+                        Sau &raquo;
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+
     <div style="margin-top: 20px;">
         <a asp-controller="Home" asp-action="Index" class="btn-back" style="text-decoration: none; display: inline-block;">⬅ Quay lại Trang Chủ</a>
     </div>
@@ -111,13 +127,23 @@
 @section Scripts {
     <script>
         let searchTimeout;
+        let currentPage = @(ViewBag.CurrentPage ?? 1);
 
-        document.getElementById('filterDeparture').addEventListener('change', triggerSearch);
-        document.getElementById('filterDestination').addEventListener('change', triggerSearch);
+        document.getElementById('filterDeparture').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
+        document.getElementById('filterDestination').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
         document.getElementById('filterTruck').addEventListener('input', function() {
+            currentPage = 1;
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(triggerSearch, 300);
         });
+
+        function changePage(page) {
+            currentPage = page;
+            const departure = document.getElementById('filterDeparture').value;
+            const destination = document.getElementById('filterDestination').value;
+            const truck = document.getElementById('filterTruck').value;
+            location.href = `@Url.Action("ArrivalList", "Trip")?departureFilter=${encodeURIComponent(departure)}&destinationFilter=${encodeURIComponent(destination)}&searchTruck=${encodeURIComponent(truck)}&page=${page}`;
+        }
 
         function triggerSearch() {
             const departure = document.getElementById('filterDeparture').value;
@@ -128,15 +154,16 @@
             const tableContainer = document.getElementById('tripTable');
             tableContainer.classList.add('loading-overlay');
 
-            const url = `@Url.Action("ArrivalList", "Trip")?departureFilter=${encodeURIComponent(departure)}&destinationFilter=${encodeURIComponent(destination)}&searchTruck=${encodeURIComponent(truck)}`;
+            const url = `@Url.Action("ArrivalList", "Trip")?departureFilter=${encodeURIComponent(departure)}&destinationFilter=${encodeURIComponent(destination)}&searchTruck=${encodeURIComponent(truck)}&page=${currentPage}`;
 
             fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(response => response.text())
             .then(html => {
                 tableBody.innerHTML = html;
                 tableContainer.classList.remove('loading-overlay');
-                const rowCount = tableBody.querySelectorAll('tr:not(:has(.no-data-msg))').length;
-                document.getElementById('tripCount').innerText = `Tổng: ${rowCount} chuyến`;
+                if (window.event && window.event.type === 'change') {
+                    location.href = url.replace('X-Requested-With=XMLHttpRequest', '');
+                }
             })
             .catch(err => {
                 console.error('Error:', err);

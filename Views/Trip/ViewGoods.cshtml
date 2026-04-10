@@ -6,21 +6,7 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/home.css">
-    <link rel="stylesheet" href="~/css/common_styles.css">
-    <style>
-        .page-wrap { max-width:1200px; margin:16px auto 30px; background:#fff; border-radius:6px; border:1px solid #ddd; box-shadow:0 2px 8px rgba(0,0,0,.06); }
-        .hdr { background:linear-gradient(135deg,#34495e,#2c3e50); color:#fff; padding:13px 20px; border-radius:6px 6px 0 0; }
-        .hdr h3 { margin:0; font-size:.95rem; }
-        .hdr .meta { margin-top:5px; font-size:.8rem; opacity:.9; }
-        .hdr .badge { background:rgba(255,255,255,.22); padding:2px 8px; border-radius:10px; margin-right:6px; font-weight:700; }
-        .body { padding:16px 20px 22px; }
-        table { width:100%; border-collapse:collapse; font-size:.86rem; }
-        th { background:#34495e; color:#fff; padding:10px 12px; text-align:left; font-size:.78rem; text-transform:uppercase; }
-        td { padding:9px 12px; border-bottom:1px solid #eee; color: #333; }
-        tr:hover td { background:#f9f9f9; }
-        .btn-back { background:#6c757d; color:#fff; border:none; padding:8px 18px; border-radius:4px; cursor:pointer; font-weight:600; margin-top:14px; }
-    </style>
+    <link rel="stylesheet" href="~/css/view_goods.css" />
 }
 
 <div class="page-wrap">
@@ -84,7 +70,7 @@
         }
 
         <div style="margin-top: 20px;">
-            <a asp-controller="Trip" asp-action="List" class="btn-back" style="text-decoration:none; display:inline-block; text-align:center;">⬅ Quay lại DS Chuyến Xe</a>
+            <a asp-controller="Trip" asp-action="List" class="btn-back">⬅ Quay lại DS Chuyến Xe</a>
         </div>
     </div>
 </div>

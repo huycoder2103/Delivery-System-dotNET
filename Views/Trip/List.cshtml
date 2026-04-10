@@ -7,21 +7,6 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/list_trip.css" />
-    <style>
-        .sticky-filter-bar {
-            position: sticky;
-            top: 155px;
-            z-index: 800;
-            background: rgba(255, 255, 255, 0.98) !important;
-            backdrop-filter: blur(10px);
-            border: 2px solid #1a73e8;
-            margin-top: -10px;
-            border-radius: 15px !important;
-            padding: 15px 20px !important;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-        .loading-overlay { opacity: 0.5; pointer-events: none; transition: opacity 0.2s; }
-    </style>
 }
 
 <div style="max-width: 1550px; margin: 20px auto; padding: 0 20px;">
@@ -115,13 +100,21 @@
 @section Scripts {
     <script>
         let searchTimeout;
+        let currentPage = @(ViewBag.CurrentPage ?? 1);
 
-        document.getElementById('filterDeparture').addEventListener('change', triggerSearch);
-        document.getElementById('filterDestination').addEventListener('change', triggerSearch);
+        document.getElementById('filterDeparture').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
+        document.getElementById('filterDestination').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
         document.getElementById('filterTruck').addEventListener('input', function() {
+            currentPage = 1;
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(triggerSearch, 300);
         });
+
+        function changePage(page) {
+            currentPage = page;
+            triggerSearch();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
         function triggerSearch() {
             const departure = document.getElementById('filterDeparture').value;
@@ -132,15 +125,21 @@
             const tableContainer = document.getElementById('tripTable');
             tableContainer.classList.add('loading-overlay');
 
-            const url = `@Url.Action("List", "Trip")?departureFilter=${encodeURIComponent(departure)}&destinationFilter=${encodeURIComponent(destination)}&searchTruck=${encodeURIComponent(truck)}`;
+            const url = `@Url.Action("List", "Trip")?departureFilter=${encodeURIComponent(departure)}&destinationFilter=${encodeURIComponent(destination)}&searchTruck=${encodeURIComponent(truck)}&page=${currentPage}`;
 
             fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(response => response.text())
             .then(html => {
                 tableBody.innerHTML = html;
                 tableContainer.classList.remove('loading-overlay');
-                const rowCount = tableBody.querySelectorAll('tr:not(:has(.no-data-msg))').length;
-                document.getElementById('tripCount').innerText = `Tổng: ${rowCount} chuyến`;
+                // Lưu ý: Đối với TripController chúng ta đang trả về PartialView, 
+                // vì vậy cần load lại cả trang nếu muốn cập nhật UI phân trang phức tạp, 
+                // hoặc đơn giản là dùng location.href cho đơn giản nếu không muốn làm AJAX phức tạp hơn.
+                // Ở đây tôi sẽ reload trang để đồng bộ ViewBag nếu không dùng Json return.
+                if (window.event && window.event.type !== 'input' && window.event.type !== 'change') {
+                   // Chỉ reload khi bấm nút phân trang để cập nhật ViewBag
+                   location.href = url.replace('X-Requested-With=XMLHttpRequest', '');
+                }
             })
             .catch(err => {
                 console.error('Error:', err);
