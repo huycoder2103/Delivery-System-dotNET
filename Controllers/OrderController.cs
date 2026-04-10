@@ -1,88 +1,63 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Delivery_System.Models;
-using Delivery_System.Helpers;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Delivery_System.Controllers
 {
     public class OrderController : Controller
     {
         private readonly AppDbContext _context;
-        private readonly IMemoryCache _cache;
 
-        public OrderController(AppDbContext context, IMemoryCache cache)
+        public OrderController(AppDbContext context)
         {
             _context = context;
-            _cache = cache;
         }
 
-        // 1. Danh sách đơn hàng (Hỗ trợ lọc và phân trang)
+        // 1. Danh sách đơn hàng (Hỗ trợ lọc theo 3 nhóm hàng)
         [HttpGet]
-        public async Task<IActionResult> List(string sendStationFilter, string receiveStationFilter, string searchPhone, string dateFilter, string statusFilter = "all", int page = 1)
+        public async Task<IActionResult> List(string sendStationFilter, string receiveStationFilter, string searchPhone, string dateFilter, string statusFilter = "all")
         {
             var userId = HttpContext.Session.GetString("UserID");
             if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
 
-            int pageSize = 20;
-            ViewBag.StationList = await _context.TblStations.Where(s => s.IsActive == true).AsNoTracking().ToListAsync();
+            ViewBag.StationList = await _context.TblStations.Where(s => s.IsActive == true).ToListAsync();
             var query = _context.TblOrders.Where(o => o.IsDeleted == false || o.IsDeleted == null).AsQueryable();
 
-            // Phân loại hàng
-            if (statusFilter == "pending") query = query.Where(o => string.IsNullOrEmpty(o.TripId));
-            else if (statusFilter == "shipped") query = query.Where(o => !string.IsNullOrEmpty(o.TripId));
+            // Phân loại hàng theo yêu cầu
+            if (statusFilter == "pending") // Đơn đã nhập nhưng chưa giao (TripId trống)
+            {
+                query = query.Where(o => string.IsNullOrEmpty(o.TripId));
+            }
+            else if (statusFilter == "shipped") // Đơn đã chuyển lên xe
+            {
+                query = query.Where(o => !string.IsNullOrEmpty(o.TripId));
+            }
 
             if (!string.IsNullOrEmpty(sendStationFilter)) query = query.Where(o => o.SendStation == sendStationFilter);
             if (!string.IsNullOrEmpty(receiveStationFilter)) query = query.Where(o => o.ReceiveStation == receiveStationFilter);
             if (!string.IsNullOrEmpty(searchPhone)) query = query.Where(o => o.SenderPhone.Contains(searchPhone) || o.ReceiverPhone.Contains(searchPhone) || o.OrderId.Contains(searchPhone));
             
-            if (!string.IsNullOrEmpty(dateFilter) && DateTime.TryParse(dateFilter, out DateTime dt))
+            if (!string.IsNullOrEmpty(dateFilter))
             {
-                query = query.Where(o => o.CreatedAt != null && o.CreatedAt.Value.Date == dt.Date);
+                if (DateTime.TryParse(dateFilter, out DateTime dt))
+                {
+                    query = query.Where(o => o.CreatedAt != null && o.CreatedAt.Value.Date == dt.Date);
+                }
             }
 
-            // Tính toán phân trang
-            int totalItems = await query.CountAsync();
-            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-            page = page < 1 ? 1 : (page > totalPages && totalPages > 0 ? totalPages : page);
-
-            var list = await query.OrderByDescending(o => o.OrderId)
-                                 .Skip((page - 1) * pageSize)
-                                 .Take(pageSize)
-                                 .AsNoTracking()
-                                 .Select(o => new TblOrder {
-                                     OrderId = o.OrderId,
-                                     ItemName = o.ItemName,
-                                     SendStation = o.SendStation,
-                                     ReceiveStation = o.ReceiveStation,
-                                     SenderName = o.SenderName,
-                                     SenderPhone = o.SenderPhone,
-                                     ReceiverName = o.ReceiverName,
-                                     ReceiverPhone = o.ReceiverPhone,
-                                     StaffInput = o.StaffInput,
-                                     Tr = o.Tr,
-                                     Ct = o.Ct,
-                                     Note = o.Note,
-                                     CreatedAt = o.CreatedAt,
-                                     TripId = o.TripId
-                                 })
-                                 .ToListAsync();
+            var list = await query.OrderByDescending(o => o.OrderId).ToListAsync();
             
-            ViewBag.TotalPages = totalPages;
-            ViewBag.CurrentPage = page;
-            ViewBag.TotalItems = totalItems;
+            // Tính số lượng cho các nhãn nút
+            ViewBag.CountAll = await _context.TblOrders.CountAsync(o => o.IsDeleted == false || o.IsDeleted == null);
+            ViewBag.CountPending = await _context.TblOrders.CountAsync(o => (o.IsDeleted == false || o.IsDeleted == null) && string.IsNullOrEmpty(o.TripId));
+            ViewBag.CountShipped = await _context.TblOrders.CountAsync(o => (o.IsDeleted == false || o.IsDeleted == null) && !string.IsNullOrEmpty(o.TripId));
+            
             ViewBag.SearchPhone = searchPhone;
             ViewBag.CurrentStatus = statusFilter;
 
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
-                // Trả về cả danh sách và thông tin phân trang cho AJAX
-                return Json(new { 
-                    html = await this.RenderViewAsync("_OrderTableBody", list, true),
-                    totalPages = totalPages,
-                    currentPage = page,
-                    totalItems = totalItems
-                });
+                return PartialView("_OrderTableBody", list);
             }
 
             return View(list);
@@ -107,7 +82,7 @@ namespace Delivery_System.Controllers
 
             var matchingTrips = await _context.VwTripLists
                 .Where(t => t.Departure == order.SendStation && t.Status == "Đang đi")
-                .AsNoTracking().ToListAsync();
+                .ToListAsync();
 
             ViewBag.OrderForShip = order;
             return View(matchingTrips);
@@ -156,7 +131,7 @@ namespace Delivery_System.Controllers
                 return RedirectToAction("List");
             }
             
-            ViewBag.StationList = await _context.TblStations.Where(s => s.IsActive == true).AsNoTracking().ToListAsync();
+            ViewBag.StationList = await _context.TblStations.Where(s => s.IsActive == true).ToListAsync();
             return View(order);
         }
 
@@ -219,12 +194,7 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            if (!_cache.TryGetValue("StationList", out List<TblStation> stations))
-            {
-                stations = await _context.TblStations.Where(s => s.IsActive == true).AsNoTracking().ToListAsync();
-                _cache.Set("StationList", stations, TimeSpan.FromMinutes(30));
-            }
-            ViewBag.StationList = stations;
+            ViewBag.StationList = await _context.TblStations.Where(s => s.IsActive == true).ToListAsync();
             return View();
         }
 
@@ -233,25 +203,7 @@ namespace Delivery_System.Controllers
         {
             var vniTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
 
-            // Thuật toán tạo mã ORDER-000001 tăng dần
-            string newOrderId = "ORDER-000001";
-            var lastOrder = await _context.TblOrders
-                .Where(o => o.OrderId.StartsWith("ORDER-"))
-                .OrderByDescending(o => o.OrderId)
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
-
-            if (lastOrder != null)
-            {
-                // Tách phần số từ chuỗi "ORDER-XXXXXX"
-                string lastIdNumberPart = lastOrder.OrderId.Replace("ORDER-", "");
-                if (int.TryParse(lastIdNumberPart, out int lastIdNumber))
-                {
-                    newOrderId = "ORDER-" + (lastIdNumber + 1).ToString("D6");
-                }
-            }
-
-            order.OrderId = newOrderId;
+            order.OrderId = "ORD-" + vniTime.ToString("HHmmss");
             order.StaffInput = HttpContext.Session.GetString("UserID");
             order.ReceiveDate = null;
             order.ShipStatus = "Chưa Chuyển";
@@ -260,7 +212,7 @@ namespace Delivery_System.Controllers
             
             _context.TblOrders.Add(order);
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = $"Thêm đơn hàng {newOrderId} thành công!";
+            TempData["SuccessMessage"] = "Thêm đơn hàng mới thành công!";
             return RedirectToAction("List");
         }
 
@@ -268,7 +220,7 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> Trash()
         {
-            var list = await _context.TblOrders.Where(o => o.IsDeleted == true).AsNoTracking().ToListAsync();
+            var list = await _context.TblOrders.Where(o => o.IsDeleted == true).ToListAsync();
             return View(list);
         }
 

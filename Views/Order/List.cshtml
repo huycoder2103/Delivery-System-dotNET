@@ -11,6 +11,30 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/list_order.css" />
+    <style>
+        .loading-overlay { opacity: 0.5; pointer-events: none; transition: opacity 0.2s; }
+        .status-tab-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        .btn-status-tab {
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 2px solid #e8f0fe;
+            background: white;
+            color: #5f6368;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-status-tab.active {
+            background: #1a73e8;
+            color: white;
+            border-color: #1a73e8;
+            box-shadow: 0 4px 10px rgba(26, 115, 232, 0.2);
+        }
+        .btn-status-tab:hover:not(.active) { background: #f8faff; border-color: #d2e3fc; }
+    </style>
 }
 
 <div class="order-list-container">
@@ -18,14 +42,14 @@
     <div class="modern-page-header">
         <div>
             <h3>📦 Quản Lý Đơn Hàng</h3>
-            <div id="orderCount" class="modern-page-header-meta">Tổng: @(Model?.Count() ?? 0) đơn</div>
+            <div id="orderCount" style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Tổng: @(Model?.Count() ?? 0) đơn</div>
         </div>
         
-        <div class="header-actions">
-            <a asp-controller="Trip" asp-action="List" class="btn-modern btn-header-action">
+        <div style="display: flex; gap: 10px;">
+            <a asp-controller="Trip" asp-action="List" class="btn-modern" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); text-decoration: none;">
                 📤 Chuyến Xe Đi
             </a>
-            <a asp-controller="Trip" asp-action="ArrivalList" class="btn-modern btn-header-action">
+            <a asp-controller="Trip" asp-action="ArrivalList" class="btn-modern" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); text-decoration: none;">
                 📥 Chuyến Xe Đến
             </a>
         </div>
@@ -37,10 +61,10 @@
     }
     @if (TempData["ErrorMessage"] != null)
     {
-        <div class="alert alert-danger alert-danger-custom">❌ @TempData["ErrorMessage"]</div>
+        <div class="alert alert-danger" style="border-radius:12px; margin-bottom:15px; padding: 15px;">❌ @TempData["ErrorMessage"]</div>
     }
 
-    <div class="modern-card sticky-filter-bar">
+    <div class="modern-card sticky-filter-bar" style="top: 155px; border-radius: 15px !important; border: 2px solid #1a73e8;">
         
         <div class="status-tab-group">
             <button class="btn-status-tab @(ViewBag.CurrentStatus == "all" ? "active" : "")" onclick="changeStatus('all')">
@@ -54,8 +78,8 @@
             </button>
         </div>
 
-        <div class="filter-controls-group">
-            <select id="filterSendStation" class="filter-input">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+            <select id="filterSendStation" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
                 <option value="">-- Từ Trạm (Gửi) --</option>
                 @if (stationList != null)
                 {
@@ -66,7 +90,7 @@
                 }
             </select>
 
-            <select id="filterReceiveStation" class="filter-input">
+            <select id="filterReceiveStation" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
                 <option value="">-- Đến Trạm (Nhận) --</option>
                 @if (stationList != null)
                 {
@@ -77,20 +101,20 @@
                 }
             </select>
 
-            <input type="date" id="filterDate" class="filter-input">
+            <input type="date" id="filterDate" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
             
-            <div class="search-input-wrapper">
-                <input type="text" id="filterSearchPhone" class="search-input" placeholder="Tìm SĐT hoặc Mã đơn..." 
-                       value="@ViewBag.SearchPhone">
+            <div style="position: relative;">
+                <input type="text" id="filterSearchPhone" placeholder="Tìm SĐT hoặc Mã đơn..." 
+                       value="@ViewBag.SearchPhone" style="width: 200px; padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd;">
             </div>
 
-            <a asp-action="Create" class="btn-modern btn-success-modern btn-link-modern">➕ Nhập Hàng</a>
-            <a asp-action="Trash" class="btn-modern btn-secondary-modern btn-link-modern">🗑 Thùng rác</a>
+            <a asp-action="Create" class="btn-modern btn-success-modern" style="text-decoration:none;">➕ Nhập Hàng</a>
+            <a asp-action="Trash" class="btn-modern btn-secondary-modern" style="text-decoration:none;">🗑 Thùng rác</a>
             <button onclick="resetFilters()" class="btn-modern btn-secondary-modern">🔄 Làm mới</button>
         </div>
     </div>
 
-    <div class="modern-card table-wrapper">
+    <div class="modern-card" style="padding: 0; overflow-x: auto;">
         <table class="modern-table" id="orderTable">
             <thead>
                 <tr>
@@ -114,71 +138,26 @@
             </tbody>
         </table>
     </div>
-
-    <!-- UI PHÂN TRANG -->
-    <div class="pagination-container mt-4" id="paginationUI">
-        @if (ViewBag.TotalPages > 1)
-        {
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="pagination-info">
-                    Trang <strong>@ViewBag.CurrentPage</strong> / @ViewBag.TotalPages 
-                    (Tổng <strong>@ViewBag.TotalItems</strong> đơn hàng)
-                </div>
-                <div class="pagination-buttons d-flex gap-2">
-                    <button class="btn-pagination" onclick="changePage(@(ViewBag.CurrentPage - 1))" @(ViewBag.CurrentPage == 1 ? "disabled" : "")>
-                        &laquo; Trước
-                    </button>
-                    
-                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
-                    {
-                        if (i == 1 || i == ViewBag.TotalPages || (i >= ViewBag.CurrentPage - 2 && i <= ViewBag.CurrentPage + 2))
-                        {
-                            <button class="btn-pagination @(i == ViewBag.CurrentPage ? "active" : "")" onclick="changePage(@i)">
-                                @i
-                            </button>
-                        }
-                        else if (i == ViewBag.CurrentPage - 3 || i == ViewBag.CurrentPage + 3)
-                        {
-                            <span class="pagination-dots">...</span>
-                        }
-                    }
-
-                    <button class="btn-pagination" onclick="changePage(@(ViewBag.CurrentPage + 1))" @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")>
-                        Sau &raquo;
-                    </button>
-                </div>
-            </div>
-        }
-    </div>
 </div>
 
 @section Scripts {
     <script>
         let searchTimeout;
         let currentStatus = '@(ViewBag.CurrentStatus ?? "all")';
-        let currentPage = @(ViewBag.CurrentPage ?? 1);
 
-        document.getElementById('filterSendStation').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
-        document.getElementById('filterReceiveStation').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
-        document.getElementById('filterDate').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
+        document.getElementById('filterSendStation').addEventListener('change', triggerSearch);
+        document.getElementById('filterReceiveStation').addEventListener('change', triggerSearch);
+        document.getElementById('filterDate').addEventListener('change', triggerSearch);
         document.getElementById('filterSearchPhone').addEventListener('input', function() {
-            currentPage = 1;
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(triggerSearch, 300);
         });
 
         function changeStatus(status) {
             currentStatus = status;
-            currentPage = 1;
             document.querySelectorAll('.btn-status-tab').forEach(btn => btn.classList.remove('active'));
             event.currentTarget.classList.add('active');
             triggerSearch();
-        }
-
-        function changePage(page) {
-            currentPage = page;
-            triggerSearch();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function triggerSearch() {
@@ -189,51 +168,22 @@
 
             const tableBody = document.getElementById('orderTableBody');
             const tableContainer = document.getElementById('orderTable');
-            const paginationUI = document.getElementById('paginationUI');
             tableContainer.classList.add('loading-overlay');
 
-            const url = `@Url.Action("List", "Order")?sendStationFilter=${encodeURIComponent(sendStation)}&receiveStationFilter=${encodeURIComponent(receiveStation)}&searchPhone=${encodeURIComponent(phone)}&dateFilter=${encodeURIComponent(date)}&statusFilter=${currentStatus}&page=${currentPage}`;
+            const url = `@Url.Action("List", "Order")?sendStationFilter=${encodeURIComponent(sendStation)}&receiveStationFilter=${encodeURIComponent(receiveStation)}&searchPhone=${encodeURIComponent(phone)}&dateFilter=${encodeURIComponent(date)}&statusFilter=${currentStatus}`;
 
             fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(response => response.json())
-            .then(data => {
-                tableBody.innerHTML = data.html;
+            .then(response => response.text())
+            .then(html => {
+                tableBody.innerHTML = html;
                 tableContainer.classList.remove('loading-overlay');
-                document.getElementById('orderCount').innerText = `Tổng: ${data.totalItems} đơn`;
-                
-                // Cập nhật UI phân trang
-                updatePaginationUI(data.currentPage, data.totalPages, data.totalItems);
+                const rowCount = tableBody.querySelectorAll('tr:not(:has(.no-data-msg))').length;
+                document.getElementById('orderCount').innerText = `Tổng: ${rowCount} đơn`;
             })
             .catch(err => {
                 console.error('Error:', err);
                 tableContainer.classList.remove('loading-overlay');
             });
-        }
-
-        function updatePaginationUI(current, total, totalItems) {
-            const container = document.getElementById('paginationUI');
-            if (total <= 1) {
-                container.innerHTML = '';
-                return;
-            }
-
-            let html = `<div class="d-flex justify-content-between align-items-center">
-                <div class="pagination-info">Trang <strong>${current}</strong> / ${total} (Tổng <strong>${totalItems}</strong> đơn hàng)</div>
-                <div class="pagination-buttons d-flex gap-2">
-                    <button class="btn-pagination" onclick="changePage(${current - 1})" ${current === 1 ? 'disabled' : ''}>&laquo; Trước</button>`;
-
-            for (let i = 1; i <= total; i++) {
-                if (i === 1 || i === total || (i >= current - 2 && i <= current + 2)) {
-                    html += `<button class="btn-pagination ${i === current ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
-                } else if (i === current - 3 || i === current + 3) {
-                    html += `<span class="pagination-dots">...</span>`;
-                }
-            }
-
-            html += `<button class="btn-pagination" onclick="changePage(${current + 1})" ${current === total ? 'disabled' : ''}>Sau &raquo;</button>
-                </div>
-            </div>`;
-            container.innerHTML = html;
         }
 
         function resetFilters() {
@@ -242,7 +192,6 @@
             document.getElementById('filterDate').value = '';
             document.getElementById('filterSearchPhone').value = '';
             currentStatus = 'all';
-            currentPage = 1;
             document.querySelectorAll('.btn-status-tab').forEach(btn => btn.classList.remove('active'));
             document.querySelector('.btn-status-tab:first-child').classList.add('active');
             triggerSearch();

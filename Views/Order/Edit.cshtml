@@ -12,7 +12,7 @@
 <div class="edit-wrap">
     <div class="edit-title">
         <h2>CHỈNH SỬA ĐƠN HÀNG</h2>
-        <div class="edit-title-meta">Mã đơn: <strong>@Model.OrderId</strong></div>
+        <div style="font-size: 0.85rem; color: #666; margin-top: 5px;">Mã đơn: <strong>@Model.OrderId</strong></div>
     </div>
 
     <form asp-action="Edit" method="POST" onsubmit="return validateEditForm()">
@@ -32,8 +32,8 @@
         </div>
 
         <div class="form-body">
-            <div class="field mb-14">
-                <label>Tên Hàng Gửi <span class="required-star">*</span></label>
+            <div class="field" style="margin-bottom: 14px;">
+                <label>Tên Hàng Gửi <span style="color:red">*</span></label>
                 <input asp-for="ItemName" type="text" required placeholder="Nhập tên hàng hóa...">
             </div>
 
@@ -71,7 +71,7 @@
                     <input asp-for="SenderName" type="text" placeholder="Tên người gửi...">
                 </div>
                 <div class="field">
-                    <label>SĐT Gửi <span class="required-star">*</span></label>
+                    <label>SĐT Gửi <span style="color:red">*</span></label>
                     <input asp-for="SenderPhone" id="senderPhone" type="text" required placeholder="Số điện thoại người gửi...">
                 </div>
             </div>
@@ -82,7 +82,7 @@
                     <input asp-for="ReceiverName" type="text" placeholder="Tên người nhận...">
                 </div>
                 <div class="field">
-                    <label>SĐT Nhận <span class="required-star">*</span></label>
+                    <label>SĐT Nhận <span style="color:red">*</span></label>
                     <input asp-for="ReceiverPhone" id="receiverPhone" type="text" required placeholder="Số điện thoại người nhận...">
                 </div>
             </div>
@@ -109,7 +109,7 @@
     </form>
 
     <div class="footer-bar">
-        <a asp-action="List" class="btn-back btn-back-link">⬅ Quay lại</a>
+        <a asp-action="List" class="btn-back" style="text-decoration:none; text-align:center;">⬅ Quay lại</a>
     </div>
 </div>
 

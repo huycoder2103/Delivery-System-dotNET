@@ -23,16 +23,14 @@ namespace Delivery_System.Controllers
             // Lấy giờ Việt Nam chuẩn (GMT+7)
             var vniTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
             var today = vniTime.Date;
-            var tomorrow = today.AddDays(1);
 
             ViewBag.RevenueToday = await _context.TblOrders
-                .AsNoTracking()
-                .Where(o => o.CreatedAt >= today && o.CreatedAt < tomorrow && o.ShipStatus == "Đã chuyển" && (o.IsDeleted == false || o.IsDeleted == null))
+                .Where(o => o.CreatedAt != null && o.CreatedAt.Value.Date == today && o.ShipStatus == "Đã chuyển" && (o.IsDeleted == false || o.IsDeleted == null))
                 .SumAsync(o => o.Amount ?? 0);
 
-            ViewBag.ActiveStaffCount = await _context.TblWorkShifts.AsNoTracking().CountAsync(s => s.Status == "ACTIVE");
-            var userList = await _context.TblUsers.OrderBy(u => u.RoleId).AsNoTracking().ToListAsync();
-            ViewBag.Announcements = await _context.TblAnnouncements.Include(a => a.CreatedByNavigation).OrderByDescending(a => a.CreatedAt).AsNoTracking().ToListAsync();
+            ViewBag.ActiveStaffCount = await _context.TblWorkShifts.CountAsync(s => s.Status == "ACTIVE");
+            var userList = await _context.TblUsers.OrderBy(u => u.RoleId).ToListAsync();
+            ViewBag.Announcements = await _context.TblAnnouncements.Include(a => a.CreatedByNavigation).OrderByDescending(a => a.CreatedAt).ToListAsync();
 
             return View(userList);
         }
@@ -86,9 +84,8 @@ namespace Delivery_System.Controllers
             var user = await _context.TblUsers.FindAsync(userID);
             if (user != null && userID != "admin")
             {
-                user.Status = false; // Chỉ khóa tài khoản, không xóa khỏi DB
+                _context.TblUsers.Remove(user);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = $"Đã khóa tài khoản {userID} thành công.";
             }
             return RedirectToAction("Index");
         }

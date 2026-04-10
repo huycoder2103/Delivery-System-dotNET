@@ -8,7 +8,6 @@
     ".NETCoreApp,Version=v10.0": {
       "Delivery-System/1.0.0": {
         "dependencies": {
-          "LigerShark.WebOptimizer.Core": "3.0.477",
           "Microsoft.EntityFrameworkCore.Design": "9.0.0",
           "Pomelo.EntityFrameworkCore.MySql": "9.0.0"
         },
@@ -21,17 +20,6 @@
           "lib/net6.0/Humanizer.dll": {
             "assemblyVersion": "2.14.0.0",
             "fileVersion": "2.14.1.48190"
-          }
-        }
-      },
-      "LigerShark.WebOptimizer.Core/3.0.477": {
-        "dependencies": {
-          "NUglify": "1.21.15"
-        },
-        "runtime": {
-          "lib/net8.0/WebOptimizer.Core.dll": {
-            "assemblyVersion": "3.0.477.0",
-            "fileVersion": "3.0.477.0"
           }
         }
       },
@@ -394,14 +382,6 @@
           }
         }
       },
-      "NUglify/1.21.15": {
-        "runtime": {
-          "lib/net5.0/NUglify.dll": {
-            "assemblyVersion": "1.21.15.0",
-            "fileVersion": "1.21.15.0"
-          }
-        }
-      },
       "Pomelo.EntityFrameworkCore.MySql/9.0.0": {
         "dependencies": {
           "Microsoft.EntityFrameworkCore.Relational": "9.0.0",
@@ -496,13 +476,6 @@
       "sha512": "sha512-lQKvtaTDOXnoVJ20ibTuSIOf2i0uO0MPbDhd1jm238I+U/2ZnRENj0cktKZhtchBMtCUSRQ5v4xBCUbKNmyVMw==",
       "path": "humanizer.core/2.14.1",
       "hashPath": "humanizer.core.2.14.1.nupkg.sha512"
-    },
-    "LigerShark.WebOptimizer.Core/3.0.477": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-md8zBJMIur8Hnb5jn7krSfe9I0BZUGqCxwh2A5Y1MTR7wtY6v9gYuyW5EFNCYzQCvaaAZxlTynUk8ZsIsrBXsg==",
-      "path": "ligershark.weboptimizer.core/3.0.477",
-      "hashPath": "ligershark.weboptimizer.core.3.0.477.nupkg.sha512"
     },
     "Microsoft.Bcl.AsyncInterfaces/7.0.0": {
       "type": "package",
@@ -601,13 +574,6 @@
       "sha512": "sha512-78M+gVOjbdZEDIyXQqcA7EYlCGS3tpbUELHvn6638A2w0pkPI625ixnzsa5staAd3N9/xFmPJtkKDYwsXpFi/w==",
       "path": "mysqlconnector/2.4.0",
       "hashPath": "mysqlconnector.2.4.0.nupkg.sha512"
-    },
-    "NUglify/1.21.15": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-Vxwg0EjbM/gmILPtzfmzlf0MDu9a17OQb8b57oTgoHoRsZNHWIFQFa00Izcvuam3Hbw2eH272TfczDRHSXgSlA==",
-      "path": "nuglify/1.21.15",
-      "hashPath": "nuglify.1.21.15.nupkg.sha512"
     },
     "Pomelo.EntityFrameworkCore.MySql/9.0.0": {
       "type": "package",

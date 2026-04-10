@@ -8,17 +8,17 @@
     overflow: hidden;
 }
 
-/* Hiệu ứng Glow nhẹ nhàng màu xanh hệ thống */
-.main-footer::before {
-    content: '';
-    position: absolute;
-    top: -50px;
-    right: -50px;
-    width: 250px;
-    height: 250px;
-    background: radial-gradient(circle, rgba(26, 115, 232, 0.1) 0%, transparent 70%);
-    z-index: 0;
-}
+    /* Hiệu ứng Glow nhẹ nhàng màu xanh hệ thống */
+    .main-footer::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 250px;
+        height: 250px;
+        background: radial-gradient(circle, rgba(26, 115, 232, 0.1) 0%, transparent 70%);
+        z-index: 0;
+    }
 
 .footer-container {
     max-width: 1300px;
@@ -39,11 +39,11 @@
     transition: all 0.3s ease;
 }
 
-.footer-row:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(26, 115, 232, 0.2);
-    transform: translateY(-3px);
-}
+    .footer-row:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(26, 115, 232, 0.2);
+        transform: translateY(-3px);
+    }
 
 /* Dòng 1: Thương hiệu */
 .brand-row h2 {
@@ -76,27 +76,27 @@
     gap: 15px;
 }
 
-.quick-links-grid a {
-    color: #94a3b8;
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 500;
-    padding: 10px 15px;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 10px;
-    transition: all 0.2s ease;
-    border: 1px solid rgba(255, 255, 255, 0.03);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+    .quick-links-grid a {
+        color: #94a3b8;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        padding: 10px 15px;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 10px;
+        transition: all 0.2s ease;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 
-.quick-links-grid a:hover {
-    background: rgba(26, 115, 232, 0.1);
-    color: #ffffff;
-    border-color: rgba(26, 115, 232, 0.3);
-    transform: translateX(5px);
-}
+        .quick-links-grid a:hover {
+            background: rgba(26, 115, 232, 0.1);
+            color: #ffffff;
+            border-color: rgba(26, 115, 232, 0.3);
+            transform: translateX(5px);
+        }
 
 /* Dòng 3: Liên hệ */
 .contact-row {
@@ -112,19 +112,19 @@
     gap: 40px;
 }
 
-.contact-label { 
-    font-size: 0.7rem; 
-    color: #475569; 
-    text-transform: uppercase; 
-    font-weight: 700; 
-    margin-bottom: 4px; 
-    display: block; 
+.contact-label {
+    font-size: 0.7rem;
+    color: #475569;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: block;
 }
 
-.contact-value { 
-    font-size: 1rem; 
-    color: #e2e8f0; 
-    font-weight: 600; 
+.contact-value {
+    font-size: 1rem;
+    color: #e2e8f0;
+    font-weight: 600;
 }
 
 .dev-credit {
@@ -139,7 +139,16 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-    .contact-info-large { flex-direction: column; gap: 15px; }
-    .footer-row { padding: 25px 20px; }
-    .quick-links-grid { grid-template-columns: 1fr 1fr; }
+    .contact-info-large {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .footer-row {
+        padding: 25px 20px;
+    }
+
+    .quick-links-grid {
+        grid-template-columns: 1fr 1fr;
+    }
 }
