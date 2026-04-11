@@ -25,7 +25,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddControllersWithViews();
 
 // Đăng ký kết nối Database MySQL với DbContext Pooling để tối ưu hóa hiệu suất
-var connectionString = "server=delivery-db-mysql-jayker03212k5-ee32.f.aivencloud.com;port=19281;database=defaultdb;user=avnadmin;password=AVNS_txLmskApkmP4v1bHS0y;SslMode=Required";
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContextPool<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), 
