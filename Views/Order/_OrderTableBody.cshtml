@@ -7,16 +7,88 @@
     var currentUserID = HttpContextAccessor.HttpContext.Session.GetString("UserID");
 }
 
+<style>
+    /* CSS cho bảng đơn hàng (Partial) */
+    .col-order-id { min-width: 100px; }
+    .col-item-name { width: 220px; font-weight: 500; font-size: 12px; }
+    .col-route { min-width: 200px; width: 200px; text-align: center; }
+    .col-customer { width: 140px;font-weight: 500;font-size: 12px; }
+
+    .route-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-weight: 700;
+        font-size: 0.8rem;
+    }
+
+    .station-send { color: #1a73e8; }
+    .station-receive { color: #d93025; }
+    .route-arrow { color: #ccc; }
+
+    .text-order-id { color: #1a73e8; font-size: 13px; font-weight: 500; }
+
+    .customer-info-box { display: flex; flex-direction: column; }
+    .customer-name { font-weight: 500; font-size: 14px; margin-bottom: 5px; }
+    .customer-phone { font-weight: 500; color: #444; font-size: 14px; }
+
+    .staff-input-badge { color: #5f6368; font-weight: 700; }
+    .note-cell { max-width: 150px; font-size: 0.8rem; color: #666; font-style: italic; }
+    .time-cell { font-size: 0.75rem; color: #888; }
+    .trip-id-link { color: #1a73e8; font-weight: 700; }
+    .no-data-msg { padding: 50px; color: #999; text-align: center; }
+
+    .action-btns-grid { 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        gap: 8px; 
+        width: 100px;
+    }
+    .btn-action-text { 
+        display: flex; align-items: center; justify-content: center; gap: 5px;
+        padding: 6px 4px; border-radius: 6px; border: none; cursor: pointer;
+        font-size: 10px; font-weight: 700; transition: all 0.25s;
+        text-decoration: none; width: 100%;
+    }
+    .btn-full-width { grid-column: span 2; padding: 8px 10px; }
+    
+    .btn-action-text:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    
+    .btn-s-print { background: #e8eaf6; color: #3f51b5;}
+    .btn-s-ship  { width: 90%; background: #e8f0fe; color: #1a73e8; }
+    .btn-s-edit  { background: #e6f4ea; color: #1e8e3e; }
+    .btn-s-delete { background: #fce8e6; color: #d93025; }
+    .btn-disabled { opacity: 0.5; cursor: not-allowed; background: #eee; color: #aaa; }
+
+    .status-badge-fixed { 
+        display: inline-block; 
+        width: 70px; 
+        text-align: center; 
+        font-size: 10px; 
+        padding: 4px 0; 
+        line-height: 1;
+        white-space: nowrap;
+        vertical-align: middle;
+        font-weight: 600;
+    }
+</style>
+
 @if (Model != null && Model.Any())
 {
     foreach (var o in Model)
     {
         bool canEdit = currentUserRole == "AD" || o.StaffInput == currentUserID;
         <tr>
-            <td><strong class="text-order-id">@o.OrderId</strong></td>
+            <td><span class="text-order-id">@o.OrderId</span></td>
             <td class="col-item-name">@o.ItemName</td>
-            <td class="col-station text-station-send">@o.SendStation</td>
-            <td class="col-station text-station-receive">@o.ReceiveStation</td>
+            <td class="col-route">
+                <div class="route-container">
+                    <span class="station-send" style="color: #1a73e8;">@o.SendStation</span>
+                    <span class="route-arrow">➔</span>
+                    <span class="station-receive" style="color: #d93025;">@o.ReceiveStation</span>
+                </div>
+            </td>
             <td class="col-customer">
                 <div class="customer-info-box">
                     <div class="customer-name">@o.SenderName</div>
@@ -53,42 +125,39 @@
             <td>
                 @if (string.IsNullOrEmpty(o.TripId))
                 {
-                    <span class="badge badge-warning">Chưa chuyển</span>
+                    <span class="badge badge-warning status-badge-fixed">Chưa chuyển</span>
                 }
                 else
                 {
-                    <span class="badge badge-info">Đã chuyển</span>
-                    <br><small class="trip-id-link">@o.TripId</small>
+                    <span class="badge badge-info status-badge-fixed">Đã chuyển</span>
+                    @* <br><small class="trip-id-link">@o.TripId</small> *@
                 }
             </td>
             <td class="col-order-id">
                 <div class="action-btns-grid">
-                    <a asp-action="PrintReceipt" asp-route-id="@o.OrderId" target="_blank" class="btn-action-text btn-s-print">🖨️ Xem & In</a>
-
+                    @* Hàng 1: Nút Chuyển (Chỉ hiện khi chưa chuyển) *@
                     @if (string.IsNullOrEmpty(o.TripId))
                     {
                         if (canEdit)
                         {
-                            <a asp-action="Ship" asp-route-id="@o.OrderId" class="btn-action-text btn-s-ship">🚚 Chuyển</a>
+                            <a asp-action="Ship" asp-route-id="@o.OrderId" class="btn-action-text btn-s-ship btn-full-width">🚚 Chuyển</a>
                         }
                         else
                         {
-                            <button type="button" class="btn-action-text btn-disabled" title="Chỉ người tạo đơn mới được chuyển hàng">🔒 Chuyển</button>
+                            <button type="button" class="btn-action-text btn-disabled btn-full-width" title="Chỉ người tạo đơn mới được chuyển hàng">Chuyển</button>
                         }
                     }
-                    
+
+                    @* Hàng 2: Nút In và Nút Sửa *@
+                    <a asp-action="PrintReceipt" asp-route-id="@o.OrderId" target="_blank" class="btn-action-text btn-s-print">In</a>
+
                     @if (canEdit)
                     {
-                        <a asp-action="Edit" asp-route-id="@o.OrderId" class="btn-action-text btn-s-edit">✏️ Sửa đơn</a>
-                        
-                        @* <form asp-action="Delete" method="POST" style="display:inline;">
-                            <input type="hidden" name="id" value="@o.OrderId" />
-                            <button type="submit" class="btn-action-text btn-s-delete" onclick="return confirm('Đưa đơn này vào thùng rác?')">🗑️ Xóa</button>
-                        </form> *@
+                        <a asp-action="Edit" asp-route-id="@o.OrderId" class="btn-action-text btn-s-edit">Sửa</a>
                     }
                     else
                     {
-                        <button type="button" class="btn-action-text btn-disabled" title="Bạn không có quyền sửa đơn này">🔒 Sửa đơn</button>
+                        <button type="button" class="btn-action-text btn-disabled" title="Bạn không có quyền sửa đơn này">Khóa</button>
                     }
                 </div>
             </td>

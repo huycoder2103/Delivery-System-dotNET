@@ -13,16 +13,17 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/report.css">
+    
 }
 
-<div class="container-custom">
+<div class="container-custom" style="max-width: 1600px; margin: 20px auto; padding: 0 20px;">
     
-    <div class="modern-page-header">
+    <div class="modern-page-header" style="background: linear-gradient(135deg, #1a73e8, #0d47a1);">
         <div>
             <h3>📊 @(role == "AD" ? "BÁO CÁO & THỐNG KÊ" : "KẾT QUẢ LÀM VIỆC CÁ NHÂN")</h3>
-            <div class="modern-page-header-meta">@(role == "AD" ? "Theo dõi doanh thu và hiệu suất ca làm việc toàn hệ thống" : "Theo dõi hiệu suất và lịch sử ca làm việc của bạn")</div>
+            <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">@(role == "AD" ? "Theo dõi doanh thu và hiệu suất ca làm việc toàn hệ thống" : "Theo dõi hiệu suất và lịch sử ca làm việc của bạn")</div>
         </div>
-        <a asp-controller="Home" asp-action="Index" class="btn-modern btn-header-back">
+        <a asp-controller="Home" asp-action="Index" class="btn-modern" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); text-decoration: none;">
             ← Quay lại Trang Chủ
         </a>
     </div>
@@ -38,32 +39,32 @@
             @if (role == "AD")
             {
                 <div class="modern-card mb-4">
-                    <form asp-action="Index" method="GET" class="filter-form-row">
-                        <div class="filter-input-group">
-                            <label class="stat-label filter-input-label">Chọn ngày xem dữ liệu</label>
-                            <input type="date" name="reportDate" class="form-control filter-input-date" value="@reportDate">
+                    <form asp-action="Index" method="GET" style="display: flex; gap: 35px; align-items: flex-end;">
+                        <div style="flex: 1; max-width: 300px;">
+                            <label class="stat-label" style="margin-bottom: 8px; display: block;">Chọn ngày xem dữ liệu</label>
+                            <input type="date" name="reportDate" class="form-control" style="padding: 10px; border-radius: 10px; border: 1px solid #ddd; width: 100%;" value="@reportDate">
                         </div>
-                        <button type="submit" class="btn-modern btn-primary-modern filter-btn-update">🔍 CẬP NHẬT DỮ LIỆU</button>
-                        <div class="date-badge-container">
-                            <span class="badge badge-info date-badge">📅 Ngày: <strong>@DateTime.Parse(reportDate).ToString("dd/MM/yyyy")</strong></span>
+                        <button type="submit" class="btn-modern btn-primary-modern" style="padding: 11px 25px;">🔍 CẬP NHẬT DỮ LIỆU</button>
+                        <div style="margin-left: auto;">
+                            <span class="badge badge-info" style="padding: 10px 20px; font-size: 0.9rem;">📅 Ngày: <strong>@DateTime.Parse(reportDate).ToString("dd/MM/yyyy")</strong></span>
                         </div>
                     </form>
                 </div>
 
-                <div class="row mb-4 stat-cards-row">
-                    <div class="stat-card-col">
+                <div class="row mb-4" style="display: flex; gap: 20px;">
+                    <div style="flex: 1;">
                         <div class="card report-card p-4 border-start border-primary border-5 shadow-sm">
                             <div class="stat-label">Doanh thu hệ thống (Ngày)</div>
                             <div class="stat-value text-primary">@string.Format("{0:N0}", ViewBag.RevenueDateVal) K</div>
                         </div>
                     </div>
-                    <div class="stat-card-col">
+                    <div style="flex: 1;">
                         <div class="card report-card p-4 border-start border-info border-5 shadow-sm">
                             <div class="stat-label">Đơn hàng mới</div>
                             <div class="stat-value text-info">@ViewBag.OrdersDateVal</div>
                         </div>
                     </div>
-                    <div class="stat-card-col">
+                    <div style="flex: 1;">
                         <div class="card report-card p-4 border-start border-warning border-5 shadow-sm">
                             <div class="stat-label">Nhân sự đang Online</div>
                             <div class="stat-value text-warning">@ViewBag.ActiveStaffCount</div>
@@ -73,7 +74,7 @@
 
                 <div class="card report-card p-4 mb-4">
                     <h5 class="fw-bold mb-4" style="color: #333;">🚀 Tăng Trưởng Doanh Thu Toàn Hệ Thống (7 Ngày)</h5>
-                    <div class="chart-container">
+                    <div style="height: 400px; width: 100%;">
                         <canvas id="realRevenueChart"></canvas>
                     </div>
                 </div>
@@ -83,7 +84,7 @@
                     <div class="table-responsive">
                         <table class="table align-middle">
                             <thead class="table-light">
-                                <tr class="table-header-text">
+                                <tr style="font-size: 0.75rem; text-transform: uppercase; color: #6c757d;">
                                     <th>Nhân Viên</th>
                                     <th class="text-center">Trạng Thái</th>
                                     <th class="text-center">Số Đơn Nhập</th>
@@ -99,17 +100,17 @@
                                         <tr class="leaderboard-row">
                                             <td>
                                                 <div class="fw-bold text-dark">@p.StaffName</div>
-                                                <div class="staff-id-text">ID: @p.StaffId</div>
+                                                <div style="font-size: 0.7rem; color: #888;">ID: @p.StaffId</div>
                                             </td>
                                             <td class="text-center">
-                                                <span class="badge @(p.IsWorking ? "bg-success" : "bg-light text-muted") badge-status-staff">
+                                                <span class="badge @(p.IsWorking ? "bg-success" : "bg-light text-muted")" style="font-size: 0.65rem;">
                                                     @(p.IsWorking ? "ĐANG LÀM" : "OFFLINE")
                                                 </span>
                                             </td>
                                             <td class="text-center fw-bold">@p.DayOrders</td>
                                             <td class="text-end fw-bold text-success">@string.Format("{0:N0}", p.DayRev) K</td>
                                             <td class="text-center">
-                                                <a href="@Url.Action("Index", new { targetStaffId = p.StaffId })#history" class="btn-modern btn-primary-modern btn-action-view">Xem Nhật Ký</a>
+                                                <a href="@Url.Action("Index", new { targetStaffId = p.StaffId })#history" class="btn-modern btn-primary-modern" style="padding: 5px 15px; font-size: 0.75rem;">Xem Nhật Ký</a>
                                             </td>
                                         </tr>
                                     }
@@ -127,26 +128,26 @@
                     
                     @if (ViewBag.CurrentShift != null)
                     {
-                        <div class="alert alert-info d-flex justify-content-between align-items-center shift-active-alert">
+                        <div class="alert alert-info d-flex justify-content-between align-items-center" style="border-radius: 15px; padding: 20px; margin-bottom: 40px;">
                             <div>
                                 <h5 class="mb-1">🟢 Bạn đang trong ca làm việc hoạt động</h5>
                                 <p class="mb-0 small">Bắt đầu lúc: <strong>@ViewBag.CurrentShift.StartTime.ToString("HH:mm - dd/MM/yyyy")</strong></p>
                             </div>
-                            <a asp-controller="Shift" asp-action="End" class="btn-modern btn-end-shift">Kết Thúc Ca</a>
+                            <a asp-controller="Shift" asp-action="End" class="btn-modern" style="background: #ea4335; color: white; text-decoration: none;">Kết Thúc Ca</a>
                         </div>
                     }
 
-                    <div class="summary-cards-flex">
-                        <div class="card report-card p-5 text-center border-bottom border-success border-5 shadow summary-stat-card">
+                    <div style="display: flex; gap: 30px; justify-content: center;">
+                        <div class="card report-card p-5 text-center border-bottom border-success border-5 shadow" style="min-width: 350px;">
                             <div class="stat-label" style="font-size: 1rem;">Đơn hàng đã giao thành công</div>
-                            <div class="stat-value text-success summary-stat-value">@ViewBag.DeliveredOrders</div>
-                            <div class="summary-footer-note">Tổng số đơn bạn đã nhập và hoàn thành</div>
+                            <div class="stat-value text-success" style="font-size: 3rem;">@ViewBag.DeliveredOrders</div>
+                            <div style="color: #888; margin-top: 10px;">Tổng số đơn bạn đã nhập và hoàn thành</div>
                         </div>
                         
-                        <div class="card report-card p-5 text-center border-bottom border-primary border-5 shadow summary-stat-card">
+                        <div class="card report-card p-5 text-center border-bottom border-primary border-5 shadow" style="min-width: 350px;">
                             <div class="stat-label" style="font-size: 1rem;">Tổng doanh thu thu được</div>
-                            <div class="stat-value text-primary summary-stat-value">@string.Format("{0:N0}", ViewBag.TotalRevenue) K</div>
-                            <div class="summary-footer-note">Tổng số tiền cước từ các đơn hàng bạn xử lý</div>
+                            <div class="stat-value text-primary" style="font-size: 3rem;">@string.Format("{0:N0}", ViewBag.TotalRevenue) K</div>
+                            <div style="color: #888; margin-top: 10px;">Tổng số tiền cước từ các đơn hàng bạn xử lý</div>
                         </div>
                     </div>
 
@@ -159,8 +160,8 @@
 
         <!-- ========================== TAB 2: LỊCH SỬ CA LÀM ========================== -->
         <div class="tab-pane fade @(viewShiftId != null ? "show active" : "")" id="history">
-            <div class="history-flex-container">
-                <div class="history-list-col @(viewShiftId != null ? "with-detail" : "")">
+            <div style="display: flex; gap: 20px;">
+                <div style="flex: @(viewShiftId != null ? "5" : "12")">
                     <div class="card report-card p-4">
                         <h5 class="fw-bold mb-3 text-secondary">
                             📜 Nhật ký 20 ca làm việc gần nhất
@@ -183,14 +184,14 @@
                                         {
                                             <tr class="@(s.ShiftId == viewShiftId ? "table-info" : "")">
                                                 <td><strong>#@s.ShiftId</strong></td>
-                                                <td class="shift-time-text">@s.StartTime.ToString("dd/MM/yyyy HH:mm")</td>
-                                                <td class="shift-time-text">@(s.EndTime?.ToString("dd/MM/yyyy HH:mm") ?? "---")</td>
+                                                <td style="font-size: 0.85rem;">@s.StartTime.ToString("dd/MM/yyyy HH:mm")</td>
+                                                <td style="font-size: 0.85rem;">@(s.EndTime?.ToString("dd/MM/yyyy HH:mm") ?? "---")</td>
                                                 <td>
                                                     <span class="badge @(s.Status == "ACTIVE" ? "bg-success" : "bg-secondary")">@s.Status</span>
                                                 </td>
                                                 <td class="text-center">
                                                     <a href="@Url.Action("Index", new { viewShiftId = s.ShiftId, targetStaffId = selectedStaffId })#history" 
-                                                       class="btn-modern btn-primary-modern btn-action-view">Chi tiết</a>
+                                                       class="btn-modern btn-primary-modern" style="padding: 5px 15px; font-size: 0.75rem;">Chi tiết</a>
                                                 </td>
                                             </tr>
                                         }
@@ -203,7 +204,7 @@
 
                 @if (viewShiftId != null)
                 {
-                    <div class="history-detail-col">
+                    <div style="flex: 7;">
                         <div class="card report-card p-4">
                             <h5 class="fw-bold mb-3 text-primary d-flex justify-content-between">
                                 <span>📦 ĐƠN HÀNG TRONG CA #@viewShiftId</span>
@@ -217,7 +218,7 @@
                                     @if (shiftOrders != null) {
                                         foreach (var o in shiftOrders) {
                                             <tr>
-                                                <td><strong class="order-id-highlight">@o.OrderId</strong></td>
+                                                <td><strong style="color: #1a73e8;">@o.OrderId</strong></td>
                                                 <td>@o.ItemName</td>
                                                 <td class="text-end fw-bold text-success">@string.Format("{0:N0}", o.Amount ?? 0) K</td>
                                             </tr>

@@ -13,7 +13,7 @@ namespace Delivery_System.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string reportDate, int? viewShiftId, string targetStaffId)
+        public async Task<IActionResult> Index(string? reportDate, int? viewShiftId, string? targetStaffId)
         {
             var userId = HttpContext.Session.GetString("UserID");
             var role = HttpContext.Session.GetString("Role");
@@ -22,67 +22,86 @@ namespace Delivery_System.Controllers
             var vniTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
             DateTime date = string.IsNullOrEmpty(reportDate) ? vniTime.Date : DateTime.Parse(reportDate);
             var selectedDate = date.Date;
+            var tomorrow = selectedDate.AddDays(1);
             ViewBag.ReportDate = date.ToString("yyyy-MM-dd");
 
             if (role == "AD")
             {
-                // 1. Thống kê cơ bản ngày được chọn
-                ViewBag.RevenueDateVal = await _context.TblOrders.Where(o => o.CreatedAt != null && o.CreatedAt.Value.Date == selectedDate && o.ShipStatus == "Đã chuyển" && (o.IsDeleted == false || o.IsDeleted == null)).SumAsync(o => o.Amount ?? 0);
-                ViewBag.OrdersDateVal = await _context.TblOrders.CountAsync(o => o.CreatedAt != null && o.CreatedAt.Value.Date == selectedDate && (o.IsDeleted == false || o.IsDeleted == null));
-                ViewBag.ActiveStaffCount = await _context.TblWorkShifts.CountAsync(s => s.Status == "ACTIVE");
+                // 1. Thống kê cơ bản ngày được chọn (Tối ưu: AsNoTracking & Range Search)
+                var baseQuery = _context.TblOrders.AsNoTracking().Where(o => o.IsDeleted == false || o.IsDeleted == null);
                 
-                // 2. Dữ liệu biểu đồ doanh thu 7 ngày gần nhất
-                var last7Days = Enumerable.Range(0, 7).Select(i => vniTime.Date.AddDays(-i)).OrderBy(d => d).ToList();
-                var chartLabels = last7Days.Select(d => d.ToString("dd/MM")).ToList();
+                ViewBag.RevenueDateVal = await baseQuery
+                    .Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow && o.ShipStatus == "Đã chuyển")
+                    .SumAsync(o => o.Amount ?? 0);
+
+                ViewBag.OrdersDateVal = await baseQuery
+                    .Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow)
+                    .CountAsync();
+
+                ViewBag.ActiveStaffCount = await _context.TblWorkShifts.AsNoTracking().CountAsync(s => s.Status == "ACTIVE");
+                
+                // 2. Dữ liệu biểu đồ doanh thu 7 ngày gần nhất (Tối ưu: Gộp 7 query thành 1)
+                var weekStart = vniTime.Date.AddDays(-6);
+                var weekEnd = vniTime.Date.AddDays(1);
+
+                var weeklyData = await baseQuery
+                    .Where(o => o.CreatedAt >= weekStart && o.CreatedAt < weekEnd && o.ShipStatus == "Đã chuyển")
+                    .GroupBy(o => o.CreatedAt!.Value.Date)
+                    .Select(g => new { Date = g.Key, Total = g.Sum(o => o.Amount ?? 0) })
+                    .ToListAsync();
+
+                var chartLabels = new List<string>();
                 var chartData = new List<decimal>();
 
-                foreach (var d in last7Days)
+                for (int i = 6; i >= 0; i--)
                 {
-                    var sum = await _context.TblOrders
-                        .Where(o => o.CreatedAt != null && o.CreatedAt.Value.Date == d && o.ShipStatus == "Đã chuyển" && (o.IsDeleted == false || o.IsDeleted == null))
-                        .SumAsync(o => o.Amount ?? 0);
-                    chartData.Add(sum);
+                    var d = vniTime.Date.AddDays(-i);
+                    chartLabels.Add(d.ToString("dd/MM"));
+                    chartData.Add(weeklyData.FirstOrDefault(x => x.Date == d)?.Total ?? 0);
                 }
                 ViewBag.ChartLabels = chartLabels;
                 ViewBag.ChartData = chartData;
 
-                // Hiệu suất nhân viên đơn giản (không xếp hạng)
-                ViewBag.StaffPerformance = await _context.TblUsers
+                // 3. Hiệu suất nhân viên (Tối ưu: Sử dụng DTO để tránh gọi DB trong Select nếu có thể, hoặc dùng AsNoTracking)
+                var today = vniTime.Date;
+                var nextDay = today.AddDays(1);
+
+                ViewBag.StaffPerformance = await _context.TblUsers.AsNoTracking()
                     .Where(u => u.RoleId == "US")
                     .Select(u => new { 
                         StaffName = u.FullName, 
                         StaffId = u.UserId, 
-                        DayOrders = _context.TblOrders.Count(o => o.StaffInput == u.UserId && o.CreatedAt != null && o.CreatedAt.Value.Date == vniTime.Date),
-                        DayRev = _context.TblOrders.Where(o => o.StaffInput == u.UserId && o.CreatedAt != null && o.CreatedAt.Value.Date == vniTime.Date && o.ShipStatus == "Đã chuyển").Sum(o => o.Amount ?? 0),
-                        IsWorking = _context.TblWorkShifts.Any(s => s.StaffId == u.UserId && s.Status == "ACTIVE") 
+                        DayOrders = _context.TblOrders.AsNoTracking().Count(o => o.StaffInput == u.UserId && o.CreatedAt >= today && o.CreatedAt < nextDay && (o.IsDeleted == false || o.IsDeleted == null)),
+                        DayRev = _context.TblOrders.AsNoTracking().Where(o => o.StaffInput == u.UserId && o.CreatedAt >= today && o.CreatedAt < nextDay && o.ShipStatus == "Đã chuyển" && (o.IsDeleted == false || o.IsDeleted == null)).Sum(o => o.Amount ?? 0),
+                        IsWorking = _context.TblWorkShifts.AsNoTracking().Any(s => s.StaffId == u.UserId && s.Status == "ACTIVE") 
                     })
                     .ToListAsync();
             }
             else
             {
-                // Dữ liệu dành riêng cho nhân viên
-                ViewBag.DeliveredOrders = await _context.TblOrders.CountAsync(o => o.StaffInput == userId && o.ShipStatus == "Đã chuyển" && (o.IsDeleted == false || o.IsDeleted == null));
-                ViewBag.TotalRevenue = await _context.TblOrders.Where(o => o.StaffInput == userId && o.ShipStatus == "Đã chuyển" && (o.IsDeleted == false || o.IsDeleted == null)).SumAsync(o => o.Amount ?? 0);
+                // Dữ liệu dành riêng cho nhân viên (Tối ưu: AsNoTracking)
+                var userOrdersQuery = _context.TblOrders.AsNoTracking().Where(o => o.StaffInput == userId && (o.IsDeleted == false || o.IsDeleted == null));
                 
-                var currentShift = await _context.TblWorkShifts.FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
-                ViewBag.CurrentShift = currentShift;
+                ViewBag.DeliveredOrders = await userOrdersQuery.CountAsync(o => o.ShipStatus == "Đã chuyển");
+                ViewBag.TotalRevenue = await userOrdersQuery.Where(o => o.ShipStatus == "Đã chuyển").SumAsync(o => o.Amount ?? 0);
+                
+                ViewBag.CurrentShift = await _context.TblWorkShifts.AsNoTracking().FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
             }
 
             // --- LỊCH SỬ CA LÀM VIỆC ---
             string staffToFetch = (role == "AD" && !string.IsNullOrEmpty(targetStaffId)) ? targetStaffId : userId;
             ViewBag.SelectedStaffId = staffToFetch;
 
-            var shiftHistory = await _context.TblWorkShifts
+            ViewBag.ShiftHistory = await _context.TblWorkShifts.AsNoTracking()
                 .Where(s => s.StaffId == staffToFetch)
                 .OrderByDescending(s => s.StartTime)
                 .Take(20)
                 .ToListAsync();
-            ViewBag.ShiftHistory = shiftHistory;
 
             if (viewShiftId.HasValue)
             {
                 ViewBag.ViewShiftId = viewShiftId.Value;
-                ViewBag.ShiftOrders = await _context.TblOrders
+                ViewBag.ShiftOrders = await _context.TblOrders.AsNoTracking()
                     .Where(o => o.ShiftId == viewShiftId.Value)
                     .ToListAsync();
             }

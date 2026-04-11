@@ -19,21 +19,21 @@ namespace Delivery_System.Controllers
         public IActionResult Login() => View();
 
         [HttpPost]
-        public async Task<IActionResult> Login(string userID, string password)
+        public async Task<IActionResult> Login(string username, string password)
         {
-            if (string.IsNullOrEmpty(userID) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
                 ViewBag.ErrorMessage = "Vui lòng nhập đầy đủ thông tin!";
                 return View();
             }
 
             // Chuẩn hóa dữ liệu: Cắt khoảng trắng đầu/cuối
-            userID = userID.Trim();
+            username = username.Trim();
             password = password.Trim();
 
             string hashedPassword = HashSha256(password);
             var user = await _context.TblUsers
-                .FirstOrDefaultAsync(u => u.UserId == userID && u.Password == hashedPassword && u.Status == true);
+                .FirstOrDefaultAsync(u => u.Username == username && u.Password == hashedPassword && u.Status == true);
 
             if (user != null)
             {
@@ -44,7 +44,7 @@ namespace Delivery_System.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            ViewBag.UserID = userID;
+            ViewBag.Username = username;
             ViewBag.ErrorMessage = "Sai tài khoản, mật khẩu hoặc tài khoản đã bị khóa!";
             return View();
         }

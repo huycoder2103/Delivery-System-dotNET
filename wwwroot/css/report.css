@@ -407,6 +407,7 @@ table tr:hover {
     color: #1a73e8;
 }
 
+
 @media(max-width:768px) {
     .stat-cards-row, .summary-cards-flex, .history-flex-container, .filter-form-row {
         flex-direction: column;
