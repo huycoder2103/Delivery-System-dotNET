@@ -1,13 +1,51 @@
 @model IEnumerable<Delivery_System.Models.VwTripList>
 
+<style>
+    /* CSS đồng bộ cho bảng chuyến xe */
+    .col-route { min-width: 200px; width: 200px; text-align: center; }
+    
+    .route-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-weight: 500;
+        font-size: 14px;
+    }
+
+    .station-send { color: #1a73e8; }
+    .station-receive { color: #d93025; }
+    .route-arrow { color: #ccc; }
+
+    .trip-id-text { color: #1a73e8; font-size: 13px; font-weight: 500; }
+
+    /* Style cho các nút action của chuyến xe */
+    .action-btns-grid { display: flex; flex-direction: column; gap: 5px; align-items: center; }
+    .btn-action-trip { 
+        display: inline-block; text-align: center; text-decoration: none;
+        padding: 8px 10px; border-radius: 8px; font-weight: 700; cursor: pointer; 
+        width: 110px; font-size: 12px; border: none; transition: all 0.2s;
+    }
+    .btn-action-trip:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    
+    .btn-status-arrived { background: #e6f4ea; color: #1e8e3e; width:130px}
+    .btn-status-assign { background: #e6f4ea; color: #1e8e3e; }
+    .btn-status-view { background: #e8f0fe; color: #1a73e8; }
+</style>
+
 @if (Model != null && Model.Any())
 {
     foreach (var t in Model)
     {
         <tr>
-            <td><strong style="color: #1a73e8;">@t.TripId</strong></td>
-            <td style="color: #d93025; font-weight: 600;">@t.Departure</td>
-            <td style="color: #188038; font-weight: 600;">@t.Destination</td>
+            <td><span class="trip-id-text">@t.TripId</span></td>
+            <td class="col-route">
+                <div class="route-container">
+                    <span class="station-send">@t.Departure</span>
+                    <span class="route-arrow">➔</span>
+                    <span class="station-receive">@t.Destination</span>
+                </div>
+            </td>
             <td style="font-weight: 600;">@t.LicensePlate</td>
             <td>@t.DepartureTime</td>
             <td>@t.DriverName</td>
@@ -21,10 +59,10 @@
                     <span class="badge-status-m badge-arrived">🏁 Đã cập bến</span>
                 }
             </td>
-            <td style="font-weight: 600;">@t.StaffCreatedName</td>
+            <td style="font-weight: 600;">@t.StaffCreated</td>
             <td style="font-size: 1rem;">@t.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
             <td style="min-width: 130px;">
-                <div class="action-btns-grid" style="display: flex; flex-direction: column; gap: 5px; align-items: center;">
+                <div class="action-btns-grid">
                     @{
                         var orderCounts = ViewBag.OrderCounts as Dictionary<string, int>;
                         int count = (orderCounts != null && orderCounts.ContainsKey(t.TripId)) ? orderCounts[t.TripId] : 0;
@@ -33,7 +71,7 @@
                     @* Nút xác nhận đến (Dùng SweetAlert2) *@
                     @if (ViewBag.IsArrivalPage == true && t.Status == "Đang đi")
                     {
-                        <button type="button" class="btn-action-trip" style="background:#e6f4ea; color:#1e8e3e; border:none; padding:8px 12px; border-radius:8px; font-weight:700; cursor:pointer; width: 110px;"
+                        <button type="button" class="btn-action-trip btn-status-arrived"
                                 onclick="confirmArrive('@t.TripId')">🏁 Đã đến</button>
                         
                         <form id="arriveForm-@t.TripId" asp-action="Arrive" method="POST" style="display:none;">
@@ -43,9 +81,9 @@
 
                     @if (t.Status == "Đang đi" && ViewBag.IsArrivalPage != true)
                     {
-                        <a asp-action="AssignGoods" asp-route-id="@t.TripId" class="btn-action-trip" style="text-decoration: none; background:#fff3cd; color:#856404; border:none; padding:8px 12px; border-radius:8px; font-weight:700; cursor:pointer; width: 110px; display: inline-block; text-align: center;">📦 Thêm hàng</a>
+                        <a asp-action="AssignGoods" asp-route-id="@t.TripId" class="btn-action-trip btn-status-assign">📦 Thêm hàng</a>
                     }
-                    <a asp-action="ViewGoods" asp-route-id="@t.TripId" class="btn-action-trip" style="text-decoration: none; background:#e8f0fe; color:#1a73e8; border:none; padding:8px 12px; border-radius:8px; font-weight:700; cursor:pointer; width: 110px; display: inline-block; text-align: center;">
+                    <a asp-action="ViewGoods" asp-route-id="@t.TripId" class="btn-action-trip btn-status-view">
                         📋 Xem hàng (@count)
                     </a>
                 </div>
