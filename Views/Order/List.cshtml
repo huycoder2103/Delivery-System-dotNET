@@ -11,30 +11,6 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/list_order.css" />
-    <style>
-        .loading-overlay { opacity: 0.5; pointer-events: none; transition: opacity 0.2s; }
-        .status-tab-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        .btn-status-tab {
-            padding: 10px 20px;
-            border-radius: 12px;
-            border: 2px solid #e8f0fe;
-            background: white;
-            color: #5f6368;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-status-tab.active {
-            background: #1a73e8;
-            color: white;
-            border-color: #1a73e8;
-            box-shadow: 0 4px 10px rgba(26, 115, 232, 0.2);
-        }
-        .btn-status-tab:hover:not(.active) { background: #f8faff; border-color: #d2e3fc; }
-    </style>
 }
 
 <div class="order-list-container">
@@ -42,14 +18,14 @@
     <div class="modern-page-header">
         <div>
             <h3>📦 Quản Lý Đơn Hàng</h3>
-            <div id="orderCount" style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Tổng: @(Model?.Count() ?? 0) đơn</div>
+            <div id="orderCount" class="modern-page-header-meta">Tổng: @(Model?.Count() ?? 0) đơn</div>
         </div>
         
-        <div style="display: flex; gap: 10px;">
-            <a asp-controller="Trip" asp-action="List" class="btn-modern" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); text-decoration: none;">
+        <div class="header-actions">
+            <a asp-controller="Trip" asp-action="List" class="btn-modern btn-header-action">
                 📤 Chuyến Xe Đi
             </a>
-            <a asp-controller="Trip" asp-action="ArrivalList" class="btn-modern" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); text-decoration: none;">
+            <a asp-controller="Trip" asp-action="ArrivalList" class="btn-modern btn-header-action">
                 📥 Chuyến Xe Đến
             </a>
         </div>
@@ -61,10 +37,10 @@
     }
     @if (TempData["ErrorMessage"] != null)
     {
-        <div class="alert alert-danger" style="border-radius:12px; margin-bottom:15px; padding: 15px;">❌ @TempData["ErrorMessage"]</div>
+        <div class="alert alert-danger alert-danger-custom">❌ @TempData["ErrorMessage"]</div>
     }
 
-    <div class="modern-card sticky-filter-bar" style="top: 155px; border-radius: 15px !important; border: 2px solid #1a73e8;">
+    <div class="modern-card sticky-filter-bar">
         
         <div class="status-tab-group">
             <button class="btn-status-tab @(ViewBag.CurrentStatus == "all" ? "active" : "")" onclick="changeStatus('all')">
@@ -78,8 +54,8 @@
             </button>
         </div>
 
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-            <select id="filterSendStation" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+        <div class="filter-controls-group">
+            <select id="filterSendStation" class="filter-input">
                 <option value="">-- Từ Trạm (Gửi) --</option>
                 @if (stationList != null)
                 {
@@ -90,7 +66,7 @@
                 }
             </select>
 
-            <select id="filterReceiveStation" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+            <select id="filterReceiveStation" class="filter-input">
                 <option value="">-- Đến Trạm (Nhận) --</option>
                 @if (stationList != null)
                 {
@@ -101,36 +77,35 @@
                 }
             </select>
 
-            <input type="date" id="filterDate" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+            <input type="date" id="filterDate" class="filter-input">
             
-            <div style="position: relative;">
+            <div class="search-input-wrapper">
                 <input type="text" id="filterSearchPhone" placeholder="Tìm SĐT hoặc Mã đơn..." 
-                       value="@ViewBag.SearchPhone" style="width: 200px; padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd;">
+                       value="@ViewBag.SearchPhone" class="search-input">
             </div>
 
-            <a asp-action="Create" class="btn-modern btn-success-modern" style="text-decoration:none;">➕ Nhập Hàng</a>
-            <a asp-action="Trash" class="btn-modern btn-secondary-modern" style="text-decoration:none;">🗑 Thùng rác</a>
+            <a asp-action="Create" class="btn-modern btn-success-modern btn-link-modern">➕ Nhập Hàng</a>
+            <a asp-action="Trash" class="btn-modern btn-secondary-modern btn-link-modern">🗑 Thùng rác</a>
             <button onclick="resetFilters()" class="btn-modern btn-secondary-modern">🔄 Làm mới</button>
         </div>
     </div>
 
-    <div class="modern-card" style="padding: 0; overflow-x: auto;">
+    <div class="modern-card table-wrapper">
         <table class="modern-table" id="orderTable">
             <thead>
                 <tr>
                     <th>Mã Đơn</th>
                     <th class="col-item-name">Tên Hàng</th>
-                    <th class="col-station">Trạm Gửi</th>
-                    <th class="col-station">Trạm Nhận</th>
+                    <th class="col-route">Lộ trình</th>
                     <th class="col-customer">Người Gửi</th>
                     <th class="col-customer">Người Nhận</th>
                     <th>NV Nhập</th>
-                    <th>Phí TR</th>
-                    <th>Phí CT</th>
+                    <th>TR</th>
+                    <th>CT</th>
                     <th>Ghi chú</th>
-                    <th>Thời Gian Tạo</th>
+                    <th>Giờ Tạo</th>
                     <th>Trạng thái</th>
-                    <th>Thao tác</th>
+                    <th class="col-act">Thao tác</th>
                 </tr>
             </thead>
             <tbody id="orderTableBody">
@@ -138,26 +113,55 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-container" style="margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 10px;">
+        @if (ViewBag.TotalPages > 1)
+        {
+            var currentPage = (int)ViewBag.CurrentPage;
+            var totalPages = (int)ViewBag.TotalPages;
+
+            <button class="btn-modern btn-secondary-modern" onclick="changePage(@(currentPage - 1))" @(currentPage == 1 ? "disabled" : "")>
+                « Trang trước
+            </button>
+            
+            <div style="font-weight: bold; color: #1a73e8;">
+                Trang @currentPage / @totalPages
+            </div>
+
+            <button class="btn-modern btn-secondary-modern" onclick="changePage(@(currentPage + 1))" @(currentPage == totalPages ? "disabled" : "")>
+                Trang sau »
+            </button>
+        }
+    </div>
 </div>
 
 @section Scripts {
     <script>
         let searchTimeout;
         let currentStatus = '@(ViewBag.CurrentStatus ?? "all")';
+        let currentPage = @(ViewBag.CurrentPage ?? 1);
 
-        document.getElementById('filterSendStation').addEventListener('change', triggerSearch);
-        document.getElementById('filterReceiveStation').addEventListener('change', triggerSearch);
-        document.getElementById('filterDate').addEventListener('change', triggerSearch);
+        document.getElementById('filterSendStation').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
+        document.getElementById('filterReceiveStation').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
+        document.getElementById('filterDate').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
         document.getElementById('filterSearchPhone').addEventListener('input', function() {
             clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(triggerSearch, 300);
+            searchTimeout = setTimeout(() => { currentPage = 1; triggerSearch(); }, 300);
         });
 
         function changeStatus(status) {
             currentStatus = status;
+            currentPage = 1;
             document.querySelectorAll('.btn-status-tab').forEach(btn => btn.classList.remove('active'));
             event.currentTarget.classList.add('active');
             triggerSearch();
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            triggerSearch();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function triggerSearch() {
@@ -170,31 +174,18 @@
             const tableContainer = document.getElementById('orderTable');
             tableContainer.classList.add('loading-overlay');
 
-            const url = `@Url.Action("List", "Order")?sendStationFilter=${encodeURIComponent(sendStation)}&receiveStationFilter=${encodeURIComponent(receiveStation)}&searchPhone=${encodeURIComponent(phone)}&dateFilter=${encodeURIComponent(date)}&statusFilter=${currentStatus}`;
+            const url = `@Url.Action("List", "Order")?sendStationFilter=${encodeURIComponent(sendStation)}&receiveStationFilter=${encodeURIComponent(receiveStation)}&searchPhone=${encodeURIComponent(phone)}&dateFilter=${encodeURIComponent(date)}&statusFilter=${currentStatus}&page=${currentPage}`;
 
-            fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(response => response.text())
-            .then(html => {
-                tableBody.innerHTML = html;
-                tableContainer.classList.remove('loading-overlay');
-                const rowCount = tableBody.querySelectorAll('tr:not(:has(.no-data-msg))').length;
-                document.getElementById('orderCount').innerText = `Tổng: ${rowCount} đơn`;
-            })
-            .catch(err => {
-                console.error('Error:', err);
-                tableContainer.classList.remove('loading-overlay');
-            });
+            // Đối với AJAX Pagination, chúng ta cần cập nhật cả phần nội dung bảng và (nếu cần) UI phân trang.
+            // Tuy nhiên để đơn giản, chúng ta sẽ reload trang hoặc chỉ cập nhật bảng nếu dùng AJAX hoàn toàn.
+            // Ở đây, để đảm bảo UI phân trang khớp với dữ liệu, cách tốt nhất là reload trang hoặc trả về cả cụm HTML.
+            
+            // Tạm thời reload trang để UI phân trang cập nhật chính xác theo ViewBag mới từ server
+            window.location.href = url;
         }
 
         function resetFilters() {
-            document.getElementById('filterSendStation').value = '';
-            document.getElementById('filterReceiveStation').value = '';
-            document.getElementById('filterDate').value = '';
-            document.getElementById('filterSearchPhone').value = '';
-            currentStatus = 'all';
-            document.querySelectorAll('.btn-status-tab').forEach(btn => btn.classList.remove('active'));
-            document.querySelector('.btn-status-tab:first-child').classList.add('active');
-            triggerSearch();
+            window.location.href = `@Url.Action("List", "Order")`;
         }
     </script>
 }

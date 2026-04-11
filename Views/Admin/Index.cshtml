@@ -1,254 +1,410 @@
 @model IEnumerable<Delivery_System.Models.TblUser>
 
 @{
-    ViewData["Title"] = "Quản Lý Admin";
+    ViewData["Title"] = "Hệ Thống Quản Trị";
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/admin.css" />
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --bg-body: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --radius: 16px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        body { background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', 'Segoe UI', sans-serif; }
+
+        .admin-wrapper { max-width: 1300px; margin: 0 auto; padding: 20px; }
+
+        /* --- DASHBOARD HEADER --- */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+        .page-header h1 { font-size: 1.75rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.5px; }
+        .page-header p { color: var(--text-muted); margin: 5px 0 0 0; font-size: 0.95rem; }
+
+        /* --- KPI CARDS --- */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .kpi-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.8);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .kpi-card:hover { transform: translateY(-5px); }
+        .kpi-card .label { font-size: 0.875rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .kpi-card .value { font-size: 2.25rem; font-weight: 800; margin: 10px 0; display: block; color: #0f172a; }
+        .kpi-card.blue { color: var(--info); border-left: 5px solid var(--info); }
+        .kpi-card.green { color: var(--success); border-left: 5px solid var(--success); }
+        .kpi-card.orange { color: var(--warning); border-left: 5px solid var(--warning); }
+        .kpi-card.chart { grid-column: span 2; display: flex; align-items: center; padding: 15px; }
+
+        /* --- MAIN CONTAINER --- */
+        .content-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .section-title h2 { font-size: 1.25rem; font-weight: 700; color: #1e293b; margin: 0; }
+
+        /* --- TABLE STYLE --- */
+        .table-responsive { overflow-x: auto; border-radius: 12px; border: 1px solid #e2e8f0; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th { background: #f8fafc; padding: 16px; text-align: left; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #64748b; border-bottom: 1px solid #e2e8f0; }
+        td { padding: 16px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; vertical-align: middle; }
+        tr:hover { background: #f8fafc; }
+        tr:last-child td { border-bottom: none; }
+
+        /* --- STATUS BADGES --- */
+        .badge { padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 5px; }
+        .badge-active { background: #dcfce7; color: #15803d; }
+        .badge-locked { background: #fee2e2; color: #b91c1c; }
+        .badge-admin { background: #e0e7ff; color: #4338ca; }
+        .badge-user { background: #f1f5f9; color: #475569; }
+
+        /* --- MODERN BUTTONS --- */
+        .btn-m {
+            padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: 0.85rem;
+            cursor: pointer; transition: all 0.2s; border: none; display: inline-flex; align-items: center; gap: 8px;
+            text-decoration: none; justify-content: center;
+        }
+        .btn-m:active { transform: scale(0.98); }
+        
+        .btn-add { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+        .btn-add:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+        .action-group { display: flex; gap: 8px; }
+        .btn-s { padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-s-blue { background: #eff6ff; color: #2563eb; }
+        .btn-s-blue:hover { background: #2563eb; color: #fff; }
+        .btn-s-cyan { background: #ecfeff; color: #0891b2; }
+        .btn-s-cyan:hover { background: #0891b2; color: #fff; }
+        .btn-s-orange { background: #fff7ed; color: #ea580c; }
+        .btn-s-orange:hover { background: #ea580c; color: #fff; }
+        .btn-s-green { background: #f0fdf4; color: #16a34a; }
+        .btn-s-green:hover { background: #16a34a; color: #fff; }
+        .btn-s-red { background: #fef2f2; color: #dc2626; }
+        .btn-s-red:hover { background: #dc2626; color: #fff; }
+
+        /* --- SEARCH BAR --- */
+        .search-container { margin-bottom: 20px; position: relative; max-width: 400px; }
+        .search-container input {
+            width: 100%; padding: 12px 16px 12px 45px; border-radius: 12px; border: 1px solid #e2e8f0;
+            background: #f8fafc; transition: all 0.3s; font-size: 0.95rem;
+        }
+        .search-container input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); outline: none; }
+        .search-container i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+
+        /* --- MODALS --- */
+        .modal {
+            display: none; position: fixed; z-index: 9999; left: 0; top: 0;
+            width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px); align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: #fff; padding: 40px; border-radius: 24px; width: 90%; max-width: 500px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: modalIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @@keyframes modalIn { 
+            from { opacity: 0; transform: translateY(20px) scale(0.95); } 
+            to { opacity: 1; transform: translateY(0) scale(1); } 
+        }
+        
+        .modal-header { margin-bottom: 25px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; }
+        .modal-header h3 { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 0; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 700; color: #475569; margin-bottom: 8px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-group input { 
+            width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #e2e8f0;
+            font-size: 1rem; transition: all 0.2s; box-sizing: border-box; background: #f8fafc;
+        }
+        .form-group input:focus { border-color: var(--primary); outline: none; background: #fff; }
+
+        .modal-footer { display: flex; gap: 12px; margin-top: 30px; }
+        .btn-cancel { background: #f1f5f9; color: #475569; padding: 12px 24px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; flex: 1; transition: 0.2s; }
+        .btn-cancel:hover { background: #e2e8f0; }
+
+        /* --- ALERTS --- */
+        .alert-box { padding: 16px 20px; border-radius: 12px; margin-bottom: 25px; font-weight: 600; display: flex; align-items: center; gap: 12px; }
+        .alert-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+        .alert-error { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+
+        /* --- DETAILS POPUP --- */
+        .details-list { display: flex; flex-direction: column; gap: 12px; }
+        .details-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .details-row:last-child { border-bottom: none; }
+        .det-label { font-weight: 700; color: #64748b; font-size: 0.9rem; }
+        .det-value { font-weight: 600; color: #1e293b; text-align: right; }
+        .det-highlight { color: var(--primary); font-weight: 800; }
+    </style>
 }
 
-<!-- --- ADMIN DASHBOARD --- -->
-<div class="admin-container" style="margin-bottom: 20px; background: #fdfdfd;">
-    <div class="admin-header">
-        <h2>BẢNG ĐIỀU KHIỂN HỆ THỐNG</h2>
+<div class="admin-wrapper">
+    <!-- --- MODERN PAGE HEADER --- -->
+    <div class="modern-page-header">
+        <div>
+            <h3>🛡️ Quản Lý Hệ Thống</h3>
+            <div class="modern-page-header-meta">Chào mừng quản trị viên, đây là tình trạng vận hành hôm nay.</div>
+        </div>
+        
+        <div class="header-actions" style="display: flex; gap: 10px;">
+            <button class="btn-modern btn-add" onclick="showAddModal()" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 10px 20px;">
+                ➕ Thêm Nhân Viên Mới
+            </button>
+        </div>
     </div>
-    <div class="kpi-row">
-        <div class="kpi-mini blue" style="background: #e7f3ff; border: 1px solid #b3d7ff;">
-            <div class="v" style="color: #007bff;">
-                @string.Format("{0:N0}", ViewBag.RevenueToday) K
+
+    <!-- --- KPI SECTION --- -->
+    <section class="kpi-grid">
+        <div class="kpi-card blue">
+            <span class="label">Doanh thu hôm nay</span>
+            <span class="value">@string.Format("{0:N0}", ViewBag.RevenueToday) K</span>
+            <span style="font-size: 0.8rem; opacity: 0.8;">VND (Chỉ đơn đã chuyển)</span>
+        </div>
+        <div class="kpi-card green">
+            <span class="label">Nhân viên trực ca</span>
+            <span class="value">@ViewBag.ActiveStaffCount</span>
+            <span style="font-size: 0.8rem; opacity: 0.8;">Ca làm đang hoạt động</span>
+        </div>
+        <div class="kpi-card chart">
+            <canvas id="revenueChart" style="max-height: 100px; width: 100%;"></canvas>
+        </div>
+    </section>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert-box alert-error">⚠️ @TempData["ErrorMessage"]</div>
+    }
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert-box alert-success">✅ @TempData["SuccessMessage"]</div>
+    }
+
+    <!-- --- STAFF MANAGEMENT --- -->
+    <main class="content-card">
+        <div class="section-title">
+            <h2>Danh Sách Đội Ngũ Nhân Viên</h2>
+            <div style="display: flex; gap: 15px;">
+                <span class="badge badge-user">Tổng: @Model.Count()</span>
+                <span class="badge badge-active">Mở: @Model.Count(u => u.Status == true)</span>
+                <span class="badge badge-locked">Khóa: @Model.Count(u => u.Status != true)</span>
             </div>
-            <div class="l">Doanh thu hôm nay</div>
         </div>
-        <div class="kpi-mini green" style="background: #e6fffa; border: 1px solid #b2f5ea;">
-            <div class="v" style="color: #38b2ac;">@ViewBag.ActiveStaffCount</div>
-            <div class="l">Nhân viên đang trong ca làm</div>
-        </div>
-        <div class="kpi-mini" style="flex: 2; background: white; padding: 10px;">
-            <canvas id="revenueChart" style="max-height: 120px; width: 100%;"></canvas>
-        </div>
-    </div>
-</div>
 
-@if (TempData["ErrorMessage"] != null)
-{
-    <div style="background:#f8d7da;color:#721c24;padding:10px 20px;text-align:center;font-weight:bold;margin-bottom:10px; border-radius: 8px;">
-        ❌ @TempData["ErrorMessage"]
-    </div>
-}
-@if (TempData["SuccessMessage"] != null)
-{
-    <div style="background:#d4edda;color:#155724;padding:10px 20px;text-align:center;font-weight:bold;margin-bottom:10px; border-radius: 8px;">
-        ✅ @TempData["SuccessMessage"]
-    </div>
-}
-
-<div class="admin-container">
-    <div class="admin-header">
-        <h2>QUẢN LÝ NHÂN VIÊN</h2>
-        <button class="btn-cyan" onclick="showAddModal()">+ Thêm Nhân Viên Mới</button>
-    </div>
-
-    <div class="kpi-row">
-        <div class="kpi-mini">
-            <div class="v">@Model.Count()</div>
-            <div class="l">Tổng nhân viên</div>
+        <div class="search-container">
+            <i>🔍</i>
+            <input type="text" id="staffSearch" placeholder="Tìm kiếm tên hoặc số điện thoại..." oninput="filterStaff(this.value)">
         </div>
-        <div class="kpi-mini green">
-            <div class="v">@Model.Count(u => u.Status == true)</div>
-            <div class="l">Đang hoạt động</div>
-        </div>
-        <div class="kpi-mini red">
-            <div class="v">@Model.Count(u => u.Status != true)</div>
-            <div class="l">Tạm khóa</div>
-        </div>
-    </div>
 
-    <div class="search-bar">
-        <input type="text" id="staffSearch" placeholder="🔍 Tìm theo tên hoặc SĐT..." oninput="filterStaff(this.value)">
-        <button class="btn-search">Tìm kiếm</button>
-        <span class="result-count" id="resultCount"></span>
-    </div>
-
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Mã NV</th>
-                    <th>Họ Tên</th>
-                    <th>SĐT</th>
-                    <th>Quyền</th>
-                    <th>Tài Khoản</th>
-                    <th>Thao Tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                @{ int count = 1; }
-                @foreach (var user in Model)
-                {
-                    <tr class="staff-row" data-name="@user.FullName.ToLower()" data-phone="@user.Phone">
-                        <td>@(count++)</td>
-                        <td><strong>@user.UserId</strong></td>
-                        <td>@user.FullName</td>
-                        <td>@(string.IsNullOrEmpty(user.Phone) ? "-" : user.Phone)</td>
-                        <td>
-                            <span class="badge-@(user.RoleId == "AD" ? "admin" : "user")">
-                                @(user.RoleId == "AD" ? "Admin" : "Nhân Viên")
-                            </span>
-                        </td>
-                        <td>
-                            <span class="@(user.Status == true ? "status-active" : "status-inactive")">
-                                @(user.Status == true ? "✅ Mở" : "⛔ Khóa")
-                            </span>
-                        </td>
-                        <td>
-                            <div style="display: flex; gap: 5px; justify-content: center;">
-                                <form asp-action="ToggleUser" method="POST" style="display:inline;">
-                                    <input type="hidden" name="userID" value="@user.UserId">
-                                    <input type="submit" value="@(user.Status == true ? "Khóa" : "Mở")" 
-                                           class="btn-action @(user.Status == true ? "btn-orange" : "btn-green")" style="width: 60px;">
-                                </form>
-                                <button class="btn-action btn-blue" onclick="showChangePassModal('@user.UserId', '@user.FullName')" style="width: 70px;">Đổi MK</button>
-                                
-                                @if (user.UserId != "admin")
-                                {
-                                    <button type="button" class="btn-action" style="background:#fce8e6; color:#d93025; border:none; border-radius:4px; cursor:pointer;" 
-                                            onclick="confirmDeleteUser('@user.UserId')">🗑️ Xóa</button>
-                                    <form id="deleteUserForm-@user.UserId" asp-action="DeleteUser" method="POST" style="display:none;">
-                                        <input type="hidden" name="userID" value="@user.UserId" />
-                                    </form>
-                                }
-                            </div>
-                        </td>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã NV</th>
+                        <th>Họ Tên Nhân Viên</th>
+                        <th>SĐT</th>
+                        <th>Quyền Hạn</th>
+                        <th>Trạng Thái</th>
+                        <th style="text-align: center;">Thao Tác</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr class="staff-row" data-name="@user.FullName.ToLower()" data-phone="@user.Phone">
+                            <td><strong style="color: var(--primary);">@user.UserId</strong></td>
+                            <td>
+                                <div style="font-weight: 700;">@user.FullName</div>
+                                @* <div style="font-size: 0.75rem; color: #94a3b8;">@user.Username</div> *@
+                            </td>
+                            <td>@(string.IsNullOrEmpty(user.Phone) ? "—" : user.Phone)</td>
+                            <td>
+                                <span class="badge @(user.RoleId == "AD" ? "badge-admin" : "badge-user")">
+                                    @(user.RoleId == "AD" ? "🛡️ Admin" : "👤 Nhân Viên")
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge @(user.Status == true ? "badge-active" : "badge-locked")">
+                                    @(user.Status == true ? "● Hoạt động" : "● Đã khóa")
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn-s btn-s-blue" onclick="showChangePassModal('@user.UserId', '@user.FullName')">Đổi MK</button>
+                                    
+                                    <button class="btn-s btn-s-cyan" 
+                                            onclick="showDetailsModal('@user.UserId', '@user.Username', '@user.FullName', '@(user.RoleId == "AD" ? "Admin" : "Nhân Viên")', '@user.Phone', '@user.Email', '@user.Status', '@user.CreatedAt?.ToString("dd/MM/yyyy HH:mm")')">Chi tiết</button>
+
+                                    @if (user.UserId != "admin")
+                                    {
+                                        <form asp-action="ToggleUser" method="POST" style="display:inline;">
+                                            <input type="hidden" name="userID" value="@user.UserId">
+                                            <button type="submit" class="btn-s @(user.Status == true ? "btn-s-orange" : "btn-s-green")">
+                                                @(user.Status == true ? "Khóa" : "Mở")
+                                            </button>
+                                        </form>
+
+                                        <button type="button" class="btn-s btn-s-red" onclick="confirmDeleteUser('@user.UserId')">Xóa</button>
+                                        <form id="deleteUserForm-@user.UserId" asp-action="DeleteUser" method="POST" style="display:none;">
+                                            <input type="hidden" name="userID" value="@user.UserId" />
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </main>
 </div>
 
-<!-- MODAL: THÊM NHÂN VIÊN -->
+<!-- --- MODALS --- -->
+
 <div id="addModal" class="modal">
     <div class="modal-content">
-        <h3>➕ THÊM NHÂN VIÊN MỚI</h3>
+        <div class="modal-header"><h3>➕ Thêm Nhân Viên Mới</h3></div>
         <form asp-action="SaveUser" method="POST" onsubmit="return validateAddForm()">
-            <div class="group">
-                <label>Mã Tài Khoản <span style="color:red">*</span></label>
-                <input type="text" name="newUserID" id="newUserID" class="inp" required placeholder="VD: NV05">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group"><label>Mã Nhân Viên</label><input type="text" name="newUserID" id="newUserID" required></div>
+                <div class="form-group"><label>Tên Đăng Nhập</label><input type="text" name="newUsername" id="newUsername" required></div>
             </div>
-            <div class="group">
-                <label>Họ Tên <span style="color:red">*</span></label>
-                <input type="text" name="newFullName" class="inp" required placeholder="Nguyễn Văn A">
+            
+            <div class="form-group"><label>Họ Và Tên</label><input type="text" name="newFullName" required></div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group"><label>Mật Khẩu</label><input type="password" name="newPassword" id="newPassword" required></div>
+                <div class="form-group"><label>Xác Nhận MK</label><input type="password" id="newConfirmPassword" required></div>
             </div>
-            <div class="group">
-                <label>Mật Khẩu <span style="color:red">*</span></label>
-                <input type="password" name="newPassword" id="newPassword" class="inp" required placeholder="Nhập mật khẩu">
+            <small id="addPassErr" style="color:var(--danger);display:none;font-weight:700;margin-top:-10px;margin-bottom:10px;">Mật khẩu không khớp!</small>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group"><label>Số Điện Thoại</label><input type="tel" name="newPhone" required></div>
+                <div class="form-group"><label>Email</label><input type="email" name="newEmail" required></div>
             </div>
-            <div class="group">
-                <label>Xác Nhận Mật Khẩu <span style="color:red">*</span></label>
-                <input type="password" id="newConfirmPassword" class="inp" required placeholder="Nhập lại mật khẩu">
-                <small id="addPassErr" style="color:red;display:none;">Mật khẩu không khớp!</small>
-            </div>
-            <div class="group">
-                <label>Số Điện Thoại</label>
-                <input type="tel" name="newPhone" class="inp" placeholder="0901234567">
-            </div>
-            <div class="group">
-                <label>Email</label>
-                <input type="email" name="newEmail" class="inp" placeholder="abc@company.vn">
-            </div>
+
             <div class="modal-footer">
-                <input type="submit" value="💾 Lưu Nhân Viên" class="btn-cyan">
-                <button type="button" onclick="hideAddModal()" class="btn-back">Hủy</button>
+                <button type="submit" class="btn-m btn-add" style="flex:2">Lưu Nhân Viên</button>
+                <button type="button" onclick="hideAddModal()" class="btn-cancel">Hủy</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- MODAL: ĐỔI MẬT KHẨU -->
 <div id="changePassModal" class="modal">
     <div class="modal-content">
-        <h3>🔑 ĐỔI MẬT KHẨU</h3>
-        <p id="cpUserLabel" style="color:#555;margin-bottom:15px;"></p>
+        <div class="modal-header"><h3>🔑 Đổi Mật Khẩu</h3></div>
+        <p id="cpUserLabel"></p>
         <form asp-action="ChangePassword" method="POST" onsubmit="return validateChangePassForm()">
             <input type="hidden" name="cpUserID" id="cpUserID">
-            <div class="group">
-                <label>Mật Khẩu Mới <span style="color:red">*</span></label>
-                <input type="password" name="cpNewPassword" id="cpNewPassword" class="inp" required placeholder="Nhập mật khẩu mới">
-            </div>
-            <div class="group">
-                <label>Xác Nhận Mật Khẩu Mới <span style="color:red">*</span></label>
-                <input type="password" id="cpConfirmPassword" class="inp" required placeholder="Nhập lại mật khẩu mới">
-                <small id="cpPassErr" style="color:red;display:none;">Mật khẩu không khớp!</small>
-            </div>
+            <div class="form-group"><label>Mật Khẩu Mới</label><input type="password" name="cpNewPassword" id="cpNewPassword" required></div>
+            <div class="form-group"><label>Xác Nhận MK</label><input type="password" id="cpConfirmPassword" required>
+            <small id="cpPassErr" style="color:var(--danger);display:none;font-weight:700;">MK không khớp!</small></div>
             <div class="modal-footer">
-                <input type="submit" value="✅ Xác Nhận Đổi" class="btn-cyan">
-                <button type="button" onclick="hideChangePassModal()" class="btn-back">Hủy</button>
+                <button type="submit" class="btn-m btn-add" style="flex:2">Cập Nhật</button>
+                <button type="button" onclick="hideChangePassModal()" class="btn-cancel">Hủy</button>
             </div>
         </form>
+    </div>
+</div>
+
+<div id="detailsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3>👤 Hồ Sơ Nhân Viên</h3></div>
+        <div class="details-list">
+            <div class="details-row"><span class="det-label">Mã nhân viên:</span><span class="det-value det-highlight" id="detUserId"></span></div>
+            <div class="details-row"><span class="det-label">Tài khoản:</span><span class="det-value" id="detUsername"></span></div>
+            <div class="details-row"><span class="det-label">Họ và tên:</span><span class="det-value" id="detFullName"></span></div>
+            <div class="details-row"><span class="det-label">Quyền hạn:</span><span class="det-value" id="detRole"></span></div>
+            <div class="details-row"><span class="det-label">Điện thoại:</span><span class="det-value" id="detPhone"></span></div>
+            <div class="details-row"><span class="det-label">Email:</span><span class="det-value" id="detEmail"></span></div>
+            <div class="details-row"><span class="det-label">Trạng thái:</span><span class="det-value" id="detStatus"></span></div>
+            <div class="details-row"><span class="det-label">Ngày tạo:</span><span class="det-value" id="detCreatedAt"></span></div>
+        </div>
+        <div class="modal-footer"><button type="button" onclick="hideDetailsModal()" class="btn-m btn-add" style="width:100%">Đóng</button></div>
     </div>
 </div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(ViewBag.ChartLabels)),
+                datasets: [{
+                    data: @Html.Raw(Json.Serialize(ViewBag.ChartData)),
+                    borderColor: '#4f46e5', backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                    borderWidth: 3, fill: true, tension: 0.4, pointRadius: 0
+                }]
+            },
+            options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
+        });
+
         function confirmDeleteUser(id) {
             Swal.fire({
-                title: 'Xóa nhân viên?',
-                text: "Tài khoản " + id + " sẽ bị xóa khỏi hệ thống!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Xác nhận xóa',
-                cancelButtonText: 'Hủy'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('deleteUserForm-' + id).submit();
-                }
-            })
+                title: 'Xóa nhân viên?', text: "Hành động này không thể hoàn tác!", icon: 'warning',
+                showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Xóa ngay', cancelButtonText: 'Hủy'
+            }).then((result) => { if (result.isConfirmed) document.getElementById('deleteUserForm-' + id).submit(); });
         }
 
         function showAddModal() { document.getElementById('addModal').style.display = 'flex'; }
         function hideAddModal() { document.getElementById('addModal').style.display = 'none'; }
-        
-        function showChangePassModal(userID, fullName) {
-            document.getElementById('cpUserID').value = userID;
-            document.getElementById('cpUserLabel').textContent = 'Nhân viên: ' + fullName + ' (' + userID + ')';
-            document.getElementById('changePassModal').style.display = 'flex';
-        }
+        function showChangePassModal(id, name) { document.getElementById('cpUserID').value = id; document.getElementById('cpUserLabel').textContent = name; document.getElementById('changePassModal').style.display = 'flex'; }
         function hideChangePassModal() { document.getElementById('changePassModal').style.display = 'none'; }
+        function showDetailsModal(id, user, name, role, phone, email, status, created) {
+            document.getElementById('detUserId').textContent = id; document.getElementById('detUsername').textContent = user;
+            document.getElementById('detFullName').textContent = name; document.getElementById('detRole').textContent = role;
+            document.getElementById('detPhone').textContent = phone || '—'; document.getElementById('detEmail').textContent = email || '—';
+            document.getElementById('detStatus').innerHTML = (status.toLowerCase() === 'true') ? '<span style="color:#10b981">● Hoạt động</span>' : '<span style="color:#ef4444">● Đã khóa</span>';
+            document.getElementById('detCreatedAt').textContent = created; document.getElementById('detailsModal').style.display = 'flex';
+        }
+        function hideDetailsModal() { document.getElementById('detailsModal').style.display = 'none'; }
 
         function validateAddForm() {
-            const p1 = document.getElementById('newPassword').value;
-            const p2 = document.getElementById('newConfirmPassword').value;
-            if (p1 !== p2) { document.getElementById('addPassErr').style.display = 'block'; return false; }
-            return true;
+            const p1 = document.getElementById('newPassword').value; const p2 = document.getElementById('newConfirmPassword').value;
+            if (p1 !== p2) { document.getElementById('addPassErr').style.display = 'block'; return false; } return true;
         }
-
         function validateChangePassForm() {
-            const p1 = document.getElementById('cpNewPassword').value;
-            const p2 = document.getElementById('cpConfirmPassword').value;
-            if (p1 !== p2) { document.getElementById('cpPassErr').style.display = 'block'; return false; }
-            return true;
+            const p1 = document.getElementById('cpNewPassword').value; const p2 = document.getElementById('cpConfirmPassword').value;
+            if (p1 !== p2) { document.getElementById('cpPassErr').style.display = 'block'; return false; } return true;
         }
-
-        function filterStaff(keyword) {
-            const kw = keyword.toLowerCase();
-            const rows = document.querySelectorAll('.staff-row');
-            rows.forEach(row => {
-                const name = row.getAttribute('data-name');
-                const phone = row.getAttribute('data-phone');
-                row.style.display = (name.includes(kw) || phone.includes(kw)) ? '' : 'none';
+        function filterStaff(kw) {
+            const k = kw.toLowerCase(); document.querySelectorAll('.staff-row').forEach(r => {
+                const n = r.getAttribute('data-name'); const p = r.getAttribute('data-phone');
+                r.style.display = (n.includes(k) || p.includes(k)) ? '' : 'none';
             });
         }
-
-        window.onclick = function (e) {
-            if (e.target.className === 'modal') {
-                hideAddModal();
-                hideChangePassModal();
-            }
-        };
+        window.onclick = (e) => { if (e.target.className === 'modal') { hideAddModal(); hideChangePassModal(); hideDetailsModal(); } };
     </script>
 }

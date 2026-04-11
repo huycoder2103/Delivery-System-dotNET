@@ -377,6 +377,11 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(15)
                 .HasColumnName("phone");
+
+            entity.Property(e => e.Username)
+                .HasMaxLength(50)
+                .HasColumnName("username");
+
             entity.Property(e => e.RoleId)
                 .HasMaxLength(5)
                 .HasDefaultValueSql("'US'")

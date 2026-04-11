@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Delivery_System.Models;
 
 namespace Delivery_System.Controllers
@@ -7,152 +8,149 @@ namespace Delivery_System.Controllers
     public class TripController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IMemoryCache _cache;
 
-        public TripController(AppDbContext context)
+        public TripController(AppDbContext context, IMemoryCache cache)
         {
             _context = context;
+            _cache = cache;
         }
 
-        // 1. Chuyến xe đi
+        private async Task<List<TblStation>> GetCachedStationsAsync()
+        {
+            const string stationCacheKey = "StationList";
+            if (!_cache.TryGetValue(stationCacheKey, out List<TblStation>? stations))
+            {
+                stations = await _context.TblStations.AsNoTracking().Where(s => s.IsActive == true).ToListAsync();
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(30));
+                _cache.Set(stationCacheKey, stations, cacheOptions);
+            }
+            return stations ?? new List<TblStation>();
+        }
+
+        private async Task<List<TblTruck>> GetCachedTrucksAsync()
+        {
+            const string truckCacheKey = "TruckList";
+            if (!_cache.TryGetValue(truckCacheKey, out List<TblTruck>? trucks))
+            {
+                trucks = await _context.TblTrucks.AsNoTracking().ToListAsync();
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(30));
+                _cache.Set(truckCacheKey, trucks, cacheOptions);
+            }
+            return trucks ?? new List<TblTruck>();
+        }
+
         [HttpGet]
-        public async Task<IActionResult> List(string departureFilter, string destinationFilter, string searchTruck)
+        public async Task<IActionResult> List(string? departureFilter, string? destinationFilter, string? searchTruck, int page = 1)
         {
             var userId = HttpContext.Session.GetString("UserID");
             if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
+            const int pageSize = 20; if (page < 1) page = 1;
 
-            ViewBag.StationList = await _context.TblStations.Where(s => s.IsActive == true).ToListAsync();
-            var query = _context.VwTripLists.AsQueryable(); // Lấy tất cả chuyến xe
-
+            ViewBag.StationList = await GetCachedStationsAsync();
+            var query = _context.VwTripLists.AsNoTracking();
             if (!string.IsNullOrEmpty(departureFilter)) query = query.Where(t => t.Departure == departureFilter);
             if (!string.IsNullOrEmpty(destinationFilter)) query = query.Where(t => t.Destination == destinationFilter);
-            if (!string.IsNullOrEmpty(searchTruck)) query = query.Where(t => t.LicensePlate.Contains(searchTruck));
+            if (!string.IsNullOrEmpty(searchTruck)) query = query.Where(t => t.LicensePlate != null && t.LicensePlate.Contains(searchTruck));
 
-            var list = await query.OrderByDescending(t => t.CreatedAt).ToListAsync();
+            int totalRecords = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+            var list = await query.OrderByDescending(t => t.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             
-            // Tính số lượng đơn hàng cho mỗi chuyến xe trong danh sách
             var tripIds = list.Select(t => t.TripId).ToList();
-            var orderCounts = await _context.TblOrders
-                .Where(o => tripIds.Contains(o.TripId ?? ""))
-                .GroupBy(o => o.TripId)
-                .Select(g => new { TripId = g.Key, Count = g.Count() })
-                .ToDictionaryAsync(x => x.TripId, x => x.Count);
+            var orderCounts = await _context.TblOrders.AsNoTracking().Where(o => tripIds.Contains(o.TripId ?? "")).GroupBy(o => o.TripId)
+                .Select(g => new { TripId = g.Key, Count = g.Count() }).ToDictionaryAsync(x => x.TripId!, x => x.Count);
             
-            ViewBag.OrderCounts = orderCounts;
-            ViewBag.SearchTruck = searchTruck;
-            ViewBag.IsArrivalPage = false;
+            ViewBag.OrderCounts = orderCounts; ViewBag.SearchTruck = searchTruck; ViewBag.IsArrivalPage = false;
+            ViewBag.CurrentPage = page; ViewBag.TotalPages = totalPages; ViewBag.DepartureFilter = departureFilter; ViewBag.DestinationFilter = destinationFilter;
 
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return PartialView("_TripTableBody", list);
-            }
-
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest") return PartialView("_TripTableBody", list);
             return View(list);
         }
 
-        // 2. Chuyến xe đến
         [HttpGet]
-        public async Task<IActionResult> ArrivalList(string departureFilter, string destinationFilter, string searchTruck)
+        public async Task<IActionResult> ArrivalList(string? departureFilter, string? destinationFilter, string? searchTruck, int page = 1)
         {
             var userId = HttpContext.Session.GetString("UserID");
             if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
+            const int pageSize = 20; if (page < 1) page = 1;
 
-            ViewBag.StationList = await _context.TblStations.Where(s => s.IsActive == true).ToListAsync();
-            var query = _context.VwTripLists.AsQueryable(); // Đổ dữ liệu giống hệt trang Chuyến xe đi
-
+            ViewBag.StationList = await GetCachedStationsAsync();
+            var query = _context.VwTripLists.AsNoTracking();
             if (!string.IsNullOrEmpty(departureFilter)) query = query.Where(t => t.Departure == departureFilter);
             if (!string.IsNullOrEmpty(destinationFilter)) query = query.Where(t => t.Destination == destinationFilter);
-            if (!string.IsNullOrEmpty(searchTruck)) query = query.Where(t => t.LicensePlate.Contains(searchTruck));
+            if (!string.IsNullOrEmpty(searchTruck)) query = query.Where(t => t.LicensePlate != null && t.LicensePlate.Contains(searchTruck));
 
-            var list = await query.OrderByDescending(t => t.CreatedAt).ToListAsync();
+            int totalRecords = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+            var list = await query.OrderByDescending(t => t.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
-            // Tính số lượng đơn hàng cho mỗi chuyến xe trong danh sách
             var tripIds = list.Select(t => t.TripId).ToList();
-            var orderCounts = await _context.TblOrders
-                .Where(o => tripIds.Contains(o.TripId ?? ""))
-                .GroupBy(o => o.TripId)
-                .Select(g => new { TripId = g.Key, Count = g.Count() })
-                .ToDictionaryAsync(x => x.TripId, x => x.Count);
+            var orderCounts = await _context.TblOrders.AsNoTracking().Where(o => tripIds.Contains(o.TripId ?? "")).GroupBy(o => o.TripId)
+                .Select(g => new { TripId = g.Key, Count = g.Count() }).ToDictionaryAsync(x => x.TripId!, x => x.Count);
             
-            ViewBag.OrderCounts = orderCounts;
-            ViewBag.SearchTruck = searchTruck;
-            ViewBag.IsArrivalPage = true;
+            ViewBag.OrderCounts = orderCounts; ViewBag.SearchTruck = searchTruck; ViewBag.IsArrivalPage = true;
+            ViewBag.CurrentPage = page; ViewBag.TotalPages = totalPages; ViewBag.DepartureFilter = departureFilter; ViewBag.DestinationFilter = destinationFilter;
 
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return PartialView("_TripTableBody", list);
-            }
-
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest") return PartialView("_TripTableBody", list);
             return View(list);
         }
 
-        // 3. Trang tạo chuyến xe mới
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            ViewBag.StationList = await _context.TblStations.Where(s => s.IsActive == true).ToListAsync();
-            ViewBag.TruckList = await _context.TblTrucks.ToListAsync();
+            ViewBag.StationList = await GetCachedStationsAsync();
+            ViewBag.TruckList = await GetCachedTrucksAsync();
             return View();
         }
 
-        // 4. Xử lý lưu chuyến xe
         [HttpPost]
         public async Task<IActionResult> Create(TblTrip trip)
         {
-            trip.TripId = "TRP-" + DateTime.Now.ToString("HHmm");
+            var lastTrip = await _context.TblTrips.AsNoTracking().Where(t => t.TripId.StartsWith("TRP-")).OrderByDescending(t => t.TripId).FirstOrDefaultAsync();
+            int nextIdNum = 1;
+            if (lastTrip != null && int.TryParse(lastTrip.TripId.Replace("TRP-", ""), out int lastId)) nextIdNum = lastId + 1;
+            trip.TripId = "TRP-" + nextIdNum.ToString("D6");
             trip.StaffCreated = HttpContext.Session.GetString("UserID");
             trip.CreatedAt = DateTime.Now;
             trip.Status = "Đang đi";
             trip.TripType = "depart";
-            
             _context.TblTrips.Add(trip);
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Thêm chuyến xe mới thành công!";
             return RedirectToAction("List");
         }
 
-        // 5. Trang gán hàng vào xe
         [HttpGet]
         public async Task<IActionResult> AssignGoods(string id)
         {
-            var trip = await _context.VwTripLists.FirstOrDefaultAsync(t => t.TripId == id);
+            var trip = await _context.VwTripLists.AsNoTracking().FirstOrDefaultAsync(t => t.TripId == id);
             if (trip == null) return NotFound();
-
-            var pendingOrders = await _context.TblOrders
-                .Where(o => (o.TripId == null || o.TripId == "") && o.SendStation == trip.Departure && (o.IsDeleted == false || o.IsDeleted == null))
-                .ToListAsync();
-
+            var pendingOrders = await _context.TblOrders.AsNoTracking().Where(o => string.IsNullOrEmpty(o.TripId) && o.SendStation == trip.Departure && (o.IsDeleted == false || o.IsDeleted == null)).ToListAsync();
             ViewBag.Trip = trip;
             return View(pendingOrders);
         }
 
-        // 6. Trang xem hàng trên xe
         [HttpGet]
         public async Task<IActionResult> ViewGoods(string id)
         {
-            var trip = await _context.VwTripLists.FirstOrDefaultAsync(t => t.TripId == id);
+            var trip = await _context.VwTripLists.AsNoTracking().FirstOrDefaultAsync(t => t.TripId == id);
             if (trip == null) return NotFound();
-
-            var ordersOnTrip = await _context.TblOrders.Where(o => o.TripId == id).ToListAsync();
-
+            var ordersOnTrip = await _context.TblOrders.AsNoTracking().Where(o => o.TripId == id).ToListAsync();
             ViewBag.Trip = trip;
             return View(ordersOnTrip);
         }
 
-        // 7. Xử lý xe đã đến trạm
         [HttpPost]
         public async Task<IActionResult> Arrive(string id)
         {
             var trip = await _context.TblTrips.FindAsync(id);
-            if (trip != null)
-            {
+            if (trip != null) {
                 trip.Status = "Đã đến";
                 var orders = await _context.TblOrders.Where(o => o.TripId == id).ToListAsync();
-                foreach (var o in orders)
-                {
-                    o.ShipStatus = "Đã chuyển";
-                }
+                foreach (var o in orders) o.ShipStatus = "Đã chuyển";
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = $"Chuyến xe {id} đã cập bến thành công!";
             }
             return RedirectToAction("ArrivalList");
         }
