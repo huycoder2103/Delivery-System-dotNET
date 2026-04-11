@@ -1,0 +1,8 @@
+.error-box {
+    max-width: 500px; margin: 80px auto; text-align: center;
+    background: white; padding: 40px; border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+.error-icon { font-size: 4rem; margin-bottom: 20px; }
+.error-box h2 { color: #e74c3c; }
+.error-msg { color: #666; margin: 15px 0; font-size: 0.9rem; }

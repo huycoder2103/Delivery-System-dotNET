@@ -1,0 +1,419 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* Document   : report.css
+    Created on : Feb 24, 2026
+    Author     : HuyNHSE190240
+*/
+
+/* Bố cục lưới cho các thẻ báo cáo */
+.report-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Chia 2 cột đều nhau */
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Thiết kế thẻ báo cáo trắng */
+.report-card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Đổ bóng nhẹ cho chuyên nghiệp */
+}
+
+.report-card h3 {
+    margin-top: 0;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+/* Hàng hiển thị thông số */
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px dashed #eee;
+    font-size: 1rem;
+}
+
+.stat-row:last-of-type {
+    border-bottom: none;
+}
+
+.stat-value {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+/* Màu sắc trạng thái */
+.text-green { color: #27ae60 !important; } /* Màu xanh cho tiền thực nhận */
+.text-red { color: #e74c3c !important; }   /* Màu đỏ cho đơn hủy */
+
+/* Style cho bảng danh sách nhân viên (Dành cho Admin) */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background: #fff;
+}
+
+table th {
+    background-color: #34495e;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-weight: 500;
+}
+
+table td {
+    padding: 12px;
+    border: 1px solid #edf2f7;
+    color: #4a5568;
+}
+
+table tr:nth-child(even) {
+    background-color: #f8fafc; /* Màu nền xen kẽ cho dễ nhìn */
+}
+
+table tr:hover {
+    background-color: #f1f5f9; /* Hiệu ứng hover khi rê chuột qua hàng */
+}
+
+/* Phần Giao ca cho nhân viên */
+.shift-note-area {
+    width: 100%;
+    height: 100px;
+    margin-top: 10px;
+    padding: 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    resize: vertical;
+    font-family: inherit;
+    box-sizing: border-box; /* Đảm bảo padding không làm tràn chiều rộng */
+}
+
+.shift-note-area:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.btn-container {
+    margin-top: 20px;
+    text-align: right;
+}
+
+/* Tabs */
+        .report-tabs { display:flex; flex-wrap:wrap; gap:0; margin-bottom:20px; border-bottom:2px solid #3498db; }
+        .tab-btn {
+            padding:10px 20px; background:#f4f7f6; border:1px solid #ddd; border-bottom:none;
+            cursor:pointer; font-weight:700; font-size:.86rem; color:#666;
+            border-radius:6px 6px 0 0; margin-right:4px; transition:all .2s;
+        }
+        .tab-btn.active { background:#3498db; color:#fff; border-color:#3498db; }
+        .tab-pane { display:none; }
+        .tab-pane.active { display:block; }
+
+        /* KPI grids */
+        .kpi-grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:18px; }
+        .kpi-grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:18px; }
+        .kpi-grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-bottom:18px; }
+        .kpi-card {
+            background:#fff; border-radius:10px; padding:16px 18px;
+            box-shadow:0 2px 8px rgba(0,0,0,.07); text-align:center; border-top:4px solid #3498db;
+        }
+        .kpi-card.green  { border-top-color:#27ae60; }
+        .kpi-card.orange { border-top-color:#f39c12; }
+        .kpi-card.red    { border-top-color:#e74c3c; }
+        .kpi-card.purple { border-top-color:#8e44ad; }
+        .kpi-val { font-size:1.7rem; font-weight:900; color:#2c3e50; margin:4px 0 2px; }
+        .kpi-val.green  { color:#27ae60; }
+        .kpi-val.orange { color:#f39c12; }
+        .kpi-val.red    { color:#e74c3c; }
+        .kpi-lbl { font-size:.71rem; color:#aaa; font-weight:700; text-transform:uppercase; letter-spacing:.4px; }
+
+        /* Report card */
+        .report-card {
+            background:#fff; padding:20px; border-radius:10px;
+            box-shadow:0 2px 8px rgba(0,0,0,.07); margin-bottom:16px;
+        }
+        .report-card h3 {
+            margin:0 0 14px; color:#2c3e50; border-bottom:2px solid #3498db;
+            padding-bottom:8px; font-size:1rem;
+        }
+        .stat-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dashed #eee; font-size:.9rem; }
+        .stat-row:last-child { border-bottom:none; }
+        .stat-value { font-weight:800; font-size:1rem; }
+        .text-green  { color:#27ae60 !important; }
+        .text-red    { color:#e74c3c !important; }
+        .text-blue   { color:#2980b9 !important; }
+        .text-orange { color:#f39c12 !important; }
+
+        /* Date picker */
+        .date-picker-bar {
+            display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+            background:#fff; padding:14px 18px; border-radius:10px;
+            box-shadow:0 2px 8px rgba(0,0,0,.07); margin-bottom:18px;
+        }
+        .date-picker-bar label { font-weight:700; color:#555; font-size:.88rem; white-space:nowrap; }
+        .date-picker-bar input[type="date"] {
+            padding:8px 12px; border:2px solid #3498db; border-radius:6px; font-size:.9rem; outline:none;
+        }
+        .btn-view-date { background:#3498db; color:#fff; border:none; padding:9px 20px; border-radius:6px; font-weight:700; cursor:pointer; }
+        .btn-view-date:hover { background:#2980b9; }
+        .btn-today { background:#27ae60; color:#fff; border:none; padding:9px 16px; border-radius:6px; font-weight:700; cursor:pointer; }
+        .selected-date-badge {
+            background:#eaf2fb; color:#1a5276; border:1px solid #aed6f1;
+            padding:6px 14px; border-radius:20px; font-weight:700; font-size:.84rem;
+        }
+
+        /* History table */
+        .history-table { width:100%; border-collapse:collapse; font-size:.83rem; }
+        .history-table thead th { background:#2c3e50; color:#fff; padding:10px 14px; text-align:left; font-size:.75rem; text-transform:uppercase; }
+        .history-table tbody td { padding:9px 14px; border-bottom:1px solid #f0f0f0; }
+        .history-table tbody tr { cursor:pointer; transition:background .15s; }
+        .history-table tbody tr:hover td { background:#eaf2fb; }
+        .history-table tbody tr.row-selected td { background:#d6eaf8; }
+        .history-table tbody tr.row-today td { background:#eafaf1; }
+        .rev-cell { color:#27ae60; font-weight:700; }
+        .cnt-cell { color:#2980b9; font-weight:700; text-align:center; }
+        .bar-wrap { display:inline-block; width:100px; height:8px; background:#ecf0f1; border-radius:4px; vertical-align:middle; }
+        .bar-fill { height:100%; background:#3498db; border-radius:4px; }
+        .tag-today { background:#27ae60; color:#fff; font-size:.67rem; padding:1px 7px; border-radius:8px; margin-left:5px; }
+        .tag-sel   { background:#3498db; color:#fff; font-size:.67rem; padding:1px 7px; border-radius:8px; margin-left:5px; }
+        .btn-detail { background:#1a73e8; color:#fff; border:none; padding:4px 12px; border-radius:4px; cursor:pointer; font-size:.75rem; font-weight:700; }
+
+        /* Day orders table */
+        .day-orders-wrap { max-height:400px; overflow-y:auto; border-radius:6px; border:1px solid #eee; }
+        .day-table { width:100%; border-collapse:collapse; font-size:.81rem; }
+        .day-table thead th {
+            background:#1a73e8; color:#fff; padding:9px 12px; text-align:center;
+            font-size:.73rem; text-transform:uppercase; position:sticky; top:0; z-index:2;
+        }
+        .day-table tbody td { padding:8px 12px; border-bottom:1px solid #f0f0f0; text-align:center; }
+        .day-table tbody tr:hover td { background:#f0f7ff; }
+        .bs { padding:2px 8px; border-radius:8px; font-size:.72rem; font-weight:700; white-space:nowrap; }
+        .bs-ship { background:#d1e7dd; color:#0f5132; }
+        .bs-wait { background:#fff3cd; color:#856404; }
+        .bs-tr   { background:#d1e7dd; color:#0f5132; }
+        .bs-ct   { background:#f8d7da; color:#842029; }
+        .no-data-row { text-align:center; padding:28px; color:#aaa; }
+
+        /* Staff table */
+        .staff-table { width:100%; border-collapse:collapse; font-size:.85rem; }
+        .staff-table thead th { background:#34495e; color:#fff; padding:10px 14px; text-align:left; font-size:.75rem; text-transform:uppercase; }
+        .staff-table tbody td { padding:10px 14px; border-bottom:1px solid #f0f0f0; }
+        .staff-table tbody tr:hover td { background:#f8f9fa; }
+
+        /* Shift */
+        .shift-area { width:100%; height:88px; margin-top:10px; padding:12px; border:1px solid #ddd; border-radius:6px; resize:vertical; font-family:inherit; box-sizing:border-box; }
+        .shift-area:focus { outline:none; border-color:#3498db; }
+
+/* ==========================================================================
+   NEW MODERN REPORT STYLES (Refactored from inline styles)
+   ========================================================================== */
+
+.container-custom {
+    max-width: 1600px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.report-card { 
+    border: none; 
+    border-radius: 15px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+    transition: 0.3s; 
+    background: white; 
+}
+
+.stat-value { 
+    font-size: 1.8rem; 
+    font-weight: 700; 
+    color: #333; 
+}
+
+.stat-label { 
+    font-size: 0.8rem; 
+    color: #6c757d; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    font-weight: bold; 
+}
+
+.report-tab-btn { 
+    padding: 12px 25px; 
+    border-radius: 12px; 
+    font-weight: 700; 
+    border: none; 
+    cursor: pointer; 
+    transition: all 0.3s; 
+    font-size: 0.9rem; 
+}
+
+.report-tab-btn.active { 
+    background: #1a73e8; 
+    color: white; 
+    box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3); 
+}
+
+.report-tab-btn:not(.active) { 
+    background: #e8f0fe; 
+    color: #1a73e8; 
+}
+
+.modern-page-header-meta {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-top: 4px;
+}
+
+.btn-header-back {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+    text-decoration: none;
+}
+
+.filter-form-row {
+    display: flex;
+    gap: 35px;
+    align-items: flex-end;
+}
+
+.filter-input-group {
+    flex: 1;
+    max-width: 300px;
+}
+
+.filter-input-label {
+    margin-bottom: 8px;
+    display: block;
+}
+
+.filter-input-date {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    width: 100%;
+}
+
+.filter-btn-update {
+    padding: 11px 25px;
+}
+
+.date-badge-container {
+    margin-left: auto;
+}
+
+.date-badge {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+}
+
+.stat-cards-row {
+    display: flex;
+    gap: 20px;
+}
+
+.stat-card-col {
+    flex: 1;
+}
+
+.chart-container {
+    height: 400px;
+    width: 100%;
+}
+
+.table-header-text {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #6c757d;
+}
+
+.staff-id-text {
+    font-size: 0.7rem;
+    color: #888;
+}
+
+.badge-status-staff {
+    font-size: 0.65rem;
+}
+
+.btn-action-view {
+    padding: 5px 15px;
+    font-size: 0.75rem;
+}
+
+.shift-active-alert {
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 40px;
+}
+
+.btn-end-shift {
+    background: #ea4335;
+    color: white;
+    text-decoration: none;
+}
+
+.summary-cards-flex {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+}
+
+.summary-stat-card {
+    min-width: 350px;
+}
+
+.summary-stat-value {
+    font-size: 3rem;
+}
+
+.summary-footer-note {
+    color: #888;
+    margin-top: 10px;
+}
+
+.history-flex-container {
+    display: flex;
+    gap: 20px;
+}
+
+.history-list-col {
+    flex: 12; /* Default when detail is hidden */
+}
+
+.history-list-col.with-detail {
+    flex: 5;
+}
+
+.history-detail-col {
+    flex: 7;
+}
+
+.shift-time-text {
+    font-size: 0.85rem;
+}
+
+.order-id-highlight {
+    color: #1a73e8;
+}
+
+
+@media(max-width:768px) {
+    .stat-cards-row, .summary-cards-flex, .history-flex-container, .filter-form-row {
+        flex-direction: column;
+    }
+    .filter-input-group, .summary-stat-card {
+        max-width: 100%;
+        min-width: 100%;
+    }
+}
