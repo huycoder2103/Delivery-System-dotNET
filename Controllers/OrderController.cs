@@ -186,14 +186,21 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> Trash()
         {
-            var list = await _context.TblOrders.AsNoTracking().Where(o => o.IsDeleted == true).ToListAsync();
+            // Bỏ qua Global Filter để lấy đơn đã xóa
+            var list = await _context.TblOrders
+                .AsNoTracking()
+                .IgnoreQueryFilters()
+                .Where(o => o.IsDeleted == true)
+                .ToListAsync();
             return View(list);
         }
 
         [HttpPost]
         public async Task<IActionResult> Restore(string id)
         {
-            var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == id);
+            var order = await _context.TblOrders
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(o => o.OrderId == id);
             if (order != null) { order.IsDeleted = false; await _context.SaveChangesAsync(); }
             return RedirectToAction("Trash");
         }
@@ -201,7 +208,9 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> HardDelete(string id)
         {
-            var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == id);
+            var order = await _context.TblOrders
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(o => o.OrderId == id);
             if (order != null) { _context.TblOrders.Remove(order); await _context.SaveChangesAsync(); }
             return RedirectToAction("Trash");
         }

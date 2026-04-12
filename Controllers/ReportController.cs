@@ -96,11 +96,18 @@ namespace Delivery_System.Controllers
             }
             else
             {
-                // Dữ liệu dành riêng cho nhân viên (Tối ưu: AsNoTracking)
-                var userOrdersQuery = _context.TblOrders.AsNoTracking().Where(o => o.StaffInput == userId && (o.IsDeleted == false || o.IsDeleted == null));
+                // Dữ liệu dành riêng cho nhân viên (Tối ưu: AsNoTracking & GroupBy)
+                var userStats = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.StaffInput == userId && o.ShipStatus == "Đã chuyển")
+                    .GroupBy(o => 1)
+                    .Select(g => new { 
+                        Count = g.Count(), 
+                        Sum = g.Sum(o => o.Amount ?? 0) 
+                    })
+                    .FirstOrDefaultAsync();
                 
-                ViewBag.DeliveredOrders = await userOrdersQuery.CountAsync(o => o.ShipStatus == "Đã chuyển");
-                ViewBag.TotalRevenue = await userOrdersQuery.Where(o => o.ShipStatus == "Đã chuyển").SumAsync(o => o.Amount ?? 0);
+                ViewBag.DeliveredOrders = userStats?.Count ?? 0;
+                ViewBag.TotalRevenue = userStats?.Sum ?? 0;
                 
                 ViewBag.CurrentShift = await _context.TblWorkShifts.AsNoTracking().FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
             }
