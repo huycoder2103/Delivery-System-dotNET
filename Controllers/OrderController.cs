@@ -22,8 +22,7 @@ namespace Delivery_System.Controllers
             if (!_cache.TryGetValue(stationCacheKey, out List<TblStation>? stations))
             {
                 stations = await _context.TblStations.AsNoTracking().Where(s => s.IsActive == true).ToListAsync();
-                var cacheOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(30));
+                var cacheOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(60));
                 _cache.Set(stationCacheKey, stations, cacheOptions);
             }
             return stations ?? new List<TblStation>();
@@ -32,10 +31,7 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> List(string? sendStationFilter, string? receiveStationFilter, string? searchPhone, string? dateFilter, string statusFilter = "all", int page = 1)
         {
-            var userId = HttpContext.Session.GetString("UserID");
-            if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
-
-            const int pageSize = 20;
+            const int pageSize = 20; // 20 items per page as requested
             if (page < 1) page = 1;
 
             ViewBag.StationList = await GetCachedStationsAsync();
@@ -57,18 +53,20 @@ namespace Delivery_System.Controllers
             int totalRecords = await query.CountAsync();
             int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
             
-            var list = await query.OrderByDescending(o => o.OrderId)
+            var list = await query.OrderByDescending(o => o.CreatedAt)
                 .Skip((page - 1) * pageSize).Take(pageSize)
-                .Select(o => new TblOrder {
-                    OrderId = o.OrderId, ItemName = o.ItemName, SendStation = o.SendStation, ReceiveStation = o.ReceiveStation,
-                    SenderName = o.SenderName, SenderPhone = o.SenderPhone, ReceiverName = o.ReceiverName, ReceiverPhone = o.ReceiverPhone,
-                    StaffInput = o.StaffInput, Tr = o.Tr, Ct = o.Ct, Note = o.Note, CreatedAt = o.CreatedAt, TripId = o.TripId
-                }).ToListAsync();
+                .ToListAsync();
             
-            var countsQuery = _context.TblOrders.AsNoTracking().Where(o => o.IsDeleted == false || o.IsDeleted == null);
-            ViewBag.CountAll = await countsQuery.CountAsync();
-            ViewBag.CountPending = await countsQuery.CountAsync(o => string.IsNullOrEmpty(o.TripId));
-            ViewBag.CountShipped = await countsQuery.CountAsync(o => !string.IsNullOrEmpty(o.TripId));
+            // TỐI ƯU: Đếm tất cả trạng thái chỉ với 1 query duy nhất
+            var countsQuery = _context.TblOrders.AsNoTracking(); // Global Filter đã tự động lọc IsDeleted
+            var counts = await countsQuery
+                .GroupBy(o => string.IsNullOrEmpty(o.TripId) ? "pending" : "shipped")
+                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            ViewBag.CountPending = counts.FirstOrDefault(c => c.Status == "pending")?.Count ?? 0;
+            ViewBag.CountShipped = counts.FirstOrDefault(c => c.Status == "shipped")?.Count ?? 0;
+            ViewBag.CountAll     = ViewBag.CountPending + ViewBag.CountShipped;
             
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
@@ -101,12 +99,23 @@ namespace Delivery_System.Controllers
         {
             var userId = HttpContext.Session.GetString("UserID");
             var role = HttpContext.Session.GetString("Role");
-            var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == orderId);
-            if (order != null && (role == "AD" || order.StaffInput == userId)) {
-                order.TripId = tripId;
-                order.ShipStatus = "Đang chuyển";
-                await _context.SaveChangesAsync();
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try {
+                var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == orderId);
+                if (order != null && (role == "AD" || order.StaffInput == userId)) {
+                    order.TripId = tripId;
+                    order.ShipStatus = "Đang chuyển";
+                    await _context.SaveChangesAsync();
+                    
+                    // Thêm logic ghi log hoặc cập nhật bảng liên quan nếu cần ở đây
+                    await transaction.CommitAsync();
+                }
+            } catch (Exception) {
+                await transaction.RollbackAsync();
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi gán đơn hàng vào chuyến xe!";
             }
+            
             return (source == "ship") ? RedirectToAction("List") : RedirectToAction("List", "Trip");
         }
 

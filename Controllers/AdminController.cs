@@ -15,32 +15,28 @@ namespace Delivery_System.Controllers
             _context = context;
         }
 
+        private bool IsAdmin() => HttpContext.Session.GetString("Role") == "AD";
+
         public async Task<IActionResult> Index()
         {
-            var role = HttpContext.Session.GetString("Role");
-            if (role != "AD") return RedirectToAction("Index", "Home");
+            if (!IsAdmin()) return RedirectToAction("Index", "Home");
 
             // Lấy giờ Việt Nam chuẩn (GMT+7)
             var vniTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
             var today = vniTime.Date;
             var tomorrow = today.AddDays(1);
 
-            // TỐI ƯU: Sử dụng Range Search (>= và <) thay cho .Date để tận dụng Index idx_orders_createdAt
-            // Thêm .AsNoTracking() cho truy vấn chỉ tính toán
+            // TỐI ƯU: Sử dụng Range Search & AsNoTracking. Global Filter đã tự động lọc IsDeleted.
             ViewBag.RevenueToday = await _context.TblOrders
                 .AsNoTracking()
                 .Where(o => o.CreatedAt >= today && o.CreatedAt < tomorrow 
-                            && o.ShipStatus == "Đã chuyển" 
-                            && (o.IsDeleted == false || o.IsDeleted == null))
+                            && o.ShipStatus == "Đã chuyển")
                 .SumAsync(o => o.Amount ?? 0);
 
-            // TỐI ƯU: Thêm .AsNoTracking() cho đếm số lượng
             ViewBag.ActiveStaffCount = await _context.TblWorkShifts.AsNoTracking().CountAsync(s => s.Status == "ACTIVE");
 
-            // TỐI ƯU: Thêm .AsNoTracking() cho danh sách người dùng
             var userList = await _context.TblUsers.AsNoTracking().OrderBy(u => u.RoleId).ToListAsync();
 
-            // TỐI ƯU: Thêm .AsNoTracking() cho danh sách thông báo
             ViewBag.Announcements = await _context.TblAnnouncements
                 .AsNoTracking()
                 .Include(a => a.CreatedByNavigation)
@@ -53,13 +49,14 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> ToggleUser(string userID)
         {
+            if (!IsAdmin()) return Forbid();
             if (userID == "admin") 
             {
                 TempData["ErrorMessage"] = "Không thể khóa tài khoản quản trị viên tối cao!";
                 return RedirectToAction("Index");
             }
 
-            var user = await _context.TblUsers.FindAsync(userID);
+            var user = await _context.TblUsers.FirstOrDefaultAsync(u => u.UserId == userID);
             if (user != null)
             {
                 user.Status = !(user.Status ?? false);

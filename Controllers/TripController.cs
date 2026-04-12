@@ -22,8 +22,7 @@ namespace Delivery_System.Controllers
             if (!_cache.TryGetValue(stationCacheKey, out List<TblStation>? stations))
             {
                 stations = await _context.TblStations.AsNoTracking().Where(s => s.IsActive == true).ToListAsync();
-                var cacheOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(30));
+                var cacheOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(60));
                 _cache.Set(stationCacheKey, stations, cacheOptions);
             }
             return stations ?? new List<TblStation>();
@@ -35,8 +34,7 @@ namespace Delivery_System.Controllers
             if (!_cache.TryGetValue(truckCacheKey, out List<TblTruck>? trucks))
             {
                 trucks = await _context.TblTrucks.AsNoTracking().ToListAsync();
-                var cacheOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(30));
+                var cacheOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(60));
                 _cache.Set(truckCacheKey, trucks, cacheOptions);
             }
             return trucks ?? new List<TblTruck>();
@@ -45,8 +43,6 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> List(string? departureFilter, string? destinationFilter, string? searchTruck, int page = 1)
         {
-            var userId = HttpContext.Session.GetString("UserID");
-            if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
             const int pageSize = 20; if (page < 1) page = 1;
 
             ViewBag.StationList = await GetCachedStationsAsync();

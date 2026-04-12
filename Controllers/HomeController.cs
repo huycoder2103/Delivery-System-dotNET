@@ -15,15 +15,11 @@ namespace Delivery_System.Controllers
 
         public async Task<IActionResult> Index()
         {
-            // Kiểm tra đăng nhập (Nếu chưa đăng nhập thì đuổi ra trang Login)
             var userId = HttpContext.Session.GetString("UserID");
-            if (string.IsNullOrEmpty(userId))
-            {
-                return RedirectToAction("Login", "Account");
-            }
 
             // Lấy Ca làm việc hiện tại của User này (Status = "ACTIVE")
             var currentShift = await _context.TblWorkShifts
+                .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
             
             ViewBag.CurrentShift = currentShift;
@@ -31,13 +27,19 @@ namespace Delivery_System.Controllers
             // Lấy thống kê sơ bộ cho ca làm việc (Nếu có)
             if (currentShift != null)
             {
-                // Ví dụ: Đếm số đơn hàng đã giao trong ca này
-                ViewBag.DeliveredCount = await _context.TblOrders
-                    .CountAsync(o => o.StaffInput == userId && o.ShipStatus == "Đã chuyển" && (o.IsDeleted == false || o.IsDeleted == null));
+                // TỐI ƯU: Sử dụng AsNoTracking & Global Filter đã tự động lọc IsDeleted.
+                var stats = await _context.TblOrders
+                    .AsNoTracking()
+                    .Where(o => o.StaffInput == userId && o.ShipStatus == "Đã chuyển")
+                    .GroupBy(o => 1)
+                    .Select(g => new { 
+                        Count = g.Count(), 
+                        Sum = g.Sum(o => o.Amount ?? 0) 
+                    })
+                    .FirstOrDefaultAsync();
                 
-                ViewBag.TotalRevenue = await _context.TblOrders
-                    .Where(o => o.StaffInput == userId && o.ShipStatus == "Đã chuyển" && (o.IsDeleted == false || o.IsDeleted == null))
-                    .SumAsync(o => o.Amount ?? 0);
+                ViewBag.DeliveredCount = stats?.Count ?? 0;
+                ViewBag.TotalRevenue = stats?.Sum ?? 0;
             }
 
             return View();

@@ -51,6 +51,9 @@ public partial class AppDbContext : DbContext
             .UseCollation("utf8mb4_0900_ai_ci")
             .HasCharSet("utf8mb4");
 
+        // 1. GLOBAL QUERY FILTER: Tự động loại bỏ các bản ghi đã xóa (Soft Delete)
+        modelBuilder.Entity<TblOrder>().HasQueryFilter(o => o.IsDeleted == false || o.IsDeleted == null);
+
         modelBuilder.Entity<TblAnnouncement>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");

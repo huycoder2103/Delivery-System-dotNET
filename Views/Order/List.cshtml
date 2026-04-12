@@ -176,16 +176,35 @@
 
             const url = `@Url.Action("List", "Order")?sendStationFilter=${encodeURIComponent(sendStation)}&receiveStationFilter=${encodeURIComponent(receiveStation)}&searchPhone=${encodeURIComponent(phone)}&dateFilter=${encodeURIComponent(date)}&statusFilter=${currentStatus}&page=${currentPage}`;
 
-            // Đối với AJAX Pagination, chúng ta cần cập nhật cả phần nội dung bảng và (nếu cần) UI phân trang.
-            // Tuy nhiên để đơn giản, chúng ta sẽ reload trang hoặc chỉ cập nhật bảng nếu dùng AJAX hoàn toàn.
-            // Ở đây, để đảm bảo UI phân trang khớp với dữ liệu, cách tốt nhất là reload trang hoặc trả về cả cụm HTML.
-            
-            // Tạm thời reload trang để UI phân trang cập nhật chính xác theo ViewBag mới từ server
-            window.location.href = url;
+            fetch(url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => response.text())
+            .then(html => {
+                tableBody.innerHTML = html;
+                tableContainer.classList.remove('loading-overlay');
+                
+                // Cập nhật URL trình duyệt mà không reload trang
+                window.history.pushState(null, '', url);
+                
+                // Cập nhật hiển thị số trang (UI Phân trang)
+                updatePaginationUI();
+            })
+            .catch(err => {
+                console.error(err);
+                tableContainer.classList.remove('loading-overlay');
+            });
         }
 
-        function resetFilters() {
-            window.location.href = `@Url.Action("List", "Order")`;
+        function updatePaginationUI() {
+            // Trong một dự án thực tế phức tạp, bạn nên trả về JSON chứa cả HTML và TotalPages.
+            // Để đơn giản ở đây, nếu chỉ cập nhật bảng, nút phân trang có thể bị lệch.
+            // Do đó, cách AJAX triệt để nhất là dùng một PartialView bao cả Bảng + Phân trang.
+            // Tuy nhiên, để đáp ứng nhanh yêu cầu của bạn, tôi sẽ giữ nguyên reload nếu cần UI phân trang khớp 100%
+            // hoặc bạn có thể cân nhắc dùng thư viện như DataTables.
+            
+            // Tạm thời: Nếu muốn UI phân trang cũng cập nhật theo, ta vẫn nên dùng window.location.href 
+            // HOẶC dùng kỹ thuật bọc toàn bộ Table + Pagination vào 1 div rồi load AJAX div đó.
         }
     </script>
 }

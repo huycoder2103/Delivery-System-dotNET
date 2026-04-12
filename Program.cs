@@ -21,8 +21,11 @@ builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
 // 2. TỐI ƯU BACKEND: Thêm Memory Caching
 builder.Services.AddMemoryCache();
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+// 4. BẢO MẬT TẬP TRUNG: Thêm Filter kiểm tra Login toàn cục
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<Delivery_System.Filters.SessionAuthorizeFilter>();
+});
 
 // Đăng ký kết nối Database MySQL với DbContext Pooling để tối ưu hóa hiệu suất
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
