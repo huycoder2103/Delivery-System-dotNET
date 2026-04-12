@@ -110,7 +110,7 @@ namespace Delivery_System.Controllers
             if (lastTrip != null && int.TryParse(lastTrip.TripId.Replace("TRP-", ""), out int lastId)) nextIdNum = lastId + 1;
             trip.TripId = "TRP-" + nextIdNum.ToString("D6");
             trip.StaffCreated = HttpContext.Session.GetString("UserID");
-            trip.CreatedAt = DateTime.Now;
+            trip.CreatedAt = Delivery_System.Helpers.TimeHelper.NowVni();
             trip.Status = "Đang đi";
             trip.TripType = "depart";
             _context.TblTrips.Add(trip);

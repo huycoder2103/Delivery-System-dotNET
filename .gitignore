@@ -1,16 +1,38 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
+## [Visual Studio]
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
 
-/.vs/Delivery-System.slnx/FileContentIndex/375f19ae-2b2b-489a-9e25-63b2e6993271.vsidx
-/.vs/Delivery-System.slnx/FileContentIndex/6b0af679-894b-4b85-94a5-0a4e977fcf83.vsidx
-/.vs/Delivery-System.slnx/FileContentIndex/073b7891-79aa-4791-b84b-f0aa6d34f00d.vsidx
-/.vs/Delivery-System.slnx/FileContentIndex/f418bc04-9f55-4ed6-a8d3-aa65c1fb5c0a.vsidx
-/.vs/Delivery-System.slnx/FileContentIndex/e7c2b1b0-4485-4fe4-95f4-2b6dd4f77aff.vsidx
-/.vs/Delivery-System.slnx/FileContentIndex/d95c32a3-9d65-4a2b-8f84-2602e35832c1.vsidx
-/.vs/Delivery-System.slnx/FileContentIndex/6f20da98-8f60-4f1e-a7c1-c54be53e0aeb.vsidx
-/.vs/Delivery-System.slnx/FileContentIndex/d8dea7ce-d599-4d9a-9b0d-808fa7dff0af.vsidx
-/.vs/Delivery-System.slnx/FileContentIndex/540eadfe-8fef-4dfc-b6ad-1381dbc78ce9.vsidx
-.vs/ 
-bin/ 
-obj/ 
+## [Build Results]
+[Bb]in/
+[Oo]bj/
+[Pp]ublish/
+
+## [Common Binary Formats]
+*.exe
+*.dll
+*.pdb
+*.msi
+*.nupkg
+*.zip
+*.7z
+
+## [Operating System]
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+## [Web App Specific]
+appsettings.Development.json
+wwwroot/lib/*
+wwwroot/css/*.gz
+wwwroot/css/*.br
+wwwroot/js/*.gz
+wwwroot/js/*.br
+
+## [Tools]
+.vscode/
+.idea/
+*.log
