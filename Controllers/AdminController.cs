@@ -21,29 +21,33 @@ namespace Delivery_System.Controllers
         {
             if (!IsAdmin()) return RedirectToAction("Index", "Home");
 
-            // Lấy giờ Việt Nam chuẩn (GMT+7)
-            var vniTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
-            var today = vniTime.Date;
+            var today = Delivery_System.Helpers.TimeHelper.DateVni();
             var tomorrow = today.AddDays(1);
 
-            // TỐI ƯU: Sử dụng Range Search & AsNoTracking. Global Filter đã tự động lọc IsDeleted.
-            ViewBag.RevenueToday = await _context.TblOrders
-                .AsNoTracking()
-                .Where(o => o.CreatedAt >= today && o.CreatedAt < tomorrow 
-                            && o.ShipStatus == "Đã chuyển")
+            // 1. CHẠY SONG SONG: 4 query độc lập không chờ nhau
+            var revenueTask = _context.TblOrders.AsNoTracking()
+                .Where(o => o.CreatedAt >= today && o.CreatedAt < tomorrow && o.ShipStatus == "Đã chuyển")
                 .SumAsync(o => o.Amount ?? 0);
 
-            ViewBag.ActiveStaffCount = await _context.TblWorkShifts.AsNoTracking().CountAsync(s => s.Status == "ACTIVE");
+            var staffCountTask = _context.TblWorkShifts.AsNoTracking()
+                .CountAsync(s => s.Status == "ACTIVE");
 
-            var userList = await _context.TblUsers.AsNoTracking().OrderBy(u => u.RoleId).ToListAsync();
+            var userListTask = _context.TblUsers.AsNoTracking()
+                .OrderBy(u => u.RoleId)
+                .ToListAsync();
 
-            ViewBag.Announcements = await _context.TblAnnouncements
-                .AsNoTracking()
+            var announcementsTask = _context.TblAnnouncements.AsNoTracking()
                 .Include(a => a.CreatedByNavigation)
                 .OrderByDescending(a => a.CreatedAt)
                 .ToListAsync();
 
-            return View(userList);
+            await Task.WhenAll(revenueTask, staffCountTask, userListTask, announcementsTask);
+
+            ViewBag.RevenueToday = revenueTask.Result;
+            ViewBag.ActiveStaffCount = staffCountTask.Result;
+            ViewBag.Announcements = announcementsTask.Result;
+
+            return View(userListTask.Result);
         }
 
         [HttpPost]

@@ -172,7 +172,17 @@
 
             const tableBody = document.getElementById('orderTableBody');
             const tableContainer = document.getElementById('orderTable');
-            tableContainer.classList.add('loading-overlay');
+            
+            // HIỆU ỨNG: Skeleton Loading
+            tableBody.innerHTML = `
+                ${Array(5).fill(`
+                    <tr>
+                        ${Array(12).fill(`
+                            <td><div style="background:#f0f0f0;height:20px;border-radius:4px; animation:pulse 1.5s infinite"></div></td>
+                        `).join('')}
+                    </tr>
+                `).join('')}
+            `;
 
             const url = `@Url.Action("List", "Order")?sendStationFilter=${encodeURIComponent(sendStation)}&receiveStationFilter=${encodeURIComponent(receiveStation)}&searchPhone=${encodeURIComponent(phone)}&dateFilter=${encodeURIComponent(date)}&statusFilter=${currentStatus}&page=${currentPage}`;
 

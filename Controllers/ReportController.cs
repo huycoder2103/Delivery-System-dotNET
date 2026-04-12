@@ -13,84 +13,71 @@ namespace Delivery_System.Controllers
             _context = context;
         }
 
+        [Microsoft.AspNetCore.OutputCaching.OutputCache(PolicyName = "ReportCache")]
         public async Task<IActionResult> Index(string? reportDate, int? viewShiftId, string? targetStaffId)
         {
-            var userId = HttpContext.Session.GetString("UserID");
-            var role = HttpContext.Session.GetString("Role");
+            var userId = HttpContext.Session.GetString("UserID") ?? "";
+            var role = HttpContext.Session.GetString("Role") ?? "";
 
-            var vniTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
-            DateTime date = string.IsNullOrEmpty(reportDate) ? vniTime.Date : DateTime.Parse(reportDate);
+            var vniNow = Delivery_System.Helpers.TimeHelper.NowVni();
+            DateTime date = string.IsNullOrEmpty(reportDate) ? vniNow.Date : DateTime.Parse(reportDate);
             var selectedDate = date.Date;
             var tomorrow = selectedDate.AddDays(1);
             ViewBag.ReportDate = date.ToString("yyyy-MM-dd");
 
             if (role == "AD")
             {
-                // 1. Thống kê cơ bản ngày được chọn (Tối ưu: AsNoTracking & Range Search)
-                var baseQuery = _context.TblOrders.AsNoTracking().Where(o => o.IsDeleted == false || o.IsDeleted == null);
+                // 1. CHẠY SONG SONG: Các truy vấn thống kê
+                var baseQuery = _context.TblOrders.AsNoTracking();
                 
-                ViewBag.RevenueDateVal = await baseQuery
+                var revenueTask = baseQuery
                     .Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow && o.ShipStatus == "Đã chuyển")
                     .SumAsync(o => o.Amount ?? 0);
 
-                ViewBag.OrdersDateVal = await baseQuery
+                var ordersTask = baseQuery
                     .Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow)
                     .CountAsync();
 
-                ViewBag.ActiveStaffCount = await _context.TblWorkShifts.AsNoTracking().CountAsync(s => s.Status == "ACTIVE");
+                var activeStaffTask = _context.TblWorkShifts.AsNoTracking().CountAsync(s => s.Status == "ACTIVE");
                 
-                // 2. Dữ liệu biểu đồ doanh thu 7 ngày gần nhất (Tối ưu: Gộp 7 query thành 1)
-                var weekStart = vniTime.Date.AddDays(-6);
-                var weekEnd = vniTime.Date.AddDays(1);
-
-                var weeklyData = await baseQuery
+                var weekStart = vniNow.Date.AddDays(-6);
+                var weekEnd = vniNow.Date.AddDays(1);
+                var weeklyDataTask = baseQuery
                     .Where(o => o.CreatedAt >= weekStart && o.CreatedAt < weekEnd && o.ShipStatus == "Đã chuyển")
                     .GroupBy(o => o.CreatedAt!.Value.Date)
                     .Select(g => new { Date = g.Key, Total = g.Sum(o => o.Amount ?? 0) })
                     .ToListAsync();
 
+                // 2. CHẠY SONG SONG: Query nhân viên
+                var today = vniNow.Date;
+                var nextDay = today.AddDays(1);
+                var staffTask = _context.TblUsers.AsNoTracking().Where(u => u.RoleId == "US").Select(u => new { u.UserId, u.FullName }).ToListAsync();
+                var orderStatsTask = _context.TblOrders.AsNoTracking().Where(o => o.CreatedAt >= today && o.CreatedAt < nextDay).GroupBy(o => o.StaffInput).Select(g => new { StaffId = g.Key, DayOrders = g.Count(), DayRev = g.Where(o => o.ShipStatus == "Đã chuyển").Sum(o => o.Amount ?? 0) }).ToListAsync();
+                var workingStaffTask = _context.TblWorkShifts.AsNoTracking().Where(s => s.Status == "ACTIVE").Select(s => s.StaffId).ToListAsync();
+
+                await Task.WhenAll(revenueTask, ordersTask, activeStaffTask, weeklyDataTask, staffTask, orderStatsTask, workingStaffTask);
+
+                ViewBag.RevenueDateVal = revenueTask.Result;
+                ViewBag.OrdersDateVal = ordersTask.Result;
+                ViewBag.ActiveStaffCount = activeStaffTask.Result;
+                
                 var chartLabels = new List<string>();
                 var chartData = new List<decimal>();
-
                 for (int i = 6; i >= 0; i--)
                 {
-                    var d = vniTime.Date.AddDays(-i);
+                    var d = vniNow.Date.AddDays(-i);
                     chartLabels.Add(d.ToString("dd/MM"));
-                    chartData.Add(weeklyData.FirstOrDefault(x => x.Date == d)?.Total ?? 0);
+                    chartData.Add(weeklyDataTask.Result.FirstOrDefault(x => x.Date == d)?.Total ?? 0);
                 }
                 ViewBag.ChartLabels = chartLabels;
                 ViewBag.ChartData = chartData;
 
-                // 3. Hiệu suất nhân viên (Tối ưu: Join một lần thay vì N+1 query)
-                var today = vniTime.Date;
-                var nextDay = today.AddDays(1);
-
-                var staffIds = await _context.TblUsers.AsNoTracking()
-                    .Where(u => u.RoleId == "US")
-                    .Select(u => new { u.UserId, u.FullName })
-                    .ToListAsync();
-
-                var orderStats = await _context.TblOrders.AsNoTracking()
-                    .Where(o => o.CreatedAt >= today && o.CreatedAt < nextDay 
-                             && (o.IsDeleted == false || o.IsDeleted == null))
-                    .GroupBy(o => o.StaffInput)
-                    .Select(g => new {
-                        StaffId  = g.Key,
-                        DayOrders = g.Count(),
-                        DayRev    = g.Where(o => o.ShipStatus == "Đã chuyển").Sum(o => o.Amount ?? 0)
-                    }).ToListAsync();
-
-                var workingStaffList = await _context.TblWorkShifts.AsNoTracking()
-                    .Where(s => s.Status == "ACTIVE")
-                    .Select(s => s.StaffId)
-                    .ToListAsync();
-                var workingStaffSet = workingStaffList.ToHashSet();
-
-                ViewBag.StaffPerformance = staffIds.Select(u => new {
-                    StaffName = u.FullName,
+                var workingStaffSet = workingStaffTask.Result.ToHashSet();
+                ViewBag.StaffPerformance = staffTask.Result.Select(u => new {
+                    StaffName = u.FullName ?? "N/A",
                     StaffId   = u.UserId,
-                    DayOrders = orderStats.FirstOrDefault(s => s.StaffId == u.UserId)?.DayOrders ?? 0,
-                    DayRev    = orderStats.FirstOrDefault(s => s.StaffId == u.UserId)?.DayRev ?? 0,
+                    DayOrders = orderStatsTask.Result.FirstOrDefault(s => s.StaffId == u.UserId)?.DayOrders ?? 0,
+                    DayRev    = orderStatsTask.Result.FirstOrDefault(s => s.StaffId == u.UserId)?.DayRev ?? 0,
                     IsWorking = workingStaffSet.Contains(u.UserId)
                 }).ToList();
             }

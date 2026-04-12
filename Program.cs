@@ -18,8 +18,13 @@ builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
     options.Level = CompressionLevel.Optimal;
 });
 
-// 2. TỐI ƯU BACKEND: Thêm Memory Caching
+// 2. TỐI ƯU BACKEND: Thêm Memory Caching & Output Caching
 builder.Services.AddMemoryCache();
+builder.Services.AddOutputCache(options =>
+{
+    options.AddPolicy("ReportCache", b => b.Expire(TimeSpan.FromSeconds(60)).SetVaryByQuery("reportDate"));
+    options.AddPolicy("TripCache", b => b.Expire(TimeSpan.FromSeconds(30)).SetVaryByQuery("page", "departureFilter", "destinationFilter"));
+});
 
 // 4. BẢO MẬT TẬP TRUNG: Thêm Filter kiểm tra Login toàn cục
 builder.Services.AddControllersWithViews(options =>
@@ -28,7 +33,7 @@ builder.Services.AddControllersWithViews(options =>
 });
 
 // Đăng ký kết nối Database MySQL với DbContext Pooling để tối ưu hóa hiệu suất
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
 
 builder.Services.AddDbContextPool<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), 
@@ -75,6 +80,7 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseRouting();
+app.UseOutputCache();
 app.UseAuthorization();
 app.UseSession();
 
