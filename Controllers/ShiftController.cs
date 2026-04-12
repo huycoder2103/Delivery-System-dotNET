@@ -28,7 +28,7 @@ namespace Delivery_System.Controllers
                 var newShift = new TblWorkShift
                 {
                     StaffId = userId,
-                    StartTime = DateTime.Now,
+                    StartTime = Delivery_System.Helpers.TimeHelper.NowVni(),
                     Status = "ACTIVE"
                 };
                 _context.TblWorkShifts.Add(newShift);
@@ -50,9 +50,8 @@ namespace Delivery_System.Controllers
 
             if (activeShift != null)
             {
-                var vniTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
                 activeShift.Status = "ENDED";
-                activeShift.EndTime = vniTime;
+                activeShift.EndTime = Delivery_System.Helpers.TimeHelper.NowVni();
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Đã kết thúc ca làm việc!";
             }

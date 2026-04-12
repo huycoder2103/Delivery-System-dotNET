@@ -24,30 +24,45 @@ namespace Delivery_System.Controllers
             var today = Delivery_System.Helpers.TimeHelper.DateVni();
             var tomorrow = today.AddDays(1);
 
-            // 1. CHẠY SONG SONG: 4 query độc lập không chờ nhau
-            var revenueTask = _context.TblOrders.AsNoTracking()
+            // TỐI ƯU: Gọi tuần tự để tránh lỗi xung đột DbContext (Task.WhenAll không dùng được với 1 DbContext duy nhất)
+            ViewBag.RevenueToday = await _context.TblOrders.AsNoTracking()
                 .Where(o => o.CreatedAt >= today && o.CreatedAt < tomorrow && o.ShipStatus == "Đã chuyển")
                 .SumAsync(o => o.Amount ?? 0);
 
-            var staffCountTask = _context.TblWorkShifts.AsNoTracking()
+            ViewBag.ActiveStaffCount = await _context.TblWorkShifts.AsNoTracking()
                 .CountAsync(s => s.Status == "ACTIVE");
 
-            var userListTask = _context.TblUsers.AsNoTracking()
+            var userList = await _context.TblUsers.AsNoTracking()
                 .OrderBy(u => u.RoleId)
                 .ToListAsync();
 
-            var announcementsTask = _context.TblAnnouncements.AsNoTracking()
+            ViewBag.Announcements = await _context.TblAnnouncements.AsNoTracking()
                 .Include(a => a.CreatedByNavigation)
                 .OrderByDescending(a => a.CreatedAt)
                 .ToListAsync();
 
-            await Task.WhenAll(revenueTask, staffCountTask, userListTask, announcementsTask);
+            // TỐI ƯU: Thêm dữ liệu biểu đồ cho Admin (Tránh lỗi JS)
+            var weekStart = today.AddDays(-6);
+            var weekEnd = today.AddDays(1);
 
-            ViewBag.RevenueToday = revenueTask.Result;
-            ViewBag.ActiveStaffCount = staffCountTask.Result;
-            ViewBag.Announcements = announcementsTask.Result;
+            var weeklyData = await _context.TblOrders.AsNoTracking()
+                .Where(o => o.CreatedAt >= weekStart && o.CreatedAt < weekEnd && o.ShipStatus == "Đã chuyển")
+                .GroupBy(o => o.CreatedAt!.Value.Date)
+                .Select(g => new { Date = g.Key, Total = g.Sum(o => o.Amount ?? 0) })
+                .ToListAsync();
 
-            return View(userListTask.Result);
+            var chartLabels = new List<string>();
+            var chartData = new List<decimal>();
+            for (int i = 6; i >= 0; i--)
+            {
+                var d = today.AddDays(-i);
+                chartLabels.Add(d.ToString("dd/MM"));
+                chartData.Add(weeklyData.FirstOrDefault(x => x.Date == d)?.Total ?? 0);
+            }
+            ViewBag.ChartLabels = chartLabels;
+            ViewBag.ChartData = chartData;
+
+            return View(userList);
         }
 
         [HttpPost]

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Delivery_System.Models;
+using Delivery_System.Helpers;
 
 namespace Delivery_System.Controllers
 {
@@ -31,11 +32,11 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> List(string? sendStationFilter, string? receiveStationFilter, string? searchPhone, string? dateFilter, string statusFilter = "all", int page = 1)
         {
-            const int pageSize = 20; // 20 items per page as requested
+            const int pageSize = 20;
             if (page < 1) page = 1;
 
             ViewBag.StationList = await GetCachedStationsAsync();
-            var query = _context.TblOrders.AsNoTracking().Where(o => o.IsDeleted == false || o.IsDeleted == null);
+            var query = _context.TblOrders.AsNoTracking();
 
             if (statusFilter == "pending") query = query.Where(o => string.IsNullOrEmpty(o.TripId));
             else if (statusFilter == "shipped") query = query.Where(o => !string.IsNullOrEmpty(o.TripId));
@@ -57,8 +58,7 @@ namespace Delivery_System.Controllers
                 .Skip((page - 1) * pageSize).Take(pageSize)
                 .ToListAsync();
             
-            // TỐI ƯU: Đếm tất cả trạng thái chỉ với 1 query duy nhất
-            var countsQuery = _context.TblOrders.AsNoTracking(); // Global Filter đã tự động lọc IsDeleted
+            var countsQuery = _context.TblOrders.AsNoTracking();
             var counts = await countsQuery
                 .GroupBy(o => string.IsNullOrEmpty(o.TripId) ? "pending" : "shipped")
                 .Select(g => new { Status = g.Key, Count = g.Count() })
@@ -83,12 +83,13 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> Ship(string id)
         {
-            var userId = HttpContext.Session.GetString("UserID");
-            var role = HttpContext.Session.GetString("Role");
-            if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
+            var userId = HttpContext.Session.GetString("UserID") ?? "";
+            var role = HttpContext.Session.GetString("Role") ?? "";
+            
             var order = await _context.TblOrders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == id);
             if (order == null) return NotFound();
             if (role != "AD" && order.StaffInput != userId) return RedirectToAction("List");
+            
             var matchingTrips = await _context.VwTripLists.AsNoTracking().Where(t => t.Departure == order.SendStation && t.Status == "Đang đi").ToListAsync();
             ViewBag.OrderForShip = order;
             return View(matchingTrips);
@@ -97,8 +98,8 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> AssignToTrip(string orderId, string tripId, string source)
         {
-            var userId = HttpContext.Session.GetString("UserID");
-            var role = HttpContext.Session.GetString("Role");
+            var userId = HttpContext.Session.GetString("UserID") ?? "";
+            var role = HttpContext.Session.GetString("Role") ?? "";
 
             using var transaction = await _context.Database.BeginTransactionAsync();
             try {
@@ -107,8 +108,6 @@ namespace Delivery_System.Controllers
                     order.TripId = tripId;
                     order.ShipStatus = "Đang chuyển";
                     await _context.SaveChangesAsync();
-                    
-                    // Thêm logic ghi log hoặc cập nhật bảng liên quan nếu cần ở đây
                     await transaction.CommitAsync();
                 }
             } catch (Exception) {
@@ -122,11 +121,12 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
-            var userId = HttpContext.Session.GetString("UserID");
-            var role = HttpContext.Session.GetString("Role");
-            if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
+            var userId = HttpContext.Session.GetString("UserID") ?? "";
+            var role = HttpContext.Session.GetString("Role") ?? "";
+            
             var order = await _context.TblOrders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == id);
             if (order == null || (role != "AD" && order.StaffInput != userId)) return RedirectToAction("List");
+            
             ViewBag.StationList = await GetCachedStationsAsync();
             return View(order);
         }
@@ -134,8 +134,9 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(TblOrder order)
         {
-            var userId = HttpContext.Session.GetString("UserID");
-            var role = HttpContext.Session.GetString("Role");
+            var userId = HttpContext.Session.GetString("UserID") ?? "";
+            var role = HttpContext.Session.GetString("Role") ?? "";
+            
             var existing = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == order.OrderId);
             if (existing != null && (role == "AD" || existing.StaffInput == userId)) {
                 existing.ItemName = order.ItemName; existing.SendStation = order.SendStation; existing.ReceiveStation = order.ReceiveStation;
@@ -149,8 +150,9 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
-            var userId = HttpContext.Session.GetString("UserID");
-            var role = HttpContext.Session.GetString("Role");
+            var userId = HttpContext.Session.GetString("UserID") ?? "";
+            var role = HttpContext.Session.GetString("Role") ?? "";
+            
             var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == id);
             if (order != null && (role == "AD" || order.StaffInput == userId)) {
                 order.IsDeleted = true;
@@ -169,15 +171,18 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(TblOrder order)
         {
-            var vniTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
-            var lastOrder = await _context.TblOrders.AsNoTracking().Where(o => o.OrderId.StartsWith("ORD-")).OrderByDescending(o => o.OrderId).FirstOrDefaultAsync();
+            var vniTime = TimeHelper.NowVni();
+            var lastOrder = await _context.TblOrders.AsNoTracking().IgnoreQueryFilters().Where(o => o.OrderId.StartsWith("ORD-")).OrderByDescending(o => o.OrderId).FirstOrDefaultAsync();
+            
             int nextIdNum = 1;
             if (lastOrder != null && int.TryParse(lastOrder.OrderId.Replace("ORD-", ""), out int lastId)) nextIdNum = lastId + 1;
+            
             order.OrderId = "ORD-" + nextIdNum.ToString("D6");
             order.StaffInput = HttpContext.Session.GetString("UserID");
             order.ShipStatus = "Chưa Chuyển";
             order.IsDeleted = false;
             order.CreatedAt = vniTime;
+            
             _context.TblOrders.Add(order);
             await _context.SaveChangesAsync();
             return RedirectToAction("List");
@@ -186,21 +191,14 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> Trash()
         {
-            // Bỏ qua Global Filter để lấy đơn đã xóa
-            var list = await _context.TblOrders
-                .AsNoTracking()
-                .IgnoreQueryFilters()
-                .Where(o => o.IsDeleted == true)
-                .ToListAsync();
+            var list = await _context.TblOrders.AsNoTracking().IgnoreQueryFilters().Where(o => o.IsDeleted == true).ToListAsync();
             return View(list);
         }
 
         [HttpPost]
         public async Task<IActionResult> Restore(string id)
         {
-            var order = await _context.TblOrders
-                .IgnoreQueryFilters()
-                .FirstOrDefaultAsync(o => o.OrderId == id);
+            var order = await _context.TblOrders.IgnoreQueryFilters().FirstOrDefaultAsync(o => o.OrderId == id);
             if (order != null) { order.IsDeleted = false; await _context.SaveChangesAsync(); }
             return RedirectToAction("Trash");
         }
@@ -208,9 +206,7 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> HardDelete(string id)
         {
-            var order = await _context.TblOrders
-                .IgnoreQueryFilters()
-                .FirstOrDefaultAsync(o => o.OrderId == id);
+            var order = await _context.TblOrders.IgnoreQueryFilters().FirstOrDefaultAsync(o => o.OrderId == id);
             if (order != null) { _context.TblOrders.Remove(order); await _context.SaveChangesAsync(); }
             return RedirectToAction("Trash");
         }
@@ -220,6 +216,7 @@ namespace Delivery_System.Controllers
         {
             var order = await _context.TblOrders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == id);
             if (order == null) return NotFound();
+            ViewBag.PrintTime = TimeHelper.NowVni().ToString("dd/MM/yyyy HH:mm");
             return View(order);
         }
     }
