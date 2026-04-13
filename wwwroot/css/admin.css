@@ -38,7 +38,7 @@ th { background: #f8f9fa; padding: 12px; text-align: left; border-bottom: 2px so
 td { padding: 12px; border-bottom: 1px solid #eee; }
 
 /* BUTTONS */
-.action-group { display: flex; gap: 5px; justify-content: center; }
+.action-group { display: flex; gap: 5px; justify-content: flex-start; }
 
 .btn-action {
     padding: 6px 12px;

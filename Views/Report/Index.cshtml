@@ -160,74 +160,22 @@
 
         <!-- ========================== TAB 2: LỊCH SỬ CA LÀM ========================== -->
         <div class="tab-pane fade @(viewShiftId != null ? "show active" : "")" id="history">
-            <div style="display: flex; gap: 20px;">
-                <div style="flex: @(viewShiftId != null ? "5" : "12")">
-                    <div class="card report-card p-4">
-                        <h5 class="fw-bold mb-3 text-secondary">
-                            📜 Nhật ký 20 ca làm việc gần nhất
-                            @if (role == "AD") { <small class="text-primary">(Đang xem: @selectedStaffId)</small> }
-                        </h5>
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Mã Ca</th>
-                                        <th>Bắt đầu</th>
-                                        <th>Kết thúc</th>
-                                        <th>Trạng thái</th>
-                                        <th class="text-center">Hành động</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if (shiftHistory != null) {
-                                        foreach (var s in shiftHistory)
-                                        {
-                                            <tr class="@(s.ShiftId == viewShiftId ? "table-info" : "")">
-                                                <td><strong>#@s.ShiftId</strong></td>
-                                                <td style="font-size: 0.85rem;">@s.StartTime.ToString("dd/MM/yyyy HH:mm")</td>
-                                                <td style="font-size: 0.85rem;">@(s.EndTime?.ToString("dd/MM/yyyy HH:mm") ?? "---")</td>
-                                                <td>
-                                                    <span class="badge @(s.Status == "ACTIVE" ? "bg-success" : "bg-secondary")">@s.Status</span>
-                                                </td>
-                                                <td class="text-center">
-                                                    <a href="@Url.Action("Index", new { viewShiftId = s.ShiftId, targetStaffId = selectedStaffId })#history" 
-                                                       class="btn-modern btn-primary-modern" style="padding: 5px 15px; font-size: 0.75rem;">Chi tiết</a>
-                                                </td>
-                                            </tr>
-                                        }
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                @if (viewShiftId != null)
+            <div class="modern-card p-5 text-center">
+                <div style="font-size: 4rem; margin-bottom: 20px;">⏰</div>
+                <h3 class="fw-bold mb-3">Hệ Thống Quản Lý Ca Làm Việc Mới</h3>
+                <p class="text-muted mb-4">Tính năng nhật ký làm việc đã được nâng cấp sang hệ thống quản lý ca trực mới với đầy đủ chi tiết hàng hóa và doanh thu.</p>
+                
+                @if (role == "AD")
                 {
-                    <div style="flex: 7;">
-                        <div class="card report-card p-4">
-                            <h5 class="fw-bold mb-3 text-primary d-flex justify-content-between">
-                                <span>📦 ĐƠN HÀNG TRONG CA #@viewShiftId</span>
-                                <span class="badge badge-info">@(shiftOrders?.Count() ?? 0) đơn</span>
-                            </h5>
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr><th>Mã Đơn</th><th>Tên Hàng</th><th class="text-end">Cước</th></tr>
-                                </thead>
-                                <tbody>
-                                    @if (shiftOrders != null) {
-                                        foreach (var o in shiftOrders) {
-                                            <tr>
-                                                <td><strong style="color: #1a73e8;">@o.OrderId</strong></td>
-                                                <td>@o.ItemName</td>
-                                                <td class="text-end fw-bold text-success">@string.Format("{0:N0}", o.Amount ?? 0) K</td>
-                                            </tr>
-                                        }
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <a asp-controller="Shift" asp-action="Index" class="btn-modern btn-primary-modern" style="padding: 15px 40px; font-size: 1.1rem;">
+                        🚀 TRUY CẬP QUẢN LÝ CA TRỰC
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Shift" asp-action="MyHistory" class="btn-modern btn-primary-modern" style="padding: 15px 40px; font-size: 1.1rem;">
+                        📖 XEM LỊCH SỬ LÀM VIỆC CỦA TÔI
+                    </a>
                 }
             </div>
         </div>

@@ -96,26 +96,42 @@ namespace Delivery_System.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AssignToTrip(string orderId, string tripId, string source)
+        public async Task<IActionResult> AssignToTrip(List<string> orderIds, string? orderId, string tripId, string source)
         {
             var userId = HttpContext.Session.GetString("UserID") ?? "";
             var role = HttpContext.Session.GetString("Role") ?? "";
 
-            using var transaction = await _context.Database.BeginTransactionAsync();
-            try {
-                var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == orderId);
-                if (order != null && (role == "AD" || order.StaffInput == userId)) {
-                    order.TripId = tripId;
-                    order.ShipStatus = "Đang chuyển";
+            if (orderIds == null) orderIds = new List<string>();
+            if (!string.IsNullOrEmpty(orderId)) orderIds.Add(orderId);
+
+            if (!orderIds.Any()) 
+            {
+                TempData["ErrorMessage"] = "Vui lòng chọn ít nhất một đơn hàng!";
+                return (source == "ship") ? RedirectToAction("List") : RedirectToAction("List", "Trip");
+            }
+
+            var strategy = _context.Database.CreateExecutionStrategy();
+            await strategy.ExecuteAsync(async () => {
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try {
+                    var orders = await _context.TblOrders.Where(o => orderIds.Contains(o.OrderId)).ToListAsync();
+                    foreach (var order in orders)
+                    {
+                        if (role == "AD" || order.StaffInput == userId) {
+                            order.TripId = tripId;
+                            order.ShipStatus = "Đang chuyển";
+                        }
+                    }
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
+                    TempData["SuccessMessage"] = $"Đã gán thành công {orders.Count} đơn hàng vào chuyến xe {tripId}";
+                } catch (Exception ex) {
+                    await transaction.RollbackAsync();
+                    TempData["ErrorMessage"] = "Có lỗi xảy ra: " + ex.Message;
                 }
-            } catch (Exception) {
-                await transaction.RollbackAsync();
-                TempData["ErrorMessage"] = "Có lỗi xảy ra khi gán đơn hàng vào chuyến xe!";
-            }
+            });
             
-            return (source == "ship") ? RedirectToAction("List") : RedirectToAction("List", "Trip");
+            return (source == "ship") ? RedirectToAction("List") : RedirectToAction("AssignGoods", "Trip", new { id = tripId });
         }
 
         [HttpGet]
@@ -171,23 +187,38 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(TblOrder order)
         {
+            var userId = HttpContext.Session.GetString("UserID");
             var vniTime = TimeHelper.NowVni();
+
+            // Lấy ShiftId đang hoạt động của nhân viên
+            var activeShift = await _context.TblWorkShifts
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
+
+            if (activeShift == null)
+            {
+                TempData["ErrorMessage"] = "Bạn chưa bắt đầu ca làm việc! Vui lòng bắt đầu ca tại trang chủ trước khi thêm hàng.";
+                ViewBag.StationList = await GetCachedStationsAsync();
+                return View(order);
+            }
+
             var lastOrder = await _context.TblOrders.AsNoTracking().IgnoreQueryFilters().Where(o => o.OrderId.StartsWith("ORD-")).OrderByDescending(o => o.OrderId).FirstOrDefaultAsync();
-            
+
             int nextIdNum = 1;
             if (lastOrder != null && int.TryParse(lastOrder.OrderId.Replace("ORD-", ""), out int lastId)) nextIdNum = lastId + 1;
-            
+
             order.OrderId = "ORD-" + nextIdNum.ToString("D6");
-            order.StaffInput = HttpContext.Session.GetString("UserID");
+            order.StaffInput = userId;
             order.ShipStatus = "Chưa Chuyển";
             order.IsDeleted = false;
             order.CreatedAt = vniTime;
-            
+            order.ShiftId = activeShift.ShiftId; // Gán ShiftId
+
             _context.TblOrders.Add(order);
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Thêm đơn hàng thành công!";
             return RedirectToAction("List");
         }
-
         [HttpGet]
         public async Task<IActionResult> Trash()
         {

@@ -29,6 +29,12 @@
                 ✅ @TempData["SuccessMessage"]
             </div>
         }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div style="background:#f8d7da;color:#721c24;padding:9px 14px;border-radius:4px;margin-bottom:12px;font-weight:600;">
+                ❌ @TempData["ErrorMessage"]
+            </div>
+        }
 
         <div class="info">
             Các đơn hàng <strong>Chưa Chuyển</strong> có trạm gửi là
@@ -37,45 +43,53 @@
 
         @if (Model != null && Model.Any())
         {
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Mã Đơn</th>
-                        <th>Tên Hàng</th>
-                        <th>Người Gửi</th>
-                        <th>Người Nhận</th>
-                        <th>Trạm Nhận</th>
-                        <th>Cước</th>
-                        <th>Trạng Thái</th>
-                        <th>Thao Tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @{ int i = 1; }
-                    @foreach (var o in Model)
-                    {
+            <form id="bulkAssignForm" asp-controller="Order" asp-action="AssignToTrip" method="POST">
+                <input type="hidden" name="tripId" value="@trip?.TripId">
+                <input type="hidden" name="source" value="trip">
+                
+                <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                    <label style="font-weight: 700; cursor: pointer;">
+                        <input type="checkbox" id="selectAll" style="transform: scale(1.2); margin-right: 8px;"> Chọn tất cả
+                    </label>
+                    <button type="button" class="btn-assign" onclick="confirmBulkAssign()" style="background: #27ae60; padding: 10px 25px;">
+                        🚛 Gán các đơn đã chọn lên xe
+                    </button>
+                </div>
+
+                <table>
+                    <thead>
                         <tr>
-                            <td>@(i++)</td>
-                            <td><strong style="color:#2980b9">@o.OrderId</strong></td>
-                            <td><strong>@o.ItemName</strong></td>
-                            <td>@o.SenderName <br><small style="color:#888">@o.SenderPhone</small></td>
-                            <td>@o.ReceiverName <br><small style="color:#888">@o.ReceiverPhone</small></td>
-                            <td>@o.ReceiveStation</td>
-                            <td class="money">@string.Format("{0:N0}", o.Amount ?? 0)đ</td>
-                            <td><span class="badge-pending">@o.Tr</span></td>
-                            <td>
-                                <button type="button" class="btn-assign" onclick="confirmAssign('@o.OrderId', '@trip?.TripId')">📦 Gán lên xe</button>
-                                <form id="assignForm-@o.OrderId" asp-controller="Order" asp-action="AssignToTrip" method="POST" style="display:none;">
-                                    <input type="hidden" name="orderId" value="@o.OrderId">
-                                    <input type="hidden" name="tripId" value="@trip?.TripId">
-                                    <input type="hidden" name="source" value="trip">
-                                </form>
-                            </td>
+                            <th>Chọn</th>
+                            <th>Mã Đơn</th>
+                            <th>Tên Hàng</th>
+                            <th>Người Gửi</th>
+                            <th>Người Nhận</th>
+                            <th>Trạm Nhận</th>
+                            <th>Cước</th>
+                            <th>Thao Tác</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var o in Model)
+                        {
+                            <tr>
+                                <td style="text-align: center;">
+                                    <input type="checkbox" name="orderIds" value="@o.OrderId" class="order-checkbox" style="transform: scale(1.3);">
+                                </td>
+                                <td><strong style="color:#2980b9">@o.OrderId</strong></td>
+                                <td><strong>@o.ItemName</strong></td>
+                                <td>@o.SenderName <br><small style="color:#888">@o.SenderPhone</small></td>
+                                <td>@o.ReceiverName <br><small style="color:#888">@o.ReceiverPhone</small></td>
+                                <td>@o.ReceiveStation</td>
+                                <td class="money">@string.Format("{0:N0}", o.Amount ?? 0)đ</td>
+                                <td>
+                                    <button type="button" class="btn-assign" onclick="confirmSingleAssign('@o.OrderId')">Gán lẻ</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </form>
         }
         else
         {
@@ -90,20 +104,40 @@
 </div>
 
 <script>
-    function confirmAssign(orderId, tripId) {
+    document.getElementById('selectAll').addEventListener('change', function() {
+        const isChecked = this.checked;
+        document.querySelectorAll('.order-checkbox').forEach(cb => cb.checked = isChecked);
+    });
+
+    function confirmBulkAssign() {
+        const selected = document.querySelectorAll('.order-checkbox:checked');
+        if (selected.length === 0) {
+            Swal.fire('Chú ý', 'Vui lòng chọn ít nhất một đơn hàng!', 'warning');
+            return;
+        }
+
         Swal.fire({
-            title: 'Gán hàng lên xe?',
-            text: "Gán đơn hàng " + orderId + " lên chuyến " + tripId + "?",
-            icon: 'info',
+            title: 'Gán ' + selected.length + ' đơn hàng?',
+            text: "Xác nhận đưa các đơn hàng này lên chuyến xe @trip?.TripId?",
+            icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#34a853',
+            confirmButtonColor: '#27ae60',
             cancelButtonColor: '#d33',
-            confirmButtonText: '📦 Gán ngay!',
+            confirmButtonText: '🚀 Gán ngay',
             cancelButtonText: 'Hủy'
         }).then((result) => {
             if (result.isConfirmed) {
-                document.getElementById('assignForm-' + orderId).submit();
+                document.getElementById('bulkAssignForm').submit();
             }
         })
+    }
+
+    function confirmSingleAssign(orderId) {
+        // Bỏ chọn tất cả và chỉ chọn đơn hiện tại
+        document.querySelectorAll('.order-checkbox').forEach(cb => cb.checked = false);
+        const cb = document.querySelector(`.order-checkbox[value="${orderId}"]`);
+        if (cb) cb.checked = true;
+        
+        confirmBulkAssign();
     }
 </script>

@@ -78,7 +78,8 @@
 {
     foreach (var o in Model)
     {
-        bool canEdit = currentUserRole == "AD" || o.StaffInput == currentUserID;
+        bool isShipped = !string.IsNullOrEmpty(o.TripId);
+        bool canEdit = (currentUserRole == "AD" || o.StaffInput == currentUserID);
         <tr>
             <td><span class="text-order-id">@o.OrderId</span></td>
             <td class="col-item-name">@o.ItemName</td>
@@ -123,41 +124,44 @@
                 @o.CreatedAt?.ToString("dd/MM/yyyy HH:mm")
             </td>
             <td>
-                @if (string.IsNullOrEmpty(o.TripId))
+                @if (!isShipped)
                 {
-                    <span class="badge badge-warning status-badge-fixed">Chưa chuyển</span>
+                    <span class="badge badge-warning status-badge-fixed">Chờ giao</span>
                 }
                 else
                 {
-                    <span class="badge badge-info status-badge-fixed">Đã chuyển</span>
-                    @* <br><small class="trip-id-link">@o.TripId</small> *@
+                    <span class="badge badge-info status-badge-fixed">Đang chuyển</span>
                 }
             </td>
             <td class="col-order-id">
                 <div class="action-btns-grid">
                     @* Hàng 1: Nút Chuyển (Chỉ hiện khi chưa chuyển) *@
-                    @if (string.IsNullOrEmpty(o.TripId))
+                    @if (!isShipped)
                     {
-                        if (canEdit)
+                        if (currentUserRole == "AD" || o.StaffInput == currentUserID)
                         {
                             <a asp-action="Ship" asp-route-id="@o.OrderId" class="btn-action-text btn-s-ship btn-full-width">🚚 Chuyển</a>
                         }
                         else
                         {
-                            <button type="button" class="btn-action-text btn-disabled btn-full-width" title="Chỉ người tạo đơn mới được chuyển hàng">Chuyển</button>
+                            <button type="button" class="btn-action-text btn-disabled btn-full-width" title="Bạn không có quyền chuyển đơn này">Chuyển</button>
                         }
                     }
 
-                    @* Hàng 2: Nút In và Nút Sửa *@
+                    @* Hàng 2: Nút In và Nút Sửa/Xóa *@
                     <a asp-action="PrintReceipt" asp-route-id="@o.OrderId" target="_blank" class="btn-action-text btn-s-print">In</a>
 
-                    @if (canEdit)
+                    @if (canEdit && !isShipped)
                     {
                         <a asp-action="Edit" asp-route-id="@o.OrderId" class="btn-action-text btn-s-edit">Sửa</a>
+                        @* <button type="button" class="btn-action-text btn-s-delete" onclick="confirmDeleteOrder('@o.OrderId')">Xóa</button>
+                        <form id="deleteOrderForm-@o.OrderId" asp-action="Delete" method="POST" style="display:none;">
+                            <input type="hidden" name="id" value="@o.OrderId">
+                        </form> *@
                     }
                     else
                     {
-                        <button type="button" class="btn-action-text btn-disabled" title="Bạn không có quyền sửa đơn này">Khóa</button>
+                        <button type="button" class="btn-action-text btn-disabled" title="Đơn đã lên xe hoặc không có quyền">Khóa</button>
                     }
                 </div>
             </td>
@@ -167,6 +171,6 @@
 else
 {
     <tr>
-        <td colspan="16" class="no-data-msg">📭 Không tìm thấy đơn hàng nào phù hợp!</td>
+        <td colspan="12" class="no-data-msg">📭 Không tìm thấy đơn hàng nào phù hợp!</td>
     </tr>
 }

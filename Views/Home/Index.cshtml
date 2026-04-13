@@ -35,11 +35,15 @@
         <div class="shift-actions">
             @if (currentShift == null)
             {
-                <a asp-controller="Shift" asp-action="Start" class="btn-shift btn-start">🚀 BẮT ĐẦU CA</a>
+                <form asp-controller="Shift" asp-action="Start" method="POST">
+                    <button type="submit" class="btn-shift btn-start">🚀 BẮT ĐẦU CA</button>
+                </form>
             }
             else
             {
-                <a asp-controller="Shift" asp-action="End" class="btn-shift btn-end" onclick="return confirm('Bạn muốn kết thúc ca làm việc này?')">🛑 KẾT THÚC CA</a>
+                <form asp-controller="Shift" asp-action="End" method="POST" id="endShiftForm">
+                    <button type="button" class="btn-shift btn-end" onclick="confirmEndShift()">🛑 KẾT THÚC CA</button>
+                </form>
             }
         </div>
     </div>

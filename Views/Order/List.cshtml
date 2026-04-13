@@ -85,7 +85,6 @@
             </div>
 
             <a asp-action="Create" class="btn-modern btn-success-modern btn-link-modern" >➕ Nhập Hàng</a>
-            @* <a asp-action="Trash" class="btn-modern btn-secondary-modern btn-link-modern">🗑 Thùng rác</a> *@
             <button onclick="resetFilters()" class="btn-modern btn-secondary-modern">🔄 Làm mới</button>
         </div>
     </div>
@@ -142,13 +141,22 @@
         let currentStatus = '@(ViewBag.CurrentStatus ?? "all")';
         let currentPage = @(ViewBag.CurrentPage ?? 1);
 
-        document.getElementById('filterSendStation').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
-        document.getElementById('filterReceiveStation').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
-        document.getElementById('filterDate').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
-        document.getElementById('filterSearchPhone').addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => { currentPage = 1; triggerSearch(); }, 300);
-        });
+        function confirmDeleteOrder(orderId) {
+            Swal.fire({
+                title: 'Xóa đơn hàng?',
+                text: "Xác nhận xóa đơn hàng " + orderId + "? Dữ liệu sẽ được đưa vào thùng rác.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: '🗑 Xóa ngay',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteOrderForm-' + orderId).submit();
+                }
+            })
+        }
 
         function changeStatus(status) {
             currentStatus = status;
@@ -171,9 +179,7 @@
             const phone = document.getElementById('filterSearchPhone').value;
 
             const tableBody = document.getElementById('orderTableBody');
-            const tableContainer = document.getElementById('orderTable');
             
-            // HIỆU ỨNG: Skeleton Loading
             tableBody.innerHTML = `
                 ${Array(5).fill(`
                     <tr>
@@ -192,29 +198,15 @@
             .then(response => response.text())
             .then(html => {
                 tableBody.innerHTML = html;
-                tableContainer.classList.remove('loading-overlay');
-                
-                // Cập nhật URL trình duyệt mà không reload trang
                 window.history.pushState(null, '', url);
-                
-                // Cập nhật hiển thị số trang (UI Phân trang)
-                updatePaginationUI();
             })
             .catch(err => {
                 console.error(err);
-                tableContainer.classList.remove('loading-overlay');
             });
         }
 
-        function updatePaginationUI() {
-            // Trong một dự án thực tế phức tạp, bạn nên trả về JSON chứa cả HTML và TotalPages.
-            // Để đơn giản ở đây, nếu chỉ cập nhật bảng, nút phân trang có thể bị lệch.
-            // Do đó, cách AJAX triệt để nhất là dùng một PartialView bao cả Bảng + Phân trang.
-            // Tuy nhiên, để đáp ứng nhanh yêu cầu của bạn, tôi sẽ giữ nguyên reload nếu cần UI phân trang khớp 100%
-            // hoặc bạn có thể cân nhắc dùng thư viện như DataTables.
-            
-            // Tạm thời: Nếu muốn UI phân trang cũng cập nhật theo, ta vẫn nên dùng window.location.href 
-            // HOẶC dùng kỹ thuật bọc toàn bộ Table + Pagination vào 1 div rồi load AJAX div đó.
+        function resetFilters() {
+            window.location.href = '@Url.Action("List", "Order")';
         }
     </script>
 }

@@ -22,6 +22,9 @@
         </div>
         
         <div class="header-actions" style="display: flex; gap: 10px;">
+            <a asp-controller="Shift" asp-action="Index" class="btn-modern" style="background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 10px 20px; text-decoration: none; border-radius: 10px; font-weight: 700;">
+                ⏰ Ca Làm Việc
+            </a>
             <button class="btn-modern btn-add" onclick="showAddModal()" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 10px 20px;">
                 ➕ Thêm Nhân Viên Mới
             </button>
@@ -109,7 +112,7 @@
                                     <button class="btn-s btn-s-cyan" 
                                             onclick="showDetailsModal('@user.UserId', '@user.Username', '@user.FullName', '@(user.RoleId == "AD" ? "Admin" : "Nhân Viên")', '@user.Phone', '@user.Email', '@user.Status', '@user.CreatedAt?.ToString("dd/MM/yyyy HH:mm")')">Chi tiết</button>
 
-                                    @if (user.UserId != "admin")
+                                    @if (user.RoleId != "AD")
                                     {
                                         <form asp-action="ToggleUser" method="POST" style="display:inline;">
                                             <input type="hidden" name="userID" value="@user.UserId">

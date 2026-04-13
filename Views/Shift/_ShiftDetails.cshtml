@@ -1,0 +1,110 @@
+@model Delivery_System.Models.TblWorkShift
+
+@{
+    var addedOrders = ViewBag.AddedOrders as List<Delivery_System.Models.TblOrder>;
+    var receivedOrders = ViewBag.ReceivedOrders as List<Delivery_System.Models.TblOrder>;
+    var createdTrips = ViewBag.CreatedTrips as List<Delivery_System.Models.TblTrip>;
+}
+
+<div class="modal-header-custom">
+    <div class="staff-info-card-mini">
+        <div class="avatar-mini">@Model.Staff.FullName.Substring(0,1).ToUpper()</div>
+        <div>
+            <h3 style="margin:0; font-size: 1.25rem; font-weight: 800; color: var(--text-main);">@Model.Staff.FullName</h3>
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500; margin-top: 2px;">
+                Mã ca #@Model.ShiftId | <span style="color: var(--primary); font-weight: 700;">@Model.StartTime.ToString("HH:mm - dd/MM")</span>
+            </div>
+        </div>
+    </div>
+    <div style="text-align: right;">
+        <span class="badge @(Model.Status == "ACTIVE" ? "badge-active" : "badge-ended")" style="margin-bottom: 8px; font-size: 0.85rem; padding: 8px 16px;">
+            @(Model.Status == "ACTIVE" ? "● Đang làm việc" : "● Ca đã kết thúc")
+        </span>
+        <div style="font-weight: 800; color: #10b981; font-size: 1.1rem; letter-spacing: -0.02em;">
+            💰 @string.Format("{0:N0}", ViewBag.TotalRevenue) VNĐ
+        </div>
+    </div>
+</div>
+
+<div class="activity-tabs">
+    <button class="tab-btn active" onclick="showTab('added')">📦 Đã thêm (@addedOrders.Count)</button>
+    <button class="tab-btn" onclick="showTab('received')">🤝 Đã giao (@receivedOrders.Count)</button>
+    <button class="tab-btn" onclick="showTab('trips')">🚛 Chuyến xe (@createdTrips.Count)</button>
+</div>
+
+<div class="modal-scroll-area">
+    <!-- TAB: HÀNG ĐÃ THÊM -->
+    <div id="tab-added" class="activity-content active" style="display: block;">
+        <table class="table-mini">
+            <thead>
+                <tr>
+                    <th>Mã Đơn</th>
+                    <th>Tên Hàng</th>
+                    <th>Trạm Gửi</th>
+                    <th style="text-align: right;">Giờ</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var o in addedOrders) {
+                    <tr>
+                        <td><strong style="color:var(--primary)">@o.OrderId</strong></td>
+                        <td style="font-weight: 600;">@o.ItemName</td>
+                        <td><span class="badge badge-info" style="border-radius: 6px;">@o.SendStation</span></td>
+                        <td style="text-align: right; color: var(--text-muted); font-weight: 500;">@o.CreatedAt?.ToString("HH:mm")</td>
+                    </tr>
+                }
+                @if(!addedOrders.Any()) { <tr><td colspan="4" class="empty-msg">Chưa có dữ liệu hàng hóa được thêm.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TAB: HÀNG ĐÃ GIAO -->
+    <div id="tab-received" class="activity-content" style="display: none;">
+        <table class="table-mini">
+            <thead>
+                <tr>
+                    <th>Mã Đơn</th>
+                    <th>Tên Hàng</th>
+                    <th>Trạm Nhận</th>
+                    <th style="text-align: right;">Giờ</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var o in receivedOrders) {
+                    <tr>
+                        <td><strong style="color:#10b981">@o.OrderId</strong></td>
+                        <td style="font-weight: 600;">@o.ItemName</td>
+                        <td><span class="badge badge-active" style="border-radius: 6px;">@o.ReceiveStation</span></td>
+                        <td style="text-align: right; color: var(--text-muted); font-weight: 500;">@o.CreatedAt?.ToString("HH:mm")</td>
+                    </tr>
+                }
+                @if(!receivedOrders.Any()) { <tr><td colspan="4" class="empty-msg">Chưa có dữ liệu hàng hóa đã giao.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TAB: CHUYẾN XE -->
+    <div id="tab-trips" class="activity-content" style="display: none;">
+        <table class="table-mini">
+            <thead>
+                <tr>
+                    <th>Mã Chuyến</th>
+                    <th>Lộ Trình</th>
+                    <th>Loại</th>
+                    <th style="text-align: right;">Giờ</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var t in createdTrips) {
+                    <tr>
+                        <td><strong style="color:#f59e0b">@t.TripId</strong></td>
+                        <td style="font-weight: 600; font-size: 0.85rem;">@t.Departure ➔ @t.Destination</td>
+                        <td><span class="badge badge-info" style="background: #eff6ff; color: #1e40af; border-radius: 6px;">@t.TripType</span></td>
+                        <td style="text-align: right; color: var(--text-muted); font-weight: 500;">@t.CreatedAt?.ToString("HH:mm")</td>
+                    </tr>
+                }
+                @if(!createdTrips.Any()) { <tr><td colspan="4" class="empty-msg">Chưa có dữ liệu chuyến xe.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -51,7 +51,21 @@ namespace Delivery_System.Controllers
                 var today = vniNow.Date;
                 var nextDay = today.AddDays(1);
                 var staffList = await _context.TblUsers.AsNoTracking().Where(u => u.RoleId == "US").Select(u => new { u.UserId, u.FullName }).ToListAsync();
-                var orderStats = await _context.TblOrders.AsNoTracking().Where(o => o.CreatedAt >= today && o.CreatedAt < nextDay).GroupBy(o => o.StaffInput).Select(g => new { StaffId = g.Key, DayOrders = g.Count(), DayRev = g.Where(o => o.ShipStatus == "Đã chuyển").Sum(o => o.Amount ?? 0) }).ToListAsync();
+                
+                // Thống kê số đơn nhập (theo StaffInput)
+                var inputStats = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.CreatedAt >= today && o.CreatedAt < nextDay)
+                    .GroupBy(o => o.StaffInput)
+                    .Select(g => new { StaffId = g.Key, DayOrders = g.Count() })
+                    .ToListAsync();
+
+                // Thống kê doanh thu thực tế (theo StaffReceive - người nhận hàng tại trạm đích)
+                var receiveStats = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.ShipStatus == "Đã chuyển" && o.CreatedAt >= today && o.CreatedAt < nextDay)
+                    .GroupBy(o => o.StaffReceive)
+                    .Select(g => new { StaffId = g.Key, DayRev = g.Sum(o => o.Amount ?? 0) })
+                    .ToListAsync();
+
                 var workingStaffIds = await _context.TblWorkShifts.AsNoTracking().Where(s => s.Status == "ACTIVE").Select(s => s.StaffId).ToListAsync();
 
                 var chartLabels = new List<string>();
@@ -69,16 +83,16 @@ namespace Delivery_System.Controllers
                 ViewBag.StaffPerformance = staffList.Select(u => new {
                     StaffName = u.FullName ?? "N/A",
                     StaffId   = u.UserId,
-                    DayOrders = orderStats.FirstOrDefault(s => s.StaffId == u.UserId)?.DayOrders ?? 0,
-                    DayRev    = orderStats.FirstOrDefault(s => s.StaffId == u.UserId)?.DayRev ?? 0,
+                    DayOrders = inputStats.FirstOrDefault(s => s.StaffId == u.UserId)?.DayOrders ?? 0,
+                    DayRev    = receiveStats.FirstOrDefault(s => s.StaffId == u.UserId)?.DayRev ?? 0,
                     IsWorking = workingStaffSet.Contains(u.UserId)
                 }).ToList();
             }
             else
             {
-                // Dữ liệu dành riêng cho nhân viên (Tối ưu: AsNoTracking & GroupBy)
+                // Dữ liệu dành riêng cho nhân viên: Tính dựa trên StaffReceive (Hàng đã nhận tại trạm mình quản lý)
                 var userStats = await _context.TblOrders.AsNoTracking()
-                    .Where(o => o.StaffInput == userId && o.ShipStatus == "Đã chuyển")
+                    .Where(o => o.StaffReceive == userId && o.ShipStatus == "Đã chuyển")
                     .GroupBy(o => 1)
                     .Select(g => new { 
                         Count = g.Count(), 

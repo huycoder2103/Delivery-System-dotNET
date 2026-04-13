@@ -69,15 +69,15 @@ namespace Delivery_System.Controllers
         public async Task<IActionResult> ToggleUser(string userID)
         {
             if (!IsAdmin()) return Forbid();
-            if (userID == "admin") 
-            {
-                TempData["ErrorMessage"] = "Không thể khóa tài khoản quản trị viên tối cao!";
-                return RedirectToAction("Index");
-            }
-
+            
             var user = await _context.TblUsers.FirstOrDefaultAsync(u => u.UserId == userID);
             if (user != null)
             {
+                if (user.RoleId == "AD")
+                {
+                    TempData["ErrorMessage"] = "Không thể khóa tài khoản quản trị viên!";
+                    return RedirectToAction("Index");
+                }
                 user.Status = !(user.Status ?? false);
                 await _context.SaveChangesAsync();
             }
@@ -136,10 +136,16 @@ namespace Delivery_System.Controllers
         public async Task<IActionResult> DeleteUser(string userID)
         {
             var user = await _context.TblUsers.FindAsync(userID);
-            if (user != null && userID != "admin")
+            if (user != null)
             {
+                if (user.RoleId == "AD")
+                {
+                    TempData["ErrorMessage"] = "Không thể xóa tài khoản quản trị viên!";
+                    return RedirectToAction("Index");
+                }
                 _context.TblUsers.Remove(user);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Xóa nhân viên thành công!";
             }
             return RedirectToAction("Index");
         }

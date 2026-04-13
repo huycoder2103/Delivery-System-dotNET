@@ -105,16 +105,35 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(TblTrip trip)
         {
+            var userId = HttpContext.Session.GetString("UserID");
+
+            // Lấy ShiftId đang hoạt động của nhân viên
+            var activeShift = await _context.TblWorkShifts
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
+
+            if (activeShift == null)
+            {
+                TempData["ErrorMessage"] = "Bạn chưa bắt đầu ca làm việc! Vui lòng bắt đầu ca tại trang chủ trước khi tạo chuyến.";
+                ViewBag.StationList = await GetCachedStationsAsync();
+                ViewBag.TruckList = await GetCachedTrucksAsync();
+                return View(trip);
+            }
+
             var lastTrip = await _context.TblTrips.AsNoTracking().Where(t => t.TripId.StartsWith("TRP-")).OrderByDescending(t => t.TripId).FirstOrDefaultAsync();
             int nextIdNum = 1;
             if (lastTrip != null && int.TryParse(lastTrip.TripId.Replace("TRP-", ""), out int lastId)) nextIdNum = lastId + 1;
+
             trip.TripId = "TRP-" + nextIdNum.ToString("D6");
-            trip.StaffCreated = HttpContext.Session.GetString("UserID");
+            trip.StaffCreated = userId;
             trip.CreatedAt = Delivery_System.Helpers.TimeHelper.NowVni();
             trip.Status = "Đang đi";
             trip.TripType = "depart";
+            trip.ShiftId = activeShift.ShiftId; // Gán ShiftId
+
             _context.TblTrips.Add(trip);
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Tạo chuyến xe mới thành công!";
             return RedirectToAction("List");
         }
 
@@ -138,15 +157,33 @@ namespace Delivery_System.Controllers
             return View(ordersOnTrip);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetActiveTripsByStation(string stationName)
+        {
+            var trips = await _context.VwTripLists
+                .AsNoTracking()
+                .Where(t => t.Departure == stationName && t.Status == "Đang đi")
+                .ToListAsync();
+            return PartialView("_TripSelectOptions", trips);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Arrive(string id)
         {
+            var userId = HttpContext.Session.GetString("UserID");
             var trip = await _context.TblTrips.FindAsync(id);
-            if (trip != null) {
+            if (trip != null)
+            {
                 trip.Status = "Đã đến";
                 var orders = await _context.TblOrders.Where(o => o.TripId == id).ToListAsync();
-                foreach (var o in orders) o.ShipStatus = "Đã chuyển";
+                foreach (var o in orders)
+                {
+                    o.ShipStatus = "Đã chuyển";
+                    o.StaffReceive = userId; // Ghi nhận nhân viên nhận hàng tại trạm đích
+                    o.ReceiveDate = Delivery_System.Helpers.TimeHelper.NowVni().ToString("dd/MM/yyyy HH:mm");
+                }
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Xác nhận chuyến xe đã đến và cập nhật trạng thái đơn hàng thành công!";
             }
             return RedirectToAction("ArrivalList");
         }

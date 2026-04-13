@@ -1,0 +1,14 @@
+@model IEnumerable<Delivery_System.Models.VwTripList>
+
+<option value="">-- Chọn chuyến xe --</option>
+@if (Model != null && Model.Any())
+{
+    foreach (var t in Model)
+    {
+        <option value="@t.TripId">[@t.TripId] @t.LicensePlate (@t.Departure ➡ @t.Destination)</option>
+    }
+}
+else
+{
+    <option value="" disabled>Không có chuyến xe nào đang đi từ trạm này</option>
+}
