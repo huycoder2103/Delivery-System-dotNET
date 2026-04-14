@@ -151,7 +151,7 @@ namespace Delivery_System.Controllers
         {
             var trip = await _context.VwTripLists.AsNoTracking().FirstOrDefaultAsync(t => t.TripId == id);
             if (trip == null) return NotFound();
-            var pendingOrders = await _context.TblOrders.AsNoTracking().Where(o => string.IsNullOrEmpty(o.TripId) && o.SendStation == trip.Departure && (o.IsDeleted == false || o.IsDeleted == null)).ToListAsync();
+            var pendingOrders = await _context.TblOrders.AsNoTracking().Where(o => string.IsNullOrEmpty(o.TripId) && o.SendStation == trip.Departure && o.ReceiveStation == trip.Destination && (o.IsDeleted == false || o.IsDeleted == null)).ToListAsync();
             ViewBag.Trip = trip;
             return View(pendingOrders);
         }

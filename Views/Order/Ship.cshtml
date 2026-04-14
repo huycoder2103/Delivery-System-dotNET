@@ -18,6 +18,7 @@
                 <span class="badge">Đơn: @order.OrderId</span>
                 <span class="badge">Hàng: @order.ItemName</span>
                 <span class="badge">Trạm gửi: @order.SendStation</span>
+                <span class="badge">Trạm nhận: @order.ReceiveStation</span>
             </div>
         }
     </div>
@@ -32,7 +33,7 @@
 
         <div class="info">
             Hiển thị các chuyến xe có trạm xuất phát là <strong>"@order?.SendStation"</strong>
-            — phù hợp để chuyển đơn hàng này.
+            và trạm đến là <strong>"@order?.ReceiveStation"</strong> — phù hợp để chuyển đơn hàng này.
         </div>
 
         @if (Model != null && Model.Any())
@@ -90,7 +91,7 @@
         {
             <div class="no-data">
                 <div style="font-size:2rem;margin-bottom:8px;">🔍</div>
-                <p>Không tìm thấy chuyến xe từ trạm <strong>"@order?.SendStation"</strong>.</p>
+                <p>Không tìm thấy chuyến xe phù hợp từ trạm <strong>"@order?.SendStation"</strong> đến trạm <strong>"@order?.ReceiveStation"</strong>.</p>
             </div>
         }
 

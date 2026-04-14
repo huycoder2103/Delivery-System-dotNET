@@ -92,7 +92,7 @@ namespace Delivery_System.Controllers
             if (order == null) return NotFound();
             if (role != "AD" && order.StaffInput != userId) return RedirectToAction("List");
             
-            var matchingTrips = await _context.VwTripLists.AsNoTracking().Where(t => t.Departure == order.SendStation && t.Status == "Đang đi").ToListAsync();
+            var matchingTrips = await _context.VwTripLists.AsNoTracking().Where(t => t.Departure == order.SendStation && t.Destination == order.ReceiveStation && t.Status == "Đang đi").ToListAsync();
             ViewBag.OrderForShip = order;
             return View(matchingTrips);
         }
@@ -112,21 +112,42 @@ namespace Delivery_System.Controllers
                 return (source == "ship") ? RedirectToAction("List") : RedirectToAction("List", "Trip");
             }
 
+            var trip = await _context.VwTripLists.AsNoTracking().FirstOrDefaultAsync(t => t.TripId == tripId);
+            if (trip == null)
+            {
+                TempData["ErrorMessage"] = "Chuyến xe không tồn tại!";
+                return (source == "ship") ? RedirectToAction("List") : RedirectToAction("List", "Trip");
+            }
+
             var strategy = _context.Database.CreateExecutionStrategy();
             await strategy.ExecuteAsync(async () => {
                 using var transaction = await _context.Database.BeginTransactionAsync();
                 try {
                     var orders = await _context.TblOrders.Where(o => orderIds.Contains(o.OrderId)).ToListAsync();
+                    int successCount = 0;
                     foreach (var order in orders)
                     {
+                        if (order.SendStation != trip.Departure || order.ReceiveStation != trip.Destination)
+                        {
+                            continue; // Bỏ qua đơn hàng không khớp trạm
+                        }
+
                         if (role == "AD" || order.StaffInput == userId) {
                             order.TripId = tripId;
                             order.ShipStatus = "Đang chuyển";
+                            successCount++;
                         }
                     }
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
-                    TempData["SuccessMessage"] = $"Đã gán thành công {orders.Count} đơn hàng vào chuyến xe {tripId}";
+                    if (successCount < orders.Count)
+                    {
+                        TempData["SuccessMessage"] = $"Đã gán thành công {successCount} đơn hàng. Một số đơn bị bỏ qua do không khớp trạm gửi/nhận.";
+                    }
+                    else
+                    {
+                        TempData["SuccessMessage"] = $"Đã gán thành công {successCount} đơn hàng vào chuyến xe {tripId}";
+                    }
                 } catch (Exception ex) {
                     await transaction.RollbackAsync();
                     TempData["ErrorMessage"] = "Có lỗi xảy ra: " + ex.Message;

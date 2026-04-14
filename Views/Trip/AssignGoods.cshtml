@@ -56,7 +56,7 @@
 
         <div class="info">
             Các đơn hàng <strong>Chưa Chuyển</strong> có trạm gửi là
-            <strong>"@trip?.Departure"</strong> — sẵn sàng gán lên chuyến này.
+            <strong>"@trip?.Departure"</strong> và trạm nhận là <strong>"@trip?.Destination"</strong> — sẵn sàng gán lên chuyến này.
         </div>
 
         @if (Model != null && Model.Any())
@@ -82,6 +82,7 @@
                             <th>Tên Hàng</th>
                             <th>Người Gửi</th>
                             <th>Người Nhận</th>
+                            <th>Trạm Gửi</th>
                             <th>Trạm Nhận</th>
                             <th>Thao Tác</th>
                         </tr>
@@ -97,6 +98,7 @@
                                 <td><strong>@o.ItemName</strong></td>
                                 <td>@o.SenderName <br><small class="sender-info-mini">@o.SenderPhone</small></td>
                                 <td>@o.ReceiverName <br><small class="receiver-info-mini">@o.ReceiverPhone</small></td>
+                                <td>@o.SendStation</td>
                                 <td>@o.ReceiveStation</td>
                                 <td>
                                     <button type="button" class="btn-assign" onclick="confirmSingleAssign('@o.OrderId')">Gán lẻ</button>
@@ -111,7 +113,7 @@
         {
             <div class="no-data">
                 <div class="no-data-icon">📭</div>
-                <p>Không có đơn hàng chưa chuyển từ trạm <strong>"@trip?.Departure"</strong>.</p>
+                <p>Không có đơn hàng chưa chuyển từ trạm <strong>"@trip?.Departure"</strong> đến trạm <strong>"@trip?.Destination"</strong>.</p>
             </div>
         }
 
@@ -143,6 +145,18 @@
             cancelButtonText: 'Hủy'
         }).then((result) => {
             if (result.isConfirmed) {
+                // Vô hiệu hóa nút để tránh bấm nhiều lần
+                const bulkBtn = document.querySelector('.btn-bulk-assign');
+                if (bulkBtn) {
+                    bulkBtn.disabled = true;
+                    bulkBtn.innerHTML = "⌛ Đang xử lý...";
+                }
+                
+                // Vô hiệu hóa tất cả nút gán lẻ
+                document.querySelectorAll('.btn-assign').forEach(btn => {
+                    btn.disabled = true;
+                });
+
                 document.getElementById('bulkAssignForm').submit();
             }
         })

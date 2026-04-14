@@ -19,11 +19,15 @@ public partial class TblUser
 
     public string? Username { get; set; }
 
+    public int? StationId { get; set; }
+
     public bool? Status { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 
     public virtual TblRole Role { get; set; } = null!;
+
+    public virtual TblStation? Station { get; set; }
 
     public virtual ICollection<TblAnnouncement> TblAnnouncements { get; set; } = new List<TblAnnouncement>();
 

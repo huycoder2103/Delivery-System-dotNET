@@ -380,24 +380,31 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(15)
                 .HasColumnName("phone");
+entity.Property(e => e.Username)
+    .HasMaxLength(50)
+    .HasColumnName("username");
 
-            entity.Property(e => e.Username)
-                .HasMaxLength(50)
-                .HasColumnName("username");
+entity.Property(e => e.StationId)
+    .HasColumnName("stationID");
 
-            entity.Property(e => e.RoleId)
-                .HasMaxLength(5)
-                .HasDefaultValueSql("'US'")
-                .HasColumnName("roleID");
-            entity.Property(e => e.Status)
-                .IsRequired()
-                .HasDefaultValueSql("'1'")
-                .HasColumnName("status");
+entity.Property(e => e.RoleId)
+    .HasMaxLength(5)
+    .HasDefaultValueSql("'US'")
+    .HasColumnName("roleID");
 
-            entity.HasOne(d => d.Role).WithMany(p => p.TblUsers)
-                .HasForeignKey(d => d.RoleId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("tblUsers_ibfk_1");
+entity.Property(e => e.Status)
+    .IsRequired()
+    .HasDefaultValueSql("'1'")
+    .HasColumnName("status");
+
+entity.HasOne(d => d.Station).WithMany()
+    .HasForeignKey(d => d.StationId)
+    .HasConstraintName("FK_User_Station");
+
+entity.HasOne(d => d.Role).WithMany(p => p.TblUsers)
+    .HasForeignKey(d => d.RoleId)
+    .OnDelete(DeleteBehavior.ClientSetNull)
+    .HasConstraintName("tblUsers_ibfk_1");
         });
 
         modelBuilder.Entity<TblWorkShift>(entity =>

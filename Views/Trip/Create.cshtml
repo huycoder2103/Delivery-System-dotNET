@@ -190,6 +190,14 @@
             Swal.fire({ icon: 'error', title: 'Lỗi chọn trạm', text: 'Trạm đi và trạm đến không được trùng nhau!' });
             return false;
         }
+
+        // Ngăn chặn bấm nút nhiều lần
+        const submitBtn = document.querySelector('input[type="submit"][form="tripForm"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.value = "⌛ Đang lưu...";
+        }
+
         return true;
     }
 

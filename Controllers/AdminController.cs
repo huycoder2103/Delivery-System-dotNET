@@ -33,8 +33,15 @@ namespace Delivery_System.Controllers
                 .CountAsync(s => s.Status == "ACTIVE");
 
             var userList = await _context.TblUsers.AsNoTracking()
+                .Include(u => u.Station)
                 .OrderBy(u => u.RoleId)
                 .ToListAsync();
+
+            var stationList = await _context.TblStations.AsNoTracking()
+                .OrderBy(s => s.StationId)
+                .ToListAsync();
+
+            ViewBag.StationList = stationList;
 
             ViewBag.Announcements = await _context.TblAnnouncements.AsNoTracking()
                 .Include(a => a.CreatedByNavigation)
@@ -85,7 +92,7 @@ namespace Delivery_System.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveUser(string newUserID, string newUsername, string newFullName, string newPassword, string newPhone, string newEmail)
+        public async Task<IActionResult> SaveUser(string newUserID, string newUsername, string newFullName, string newPassword, string newPhone, string newEmail, int? newStationID)
         {
             // Kiểm tra trùng lặp Mã nhân viên hoặc Tên đăng nhập
             var existingUser = await _context.TblUsers
@@ -111,6 +118,7 @@ namespace Delivery_System.Controllers
                 Phone = newPhone,
                 Email = newEmail,
                 RoleId = "US",
+                StationId = newStationID,
                 Status = true,
                 CreatedAt = DateTime.Now
             };
@@ -148,6 +156,118 @@ namespace Delivery_System.Controllers
                 TempData["SuccessMessage"] = "Xóa nhân viên thành công!";
             }
             return RedirectToAction("Index");
+        }
+
+        // --- STATION MANAGEMENT ---
+
+        [HttpPost]
+        public async Task<IActionResult> SaveStation(int? stationId, string stationName, string address, string phone)
+        {
+            if (!IsAdmin()) return Forbid();
+
+            if (stationId.HasValue && stationId.Value > 0)
+            {
+                // Update
+                var existing = await _context.TblStations.FindAsync(stationId.Value);
+                if (existing != null)
+                {
+                    existing.StationName = stationName;
+                    existing.Address = address;
+                    existing.Phone = phone;
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Cập nhật trạm thành công!";
+                }
+            }
+            else
+            {
+                // Create
+                var station = new TblStation
+                {
+                    StationName = stationName,
+                    Address = address,
+                    Phone = phone,
+                    IsActive = true
+                };
+                _context.TblStations.Add(station);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Thêm trạm mới thành công!";
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ToggleStation(int stationId)
+        {
+            if (!IsAdmin()) return Forbid();
+            var station = await _context.TblStations.FindAsync(stationId);
+            if (station != null)
+            {
+                station.IsActive = !(station.IsActive ?? false);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteStation(int stationId)
+        {
+            if (!IsAdmin()) return Forbid();
+            var station = await _context.TblStations.FindAsync(stationId);
+            if (station != null)
+            {
+                _context.TblStations.Remove(station);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Xóa trạm thành công!";
+            }
+            return RedirectToAction("Index");
+        }
+
+        // --- STAFF STATION MANAGEMENT ---
+
+        [HttpGet]
+        public async Task<IActionResult> GetStaffByStation(int stationId)
+        {
+            if (!IsAdmin()) return Forbid();
+
+            var inStation = await _context.TblUsers.AsNoTracking()
+                .Where(u => u.StationId == stationId)
+                .Select(u => new { u.UserId, u.FullName, u.Phone })
+                .ToListAsync();
+
+            var available = await _context.TblUsers.AsNoTracking()
+                .Where(u => u.StationId == null && u.RoleId != "AD")
+                .Select(u => new { u.UserId, u.FullName, u.Phone })
+                .ToListAsync();
+
+            return Json(new { inStation, available });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddStaffToStation(string userId, int stationId)
+        {
+            if (!IsAdmin()) return Forbid();
+            var user = await _context.TblUsers.FindAsync(userId);
+            if (user != null)
+            {
+                user.StationId = stationId;
+                await _context.SaveChangesAsync();
+                return Json(new { success = true });
+            }
+            return Json(new { success = false, message = "Không tìm thấy nhân viên" });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveStaffFromStation(string userId)
+        {
+            if (!IsAdmin()) return Forbid();
+            var user = await _context.TblUsers.FindAsync(userId);
+            if (user != null)
+            {
+                user.StationId = null;
+                await _context.SaveChangesAsync();
+                return Json(new { success = true });
+            }
+            return Json(new { success = false, message = "Không tìm thấy nhân viên" });
         }
 
         private string HashSha256(string rawData)
