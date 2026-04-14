@@ -67,23 +67,23 @@
             <div class="section-label">Thông tin khách hàng</div>
             <div class="row2">
                 <div class="field">
-                    <label>Người Gửi</label>
+                    <label>Người Gửi (Trống: None)</label>
                     <input asp-for="SenderName" type="text" placeholder="Tên người gửi...">
                 </div>
                 <div class="field">
                     <label>SĐT Gửi <span style="color:red">*</span></label>
-                    <input asp-for="SenderPhone" id="senderPhone" type="text" required placeholder="Số điện thoại người gửi...">
+                    <input asp-for="SenderPhone" id="senderPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Số điện thoại người gửi...">
                 </div>
             </div>
 
             <div class="row2">
                 <div class="field">
-                    <label>Người Nhận</label>
+                    <label>Người Nhận (Trống: None)</label>
                     <input asp-for="ReceiverName" type="text" placeholder="Tên người nhận...">
                 </div>
                 <div class="field">
                     <label>SĐT Nhận <span style="color:red">*</span></label>
-                    <input asp-for="ReceiverPhone" id="receiverPhone" type="text" required placeholder="Số điện thoại người nhận...">
+                    <input asp-for="ReceiverPhone" id="receiverPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Số điện thoại người nhận...">
                 </div>
             </div>
 
@@ -114,14 +114,15 @@
 </div>
 
 <script>
-    function validateOrderForm() {
+    function validateEditForm() {
         var tr = document.getElementById("trField").value.trim();
         var ct = document.getElementById("ctField").value.trim();
         var sPhone = document.getElementById("senderPhone").value.trim();
         var rPhone = document.getElementById("receiverPhone").value.trim();
 
-        if (sPhone === "" || rPhone === "") {
-            Swal.fire({ icon: 'warning', title: 'Thiếu SĐT', text: 'Số điện thoại người gửi và người nhận không được để trống!' });
+        var phoneRegex = /^\d{10,11}$/;
+        if (!phoneRegex.test(sPhone) || !phoneRegex.test(rPhone)) {
+            Swal.fire({ icon: 'warning', title: 'SĐT không hợp lệ', text: 'Số điện thoại phải là chữ số và có độ dài từ 10 đến 11 ký tự!' });
             return false;
         }
 

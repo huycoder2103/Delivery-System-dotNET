@@ -60,23 +60,23 @@
             <div class="section-title">👤 Thông tin khách hàng</div>
             <div class="form-row">
                 <div class="form-group">
-                    <label>Người Gửi</label>
+                    <label>Người Gửi (Mặc định: None)</label>
                     <input asp-for="SenderName" type="text" placeholder="Tên khách hàng gửi...">
                 </div>
                 <div class="form-group">
                     <label>Số Điện Thoại Gửi <span class="required-star">*</span></label>
-                    <input asp-for="SenderPhone" id="senderPhone" type="text" required placeholder="Nhập SĐT người gửi...">
+                    <input asp-for="SenderPhone" id="senderPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Nhập SĐT người gửi...">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label>Người Nhận</label>
+                    <label>Người Nhận (Mặc định: None)</label>
                     <input asp-for="ReceiverName" type="text" placeholder="Tên khách hàng nhận...">
                 </div>
                 <div class="form-group">
                     <label>Số Điện Thoại Nhận <span class="required-star">*</span></label>
-                    <input asp-for="ReceiverPhone" id="receiverPhone" type="text" required placeholder="Nhập SĐT người nhận...">
+                    <input asp-for="ReceiverPhone" id="receiverPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Nhập SĐT người nhận...">
                 </div>
             </div>
         </div>
@@ -144,8 +144,9 @@
             return false;
         }
 
-        if (sPhone === "" || rPhone === "") {
-            Swal.fire({ icon: 'warning', title: 'Thiếu thông tin', text: 'Số điện thoại người gửi và người nhận không được để trống!' });
+        var phoneRegex = /^\d{10,11}$/;
+        if (!phoneRegex.test(sPhone) || !phoneRegex.test(rPhone)) {
+            Swal.fire({ icon: 'warning', title: 'SĐT không hợp lệ', text: 'Số điện thoại phải là chữ số và có độ dài từ 10 đến 11 ký tự!' });
             return false;
         }
 

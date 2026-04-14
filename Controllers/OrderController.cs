@@ -158,7 +158,9 @@ namespace Delivery_System.Controllers
             var existing = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == order.OrderId);
             if (existing != null && (role == "AD" || existing.StaffInput == userId)) {
                 existing.ItemName = order.ItemName; existing.SendStation = order.SendStation; existing.ReceiveStation = order.ReceiveStation;
-                existing.SenderName = order.SenderName; existing.SenderPhone = order.SenderPhone; existing.ReceiverName = order.ReceiverName;
+                existing.SenderName = string.IsNullOrWhiteSpace(order.SenderName) ? "None" : order.SenderName;
+                existing.SenderPhone = order.SenderPhone;
+                existing.ReceiverName = string.IsNullOrWhiteSpace(order.ReceiverName) ? "None" : order.ReceiverName;
                 existing.ReceiverPhone = order.ReceiverPhone; existing.Amount = order.Amount; existing.Tr = order.Tr; existing.Ct = order.Ct; existing.Note = order.Note;
                 await _context.SaveChangesAsync();
             }
@@ -224,6 +226,10 @@ namespace Delivery_System.Controllers
             order.IsDeleted = false;
             order.CreatedAt = vniTime;
             order.ShiftId = activeShift?.ShiftId; // Gán ShiftId nếu có
+
+            // Default empty names to "None"
+            if (string.IsNullOrWhiteSpace(order.SenderName)) order.SenderName = "None";
+            if (string.IsNullOrWhiteSpace(order.ReceiverName)) order.ReceiverName = "None";
 
             _context.TblOrders.Add(order);
             await _context.SaveChangesAsync();

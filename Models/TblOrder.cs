@@ -13,23 +13,20 @@ public partial class TblOrder
     [StringLength(200)]
     public string ItemName { get; set; } = null!;
 
-    [Range(0, 1000000000, ErrorMessage = "Số tiền không hợp lệ")]
     public decimal? Amount { get; set; }
 
-    [Required(ErrorMessage = "Tên người gửi không được để trống")]
     public string? SenderName { get; set; }
 
     [Required(ErrorMessage = "SĐT người gửi không được để trống")]
-    [RegularExpression(@"^\d{10,11}$", ErrorMessage = "SĐT phải có 10-11 chữ số")]
+    [RegularExpression(@"^\d{10,11}$", ErrorMessage = "Số điện thoại phải là chữ số và có độ dài từ 10 đến 11 ký tự")]
     public string? SenderPhone { get; set; }
 
     public string? SendStation { get; set; }
 
-    [Required(ErrorMessage = "Tên người nhận không được để trống")]
     public string? ReceiverName { get; set; }
 
     [Required(ErrorMessage = "SĐT người nhận không được để trống")]
-    [RegularExpression(@"^\d{10,11}$", ErrorMessage = "SĐT phải có 10-11 chữ số")]
+    [RegularExpression(@"^\d{10,11}$", ErrorMessage = "Số điện thoại phải là chữ số và có độ dài từ 10 đến 11 ký tự")]
     public string? ReceiverPhone { get; set; }
 
     public string? ReceiveStation { get; set; }
