@@ -7,7 +7,7 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/create_trip.css" />
+    <link rel="stylesheet" href="~/css/create_trip.css?v=@DateTime.Now.Ticks" />
 }
 
 <div class="trip-container-modern @(ViewBag.HasActiveShift == false ? "content-blurred" : "")">
@@ -144,13 +144,7 @@
     </div>
 }
 
-<style>
-    .content-blurred {
-        filter: blur(4px);
-        pointer-events: none;
-        user-select: none;
-    }
-</style>
+
 
 <script>
     let currentAMPM = 'AM';

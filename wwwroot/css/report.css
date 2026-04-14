@@ -225,6 +225,28 @@ table tr:hover {
     padding: 0 20px;
 }
 
+.report-header-gradient {
+    background: linear-gradient(135deg, #1a73e8, #0d47a1) !important;
+}
+
+.report-header-subtext {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-top: 4px;
+}
+
+.btn-back-home {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+    text-decoration: none;
+}
+
+.btn-back-home:hover {
+    background: rgba(255,255,255,0.3);
+    color: white;
+}
+
 .report-card { 
     border: none; 
     border-radius: 15px; 
@@ -288,152 +310,114 @@ table tr:hover {
     color: #1a73e8; 
 }
 
-.modern-page-header-meta {
-    font-size: 0.85rem;
-    opacity: 0.8;
-    margin-top: 4px;
+.report-tab-btn:not(.active):hover {
+    background: #d2e3fc;
 }
 
-.btn-header-back {
-    background: rgba(255,255,255,0.2);
-    color: white;
-    border: 1px solid rgba(255,255,255,0.3);
-    text-decoration: none;
-}
-
-.filter-form-row {
+.filter-form-container {
     display: flex;
     gap: 35px;
     align-items: flex-end;
 }
 
-.filter-input-group {
+.filter-group-date {
     flex: 1;
     max-width: 300px;
 }
 
-.filter-input-label {
+.filter-label {
     margin-bottom: 8px;
     display: block;
 }
 
-.filter-input-date {
+.filter-input-modern {
     padding: 10px;
     border-radius: 10px;
     border: 1px solid #ddd;
     width: 100%;
 }
 
-.filter-btn-update {
+.btn-update-report {
     padding: 11px 25px;
 }
 
-.date-badge-container {
+.date-badge-wrapper {
     margin-left: auto;
 }
 
-.date-badge {
+.date-badge-modern {
     padding: 10px 20px;
     font-size: 0.9rem;
 }
 
-.stat-cards-row {
+.stat-cards-flex {
     display: flex;
     gap: 20px;
 }
 
-.stat-card-col {
+.stat-card-wrapper {
     flex: 1;
 }
 
-.chart-container {
+.chart-title {
+    color: #333;
+}
+
+.chart-box {
     height: 400px;
     width: 100%;
 }
 
-.table-header-text {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    color: #6c757d;
-}
-
-.staff-id-text {
-    font-size: 0.7rem;
-    color: #888;
-}
-
-.badge-status-staff {
-    font-size: 0.65rem;
-}
-
-.btn-action-view {
-    padding: 5px 15px;
-    font-size: 0.75rem;
-}
-
-.shift-active-alert {
+.active-shift-alert {
     border-radius: 15px;
     padding: 20px;
     margin-bottom: 40px;
 }
 
-.btn-end-shift {
+.btn-end-shift-modern {
     background: #ea4335;
     color: white;
-    text-decoration: none;
+    border: none;
+    cursor: pointer;
 }
 
-.summary-cards-flex {
+.btn-end-shift-modern:hover {
+    background: #d33828;
+}
+
+.us-stat-flex {
     display: flex;
     gap: 30px;
     justify-content: center;
 }
 
-.summary-stat-card {
+.us-report-card {
     min-width: 350px;
 }
 
-.summary-stat-value {
+.us-stat-label {
+    font-size: 1rem;
+}
+
+.us-stat-value {
     font-size: 3rem;
 }
 
-.summary-footer-note {
+.us-footer-note {
     color: #888;
     margin-top: 10px;
 }
 
-.history-flex-container {
-    display: flex;
-    gap: 20px;
-}
-
-.history-list-col {
-    flex: 12; /* Default when detail is hidden */
-}
-
-.history-list-col.with-detail {
-    flex: 5;
-}
-
-.history-detail-col {
-    flex: 7;
-}
-
-.shift-time-text {
-    font-size: 0.85rem;
-}
-
-.order-id-highlight {
-    color: #1a73e8;
-}
-
-
 @media(max-width:768px) {
-    .stat-cards-row, .summary-cards-flex, .history-flex-container, .filter-form-row {
+    .stat-cards-flex, .us-stat-flex, .filter-form-container {
         flex-direction: column;
     }
-    .filter-input-group, .summary-stat-card {
+    .filter-group-date, .us-report-card {
         max-width: 100%;
         min-width: 100%;
+    }
+    .date-badge-wrapper {
+        margin-left: 0;
+        margin-top: 10px;
     }
 }

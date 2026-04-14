@@ -6,21 +6,48 @@
     var createdTrips = ViewBag.CreatedTrips as List<Delivery_System.Models.TblTrip>;
 }
 
+<style>
+    .shift-detail-header-info { margin: 0; font-size: 1.25rem; font-weight: 800; color: var(--text-main); }
+    .shift-detail-meta { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; margin-top: 2px; }
+    .shift-detail-primary-text { color: var(--primary); font-weight: 700; }
+    .shift-detail-status-section { text-align: right; }
+    .shift-detail-status-badge { margin-bottom: 8px; font-size: 0.85rem; padding: 8px 16px; }
+    .shift-detail-revenue { font-weight: 800; color: #10b981; font-size: 1.1rem; letter-spacing: -0.02em; }
+    
+    .tab-content-pane { display: none; }
+    .tab-content-pane.active { display: block; }
+    
+    .table-col-right { text-align: right; }
+    .table-col-time { text-align: right; color: var(--text-muted); font-weight: 500; }
+    .table-text-bold { font-weight: 600; }
+    
+    .order-id-added { color: var(--primary); font-weight: bold; }
+    .order-id-received { color: #10b981; font-weight: bold; }
+    .trip-id-text { color: #f59e0b; font-weight: bold; }
+    
+    .badge-status-small { font-size: 0.65rem; }
+    .badge-status-orange { font-size: 0.65rem; background: #fff7ed; color: #c2410c; border-color: #ffedd5; }
+    .badge-rounded { border-radius: 6px; }
+    .badge-trip-type { background: #eff6ff; color: #1e40af; border-radius: 6px; }
+    
+    .trip-route-text { font-weight: 600; font-size: 0.85rem; }
+</style>
+
 <div class="modal-header-custom">
     <div class="staff-info-card-mini">
         <div class="avatar-mini">@Model.Staff.FullName.Substring(0,1).ToUpper()</div>
         <div>
-            <h3 style="margin:0; font-size: 1.25rem; font-weight: 800; color: var(--text-main);">@Model.Staff.FullName</h3>
-            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500; margin-top: 2px;">
-                Mã ca #@Model.ShiftId | <span style="color: var(--primary); font-weight: 700;">@Model.StartTime.ToString("HH:mm - dd/MM")</span>
+            <h3 class="shift-detail-header-info">@Model.Staff.FullName</h3>
+            <div class="shift-detail-meta">
+                Mã ca #@Model.ShiftId | <span class="shift-detail-primary-text">@Model.StartTime.ToString("HH:mm - dd/MM")</span>
             </div>
         </div>
     </div>
-    <div style="text-align: right;">
-        <span class="badge @(Model.Status == "ACTIVE" ? "badge-active" : "badge-ended")" style="margin-bottom: 8px; font-size: 0.85rem; padding: 8px 16px;">
+    <div class="shift-detail-status-section">
+        <span class="badge @(Model.Status == "ACTIVE" ? "badge-active" : "badge-ended") shift-detail-status-badge">
             @(Model.Status == "ACTIVE" ? "● Đang làm việc" : "● Ca đã kết thúc")
         </span>
-        <div style="font-weight: 800; color: #10b981; font-size: 1.1rem; letter-spacing: -0.02em;">
+        <div class="shift-detail-revenue">
             💰 @string.Format("{0:N0}", ViewBag.TotalRevenue) .000 VNĐ
         </div>
     </div>
@@ -34,29 +61,29 @@
 
 <div class="modal-scroll-area">
     <!-- TAB: HÀNG ĐÃ THÊM -->
-    <div id="tab-added" class="activity-content active" style="display: block;">
+    <div id="tab-added" class="activity-content tab-content-pane active">
         <table class="table-mini">
             <thead>
                 <tr>
                     <th>Mã Đơn</th>
                     <th>Tên Hàng</th>
                     <th>Trạng Thái</th>
-                    <th style="text-align: right;">Giờ</th>
+                    <th class="table-col-right">Giờ</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach(var o in addedOrders) {
                     <tr>
-                        <td><strong style="color:var(--primary)">@o.OrderId</strong></td>
-                        <td style="font-weight: 600;">@o.ItemName</td>
+                        <td><strong class="order-id-added">@o.OrderId</strong></td>
+                        <td class="table-text-bold">@o.ItemName</td>
                         <td>
                             @if (o.ShipStatus == "Đã giao") {
-                                <span class="badge badge-active" style="font-size: 0.65rem;">Đã giao</span>
+                                <span class="badge badge-active badge-status-small">Đã giao</span>
                             } else {
-                                <span class="badge badge-info" style="font-size: 0.65rem; background: #fff7ed; color: #c2410c; border-color: #ffedd5;">@o.ShipStatus</span>
+                                <span class="badge badge-info badge-status-orange">@o.ShipStatus</span>
                             }
                         </td>
-                        <td style="text-align: right; color: var(--text-muted); font-weight: 500;">@o.CreatedAt?.ToString("HH:mm")</td>
+                        <td class="table-col-time">@o.CreatedAt?.ToString("HH:mm")</td>
                     </tr>
                 }
                 @if(!addedOrders.Any()) { <tr><td colspan="4" class="empty-msg">Chưa có dữ liệu hàng hóa được thêm.</td></tr> }
@@ -65,23 +92,23 @@
     </div>
 
     <!-- TAB: HÀNG ĐÃ GIAO -->
-    <div id="tab-received" class="activity-content" style="display: none;">
+    <div id="tab-received" class="activity-content tab-content-pane">
         <table class="table-mini">
             <thead>
                 <tr>
                     <th>Mã Đơn</th>
                     <th>Tên Hàng</th>
                     <th>Trạm Nhận</th>
-                    <th style="text-align: right;">Giờ</th>
+                    <th class="table-col-right">Giờ</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach(var o in receivedOrders) {
                     <tr>
-                        <td><strong style="color:#10b981">@o.OrderId</strong></td>
-                        <td style="font-weight: 600;">@o.ItemName</td>
-                        <td><span class="badge badge-active" style="border-radius: 6px;">@o.ReceiveStation</span></td>
-                        <td style="text-align: right; color: var(--text-muted); font-weight: 500;">@o.CreatedAt?.ToString("HH:mm")</td>
+                        <td><strong class="order-id-received">@o.OrderId</strong></td>
+                        <td class="table-text-bold">@o.ItemName</td>
+                        <td><span class="badge badge-active badge-rounded">@o.ReceiveStation</span></td>
+                        <td class="table-col-time">@o.CreatedAt?.ToString("HH:mm")</td>
                     </tr>
                 }
                 @if(!receivedOrders.Any()) { <tr><td colspan="4" class="empty-msg">Chưa có dữ liệu hàng hóa đã giao.</td></tr> }
@@ -90,23 +117,23 @@
     </div>
 
     <!-- TAB: CHUYẾN XE -->
-    <div id="tab-trips" class="activity-content" style="display: none;">
+    <div id="tab-trips" class="activity-content tab-content-pane">
         <table class="table-mini">
             <thead>
                 <tr>
                     <th>Mã Chuyến</th>
                     <th>Lộ Trình</th>
                     <th>Loại</th>
-                    <th style="text-align: right;">Giờ</th>
+                    <th class="table-col-right">Giờ</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach(var t in createdTrips) {
                     <tr>
-                        <td><strong style="color:#f59e0b">@t.TripId</strong></td>
-                        <td style="font-weight: 600; font-size: 0.85rem;">@t.Departure ➔ @t.Destination</td>
-                        <td><span class="badge badge-info" style="background: #eff6ff; color: #1e40af; border-radius: 6px;">@t.TripType</span></td>
-                        <td style="text-align: right; color: var(--text-muted); font-weight: 500;">@t.CreatedAt?.ToString("HH:mm")</td>
+                        <td><strong class="trip-id-text">@t.TripId</strong></td>
+                        <td class="trip-route-text">@t.Departure ➔ @t.Destination</td>
+                        <td><span class="badge badge-info badge-trip-type">@t.TripType</span></td>
+                        <td class="table-col-time">@t.CreatedAt?.ToString("HH:mm")</td>
                     </tr>
                 }
                 @if(!createdTrips.Any()) { <tr><td colspan="4" class="empty-msg">Chưa có dữ liệu chuyến xe.</td></tr> }

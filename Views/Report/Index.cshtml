@@ -11,21 +11,21 @@
     <link rel="stylesheet" href="~/css/report.css?v=@DateTime.Now.Ticks">
 }
 
-<div class="container-custom" style="max-width: 1600px; margin: 20px auto; padding: 0 20px;">
+<div class="container-custom">
     
-    <div class="modern-page-header" style="background: linear-gradient(135deg, #1a73e8, #0d47a1);">
+    <div class="modern-page-header report-header-gradient">
         <div>
             <h3>📊 @(role == "AD" ? "BÁO CÁO & THỐNG KÊ" : "KẾT QUẢ LÀM VIỆC CÁ NHÂN")</h3>
-            <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">@(role == "AD" ? "Theo dõi doanh thu và hiệu suất ca làm việc toàn hệ thống" : "Theo dõi hiệu suất và lịch sử ca làm việc của bạn")</div>
+            <div class="report-header-subtext">@(role == "AD" ? "Theo dõi doanh thu và hiệu suất ca làm việc toàn hệ thống" : "Theo dõi hiệu suất và lịch sử ca làm việc của bạn")</div>
         </div>
-        <a asp-controller="Home" asp-action="Index" class="btn-modern" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); text-decoration: none;">
+        <a asp-controller="Home" asp-action="Index" class="btn-modern btn-back-home">
             ← Quay lại Trang Chủ
         </a>
     </div>
 
     <div class="d-flex gap-3 mb-4" id="reportTabs">
         <button class="report-tab-btn active" type="button">📋 Tổng Quan</button>
-        <a href="@(role == "AD" ? Url.Action("Index", "Shift") : Url.Action("MyHistory", "Shift"))" class="report-tab-btn" style="text-decoration: none;">📜 Nhật Ký Làm Việc</a>
+        <a href="@(role == "AD" ? Url.Action("Index", "Shift") : Url.Action("MyHistory", "Shift"))" class="report-tab-btn btn-no-decoration">📜 Nhật Ký Làm Việc</a>
     </div>
 
     <div class="tab-content" id="reportTabsContent">
@@ -34,26 +34,26 @@
             @if (role == "AD")
             {
                 <div class="modern-card mb-4">
-                    <form asp-action="Index" method="GET" style="display: flex; gap: 35px; align-items: flex-end;">
-                        <div style="flex: 1; max-width: 300px;">
-                            <label class="stat-label" style="margin-bottom: 8px; display: block;">Chọn ngày xem dữ liệu</label>
-                            <input type="date" name="reportDate" class="form-control" style="padding: 10px; border-radius: 10px; border: 1px solid #ddd; width: 100%;" value="@reportDate">
+                    <form asp-action="Index" method="GET" class="filter-form-container">
+                        <div class="filter-group-date">
+                            <label class="stat-label filter-label">Chọn ngày xem dữ liệu</label>
+                            <input type="date" name="reportDate" class="form-control filter-input-modern" value="@reportDate">
                         </div>
-                        <button type="submit" class="btn-modern btn-primary-modern" style="padding: 11px 25px;">🔍 CẬP NHẬT DỮ LIỆU</button>
-                        <div style="margin-left: auto;">
-                            <span class="badge badge-info" style="padding: 10px 20px; font-size: 0.9rem;">📅 Ngày: <strong>@DateTime.Parse(reportDate).ToString("dd/MM/yyyy")</strong></span>
+                        <button type="submit" class="btn-modern btn-primary-modern btn-update-report">🔍 CẬP NHẬT DỮ LIỆU</button>
+                        <div class="date-badge-wrapper">
+                            <span class="badge badge-info date-badge-modern">📅 Ngày: <strong>@DateTime.Parse(reportDate).ToString("dd/MM/yyyy")</strong></span>
                         </div>
                     </form>
                 </div>
 
-                <div class="row mb-4" style="display: flex; gap: 20px;">
-                    <div style="flex: 1;">
+                <div class="stat-cards-flex mb-4">
+                    <div class="stat-card-wrapper">
                         <div class="card report-card p-4 border-start border-primary border-5 shadow-sm">
                             <div class="stat-label">Doanh thu hệ thống (Ngày)</div>
                             <div class="stat-value text-primary">@string.Format("{0:N0}", ViewBag.RevenueDateVal) k</div>
                         </div>
                     </div>
-                    <div style="flex: 1;">
+                    <div class="stat-card-wrapper">
                         <div class="card report-card p-4 border-start border-info border-5 shadow-sm">
                             <div class="stat-label">Đơn hàng mới</div>
                             <div class="stat-value text-info">@ViewBag.OrdersDateVal</div>
@@ -62,8 +62,8 @@
                 </div>
 
                 <div class="card report-card p-4 mb-4">
-                    <h5 class="fw-bold mb-4" style="color: #333;">🚀 Tăng Trưởng Doanh Thu Toàn Hệ Thống (7 Ngày)</h5>
-                    <div style="height: 400px; width: 100%;">
+                    <h5 class="fw-bold mb-4 chart-title">🚀 Tăng Trưởng Doanh Thu Toàn Hệ Thống (7 Ngày)</h5>
+                    <div class="chart-box">
                         <canvas id="realRevenueChart"></canvas>
                     </div>
                 </div>
@@ -76,28 +76,28 @@
                     
                     @if (ViewBag.CurrentShift != null)
                     {
-                        <div class="alert alert-info d-flex justify-content-between align-items-center" style="border-radius: 15px; padding: 20px; margin-bottom: 40px;">
+                        <div class="alert alert-info d-flex justify-content-between align-items-center active-shift-alert">
                             <div>
                                 <h5 class="mb-1">🟢 Bạn đang trong ca làm việc hoạt động</h5>
                                 <p class="mb-0 small">Bắt đầu lúc: <strong>@ViewBag.CurrentShift.StartTime.ToString("HH:mm - dd/MM/yyyy")</strong></p>
                             </div>
                             <form asp-controller="Shift" asp-action="End" method="POST">
-                                <button type="submit" class="btn-modern" style="background: #ea4335; color: white; border: none; cursor: pointer;" onclick="return confirm('Bạn muốn kết thúc ca làm việc này?')">Kết Thúc Ca</button>
+                                <button type="submit" class="btn-modern btn-end-shift-modern" onclick="return confirm('Bạn muốn kết thúc ca làm việc này?')">Kết Thúc Ca</button>
                             </form>
                         </div>
                     }
 
-                    <div style="display: flex; gap: 30px; justify-content: center;">
-                        <div class="card report-card p-5 text-center border-bottom border-success border-5 shadow" style="min-width: 350px;">
-                            <div class="stat-label" style="font-size: 1rem;">Đơn hàng đã giao thành công</div>
-                            <div class="stat-value text-success" style="font-size: 3rem;">@ViewBag.DeliveredOrders</div>
-                            <div style="color: #888; margin-top: 10px;">Tổng số đơn bạn đã nhập và hoàn thành</div>
+                    <div class="us-stat-flex">
+                        <div class="card report-card p-5 text-center border-bottom border-success border-5 shadow us-report-card">
+                            <div class="stat-label us-stat-label">Đơn hàng đã giao thành công</div>
+                            <div class="stat-value text-success us-stat-value">@ViewBag.DeliveredOrders</div>
+                            <div class="us-footer-note">Tổng số đơn bạn đã nhập và hoàn thành</div>
                         </div>
                         
-                        <div class="card report-card p-5 text-center border-bottom border-primary border-5 shadow" style="min-width: 350px;">
-                            <div class="stat-label" style="font-size: 1rem;">Tổng doanh thu thu được</div>
-                            <div class="stat-value text-primary" style="font-size: 3rem;">@string.Format("{0:N0}", ViewBag.TotalRevenue) K</div>
-                            <div style="color: #888; margin-top: 10px;">Tổng số tiền cước từ các đơn hàng bạn xử lý</div>
+                        <div class="card report-card p-5 text-center border-bottom border-primary border-5 shadow us-report-card">
+                            <div class="stat-label us-stat-label">Tổng doanh thu thu được</div>
+                            <div class="stat-value text-primary us-stat-value">@string.Format("{0:N0}", ViewBag.TotalRevenue) K</div>
+                            <div class="us-footer-note">Tổng số tiền cước từ các đơn hàng bạn xử lý</div>
                         </div>
                     </div>
 

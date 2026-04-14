@@ -161,3 +161,5 @@
         justify-content: center;
     }
 }
+
+.content-blurred { filter: blur(4px); pointer-events: none; user-select: none; }

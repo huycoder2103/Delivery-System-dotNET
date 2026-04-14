@@ -1,37 +1,5 @@
 @model IEnumerable<Delivery_System.Models.VwTripList>
 
-<style>
-    /* CSS đồng bộ cho bảng chuyến xe */
-    .col-route { min-width: 200px; width: 200px; text-align: center; }
-    
-    .route-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        font-weight: 500;
-        font-size: 14px;
-    }
-
-    .station-send { color: #1a73e8; }
-    .station-receive { color: #d93025; }
-    .route-arrow { color: #ccc; }
-
-    .trip-id-text { color: #1a73e8; font-size: 13px; font-weight: 500; }
-
-    /* Style cho các nút action của chuyến xe */
-    .action-btns-grid { display: flex; flex-direction: column; gap: 5px; align-items: center; }
-    .btn-action-trip { 
-        display: inline-block; text-align: center; text-decoration: none;
-        padding: 8px 10px; border-radius: 8px; font-weight: 700; cursor: pointer; 
-        width: 110px; font-size: 12px; border: none; transition: all 0.2s;
-    }
-    .btn-action-trip:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    
-    .btn-status-arrived { background: #e6f4ea; color: #1e8e3e; width:130px}
-    .btn-status-assign { background: #e6f4ea; color: #1e8e3e; }
-    .btn-status-view { background: #e8f0fe; color: #1a73e8; }
-</style>
 
 @if (Model != null && Model.Any())
 {

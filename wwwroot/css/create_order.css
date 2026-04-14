@@ -160,3 +160,5 @@
         width: 100%;
     }
 }
+
+.content-blurred { filter: blur(4px); pointer-events: none; user-select: none; }

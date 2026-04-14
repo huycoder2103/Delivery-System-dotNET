@@ -6,7 +6,7 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/create_order.css" />
+    <link rel="stylesheet" href="~/css/create_order.css?v=@DateTime.Now.Ticks" />
 }
 
 <div class="order-container-modern @(ViewBag.HasActiveShift == false ? "content-blurred" : "")">
@@ -128,13 +128,7 @@
     </div>
 }
 
-<style>
-    .content-blurred {
-        filter: blur(4px);
-        pointer-events: none;
-        user-select: none;
-    }
-</style>
+
 
 <script>
     function validateOrderForm() {

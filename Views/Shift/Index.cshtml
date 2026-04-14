@@ -5,59 +5,8 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/shift.css">
+    <link rel="stylesheet" href="~/css/shift.css?v=@DateTime.Now.Ticks">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        /* Backdrop Blur cho Modal */
-        #detailsModal.modal {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            align-items: center;
-            justify-content: center;
-        }
-
-        #detailsModal .modal-content {
-            max-width: 950px;
-            width: 95%;
-            background: #ffffff;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @@keyframes modalSlideUp {
-            from { opacity: 0; transform: translateY(40px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .modal-footer {
-            padding: 20px 30px;
-            background: #f8fafc;
-            border-top: 1px solid #f1f5f9;
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .btn-close-modal {
-            padding: 12px 30px;
-            border-radius: 12px;
-            background: var(--text-main);
-            color: white;
-            font-weight: 700;
-            border: none;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-close-modal:hover { background: #000; transform: scale(1.02); }
-    </style>
 }
 
 <div class="shift-wrapper">

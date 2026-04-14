@@ -119,3 +119,26 @@
         min-width: unset !important;
     }
 }
+
+/* Partial Order Table Styles */
+.col-order-id { min-width: 100px; }
+.col-item-name { width: 220px; font-weight: 500; font-size: 13px; }
+.col-customer { width: 140px;font-weight: 500;font-size: 12px; }
+.text-order-id { color: #1a73e8; font-size: 13px; font-weight: 500; }
+.customer-info-box { display: flex; flex-direction: column; }
+.customer-name { font-weight: 500; font-size: 14px; margin-bottom: 5px; }
+.customer-phone { font-weight: 500; color: #444; font-size: 14px; }
+.staff-input-badge { color: #5f6368; font-weight: 500;font-size: 12px; }
+.note-cell { max-width: 150px; font-size: 0.8rem; color: #666; font-style: italic; }
+.time-cell { font-size: 0.75rem; color: #888; }
+.trip-id-link { color: #1a73e8; font-weight: 700; }
+.no-data-msg { padding: 50px; color: #999; text-align: center; }
+.btn-action-text { display: flex; align-items: center; justify-content: center; gap: 5px; padding: 6px 4px; border-radius: 6px; border: none; cursor: pointer; font-size: 10px; font-weight: 700; transition: all 0.25s; text-decoration: none; width: 100%; }
+.btn-full-width { grid-column: span 2; padding: 8px 10px; }
+.btn-action-text:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+.btn-s-print { background: #e8eaf6; color: #3f51b5;}
+.btn-s-ship { width: 90%; background: #e8f0fe; color: #1a73e8; }
+.btn-s-edit { background: #e6f4ea; color: #1e8e3e; }
+.btn-s-delete { background: #fce8e6; color: #d93025; }
+.btn-disabled { opacity: 0.5; cursor: not-allowed; background: #eee; color: #aaa; }
+.status-badge-fixed { display: inline-block; width: 70px; text-align: center; font-size: 10px; padding: 4px 0; line-height: 1; white-space: nowrap; vertical-align: middle; font-weight: 600; }
