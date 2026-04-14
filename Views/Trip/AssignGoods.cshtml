@@ -7,6 +7,24 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/assign_goods.css">
+    @* <style>
+        .msg-success { background:#d4edda; color:#155724; padding:9px 14px; border-radius:4px; margin-bottom:12px; font-weight:600; }
+        .msg-error { background:#f8d7da; color:#721c24; padding:9px 14px; border-radius:4px; margin-bottom:12px; font-weight:600; }
+        
+        .bulk-actions-row { margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .select-all-label { font-weight: 700; cursor: pointer; }
+        .checkbox-all-input { transform: scale(1.2); margin-right: 8px; }
+        .btn-bulk-assign { background: #27ae60; padding: 10px 25px; }
+        
+        .centered-td { text-align: center; }
+        .order-checkbox-input { transform: scale(1.3); }
+        .order-id-highlight { color:#2980b9; }
+        .sender-info-mini { color:#888; }
+        .receiver-info-mini { color:#888; }
+        
+        .no-data-icon { font-size:2rem; margin-bottom:8px; }
+        .btn-footer-back-link { text-decoration:none; display:inline-block; text-align:center; }
+    </style> *@
 }
 
 <div class="page-wrap">
@@ -25,13 +43,13 @@
     <div class="body">
         @if (TempData["SuccessMessage"] != null)
         {
-            <div style="background:#d4edda;color:#155724;padding:9px 14px;border-radius:4px;margin-bottom:12px;font-weight:600;">
+            <div class="msg-success">
                 ✅ @TempData["SuccessMessage"]
             </div>
         }
         @if (TempData["ErrorMessage"] != null)
         {
-            <div style="background:#f8d7da;color:#721c24;padding:9px 14px;border-radius:4px;margin-bottom:12px;font-weight:600;">
+            <div class="msg-error">
                 ❌ @TempData["ErrorMessage"]
             </div>
         }
@@ -47,11 +65,11 @@
                 <input type="hidden" name="tripId" value="@trip?.TripId">
                 <input type="hidden" name="source" value="trip">
                 
-                <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
-                    <label style="font-weight: 700; cursor: pointer;">
-                        <input type="checkbox" id="selectAll" style="transform: scale(1.2); margin-right: 8px;"> Chọn tất cả
+                <div class="bulk-actions-row">
+                    <label class="select-all-label">
+                        <input type="checkbox" id="selectAll" class="checkbox-all-input"> Chọn tất cả
                     </label>
-                    <button type="button" class="btn-assign" onclick="confirmBulkAssign()" style="background: #27ae60; padding: 10px 25px;">
+                    <button type="button" class="btn-assign btn-bulk-assign" onclick="confirmBulkAssign()">
                         🚛 Gán các đơn đã chọn lên xe
                     </button>
                 </div>
@@ -72,13 +90,13 @@
                         @foreach (var o in Model)
                         {
                             <tr>
-                                <td style="text-align: center;">
-                                    <input type="checkbox" name="orderIds" value="@o.OrderId" class="order-checkbox" style="transform: scale(1.3);">
+                                <td class="centered-td">
+                                    <input type="checkbox" name="orderIds" value="@o.OrderId" class="order-checkbox order-checkbox-input">
                                 </td>
-                                <td><strong style="color:#2980b9">@o.OrderId</strong></td>
+                                <td><strong class="order-id-highlight">@o.OrderId</strong></td>
                                 <td><strong>@o.ItemName</strong></td>
-                                <td>@o.SenderName <br><small style="color:#888">@o.SenderPhone</small></td>
-                                <td>@o.ReceiverName <br><small style="color:#888">@o.ReceiverPhone</small></td>
+                                <td>@o.SenderName <br><small class="sender-info-mini">@o.SenderPhone</small></td>
+                                <td>@o.ReceiverName <br><small class="receiver-info-mini">@o.ReceiverPhone</small></td>
                                 <td>@o.ReceiveStation</td>
                                 <td>
                                     <button type="button" class="btn-assign" onclick="confirmSingleAssign('@o.OrderId')">Gán lẻ</button>
@@ -92,12 +110,12 @@
         else
         {
             <div class="no-data">
-                <div style="font-size:2rem;margin-bottom:8px;">📭</div>
+                <div class="no-data-icon">📭</div>
                 <p>Không có đơn hàng chưa chuyển từ trạm <strong>"@trip?.Departure"</strong>.</p>
             </div>
         }
 
-        <a asp-controller="Trip" asp-action="List" class="btn-back" style="text-decoration:none; display:inline-block; text-align:center;">⬅ Quay lại DS Chuyến Xe</a>
+        <a asp-controller="Trip" asp-action="List" class="btn-back btn-footer-back-link">⬅ Quay lại DS Chuyến Xe</a>
     </div>
 </div>
 

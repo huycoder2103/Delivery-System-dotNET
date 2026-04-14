@@ -7,6 +7,26 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/shift.css?v=@DateTime.Now.Ticks">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .msg-success-box { margin-bottom: 25px; background: #dcfce7; color: #15803d; padding: 15px 20px; border-radius: 12px; font-weight: 600; }
+        .section-title-flex { display: flex; gap: 12px; }
+        .table-header-center { text-align: center; }
+        
+        .staff-avatar-wrapper { display: flex; align-items: center; gap: 12px; }
+        .avatar-circle-small { width: 36px; height: 36px; border-radius: 10px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--primary); font-size: 0.9rem; }
+        .staff-name-text { font-weight: 700; color: var(--text-main); }
+        .staff-id-text-mini { font-size: 0.75rem; color: var(--text-muted); }
+        
+        .start-time-text { font-weight: 500; }
+        .end-time-text { color: var(--text-muted); }
+        .duration-text { font-weight: 600; color: var(--text-main); }
+        
+        .actions-cell-center { text-align: center; }
+        .actions-group-center { justify-content: center; }
+        .inline-form { display:inline; }
+        
+        .loader-text-info { font-weight:700; color:var(--text-muted); font-size:1.1rem; }
+    </style>
 }
 
 <div class="shift-wrapper">
@@ -19,7 +39,7 @@
 
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="alert-box alert-success" style="margin-bottom: 25px; background: #dcfce7; color: #15803d; padding: 15px 20px; border-radius: 12px; font-weight: 600;">
+        <div class="alert-box alert-success msg-success-box">
             ✅ @TempData["SuccessMessage"]
         </div>
     }
@@ -27,7 +47,7 @@
     <main class="content-card">
         <div class="section-title">
             <h2>📜 Lịch Sử Hoạt Động</h2>
-            <div style="display: flex; gap: 12px;">
+            <div class="section-title-flex">
                 <span class="badge badge-info">🚀 Đang trực: @Model.Count(s => s.Status == "ACTIVE")</span>
             </div>
         </div>
@@ -53,7 +73,7 @@
                         <th>Giờ Kết Thúc</th>
                         <th>Thời Lượng</th>
                         <th>Trạng Thái</th>
-                        <th style="text-align: center;">Thao Tác</th>
+                        <th class="table-header-center">Thao Tác</th>
                     </tr>
                 </thead>
                 <tbody id="shiftTableBody">
@@ -61,23 +81,23 @@
                     {
                         <tr class="shift-row" data-name="@item.Staff.FullName.ToLower()" data-status="@item.Status">
                             <td>
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <div style="width: 36px; height: 36px; border-radius: 10px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--primary); font-size: 0.9rem;">
+                                <div class="staff-avatar-wrapper">
+                                    <div class="avatar-circle-small">
                                         @item.Staff.FullName.Substring(0,1).ToUpper()
                                     </div>
                                     <div>
-                                        <div style="font-weight: 700; color: var(--text-main);">@item.Staff.FullName</div>
-                                        <div style="font-size: 0.75rem; color: var(--text-muted);">ID: @item.StaffId</div>
+                                        <div class="staff-name-text">@item.Staff.FullName</div>
+                                        <div class="staff-id-text-mini">ID: @item.StaffId</div>
                                     </div>
                                 </div>
                             </td>
-                            <td style="font-weight: 500;">@item.StartTime.ToString("dd/MM/yyyy HH:mm")</td>
-                            <td style="color: var(--text-muted);">@(item.EndTime?.ToString("dd/MM/yyyy HH:mm") ?? "—")</td>
+                            <td class="start-time-text">@item.StartTime.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="end-time-text">@(item.EndTime?.ToString("dd/MM/yyyy HH:mm") ?? "—")</td>
                             <td>
                                 @if (item.EndTime.HasValue)
                                 {
                                     var duration = item.EndTime.Value - item.StartTime;
-                                    <span style="font-weight: 600; color: var(--text-main);">@((int)duration.TotalHours)h @duration.Minutes m</span>
+                                    <span class="duration-text">@((int)duration.TotalHours)h @duration.Minutes m</span>
                                 }
                                 else
                                 {
@@ -89,15 +109,15 @@
                                     @(item.Status == "ACTIVE" ? "● Đang trực" : "● Đã nghỉ")
                                 </span>
                             </td>
-                            <td style="text-align: center;">
-                                <div class="action-group" style="justify-content: center;">
+                            <td class="actions-cell-center">
+                                <div class="action-group actions-group-center">
                                     <button type="button" onclick="openShiftDetails(@item.ShiftId)" class="btn-s btn-s-blue">
                                         👁️ Xem chi tiết
                                     </button>
                                     
                                     @if (item.Status == "ACTIVE" && ViewBag.IsMyHistory != true)
                                     {
-                                        <form asp-action="ForceEnd" method="POST" style="display:inline;">
+                                        <form asp-action="ForceEnd" method="POST" class="inline-form">
                                             <input type="hidden" name="shiftId" value="@item.ShiftId" />
                                             <button type="submit" class="btn-s btn-s-red" onclick="return confirm('Xác nhận kết thúc hộ ca này?')">
                                                 🛑 Kết thúc hộ
@@ -147,7 +167,7 @@
             body.innerHTML = `
                 <div class="loader-container">
                     <div class="spinner"></div>
-                    <div style="font-weight:700; color:var(--text-muted); font-size:1.1rem">Đang truy xuất dữ liệu...</div>
+                    <div class="loader-text-info">Đang truy xuất dữ liệu...</div>
                 </div>`;
 
             try {

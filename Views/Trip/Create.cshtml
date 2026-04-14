@@ -12,11 +12,10 @@
 
 <div class="trip-container-modern @(ViewBag.HasActiveShift == false ? "content-blurred" : "")">
     <form id="tripForm" asp-action="Create" method="POST" onsubmit="return validateTripStations()">
-        @* ... rest of the form ... *@
         <div class="modern-page-header">
             <div>
                 <h2>🚛 THÊM CHUYẾN XE MỚI</h2>
-                <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Khởi tạo lộ trình vận chuyển hàng hóa</div>
+                <div class="trip-create-meta">Khởi tạo lộ trình vận chuyển hàng hóa</div>
             </div>
         </div>
 
@@ -68,9 +67,9 @@
             </div>
 
             <!-- Dòng 2: Đồng hồ bên trái, Tên lái/phụ bên phải xếp chồng -->
-            <div class="form-row" style="align-items: flex-start; gap: 60px;">
+            <div class="form-row trip-form-row-top">
                 <!-- Cột trái: Đồng hồ -->
-                <div class="form-col" style="flex: 0 0 auto; width: 300px;">
+                <div class="form-col time-picker-col">
                     <label>Giờ Xuất Phát <span class="required-star">*</span></label>
                     <input type="hidden" asp-for="DepartureTime" id="finalDepartureTime" required>
                     
@@ -97,54 +96,52 @@
                 </div>
 
                 <!-- Cột phải: Tài xế (trên) và Phụ xe (dưới) -->
-                <div class="form-col" style="gap: 15px; max-width: 400px; flex: 1;">
-                    <div style="display: flex; flex-direction: column;">
+                <div class="form-col driver-info-col">
+                    <div class="input-group-vertical">
                         <label>Tài Xế Phụ Trách</label>
-                        <input asp-for="DriverName" type="text" placeholder="Họ tên tài xế..." style="width: 100%;">
+                        <input asp-for="DriverName" type="text" placeholder="Họ tên tài xế..." class="full-width-input">
                     </div>
-                    <div style="display: flex; flex-direction: column;">
+                    <div class="input-group-vertical">
                         <label>Nhân Viên Phụ Xe</label>
-                        <input asp-for="AssistantName" type="text" placeholder="Họ tên phụ xe..." style="width: 100%;">
+                        <input asp-for="AssistantName" type="text" placeholder="Họ tên phụ xe..." class="full-width-input">
                     </div>
                 </div>
             </div>
 
             <!-- Ghi chú luôn hiển thị -->
-            <div class="form-group" style="margin-top: 25px;">
-                <label style="font-weight: 700; font-size: 0.85rem; color: #5f6368; text-transform: uppercase; display: block; margin-bottom: 8px;">Ghi Chú Chuyến Xe</label>
-                <textarea asp-for="Notes" rows="3" placeholder="Nhập các lưu ý quan trọng về chuyến xe này (nếu có)..." style="width: 100%; padding: 12px 15px; border: 1px solid #dadce0; border-radius: 10px; background: #f8f9fa; transition: 0.3s; resize: vertical;"></textarea>
+            <div class="form-group note-form-group">
+                <label class="note-label">Ghi Chú Chuyến Xe</label>
+                <textarea asp-for="Notes" rows="3" placeholder="Nhập các lưu ý quan trọng về chuyến xe này (nếu có)..." class="note-textarea"></textarea>
             </div>
         </div>
     </form>
 
-    <div style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center;">
-        <a asp-action="List" class="btn-modern-back" style="text-decoration:none;">⬅ Quay lại danh sách</a>
-        <input type="submit" form="tripForm" value="💾 Lưu Chuyến Xe" class="btn-modern-save" style="padding: 12px 40px; min-width: 200px;" @(ViewBag.HasActiveShift == false ? "disabled" : "")>
+    <div class="form-actions-row">
+        <a asp-action="List" class="btn-modern-back btn-back-link">⬅ Quay lại danh sách</a>
+        <input type="submit" form="tripForm" value="💾 Lưu Chuyến Xe" class="btn-modern-save btn-save-trip" @(ViewBag.HasActiveShift == false ? "disabled" : "")>
     </div>
 </div>
 
 @if (ViewBag.HasActiveShift == false)
 {
-    <div id="shiftRequiredModal" class="modal" style="display: flex; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; backdrop-filter: blur(5px);">
-        <div class="modal-content" style="background: white; padding: 40px; border-radius: 20px; width: 450px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
-            <div style="font-size: 4rem; margin-bottom: 20px;">⏰</div>
-            <h2 style="color: #1e293b; margin-bottom: 15px; font-weight: 800;">Chưa Vào Ca Làm Việc!</h2>
-            <p style="color: #64748b; margin-bottom: 30px; line-height: 1.6;">Bạn cần phải bắt đầu ca làm việc trước khi có thể khởi tạo chuyến xe mới.</p>
+    <div id="shiftRequiredModal" class="modal shift-modal-overlay">
+        <div class="modal-content shift-modal-content">
+            <div class="shift-modal-icon">⏰</div>
+            <h2 class="shift-modal-title">Chưa Vào Ca Làm Việc!</h2>
+            <p class="shift-modal-desc">Bạn cần phải bắt đầu ca làm việc trước khi có thể khởi tạo chuyến xe mới.</p>
             
             <form asp-controller="Shift" asp-action="Start" method="POST">
-                <button type="submit" class="btn-modern-save" style="width: 100%; padding: 15px; font-size: 1.1rem; background: linear-gradient(135deg, #6366f1, #4f46e5); border: none; cursor: pointer;">
+                <button type="submit" class="btn-modern-save btn-start-shift">
                     🚀 BẮT ĐẦU CA NGAY
                 </button>
             </form>
             
-            <div style="margin-top: 20px;">
-                <a asp-action="List" style="color: #94a3b8; text-decoration: none; font-weight: 600;">Quay lại danh sách</a>
+            <div class="shift-modal-footer">
+                <a asp-action="List" class="link-modal-back">Quay lại danh sách</a>
             </div>
         </div>
     </div>
 }
-
-
 
 <script>
     let currentAMPM = 'AM';

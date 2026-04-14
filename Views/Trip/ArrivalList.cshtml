@@ -7,29 +7,50 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/list_trip.css?v=@DateTime.Now.Ticks" />
+    <style>
+        .arrival-list-container { max-width: 1550px; margin: 20px auto; padding: 0 20px; }
+        .arrival-header { background: linear-gradient(135deg, #1a73e8, #0d47a1); }
+        .trip-count-meta { font-size: 0.85rem; opacity: 0.8; margin-top: 4px; }
+        .header-actions { display: flex; gap: 10px; }
+        .btn-header-action { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); text-decoration: none; }
+        
+        .filter-controls-row { display:flex; gap:10px; flex-wrap: wrap; align-items: center; }
+        .filter-select { padding: 8px; border-radius: 8px; border: 1px solid #ddd; }
+        .search-input-wrapper { position: relative; }
+        .search-input-field { width: 200px; padding: 8px 40px 8px 12px; border-radius: 8px; border: 1px solid #ddd; }
+        .search-icon-inside { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #aaa; }
+        
+        .trip-table-card { padding: 0; overflow-x: auto; }
+        
+        .pagination-flex { margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .page-info-text { font-weight: bold; color: #1a73e8; }
+        
+        .footer-actions-row { margin-top: 20px; }
+        .btn-footer-back { text-decoration: none; display: inline-block; }
+    </style>
 }
 
-<div style="max-width: 1550px; margin: 20px auto; padding: 0 20px;">
+<div class="arrival-list-container">
     
-    <div class="modern-page-header" style="background: linear-gradient(135deg, #1a73e8, #0d47a1);">
+    <div class="modern-page-header arrival-header">
         <div>
             <h3>📥 DANH SÁCH CHUYẾN XE ĐẾN</h3>
-            <div id="tripCount" style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Tổng: @(Model?.Count() ?? 0) chuyến</div>
+            <div id="tripCount" class="trip-count-meta">Tổng: @(Model?.Count() ?? 0) chuyến</div>
         </div>
         
-        <div style="display: flex; gap: 10px;">
-            <a asp-controller="Order" asp-action="List" class="btn-modern" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); text-decoration: none;">
+        <div class="header-actions">
+            <a asp-controller="Order" asp-action="List" class="btn-modern btn-header-action">
                 📦 Quản Lý Đơn Hàng
             </a>
-            <a asp-controller="Trip" asp-action="List" class="btn-modern" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); text-decoration: none;">
+            <a asp-controller="Trip" asp-action="List" class="btn-modern btn-header-action">
                 📤 Chuyến Xe Đi
             </a>
         </div>
     </div>
 
     <div class="modern-card sticky-filter-bar">
-        <div style="display:flex; gap:10px; flex-wrap: wrap; align-items: center;">
-            <select id="filterDeparture" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+        <div class="filter-controls-row">
+            <select id="filterDeparture" class="filter-select">
                 <option value="">-- Từ Trạm (Đi) --</option>
                 @if (stationList != null)
                 {
@@ -40,7 +61,7 @@
                 }
             </select>
 
-            <select id="filterDestination" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+            <select id="filterDestination" class="filter-select">
                 <option value="">-- Đến Trạm (Dừng) --</option>
                 @if (stationList != null)
                 {
@@ -51,10 +72,10 @@
                 }
             </select>
 
-            <div style="position: relative;">
+            <div class="search-input-wrapper">
                 <input type="text" id="filterTruck" placeholder="Tìm biển số..." 
-                       value="@ViewBag.SearchTruck" style="width: 200px; padding: 8px 40px 8px 12px; border-radius: 8px; border: 1px solid #ddd;">
-                <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #aaa;">🔍</span>
+                       value="@ViewBag.SearchTruck" class="search-input-field">
+                <span class="search-icon-inside">🔍</span>
             </div>
 
             <button onclick="resetFilters()" class="btn-modern btn-secondary-modern">🔄 Làm mới</button>
@@ -66,7 +87,7 @@
         <div class="alert-success">✅ @TempData["SuccessMessage"]</div>
     }
 
-    <div class="modern-card" style="padding: 0; overflow-x: auto;">
+    <div class="modern-card trip-table-card">
         <table class="modern-table" id="tripTable">
             <thead>
                 <tr>
@@ -88,7 +109,7 @@
     </div>
 
     <!-- Pagination Controls -->
-    <div class="pagination-container" style="margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 10px;">
+    <div class="pagination-flex">
         @if (ViewBag.TotalPages > 1)
         {
             var currentPage = (int)ViewBag.CurrentPage;
@@ -98,7 +119,7 @@
                 « Trang trước
             </button>
             
-            <div style="font-weight: bold; color: #1a73e8;">
+            <div class="page-info-text">
                 Trang @currentPage / @totalPages
             </div>
 
@@ -108,8 +129,8 @@
         }
     </div>
 
-    <div style="margin-top: 20px;">
-        <a asp-controller="Home" asp-action="Index" class="btn-back" style="text-decoration: none; display: inline-block;">⬅ Quay lại Trang Chủ</a>
+    <div class="footer-actions-row">
+        <a asp-controller="Home" asp-action="Index" class="btn-back btn-footer-back">⬅ Quay lại Trang Chủ</a>
     </div>
 </div>
 
