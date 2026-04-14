@@ -100,9 +100,20 @@
                                 @* <div style="font-size: 0.75rem; color: #94a3b8;">@user.Username</div> *@
                             </td>
                             <td>
-                                <span class="badge" style="background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7;">
-                                    📍 @(user.Station?.StationName ?? "Chưa gán")
-                                </span>
+                                @if (user.Station != null)
+                                {
+                                    <span class="badge" style="background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; cursor: pointer;" 
+                                          onclick="showAssignStationModal('@user.UserId', '@user.FullName')">
+                                        📍 @user.Station.StationName
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge" style="background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; cursor: pointer; text-decoration: underline;" 
+                                          onclick="showAssignStationModal('@user.UserId', '@user.FullName')">
+                                        Chưa có trạm
+                                    </span>
+                                }
                             </td>
                             <td>@(string.IsNullOrEmpty(user.Phone) ? "—" : user.Phone)</td>
                             <td>
@@ -120,7 +131,7 @@
                                     <button class="btn-s btn-s-blue" onclick="showChangePassModal('@user.UserId', '@user.FullName')">Đổi MK</button>
                                     
                                     <button class="btn-s btn-s-cyan" 
-                                            onclick="showDetailsModal('@user.UserId', '@user.Username', '@user.FullName', '@(user.RoleId == "AD" ? "Admin" : "Nhân Viên")', '@user.Phone', '@user.Email', '@user.Status', '@user.CreatedAt?.ToString("dd/MM/yyyy HH:mm")')">Chi tiết</button>
+                                            onclick="showDetailsModal('@user.UserId', '@user.Username', '@user.FullName', '@(user.RoleId == "AD" ? "Admin" : "Nhân Viên")', '@user.Phone', '@user.Email', '@user.Status', '@user.CreatedAt?.ToString("dd/MM/yyyy HH:mm")', '@(user.StationId)')">Chi tiết</button>
 
                                     @if (user.RoleId != "AD")
                                     {
@@ -294,47 +305,107 @@
 </div>
 
 <div id="detailsModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header"><h3>👤 Hồ Sơ Nhân Viên</h3></div>
-        <div class="details-list">
-            <div class="details-row"><span class="det-label">Mã nhân viên:</span><span class="det-value det-highlight" id="detUserId"></span></div>
-            <div class="details-row"><span class="det-label">Tài khoản:</span><span class="det-value" id="detUsername"></span></div>
-            <div class="details-row"><span class="det-label">Họ và tên:</span><span class="det-value" id="detFullName"></span></div>
-            <div class="details-row"><span class="det-label">Quyền hạn:</span><span class="det-value" id="detRole"></span></div>
-            <div class="details-row"><span class="det-label">Điện thoại:</span><span class="det-value" id="detPhone"></span></div>
-            <div class="details-row"><span class="det-label">Email:</span><span class="det-value" id="detEmail"></span></div>
-            <div class="details-row"><span class="det-label">Trạng thái:</span><span class="det-value" id="detStatus"></span></div>
-            <div class="details-row"><span class="det-label">Ngày tạo:</span><span class="det-value" id="detCreatedAt"></span></div>
+    <div class="modal-content" style="max-width: 500px; padding: 25px;">
+        <div class="modal-header" style="margin-bottom: 20px;">
+            <h3 style="display: flex; align-items: center; gap: 10px;">👤 Hồ Sơ & Chỉnh Sửa Nhân Viên</h3>
         </div>
-        <div class="modal-footer"><button type="button" onclick="hideDetailsModal()" class="btn-m btn-add" style="width:100%">Đóng</button></div>
+        
+        <form asp-action="UpdateUser" method="POST">
+            <input type="hidden" name="userId" id="detUserIdInp">
+            
+            <div class="details-list">
+                <!-- Mã NV (Read-only) -->
+                <div class="details-row" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
+                    <span class="det-label" style="font-weight: 700; color: #64748b;">Mã Nhân Viên:</span>
+                    <span class="det-value det-highlight" id="detUserId" style="font-weight: 800; color: var(--primary);"></span>
+                </div>
+
+                <!-- Username (Read-only) -->
+                <div class="details-row" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
+                    <span class="det-label" style="font-weight: 700; color: #64748b;">Tên Đăng Nhập:</span>
+                    <span class="det-value" id="detUsernameText" style="color: #1e293b; font-weight: 600;"></span>
+                    <input type="hidden" id="detUsername"> <!-- Giữ để JS không lỗi -->
+                </div>
+
+                <!-- Họ Tên (Editable) -->
+                <div class="form-group" style="margin-top: 15px;">
+                    <label style="font-weight: 700; color: #64748b; margin-bottom: 5px; display: block;">Họ Và Tên</label>
+                    <input type="text" name="fullName" id="detFullName" class="form-control-modern" required style="width: 100%; padding: 10px; border-radius: 8px;">
+                </div>
+
+                <!-- Số Điện Thoại (Editable) -->
+                <div class="form-group" style="margin-top: 15px;">
+                    <label style="font-weight: 700; color: #64748b; margin-bottom: 5px; display: block;">Số Điện Thoại</label>
+                    <input type="tel" name="phone" id="detPhone" class="form-control-modern" style="width: 100%; padding: 10px; border-radius: 8px;">
+                </div>
+
+                <!-- Email (Editable) -->
+                <div class="form-group" style="margin-top: 15px;">
+                    <label style="font-weight: 700; color: #64748b; margin-bottom: 5px; display: block;">Địa Chỉ Email</label>
+                    <input type="email" name="email" id="detEmail" class="form-control-modern" style="width: 100%; padding: 10px; border-radius: 8px;">
+                </div>
+
+                <!-- Trạm (Editable - Styled) -->
+                <div class="form-group" style="margin-top: 15px;">
+                    <label style="font-weight: 700; color: #64748b; margin-bottom: 5px; display: block;">Trạm Làm Việc</label>
+                    <div style="position: relative;">
+                        <select name="stationId" id="detStationId" class="form-control-modern" 
+                                style="width: 100%; padding: 10px; border-radius: 8px; appearance: none; background: #f8fafc url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234f46e5%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%0-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E') no-repeat right 12px center; background-size: 12px auto; border: 2px solid #e2e8f0;">
+                            <option value="">-- Chưa gán trạm --</option>
+                            @if (stationList != null)
+                            {
+                                foreach (var s in stationList)
+                                {
+                                    <option value="@s.StationId">@s.StationName (@s.StationId)</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Quyền hạn & Trạng thái & Ngày tạo (Read-only) -->
+                <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed #cbd5e1; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem;">
+                    <div>Quyền: <strong id="detRole" style="color: #334155;"></strong></div>
+                    <div style="text-align: right;">Trạng thái: <span id="detStatus"></span></div>
+                    <div style="grid-column: span 2; margin-top: 5px; color: #94a3b8;">Ngày tạo: <span id="detCreatedAt"></span></div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="margin-top: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <button type="submit" class="btn-m btn-add" style="width: 100%; font-weight: 700;">💾 Lưu Thay Đổi</button>
+                <button type="button" onclick="hideDetailsModal()" class="btn-cancel" style="width: 100%; font-weight: 700;">Đóng</button>
+            </div>
+        </form>
     </div>
 </div>
 
 <div id="staffStationModal" class="modal">
-    <div class="modal-content" style="max-width: 700px; width: 95%;">
-        <div class="modal-header"><h3 id="staffStationModalTitle">👥 Quản Lý Nhân Sự Tại Trạm</h3></div>
-        <input type="hidden" id="currentStationId">
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
-            <!-- CỘT 1: NHÂN VIÊN TRONG TRẠM -->
-            <div class="station-staff-zone">
-                <h4 style="margin-bottom: 10px; font-size: 0.9rem; color: var(--primary);">📍 NHÂN VIÊN TRONG TRẠM</h4>
-                <div id="inStationList" style="max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px;">
-                    <!-- JS render -->
-                </div>
-            </div>
+    <!-- ... (existing staffStationModal content) ... -->
+</div>
 
-            <!-- CỘT 2: NHÂN VIÊN CHƯA CÓ TRẠM -->
-            <div class="station-staff-zone">
-                <h4 style="margin-bottom: 10px; font-size: 0.9rem; color: var(--text-muted);">📢 NHÂN VIÊN CHƯA CÓ TRẠM</h4>
-                <div id="availableList" style="max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px;">
-                    <!-- JS render -->
-                </div>
-            </div>
+<div id="assignStationModal" class="modal">
+    <div class="modal-content" style="max-width: 450px;">
+        <div class="modal-header"><h3>📍 Gán Trạm Làm Việc</h3></div>
+        <p id="asUserLabel" style="font-weight: 700; color: var(--primary); margin-bottom: 15px; text-align: center;"></p>
+        <input type="hidden" id="asUserId">
+        
+        <div class="form-group">
+            <label>Chọn Trạm</label>
+            <select id="asStationId" class="form-control-modern" style="width:100%; padding:12px; border-radius:12px; border:2px solid #e2e8f0;">
+                <option value="">-- Chọn trạm để gán --</option>
+                @if (stationList != null)
+                {
+                    foreach (var s in stationList)
+                    {
+                        <option value="@s.StationId">@s.StationName (@s.StationId)</option>
+                    }
+                }
+            </select>
         </div>
 
         <div class="modal-footer">
-            <button type="button" onclick="hideStaffStationModal()" class="btn-cancel">Đóng</button>
+            <button type="button" onclick="submitAssignStation()" class="btn-m btn-add" style="flex:2">Xác Nhận Gán</button>
+            <button type="button" onclick="hideAssignStationModal()" class="btn-cancel">Hủy</button>
         </div>
     </div>
 </div>
@@ -367,12 +438,22 @@
         function hideAddModal() { document.getElementById('addModal').style.display = 'none'; }
         function showChangePassModal(id, name) { document.getElementById('cpUserID').value = id; document.getElementById('cpUserLabel').textContent = name; document.getElementById('changePassModal').style.display = 'flex'; }
         function hideChangePassModal() { document.getElementById('changePassModal').style.display = 'none'; }
-        function showDetailsModal(id, user, name, role, phone, email, status, created) {
-            document.getElementById('detUserId').textContent = id; document.getElementById('detUsername').textContent = user;
-            document.getElementById('detFullName').textContent = name; document.getElementById('detRole').textContent = role;
-            document.getElementById('detPhone').textContent = phone || '—'; document.getElementById('detEmail').textContent = email || '—';
-            document.getElementById('detStatus').innerHTML = (status.toLowerCase() === 'true') ? '<span style="color:#10b981">● Hoạt động</span>' : '<span style="color:#ef4444">● Đã khóa</span>';
-            document.getElementById('detCreatedAt').textContent = created; document.getElementById('detailsModal').style.display = 'flex';
+        function showDetailsModal(id, user, name, role, phone, email, status, created, stationId) {
+            document.getElementById('detUserId').textContent = id;
+            document.getElementById('detUserIdInp').value = id;
+            document.getElementById('detUsernameText').textContent = user;
+            document.getElementById('detFullName').value = name;
+            document.getElementById('detRole').textContent = role;
+            document.getElementById('detPhone').value = phone === '—' ? '' : phone;
+            document.getElementById('detEmail').value = email === '—' ? '' : email;
+            document.getElementById('detStationId').value = stationId || '';
+            document.getElementById('detCreatedAt').textContent = created;
+            
+            document.getElementById('detStatus').innerHTML = (status.toLowerCase() === 'true') 
+                ? '<span style="color:#10b981; font-weight:700;">● Hoạt động</span>' 
+                : '<span style="color:#ef4444; font-weight:700;">● Đã khóa</span>';
+            
+            document.getElementById('detailsModal').style.display = 'flex';
         }
         function hideDetailsModal() { document.getElementById('detailsModal').style.display = 'none'; }
 
@@ -490,6 +571,41 @@
             const data = await response.json();
             if (data.success) await refreshStaffLists(stationId);
             else alert(data.message);
+        }
+
+        // --- ASSIGN STATION MODAL JS ---
+        function showAssignStationModal(userId, fullName) {
+            document.getElementById('asUserId').value = userId;
+            document.getElementById('asUserLabel').textContent = 'Nhân viên: ' + fullName;
+            document.getElementById('asStationId').value = '';
+            document.getElementById('assignStationModal').style.display = 'flex';
+        }
+
+        function hideAssignStationModal() {
+            document.getElementById('assignStationModal').style.display = 'none';
+        }
+
+        async function submitAssignStation() {
+            const userId = document.getElementById('asUserId').value;
+            const stationId = document.getElementById('asStationId').value;
+
+            if (!stationId) {
+                Swal.fire('Chú ý', 'Vui lòng chọn một trạm!', 'warning');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('userId', userId);
+            formData.append('stationId', stationId);
+
+            const response = await fetch('/Admin/AddStaffToStation', { method: 'POST', body: formData });
+            const data = await response.json();
+            
+            if (data.success) {
+                location.reload();
+            } else {
+                Swal.fire('Lỗi', data.message, 'error');
+            }
         }
 
         function filterStaff(kw) {

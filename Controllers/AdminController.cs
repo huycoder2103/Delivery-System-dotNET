@@ -141,6 +141,28 @@ namespace Delivery_System.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> UpdateUser(string userId, string fullName, string phone, string email, int? stationId)
+        {
+            if (!IsAdmin()) return Forbid();
+            
+            var user = await _context.TblUsers.FindAsync(userId);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "Không tìm thấy nhân viên!";
+                return RedirectToAction("Index");
+            }
+
+            user.FullName = fullName;
+            user.Phone = phone;
+            user.Email = email;
+            user.StationId = stationId;
+
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Cập nhật thông tin nhân viên {userId} thành công!";
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
         public async Task<IActionResult> DeleteUser(string userID)
         {
             var user = await _context.TblUsers.FindAsync(userID);
