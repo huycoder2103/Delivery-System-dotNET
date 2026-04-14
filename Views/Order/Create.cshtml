@@ -35,10 +35,9 @@
                         {
                             foreach (var s in stationList)
                             {
-                                <option value="@s.StationName">@s.StationName</option>
+                                <option value="@s.StationName">@s.StationName (@s.StationId)</option>
                             }
-                        }
-                    </select>
+                        }                    </select>
                 </div>
                 <div class="form-group">
                     <label>Trạm Nhận <span class="required-star">*</span></label>
@@ -48,10 +47,9 @@
                         {
                             foreach (var s in stationList)
                             {
-                                <option value="@s.StationName">@s.StationName</option>
+                                <option value="@s.StationName">@s.StationName (@s.StationId)</option>
                             }
-                        }
-                    </select>
+                        }                    </select>
                 </div>
             </div>
         </div>

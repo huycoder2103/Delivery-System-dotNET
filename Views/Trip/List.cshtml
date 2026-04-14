@@ -62,10 +62,9 @@
                 {
                     foreach (var s in stationList)
                     {
-                        <option value="@s.StationName">@s.StationName</option>
+                        <option value="@s.StationName">@s.StationName (@s.StationId)</option>
                     }
-                }
-            </select>
+                }            </select>
 
             <select id="filterDestination" class="filter-select">
                 <option value="">-- Đến Trạm (Dừng) --</option>
@@ -73,7 +72,7 @@
                 {
                     foreach (var s in stationList)
                     {
-                        <option value="@s.StationName">@s.StationName</option>
+                        <option value="@s.StationName">@s.StationName (@s.StationId)</option>
                     }
                 }
             </select>

@@ -157,6 +157,41 @@ namespace Delivery_System.Controllers
             return (source == "ship") ? RedirectToAction("List") : RedirectToAction("AssignGoods", "Trip", new { id = tripId });
         }
 
+        [HttpPost]
+        public async Task<IActionResult> RemoveFromTrip(string orderId, string tripId)
+        {
+            var userId = HttpContext.Session.GetString("UserID") ?? "";
+            var role = HttpContext.Session.GetString("Role") ?? "";
+
+            var order = await _context.TblOrders.FindAsync(orderId);
+            if (order == null)
+            {
+                TempData["ErrorMessage"] = "Không tìm thấy đơn hàng!";
+                return RedirectToAction("ViewGoods", "Trip", new { id = tripId });
+            }
+
+            // Kiểm tra quyền: Admin hoặc người tạo đơn
+            if (role != "AD" && order.StaffInput != userId)
+            {
+                TempData["ErrorMessage"] = "Bạn không có quyền gỡ đơn hàng này!";
+                return RedirectToAction("ViewGoods", "Trip", new { id = tripId });
+            }
+
+            // Chỉ gỡ khi đơn hàng đang ở trạng thái "Đang chuyển"
+            if (order.ShipStatus == "Đã chuyển")
+            {
+                TempData["ErrorMessage"] = "Đơn hàng đã giao, không thể gỡ khỏi xe!";
+                return RedirectToAction("ViewGoods", "Trip", new { id = tripId });
+            }
+
+            order.TripId = null;
+            order.ShipStatus = "Chưa Chuyển";
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Đã gỡ đơn hàng {orderId} khỏi chuyến xe.";
+            return RedirectToAction("ViewGoods", "Trip", new { id = tripId });
+        }
+
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
