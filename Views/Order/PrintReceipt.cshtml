@@ -8,81 +8,194 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xem trước Biên nhận - @Model.OrderId</title>
-    <link rel="stylesheet" href="~/css/print_receipt.css?v=@DateTime.Now.Ticks" />
+    <title>In Biên Lai K80 - @Model.OrderId</title>
+    <style>
+        /* Thiết lập cho máy in nhiệt K80 */
+        @@media print {
+            @@page {
+                size: 80mm auto;
+                margin: 0;
+            }
+            html, body {
+                width: 80mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden;
+            }
+            body {
+                background-color: #fff !important;
+            }
+            .ticket {
+                box-shadow: none !important;
+                border: none !important;
+                width: 80mm !important;
+                padding: 5mm !important;
+                margin: 0 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .ticket {
+            width: 80mm;
+            min-height: 100mm;
+            background-color: #fff;
+            padding: 8mm 4mm;
+            box-sizing: border-box;
+            color: #000;
+            line-height: 1.3;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+
+        /* Phần đầu biên lai */
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .website { font-size: 14px; text-transform: uppercase; }
+        .title { 
+            font-size: 20px; 
+            font-weight: bold; 
+            margin: 5px 0; 
+            text-transform: uppercase;
+        }
+        .date { font-size: 14px; margin-bottom: 10px; }
+
+        /* Nội dung hàng hóa */
+        .item-name {
+            font-size: 17px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            margin: 10px 0;
+            line-height: 1.3;
+        }
+
+        /* Thông tin người gửi/nhận */
+        .info-section {
+            font-size: 15px;
+            margin: 15px 0;
+        }
+        .row { margin-bottom: 4px; }
+        .label { font-weight: normal; }
+        .value { font-weight: bold; text-transform: uppercase; }
+
+        /* Tuyến đường & Thanh toán */
+        .route {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: left;
+            margin: 10px 0;
+            text-transform: uppercase;
+        }
+        .payment {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        /* Thông tin nhân viên & Mã số */
+        .staff-info {
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .staff-name { font-weight: bold; }
+        .barcode-num { font-size: 16px; font-weight: bold; margin-top: 2px; }
+
+        /* Điều khoản lưu ý (Chữ nhỏ) */
+        .policy {
+            font-size: 11px;
+            margin-top: 15px;
+            line-height: 1.3;
+            text-align: justify;
+            border-top: 1px dashed #000;
+            padding-top: 8px;
+        }
+
+        .no-print {
+            margin-bottom: 20px;
+        }
+        .btn-print {
+            padding: 10px 20px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="preview-toolbar">
-        <div style="color: white; font-weight: bold;">BẢN XEM TRƯỚC BIÊN NHẬN</div>
-        <button class="btn-print-main" onclick="window.print()">🖨️ XÁC NHẬN IN</button>
-        <button class="btn-close-preview" onclick="window.close()">HỦY BỎ</button>
+    <div class="no-print">
+        <button class="btn-print" onclick="window.print()">🖨️ XÁC NHẬN IN BIÊN LAI</button>
+        <button class="btn-print" style="background:#666;" onclick="window.close()">ĐÓNG</button>
     </div>
 
-    <div class="receipt-page">
-        <div class="receipt-content">
-            <div class="header">
-                <h2>DELIVERY SYSTEM</h2>
-                @* <p>Hotline: 1900 xxxx</p> *@
-                <p>Ngày: @ViewBag.PrintTime</p>
-            </div>
+    <div class="ticket">
+        <div class="header">
+            <div class="website">Delivery System</div>
+            <div class="website">(@Model.SendStation)</div>
+            <div class="title">BIÊN LAI HÀNG HÓA</div>
+            <div class="date">@ViewBag.PrintTime</div>
+        </div>
 
-            <div class="order-code">
-                MÃ ĐƠN: @Model.OrderId
-            </div>
+        <div class="item-name">
+            @Model.ItemName
+        </div>
 
-            <div class="section-title">Thông tin gửi hàng</div>
-            <div class="info-row">
-                <span class="label">Hàng hóa:</span>
-                <span class="value">@Model.ItemName</span>
-            </div>
-            <div class="info-row">
-                <span class="label">Lộ trình:</span>
-                <span class="value">@Model.SendStation → @Model.ReceiveStation</span>
-            </div>
+        <div class="info-section">
+            <div class="row"><span class="label">NG.GỬI:</span> <span class="value">@Model.SenderName</span></div>
+            <div class="row"><span class="label">NG.NHẬN:</span> <span class="value">@Model.ReceiverName</span></div>
+            <div class="row"><span class="label">SĐT GỬI:</span> <span class="value">@Model.SenderPhone</span></div>
+        </div>
 
-            <div class="section-title">Khách hàng</div>
-            <div class="info-row">
-                <span class="label">Gửi:</span>
-                <span class="value">@Model.SenderName <br> @Model.SenderPhone</span>
-            </div>
-            <div style="height: 5px;"></div>
-            <div class="info-row">
-                <span class="label">Nhận:</span>
-                <span class="value">@Model.ReceiverName <br> @Model.ReceiverPhone</span>
-            </div>
+        <div class="route">
+            @Model.SendStation &lt;&gt; @Model.ReceiveStation
+        </div>
 
-            <div class="section-title">Thanh toán</div>
-            <div class="info-row">
-                <span class="label">Đã trả (Tr):</span>
-                <span class="value">@Model.Tr k</span>
-            </div>
-            <div class="info-row">
-                <span class="label">Chưa trả (Ct):</span>
-                <span class="value">@Model.Ct k</span>
-            </div>
-
-            @* <div class="total-box">
-                <div class="info-row">
-                    <span>TỔNG CƯỚC:</span>
-                    <span>@string.Format("{0:N0}", Model.Amount ?? 0) k</span>
-                </div>
-            </div> *@
-
-            @if(!string.IsNullOrEmpty(Model.Note))
-            {
-                <div style="margin-top: 15px; font-size: 0.8rem;">
-                    <b>Ghi chú:</b> @Model.Note
-                </div>
+        <div class="payment">
+            @{
+                string payInfo = "";
+                if (!string.IsNullOrEmpty(Model.Tr) && Model.Tr != "0") payInfo += $"Đã Thanh Toán: {Model.Tr}k";
+                if (!string.IsNullOrEmpty(Model.Ct) && Model.Ct != "0") 
+                {
+                    if (payInfo != "") payInfo += " - ";
+                    payInfo += $"Phí chưa thu: {Model.Ct}k";
+                }
+                if (string.IsNullOrEmpty(payInfo)) payInfo = "Chưa có thông tin phí";
             }
+            @payInfo
+        </div>
 
-            <div class="footer-note">
-                Cảm ơn quý khách! <br>
-                Nhân viên: @Model.StaffInput
-            </div>
+        <div class="staff-info">
+            <div>NV: <span class="staff-name">@Model.StaffInput</span></div>
+            <div class="barcode-num">@Model.OrderId</div>
+        </div>
+
+        <div class="policy">
+            - Trường hợp xảy ra mất hoặc thất lạc, công ty bồi thường tối đa 50% giá trị hàng. Đối với hàng lúc gửi không khai báo trị giá bồi thường gấp 10 lần tiền cước phí. <br>
+            <strong>Lưu ý:</strong> Biên nhận này có giá trị trong 15 ngày
         </div>
     </div>
 
+    <script>
+        // Tự động mở hộp thoại in sau khi tải trang
+        window.onload = function() {
+            // window.print(); 
+        };
+    </script>
 </body>
 </html>

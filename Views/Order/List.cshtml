@@ -175,6 +175,33 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        function showPrintOptions(orderId) {
+            Swal.fire({
+                title: 'CHỌN LOẠI IN',
+                html: `Chọn định dạng in cho đơn hàng <b>${orderId}</b>`,
+                icon: 'info',
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonText: '🧾 In Biên Lai (K80)',
+                denyButtonText: '📄 In Phơi Giao (A5)',
+                cancelButtonText: 'Đóng',
+                confirmButtonColor: '#1a73e8',
+                denyButtonColor: '#e91e63',
+                customClass: {
+                    actions: 'my-actions',
+                    cancelButton: 'order-1 right-gap',
+                    confirmButton: 'order-2',
+                    denyButton: 'order-3',
+                },
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.open('/Order/PrintReceipt/' + orderId + '?type=receipt', '_blank');
+                } else if (result.isDenied) {
+                    window.open('/Order/PrintReceipt/' + orderId + '?type=delivery', '_blank');
+                }
+            })
+        }
+
         function triggerSearch() {
             const sendStation = document.getElementById('filterSendStation').value;
             const receiveStation = document.getElementById('filterReceiveStation').value;

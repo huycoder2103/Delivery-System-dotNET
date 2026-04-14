@@ -254,11 +254,18 @@ namespace Delivery_System.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> PrintReceipt(string id)
+        public async Task<IActionResult> PrintReceipt(string id, string type = "receipt")
         {
             var order = await _context.TblOrders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == id);
             if (order == null) return NotFound();
+            
             ViewBag.PrintTime = TimeHelper.NowVni().ToString("dd/MM/yyyy HH:mm");
+            
+            if (type == "delivery")
+            {
+                return View("PrintDeliverySheet", order);
+            }
+            
             return View(order);
         }
     }

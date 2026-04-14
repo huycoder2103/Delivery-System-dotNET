@@ -73,7 +73,7 @@
             </td>
             <td class="col-order-id">
                 <div class="action-btns-grid">
-                    @* Hàng 1: Nút Chuyển (Chỉ hiện khi chưa chuyển) *@
+                    @* Hàng 1: Nút Chuyển (Chỉ hiện khi chưa chuyển) hoặc Xem Chuyến (Nếu đã chuyển) *@
                     @if (!isShipped)
                     {
                         if (currentUserRole == "AD" || o.StaffInput == currentUserID)
@@ -85,9 +85,13 @@
                             <button type="button" class="btn-action-text btn-disabled btn-full-width" title="Bạn không có quyền chuyển đơn này">Chuyển</button>
                         }
                     }
+                    else
+                    {
+                        <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="btn-action-text btn-s-view-trip btn-full-width">🚛 Xem Xe</a>
+                    }
 
                     @* Hàng 2: Nút In và Nút Sửa/Xóa *@
-                    <a asp-action="PrintReceipt" asp-route-id="@o.OrderId" target="_blank" class="btn-action-text btn-s-print">In</a>
+                    <button type="button" onclick="showPrintOptions('@o.OrderId')" class="btn-action-text btn-s-print">In</button>
 
                     @if (canEdit && !isShipped)
                     {

@@ -49,7 +49,7 @@ namespace Delivery_System.Controllers
             var query = _context.VwTripLists.AsNoTracking();
             if (!string.IsNullOrEmpty(departureFilter)) query = query.Where(t => t.Departure == departureFilter);
             if (!string.IsNullOrEmpty(destinationFilter)) query = query.Where(t => t.Destination == destinationFilter);
-            if (!string.IsNullOrEmpty(searchTruck)) query = query.Where(t => t.LicensePlate != null && t.LicensePlate.Contains(searchTruck));
+            if (!string.IsNullOrEmpty(searchTruck)) query = query.Where(t => (t.LicensePlate != null && t.LicensePlate.Contains(searchTruck)) || (t.TripId != null && t.TripId.Contains(searchTruck)));
 
             int totalRecords = await query.CountAsync();
             int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
@@ -77,7 +77,7 @@ namespace Delivery_System.Controllers
             var query = _context.VwTripLists.AsNoTracking();
             if (!string.IsNullOrEmpty(departureFilter)) query = query.Where(t => t.Departure == departureFilter);
             if (!string.IsNullOrEmpty(destinationFilter)) query = query.Where(t => t.Destination == destinationFilter);
-            if (!string.IsNullOrEmpty(searchTruck)) query = query.Where(t => t.LicensePlate != null && t.LicensePlate.Contains(searchTruck));
+            if (!string.IsNullOrEmpty(searchTruck)) query = query.Where(t => (t.LicensePlate != null && t.LicensePlate.Contains(searchTruck)) || (t.TripId != null && t.TripId.Contains(searchTruck)));
 
             int totalRecords = await query.CountAsync();
             int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);

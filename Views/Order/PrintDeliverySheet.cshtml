@@ -1,0 +1,197 @@
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@model Delivery_System.Models.TblOrder
+
+@{
+    Layout = null;
+    var currentUserID = HttpContextAccessor.HttpContext.Session.GetString("UserID");
+    
+    // Hàm che số điện thoại, giữ lại 4 số cuối
+    string MaskPhone(string phone) 
+    {
+        if (string.IsNullOrEmpty(phone) || phone.Length < 4) return phone;
+        return "******" + phone.Substring(phone.Length - 4);
+    }
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>In Phiếu Gửi Hàng A5 Ngang - @Model.OrderId</title>
+    <style>
+        /* Cấu hình khổ giấy khi in */
+        @@media print {
+            @@page {
+                size: A5 landscape;
+                margin: 0;
+            }
+
+            body {
+                background-color: #fff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .ticket {
+                box-shadow: none !important;
+                border: none !important;
+                width: 100% !important;
+                height: 100vh;
+                box-sizing: border-box;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+
+        .ticket {
+            width: 210mm;
+            height: 148mm;
+            background-color: #ffc0cb;
+            padding: 30px 40px; /* Tăng lề trái phải cho thoáng */
+            box-sizing: border-box;
+            color: #000;
+            line-height: 1.3;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .route {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+
+        .content {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+            text-transform: uppercase;
+        }
+
+        .info-row {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .label {
+            text-decoration: underline;
+        }
+
+        .value {
+            font-weight: bold;
+        }
+
+        /* Phần phí và MANV nằm sát thông tin trên */
+        .meta-info {
+            font-size: 19px;
+            font-weight: bold;
+            margin-top: 15px; /* Khoảng cách vừa phải sau dòng Người Nhận */
+        }
+
+        .footer-note {
+            font-size: 15px;
+            margin-top: 5px;
+        }
+
+        /* Mã vạch giữ cố định ở góc dưới bên phải */
+        .barcode-area {
+            position: absolute;
+            bottom: 30px;
+            right: 40px;
+            text-align: center;
+        }
+
+        .barcode-img {
+            width: 130px;
+            height: 45px;
+            background: repeating-linear-gradient(90deg,
+                    #000,
+                    #000 3px,
+                    #ffc0cb 3px,
+                    #ffc0cb 6px);
+        }
+
+        .barcode-num {
+            font-size: 16px;
+            font-weight: bold;
+            display: block;
+            margin-top: 3px;
+        }
+
+        .no-print {
+            margin-bottom: 20px;
+        }
+        .btn-print {
+            padding: 10px 20px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="no-print">
+        <button class="btn-print" onclick="window.print()">🖨️ XÁC NHẬN IN PHƠI</button>
+        <button class="btn-print" style="background:#666;" onclick="window.close()">ĐÓNG</button>
+    </div>
+
+    <div class="ticket">
+        <div class="route">@Model.SendStation &lt;&gt; @Model.ReceiveStation</div>
+        <div class="content">@Model.ItemName</div>
+
+        <div class="info-row">
+            <span class="label">GỬI</span>: <span class="value">@Model.SenderName - @Model.SenderPhone</span>
+        </div>
+
+        <div class="info-row">
+            <span class="label">NHẬN</span>: <span class="value">@Model.ReceiverName - @MaskPhone(Model.ReceiverPhone)</span>
+        </div>
+
+        <div class="meta-info">
+            @{
+                string payInfo = "";
+                if (!string.IsNullOrEmpty(Model.Tr) && Model.Tr != "0") payInfo += $"Phí Đã Thu: {Model.Tr}k";
+                if (!string.IsNullOrEmpty(Model.Ct) && Model.Ct != "0") 
+                {
+                    if (payInfo != "") payInfo += " - ";
+                    payInfo += $"Phí chưa thu: {Model.Ct}k";
+                }
+                if (string.IsNullOrEmpty(payInfo)) payInfo = "Phí Đã Thu: 0k - Phí chưa thu: 0k";
+            }
+            @payInfo <br>
+            MANV: @Model.StaffInput - NGÀY: @Model.CreatedAt?.ToString("dd/MM/yyyy HH:mm")
+        </div>
+
+        <div class="footer-note">
+            NvN: - NvIN: @currentUserID - @ViewBag.PrintTime
+        </div>
+
+        <div class="barcode-area">
+            <div class="barcode-img"></div>
+            <span class="barcode-num">@Model.OrderId</span>
+        </div>
+    </div>
+
+</body>
+</html>
