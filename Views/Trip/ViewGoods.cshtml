@@ -19,6 +19,7 @@
                 <span class="badge">Chuyến: @trip.TripId</span>
                 <span class="badge">Lộ trình: @trip.RouteInfo</span>
                 <span class="badge">Biển số: @trip.LicensePlate</span>
+                <span class="badge">Tổng đơn: @(Model?.Count() ?? 0) đơn</span>
             </div>
         }
     </div>
@@ -40,11 +41,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @{ int i = 1; }
+                    @{ 
+                        int i = 1;
+                        decimal totalTr = 0;
+                        decimal totalCt = 0;
+
+                        decimal ParseDecimal(string? s) {
+                            if (string.IsNullOrEmpty(s)) return 0;
+                            return decimal.TryParse(s, out decimal res) ? res : 0;
+                        }
+                    }
                     @foreach (var o in Model)
                     {
                         var sendStationId = stations.FirstOrDefault(s => s.StationName == o.SendStation)?.StationId;
                         var receiveStationId = stations.FirstOrDefault(s => s.StationName == o.ReceiveStation)?.StationId;
+                        totalTr += ParseDecimal(o.Tr);
+                        totalCt += ParseDecimal(o.Ct);
                         
                         <tr>
                             <td>@(i++)</td>
@@ -64,22 +76,27 @@
                                     <strong class="text-blue-600">@o.OrderId</strong>
                                 }
                             </td>
-                            <td>@o.ItemName</td>
-                            <td>@o.SenderName <br>@o.SenderPhone</td>
-                            <td>@o.ReceiverName <br>@o.ReceiverPhone</td>
+                            <td class="col-item-name">@o.ItemName</td>
+                            <td class="col-name-std">@o.SenderName <br><hr/>@o.SenderPhone</td>
+                            <td class="col-name-std">@o.ReceiverName <br><hr/>@o.ReceiverPhone</td>
                             <td>
                                 <span>
                                     @(sendStationId?.ToString() ?? "??") ➔ @(receiveStationId?.ToString() ?? "??")
                                 </span>
                             </td>
-                            <td><span style="color:#27ae60; font-weight:700;">@o.Tr</span></td>
-                            <td><span style="color:#e67e22; font-weight:700;">@o.Ct</span></td>
-                            
+                            <td><span style="color:#27ae60; font-weight:500;">@o.Tr</span></td>
+                            <td><span style="color:#e67e22; font-weight:500;">@o.Ct</span></td>
                         </tr>
                     }
                 </tbody>
+                <tfoot>
+                    <tr style="background: #f8fafc; font-weight: 550; border-top: 2px solid #e2e8f0;">
+                        <td colspan="6" style="text-align: right; color: #64748b; text-transform: uppercase; font-size: 0.8rem; padding-right: 20px;">Tổng:</td>
+                        <td style="color: #27ae60; font-size: 14px;">@string.Format("{0:N0}", totalTr)</td>
+                        <td style="color: #e67e22; font-size: 14px;">@string.Format("{0:N0}", totalCt)</td>
+                    </tr>
+                </tfoot>
             </table>
-
         }
         else
         {

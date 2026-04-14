@@ -1,5 +1,5 @@
 .page-wrap {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 16px auto 30px;
     background: #fff;
     border-radius: 6px;
@@ -16,21 +16,22 @@
 
     .hdr h3 {
         margin: 0;
-        font-size: .95rem;
+        font-size: 18px;
     }
 
     .hdr .meta {
         margin-top: 5px;
-        font-size: .8rem;
+        font-size: 18px !important;
         opacity: .9;
     }
 
     .hdr .badge {
         background: rgba(255,255,255,.22);
-        padding: 2px 8px;
+        padding: 4px 14px;
         border-radius: 10px;
-        margin-right: 6px;
-        font-weight: 700;
+        margin-right: 10px;
+        font-weight: 500;
+        font-size: 15px !important;
     }
 
 .body {
@@ -78,8 +79,8 @@ tr:hover td {
 .order-id-link {
     color: #2980b9;
     cursor: pointer;
-    text-decoration: underline;
-    font-weight: 700;
+    /*    text-decoration: underline;*/
+    font-weight: 500;
     transition: 0.2s;
 }
 
@@ -87,9 +88,19 @@ tr:hover td {
         color: #c0392b;
         background: #fee2e2;
         border-radius: 4px;
-        padding: 2px 4px;
+        /*padding: 2px 4px;*/
     }
 
 .text-blue-600 {
     color: #2563eb;
+}
+.col-name-std  {
+    font-size: 15px;
+}
+.col-item-name {
+    font-size: 15px;
+}
+.col-name-std hr {
+    margin: 4px -5px;
+    max-width: 100px;
 }

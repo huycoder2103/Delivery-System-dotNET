@@ -19,9 +19,9 @@
             <td class="col-item-name">@o.ItemName</td>
             <td class="col-route">
                 <div class="route-container">
-                    <span class="station-send" style="color: #1a73e8;">@o.SendStation</span>
+                    <span class="station-send">@o.SendStation</span>
                     <span class="route-arrow">➔</span>
-                    <span class="station-receive" style="color: #d93025;">@o.ReceiveStation</span>
+                    <span class="station-receive">@o.ReceiveStation</span>
                 </div>
             </td>
             <td class="col-customer">
@@ -57,7 +57,7 @@
             <td class="time-cell">
                 @o.CreatedAt?.ToString("dd/MM/yyyy HH:mm")
             </td>
-            <td>
+            @* <td>
                 @if (o.ShipStatus == "Đã giao")
                 {
                     <span class="badge badge-success status-badge-fixed" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0;">Đã giao</span>
@@ -70,7 +70,7 @@
                 {
                     <span class="badge badge-info status-badge-fixed">Đang chuyển</span>
                 }
-            </td>
+            </td> *@
             <td class="col-order-id">
                 <div class="action-btns-grid">
                     @* Hàng 1: Nút Chuyển (Chỉ hiện khi chưa chuyển) hoặc Xem Chuyến (Nếu đã chuyển) *@

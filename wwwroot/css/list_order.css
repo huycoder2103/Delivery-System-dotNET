@@ -17,8 +17,17 @@
     border-radius: 0 0 15px 15px !important;
     padding: 15px 20px !important;
 }
-
-.loading-overlay { opacity: 0.5; pointer-events: none; transition: opacity 0.2s; }
+.route-container {
+    min-width: 150px;
+    margin:0;
+}
+.station-send{color: #1a73e8;font-size: 12px;}
+.station-receive{color: #d93025;font-size: 12px;}
+.loading-overlay {
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
 
 .status-tab-group { display: flex; gap: 10px; margin-bottom: 15px; }
 
@@ -122,7 +131,7 @@
 
 /* Partial Order Table Styles */
 .col-order-id { min-width: 110px; width: 110px; }
-.col-item-name { width: 220px; font-weight: 500; font-size: 13px; }
+.col-item-name { width: 220px;  font-size: 13px; }
 .col-customer { width: 140px;font-weight: 500;font-size: 12px; }
 .text-order-id { color: #1a73e8; font-size: 13px; font-weight: 500; }
 .customer-info-box { display: flex; flex-direction: column; }
