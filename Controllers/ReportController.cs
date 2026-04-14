@@ -13,6 +13,12 @@ namespace Delivery_System.Controllers
             _context = context;
         }
 
+        private decimal ParseSafe(string? val)
+        {
+            if (string.IsNullOrWhiteSpace(val)) return 0;
+            return decimal.TryParse(val, out decimal res) ? res : 0;
+        }
+
         public async Task<IActionResult> Index(string? reportDate, int? viewShiftId, string? targetStaffId)
         {
             var userId = HttpContext.Session.GetString("UserID") ?? "";
@@ -26,14 +32,13 @@ namespace Delivery_System.Controllers
 
             if (role == "AD")
             {
-                // 1. Thực hiện các truy vấn tuần tự (DbContext không cho phép chạy song song trên cùng 1 instance)
-                var baseQuery = _context.TblOrders.AsNoTracking();
-                
-                ViewBag.RevenueDateVal = await baseQuery
-                    .Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow && o.ShipStatus == "Đã chuyển")
-                    .SumAsync(o => o.Amount ?? 0);
+                // Tính doanh thu hệ thống theo ngày (TR + CT)
+                var dailyOrders = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow && o.ShipStatus == "Đã giao")
+                    .ToListAsync();
+                ViewBag.RevenueDateVal = dailyOrders.Sum(o => ParseSafe(o.Tr) + ParseSafe(o.Ct));
 
-                ViewBag.OrdersDateVal = await baseQuery
+                ViewBag.OrdersDateVal = await _context.TblOrders.AsNoTracking()
                     .Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow)
                     .CountAsync();
 
@@ -41,10 +46,8 @@ namespace Delivery_System.Controllers
                 
                 var weekStart = vniNow.Date.AddDays(-6);
                 var weekEnd = vniNow.Date.AddDays(1);
-                var weeklyData = await baseQuery
-                    .Where(o => o.CreatedAt >= weekStart && o.CreatedAt < weekEnd && o.ShipStatus == "Đã chuyển")
-                    .GroupBy(o => o.CreatedAt!.Value.Date)
-                    .Select(g => new { Date = g.Key, Total = g.Sum(o => o.Amount ?? 0) })
+                var weeklyOrders = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.CreatedAt >= weekStart && o.CreatedAt < weekEnd && o.ShipStatus == "Đã giao")
                     .ToListAsync();
 
                 // Dữ liệu nhân viên
@@ -52,18 +55,9 @@ namespace Delivery_System.Controllers
                 var nextDay = today.AddDays(1);
                 var staffList = await _context.TblUsers.AsNoTracking().Where(u => u.RoleId == "US").Select(u => new { u.UserId, u.FullName }).ToListAsync();
                 
-                // Thống kê số đơn nhập (theo StaffInput)
-                var inputStats = await _context.TblOrders.AsNoTracking()
+                // Thống kê theo StaffInput (Người sở hữu đơn hàng)
+                var todayAllOrders = await _context.TblOrders.AsNoTracking()
                     .Where(o => o.CreatedAt >= today && o.CreatedAt < nextDay)
-                    .GroupBy(o => o.StaffInput)
-                    .Select(g => new { StaffId = g.Key, DayOrders = g.Count() })
-                    .ToListAsync();
-
-                // Thống kê doanh thu thực tế (theo StaffReceive - người nhận hàng tại trạm đích)
-                var receiveStats = await _context.TblOrders.AsNoTracking()
-                    .Where(o => o.ShipStatus == "Đã chuyển" && o.CreatedAt >= today && o.CreatedAt < nextDay)
-                    .GroupBy(o => o.StaffReceive)
-                    .Select(g => new { StaffId = g.Key, DayRev = g.Sum(o => o.Amount ?? 0) })
                     .ToListAsync();
 
                 var workingStaffIds = await _context.TblWorkShifts.AsNoTracking().Where(s => s.Status == "ACTIVE").Select(s => s.StaffId).ToListAsync();
@@ -74,34 +68,34 @@ namespace Delivery_System.Controllers
                 {
                     var d = vniNow.Date.AddDays(-i);
                     chartLabels.Add(d.ToString("dd/MM"));
-                    chartData.Add(weeklyData.FirstOrDefault(x => x.Date == d)?.Total ?? 0);
+                    var daySum = weeklyOrders.Where(o => o.CreatedAt!.Value.Date == d)
+                        .Sum(o => ParseSafe(o.Tr) + ParseSafe(o.Ct));
+                    chartData.Add(daySum);
                 }
                 ViewBag.ChartLabels = chartLabels;
                 ViewBag.ChartData = chartData;
 
                 var workingStaffSet = workingStaffIds.ToHashSet();
-                ViewBag.StaffPerformance = staffList.Select(u => new {
-                    StaffName = u.FullName ?? "N/A",
-                    StaffId   = u.UserId,
-                    DayOrders = inputStats.FirstOrDefault(s => s.StaffId == u.UserId)?.DayOrders ?? 0,
-                    DayRev    = receiveStats.FirstOrDefault(s => s.StaffId == u.UserId)?.DayRev ?? 0,
-                    IsWorking = workingStaffSet.Contains(u.UserId)
+                ViewBag.StaffPerformance = staffList.Select(u => {
+                    var staffOrders = todayAllOrders.Where(o => o.StaffInput == u.UserId).ToList();
+                    return new {
+                        StaffName = u.FullName ?? "N/A",
+                        StaffId   = u.UserId,
+                        DayOrders = staffOrders.Count,
+                        DayRev    = staffOrders.Where(o => o.ShipStatus == "Đã giao").Sum(o => ParseSafe(o.Tr) + ParseSafe(o.Ct)),
+                        IsWorking = workingStaffSet.Contains(u.UserId)
+                    };
                 }).ToList();
             }
             else
             {
-                // Dữ liệu dành riêng cho nhân viên: Tính dựa trên StaffReceive (Hàng đã nhận tại trạm mình quản lý)
-                var userStats = await _context.TblOrders.AsNoTracking()
-                    .Where(o => o.StaffReceive == userId && o.ShipStatus == "Đã chuyển")
-                    .GroupBy(o => 1)
-                    .Select(g => new { 
-                        Count = g.Count(), 
-                        Sum = g.Sum(o => o.Amount ?? 0) 
-                    })
-                    .FirstOrDefaultAsync();
+                // Dữ liệu cá nhân nhân viên
+                var myOrders = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.StaffInput == userId && o.ShipStatus == "Đã giao")
+                    .ToListAsync();
                 
-                ViewBag.DeliveredOrders = userStats?.Count ?? 0;
-                ViewBag.TotalRevenue = userStats?.Sum ?? 0;
+                ViewBag.DeliveredOrders = myOrders.Count;
+                ViewBag.TotalRevenue = myOrders.Sum(o => ParseSafe(o.Tr) + ParseSafe(o.Ct));
                 
                 ViewBag.CurrentShift = await _context.TblWorkShifts.AsNoTracking().FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
             }

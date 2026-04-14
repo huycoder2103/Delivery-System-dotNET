@@ -15,6 +15,12 @@ namespace Delivery_System.Controllers
 
         private bool IsAdmin() => HttpContext.Session.GetString("Role") == "AD";
 
+        private decimal ParseSafe(string? val)
+        {
+            if (string.IsNullOrWhiteSpace(val)) return 0;
+            return decimal.TryParse(val, out decimal res) ? res : 0;
+        }
+
         // 1. TRANG QUẢN LÝ CA LÀM VIỆC (DÀNH CHO ADMIN)
         public async Task<IActionResult> Index()
         {
@@ -111,15 +117,25 @@ namespace Delivery_System.Controllers
 
             if (shift == null) return NotFound();
 
-            var addedOrders = await _context.TblOrders.AsNoTracking().Where(o => o.ShiftId == id).ToListAsync();
+            // Lấy danh sách hàng hóa do nhân viên này NHẬP trong ca này
+            var addedOrders = await _context.TblOrders.AsNoTracking()
+                .Where(o => o.ShiftId == id && o.StaffInput == shift.StaffId)
+                .ToListAsync();
             
             ViewBag.AddedOrders = addedOrders;
-            ViewBag.TotalRevenue = addedOrders.Sum(o => o.Amount ?? 0); // Tính tổng doanh thu
+            // Doanh thu tính cho người NHẬP đơn (TR + CT) cho những đơn đã giao
+            ViewBag.TotalRevenue = addedOrders
+                .Where(o => o.ShipStatus == "Đã giao")
+                .Sum(o => ParseSafe(o.Tr) + ParseSafe(o.Ct));
 
+            // Lấy danh sách hàng hóa nhân viên này thực hiện GIAO (xác nhận đến) trong ca này
+            // Lưu ý: Phần này để theo dõi công việc vận chuyển, không tính vào doanh thu cá nhân của họ nếu họ không phải người nhập.
             ViewBag.ReceivedOrders = await _context.TblOrders.AsNoTracking()
-                .Where(o => o.StaffReceive == shift.StaffId && o.ShipStatus == "Đã chuyển" 
+                .Where(o => o.StaffReceive == shift.StaffId && o.ShipStatus == "Đã giao" 
                             && o.CreatedAt >= shift.StartTime && (shift.EndTime == null || o.CreatedAt <= shift.EndTime))
                 .ToListAsync();
+
+            // Chuyến xe do nhân viên này tạo
             ViewBag.CreatedTrips = await _context.TblTrips.AsNoTracking().Include(t => t.Truck).Where(t => t.ShiftId == id).ToListAsync();
 
             return PartialView("_ShiftDetails", shift);

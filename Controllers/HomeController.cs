@@ -13,6 +13,12 @@ namespace Delivery_System.Controllers
             _context = context;
         }
 
+        private decimal ParseSafe(string? val)
+        {
+            if (string.IsNullOrWhiteSpace(val)) return 0;
+            return decimal.TryParse(val, out decimal res) ? res : 0;
+        }
+
         public async Task<IActionResult> Index()
         {
             var userId = HttpContext.Session.GetString("UserID");
@@ -27,19 +33,14 @@ namespace Delivery_System.Controllers
             // Lấy thống kê sơ bộ cho ca làm việc (Nếu có)
             if (currentShift != null)
             {
-                // TỐI ƯU: Sử dụng AsNoTracking & Global Filter đã tự động lọc IsDeleted.
-                var stats = await _context.TblOrders
+                // Lấy danh sách đơn hàng đã chuyển của nhân viên này để tính toán (TR + CT)
+                var myDeliveredOrders = await _context.TblOrders
                     .AsNoTracking()
-                    .Where(o => o.StaffInput == userId && o.ShipStatus == "Đã chuyển")
-                    .GroupBy(o => 1)
-                    .Select(g => new { 
-                        Count = g.Count(), 
-                        Sum = g.Sum(o => o.Amount ?? 0) 
-                    })
-                    .FirstOrDefaultAsync();
+                    .Where(o => o.StaffInput == userId && o.ShipStatus == "Đã giao")
+                    .ToListAsync();
                 
-                ViewBag.DeliveredCount = stats?.Count ?? 0;
-                ViewBag.TotalRevenue = stats?.Sum ?? 0;
+                ViewBag.DeliveredCount = myDeliveredOrders.Count;
+                ViewBag.TotalRevenue = myDeliveredOrders.Sum(o => ParseSafe(o.Tr) + ParseSafe(o.Ct));
             }
 
             return View();

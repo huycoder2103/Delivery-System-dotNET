@@ -44,13 +44,16 @@
         
         <div class="status-tab-group">
             <button class="btn-status-tab @(ViewBag.CurrentStatus == "all" ? "active" : "")" onclick="changeStatus('all')">
-                🌐 Tất cả đơn hàng
+                🌐 Tất cả (@ViewBag.CountAll)
             </button>
             <button class="btn-status-tab @(ViewBag.CurrentStatus == "pending" ? "active" : "")" onclick="changeStatus('pending')">
-                📥 Chờ giao (Tại kho)
+                📥 Chờ giao (@ViewBag.CountPending)
             </button>
             <button class="btn-status-tab @(ViewBag.CurrentStatus == "shipped" ? "active" : "")" onclick="changeStatus('shipped')">
-                🚛 Đã lên xe
+                🚛 Đang chuyển (@ViewBag.CountShipped)
+            </button>
+            <button class="btn-status-tab @(ViewBag.CurrentStatus == "delivered" ? "active" : "")" onclick="changeStatus('delivered')">
+                ✅ Đã giao (@ViewBag.CountDelivered)
             </button>
         </div>
 

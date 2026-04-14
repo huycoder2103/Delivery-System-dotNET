@@ -10,7 +10,7 @@
 <style>
     /* CSS cho bảng đơn hàng (Partial) */
     .col-order-id { min-width: 100px; }
-    .col-item-name { width: 220px; font-weight: 500; font-size: 12px; }
+    .col-item-name { width: 220px; font-weight: 500; font-size: 13px; }
     .col-route { min-width: 200px; width: 200px; text-align: center; }
     .col-customer { width: 140px;font-weight: 500;font-size: 12px; }
 
@@ -33,7 +33,7 @@
     .customer-name { font-weight: 500; font-size: 14px; margin-bottom: 5px; }
     .customer-phone { font-weight: 500; color: #444; font-size: 14px; }
 
-    .staff-input-badge { color: #5f6368; font-weight: 700; }
+    .staff-input-badge { color: #5f6368; font-weight: 500;font-size: 12px; }
     .note-cell { max-width: 150px; font-size: 0.8rem; color: #666; font-style: italic; }
     .time-cell { font-size: 0.75rem; color: #888; }
     .trip-id-link { color: #1a73e8; font-weight: 700; }
@@ -124,7 +124,11 @@
                 @o.CreatedAt?.ToString("dd/MM/yyyy HH:mm")
             </td>
             <td>
-                @if (!isShipped)
+                @if (o.ShipStatus == "Đã giao")
+                {
+                    <span class="badge badge-success status-badge-fixed" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0;">Đã giao</span>
+                }
+                else if (!isShipped)
                 {
                     <span class="badge badge-warning status-badge-fixed">Chờ giao</span>
                 }
@@ -154,14 +158,10 @@
                     @if (canEdit && !isShipped)
                     {
                         <a asp-action="Edit" asp-route-id="@o.OrderId" class="btn-action-text btn-s-edit">Sửa</a>
-                        @* <button type="button" class="btn-action-text btn-s-delete" onclick="confirmDeleteOrder('@o.OrderId')">Xóa</button>
-                        <form id="deleteOrderForm-@o.OrderId" asp-action="Delete" method="POST" style="display:none;">
-                            <input type="hidden" name="id" value="@o.OrderId">
-                        </form> *@
                     }
                     else
                     {
-                        <button type="button" class="btn-action-text btn-disabled" title="Đơn đã lên xe hoặc không có quyền">Khóa</button>
+                        <button type="button" class="btn-action-text btn-disabled" title="Hàng đã lên xe hoặc không có quyền">Khóa</button>
                     }
                 </div>
             </td>

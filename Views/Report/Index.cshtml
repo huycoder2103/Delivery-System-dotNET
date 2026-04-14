@@ -133,7 +133,9 @@
                                 <h5 class="mb-1">🟢 Bạn đang trong ca làm việc hoạt động</h5>
                                 <p class="mb-0 small">Bắt đầu lúc: <strong>@ViewBag.CurrentShift.StartTime.ToString("HH:mm - dd/MM/yyyy")</strong></p>
                             </div>
-                            <a asp-controller="Shift" asp-action="End" class="btn-modern" style="background: #ea4335; color: white; text-decoration: none;">Kết Thúc Ca</a>
+                            <form asp-controller="Shift" asp-action="End" method="POST">
+                                <button type="submit" class="btn-modern" style="background: #ea4335; color: white; border: none; cursor: pointer;" onclick="return confirm('Bạn muốn kết thúc ca làm việc này?')">Kết Thúc Ca</button>
+                            </form>
                         </div>
                     }
 
@@ -163,17 +165,16 @@
             <div class="modern-card p-5 text-center">
                 <div style="font-size: 4rem; margin-bottom: 20px;">⏰</div>
                 <h3 class="fw-bold mb-3">Hệ Thống Quản Lý Ca Làm Việc Mới</h3>
-                <p class="text-muted mb-4">Tính năng nhật ký làm việc đã được nâng cấp sang hệ thống quản lý ca trực mới với đầy đủ chi tiết hàng hóa và doanh thu.</p>
                 
                 @if (role == "AD")
                 {
-                    <a asp-controller="Shift" asp-action="Index" class="btn-modern btn-primary-modern" style="padding: 15px 40px; font-size: 1.1rem;">
+                    <a asp-controller="Shift" asp-action="Index" class="btn-modern btn-primary-modern" style="padding: 15px 40px; font-size: 1.1rem;text-decoration:none;">
                         🚀 TRUY CẬP QUẢN LÝ CA TRỰC
                     </a>
                 }
                 else
                 {
-                    <a asp-controller="Shift" asp-action="MyHistory" class="btn-modern btn-primary-modern" style="padding: 15px 40px; font-size: 1.1rem;">
+                        <a asp-controller="Shift" asp-action="MyHistory" class="btn-modern btn-primary-modern" style="padding: 15px 40px; font-size: 1.1rem;text-decoration:none;">
                         📖 XEM LỊCH SỬ LÀM VIỆC CỦA TÔI
                     </a>
                 }

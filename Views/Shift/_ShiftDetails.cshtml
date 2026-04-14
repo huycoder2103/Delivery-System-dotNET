@@ -21,7 +21,7 @@
             @(Model.Status == "ACTIVE" ? "● Đang làm việc" : "● Ca đã kết thúc")
         </span>
         <div style="font-weight: 800; color: #10b981; font-size: 1.1rem; letter-spacing: -0.02em;">
-            💰 @string.Format("{0:N0}", ViewBag.TotalRevenue) VNĐ
+            💰 @string.Format("{0:N0}", ViewBag.TotalRevenue) .000 VNĐ
         </div>
     </div>
 </div>
@@ -40,7 +40,7 @@
                 <tr>
                     <th>Mã Đơn</th>
                     <th>Tên Hàng</th>
-                    <th>Trạm Gửi</th>
+                    <th>Trạng Thái</th>
                     <th style="text-align: right;">Giờ</th>
                 </tr>
             </thead>
@@ -49,7 +49,13 @@
                     <tr>
                         <td><strong style="color:var(--primary)">@o.OrderId</strong></td>
                         <td style="font-weight: 600;">@o.ItemName</td>
-                        <td><span class="badge badge-info" style="border-radius: 6px;">@o.SendStation</span></td>
+                        <td>
+                            @if (o.ShipStatus == "Đã giao") {
+                                <span class="badge badge-active" style="font-size: 0.65rem;">Đã giao</span>
+                            } else {
+                                <span class="badge badge-info" style="font-size: 0.65rem; background: #fff7ed; color: #c2410c; border-color: #ffedd5;">@o.ShipStatus</span>
+                            }
+                        </td>
                         <td style="text-align: right; color: var(--text-muted); font-weight: 500;">@o.CreatedAt?.ToString("HH:mm")</td>
                     </tr>
                 }

@@ -97,6 +97,14 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
+            var userId = HttpContext.Session.GetString("UserID");
+            var role = HttpContext.Session.GetString("Role") ?? "";
+
+            var activeShift = await _context.TblWorkShifts
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
+
+            ViewBag.HasActiveShift = (role == "AD" || activeShift != null);
             ViewBag.StationList = await GetCachedStationsAsync();
             ViewBag.TruckList = await GetCachedTrucksAsync();
             return View();
@@ -106,13 +114,14 @@ namespace Delivery_System.Controllers
         public async Task<IActionResult> Create(TblTrip trip)
         {
             var userId = HttpContext.Session.GetString("UserID");
+            var role = HttpContext.Session.GetString("Role") ?? "";
 
             // Lấy ShiftId đang hoạt động của nhân viên
             var activeShift = await _context.TblWorkShifts
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
 
-            if (activeShift == null)
+            if (role != "AD" && activeShift == null)
             {
                 TempData["ErrorMessage"] = "Bạn chưa bắt đầu ca làm việc! Vui lòng bắt đầu ca tại trang chủ trước khi tạo chuyến.";
                 ViewBag.StationList = await GetCachedStationsAsync();
@@ -129,7 +138,7 @@ namespace Delivery_System.Controllers
             trip.CreatedAt = Delivery_System.Helpers.TimeHelper.NowVni();
             trip.Status = "Đang đi";
             trip.TripType = "depart";
-            trip.ShiftId = activeShift.ShiftId; // Gán ShiftId
+            trip.ShiftId = activeShift?.ShiftId; // Gán ShiftId nếu có
 
             _context.TblTrips.Add(trip);
             await _context.SaveChangesAsync();
@@ -175,15 +184,22 @@ namespace Delivery_System.Controllers
             if (trip != null)
             {
                 trip.Status = "Đã đến";
-                var orders = await _context.TblOrders.Where(o => o.TripId == id).ToListAsync();
+                
+                // Lấy tất cả đơn hàng trên chuyến xe này (bỏ qua filter để chắc chắn cập nhật hết)
+                var orders = await _context.TblOrders
+                    .IgnoreQueryFilters()
+                    .Where(o => o.TripId == id)
+                    .ToListAsync();
+
                 foreach (var o in orders)
                 {
-                    o.ShipStatus = "Đã chuyển";
-                    o.StaffReceive = userId; // Ghi nhận nhân viên nhận hàng tại trạm đích
+                    o.ShipStatus = "Đã giao";
+                    o.StaffReceive = userId; // Người xác nhận xe đến là người nhận hàng tại kho
                     o.ReceiveDate = Delivery_System.Helpers.TimeHelper.NowVni().ToString("dd/MM/yyyy HH:mm");
                 }
+                
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Xác nhận chuyến xe đã đến và cập nhật trạng thái đơn hàng thành công!";
+                TempData["SuccessMessage"] = $"Đã xác nhận chuyến {id} cập bến. {orders.Count} đơn hàng đã chuyển trạng thái thành công!";
             }
             return RedirectToAction("ArrivalList");
         }

@@ -39,7 +39,8 @@ namespace Delivery_System.Controllers
             var query = _context.TblOrders.AsNoTracking();
 
             if (statusFilter == "pending") query = query.Where(o => string.IsNullOrEmpty(o.TripId));
-            else if (statusFilter == "shipped") query = query.Where(o => !string.IsNullOrEmpty(o.TripId));
+            else if (statusFilter == "shipped") query = query.Where(o => !string.IsNullOrEmpty(o.TripId) && o.ShipStatus != "Đã giao");
+            else if (statusFilter == "delivered") query = query.Where(o => o.ShipStatus == "Đã giao");
 
             if (!string.IsNullOrEmpty(sendStationFilter)) query = query.Where(o => o.SendStation == sendStationFilter);
             if (!string.IsNullOrEmpty(receiveStationFilter)) query = query.Where(o => o.ReceiveStation == receiveStationFilter);
@@ -60,13 +61,14 @@ namespace Delivery_System.Controllers
             
             var countsQuery = _context.TblOrders.AsNoTracking();
             var counts = await countsQuery
-                .GroupBy(o => string.IsNullOrEmpty(o.TripId) ? "pending" : "shipped")
+                .GroupBy(o => o.ShipStatus == "Đã giao" ? "delivered" : (string.IsNullOrEmpty(o.TripId) ? "pending" : "shipped"))
                 .Select(g => new { Status = g.Key, Count = g.Count() })
                 .ToListAsync();
 
             ViewBag.CountPending = counts.FirstOrDefault(c => c.Status == "pending")?.Count ?? 0;
             ViewBag.CountShipped = counts.FirstOrDefault(c => c.Status == "shipped")?.Count ?? 0;
-            ViewBag.CountAll     = ViewBag.CountPending + ViewBag.CountShipped;
+            ViewBag.CountDelivered = counts.FirstOrDefault(c => c.Status == "delivered")?.Count ?? 0;
+            ViewBag.CountAll     = ViewBag.CountPending + ViewBag.CountShipped + ViewBag.CountDelivered;
             
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
@@ -180,6 +182,14 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
+            var userId = HttpContext.Session.GetString("UserID");
+            var role = HttpContext.Session.GetString("Role") ?? "";
+
+            var activeShift = await _context.TblWorkShifts
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
+
+            ViewBag.HasActiveShift = (role == "AD" || activeShift != null);
             ViewBag.StationList = await GetCachedStationsAsync();
             return View();
         }
@@ -188,6 +198,7 @@ namespace Delivery_System.Controllers
         public async Task<IActionResult> Create(TblOrder order)
         {
             var userId = HttpContext.Session.GetString("UserID");
+            var role = HttpContext.Session.GetString("Role") ?? "";
             var vniTime = TimeHelper.NowVni();
 
             // Lấy ShiftId đang hoạt động của nhân viên
@@ -195,7 +206,7 @@ namespace Delivery_System.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
 
-            if (activeShift == null)
+            if (role != "AD" && activeShift == null)
             {
                 TempData["ErrorMessage"] = "Bạn chưa bắt đầu ca làm việc! Vui lòng bắt đầu ca tại trang chủ trước khi thêm hàng.";
                 ViewBag.StationList = await GetCachedStationsAsync();
@@ -212,7 +223,7 @@ namespace Delivery_System.Controllers
             order.ShipStatus = "Chưa Chuyển";
             order.IsDeleted = false;
             order.CreatedAt = vniTime;
-            order.ShiftId = activeShift.ShiftId; // Gán ShiftId
+            order.ShiftId = activeShift?.ShiftId; // Gán ShiftId nếu có
 
             _context.TblOrders.Add(order);
             await _context.SaveChangesAsync();
