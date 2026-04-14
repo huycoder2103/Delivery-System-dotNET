@@ -253,8 +253,28 @@ table tr:hover {
     font-weight: 700; 
     border: none; 
     cursor: pointer; 
-    transition: all 0.3s; 
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
     font-size: 0.9rem; 
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.report-tab-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    filter: brightness(1.05);
+}
+
+.report-tab-btn:active {
+    transform: scale(0.92) translateY(1px) !important;
+    filter: brightness(0.85) !important;
+    box-shadow: inset 0 4px 8px rgba(0,0,0,0.15) !important;
+    transition: all 0.05s !important;
 }
 
 .report-tab-btn.active { 

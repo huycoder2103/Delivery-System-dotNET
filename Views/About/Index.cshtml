@@ -2,182 +2,195 @@
 @inject IHttpContextAccessor HttpContextAccessor
 
 @{
-    ViewData["Title"] = "Hướng dẫn chi tiết - Delivery System";
-    var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
+    ViewData["Title"] = "Cẩm nang Vận hành - Smart Layout";
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/about.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/about.css?v=@DateTime.Now.Ticks">
 }
 
-<div class="about-container">
-    <div class="about-header">
-        <h1>📘 HƯỚNG DẪN SỬ DỤNG HỆ THỐNG</h1>
-        <p>Quy trình quản lý hàng hóa, ca làm việc và hệ thống báo cáo</p>
-    </div>
-
-    <div class="currency-note">
-        ⚠️ LƯU Ý QUAN TRỌNG: Toàn bộ đơn vị tiền tệ (Cước phí, Doanh thu) trên hệ thống hiện được tính bằng đơn vị "K" (Ví dụ: 50 K = 50,000 VNĐ).
-    </div>
-
-    <!-- 1. QUẢN LÝ CA LÀM VIỆC -->
-    <div class="guide-section">
-        <h2 class="text-primary">⏱️ Quản Lý Ca Làm Việc</h2>
-        <div class="feature-grid">
-            <div class="feature-card" onclick="toggleCard(this)">
-                <h4>🚀 Quy trình Bắt đầu & Kết thúc ca</h4>
-                <div class="card-hint">Thực hiện ngay tại Trang Chủ</div>
-                <div class="feature-details">
-                    <div class="sub-feature-container">
-                        <div class="sub-feature-item" onclick="toggleSubFeature(event, this)">
-                            <div class="sub-feature-header">🟢 Nút "Bắt đầu ca" <span>+</span></div>
-                            <div class="sub-feature-content">
-                                Mỗi nhân viên khi bắt đầu làm việc phải nhấn nút này. Hệ thống sẽ ghi nhận thời gian bắt đầu và tạo một <b>Mã Ca</b> riêng biệt. Mọi đơn hàng bạn nhập trong lúc này sẽ được tính vào doanh thu của ca đó.
-                            </div>
-                        </div>
-                        <div class="sub-feature-item" onclick="toggleSubFeature(event, this)">
-                            <div class="sub-feature-header">🛑 Nút "Kết thúc ca" <span>+</span></div>
-                            <div class="sub-feature-content">
-                                Khi hết giờ làm, hãy nhấn nút này để đóng ca. Hệ thống sẽ chốt số liệu doanh thu và số đơn hàng bạn đã xử lý. 
-                            </div>
-                        </div>
-                        <div class="sub-feature-item" onclick="toggleSubFeature(event, this)">
-                            <div class="sub-feature-header">📊 Thống kê Real-time <span>+</span></div>
-                            <div class="sub-feature-content">
-                                Ngay trên widget ca làm, bạn sẽ thấy các con số: <b>Đã giao</b>, <b>Đang đi</b> và <b>Doanh thu tạm tính</b> được cập nhật tức thì theo từng đơn hàng bạn xử lý.
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<div class="docs-inner-wrapper">
+    <!-- SIDENAV (SMART STICKY) -->
+    <aside class="docs-sidebar-container">
+        <div class="docs-sidebar-card">
+            <div class="sidebar-title">Hướng dẫn nhanh</div>
+            
+            <div class="nav-menu-box">
+                <!-- GIỌT NƯỚC -->
+                <div id="sideIndicator" class="nav-liquid-drop"></div>
+                
+                <nav class="nav-menu">
+                    <a href="#intro" class="nav-link-item active"><i class="bi bi-compass"></i> Giới thiệu</a>
+                    <a href="#payment" class="nav-link-item"><i class="bi bi-wallet2"></i> Quy ước TR & CT</a>
+                    <a href="#shift" class="nav-link-item"><i class="bi bi-clock-history"></i> Quy trình Ca trực</a>
+                    <a href="#order" class="nav-link-item"><i class="bi bi-box-seam"></i> Nhập hàng gửi</a>
+                    <a href="#trip" class="nav-link-item"><i class="bi bi-truck"></i> Điều phối Chuyến</a>
+                    <a href="#arrival" class="nav-link-item"><i class="bi bi-flag"></i> Nhận hàng đến</a>
+                    <a href="#history" class="nav-link-item"><i class="bi bi-journal-text"></i> Xem Nhật ký</a>
+                </nav>
             </div>
+
+            <a href="#" class="btn-top-quick" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+                <i class="bi bi-arrow-up-short"></i> Lên đầu trang
+            </a>
         </div>
-    </div>
+    </aside>
 
-    <!-- 2. HỆ THỐNG BÁO CÁO -->
-    <div class="guide-section">
-        <h2 class="text-success">📊 Báo Cáo & Thống Kê</h2>
-        <div class="feature-grid">
-            <div class="feature-card" onclick="toggleCard(this)">
-                <h4>📈 Công cụ dành cho Nhân Viên</h4>
-                <div class="feature-details">
-                    <div class="sub-feature-container">
-                        <div class="sub-feature-item" onclick="toggleSubFeature(event, this)">
-                            <div class="sub-feature-header">📑 Tab "Ca Hiện Tại" <span>+</span></div>
-                            <div class="sub-feature-content">Xem tổng quan chi tiết các con số vận hành của phiên làm việc đang diễn ra.</div>
-                        </div>
-                        <div class="sub-feature-item" onclick="toggleSubFeature(event, this)">
-                            <div class="sub-feature-header">📜 Tab "Lịch Sử Ca" <span>+</span></div>
-                            <div class="sub-feature-content">Xem lại 20 ca làm việc gần nhất. Nhấn nút <b>"Chi tiết"</b> để xem danh sách từng đơn hàng cụ thể đã làm trong ca đó.</div>
-                        </div>
+    <!-- MAIN CONTENT -->
+    <main class="docs-main-content">
+        <header class="hero-banner" id="intro">
+            <h1>Cẩm nang <br>Nhân viên</h1>
+            <p>Quy trình vận hành chuẩn cho hệ thống quản lý trạm.</p>
+        </header>
+
+        <!-- 01. QUY ƯỚC -->
+        <section id="payment">
+            <h2 class="section-title"><i class="bi bi-currency-dollar"></i> 01. Quy ước TR & CT</h2>
+            <div class="doc-card">
+                <div class="alert-premium">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div><b>QUY ĐỊNH THANH TOÁN:</b> </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    
+                    <div style="background: #f0fff4; padding: 25px; border-radius: 16px; border: 1px solid #c6f6d5;">
+                        <span class="badge-step" style="background:#10b981">Cột TR</span>
+                        <h4>Người gửi đã Trả Rồi</h4>
+                        <p style="font-size: 0.85rem; opacity: 0.8;">Người Gửi sẽ thanh toán tiền trước khi giao.</p>
+                    </div>
+                    <div style="background: #fffaf0; padding: 25px; border-radius: 16px; border: 1px solid #feebc8;">
+                        <span class="badge-step" style="background:#f59e0b">Cột CT</span>
+                        <h4>Người gửi Chưa Trả</h4>
+                        <p style="font-size: 0.85rem; opacity: 0.8;">Người Nhận thanh toán khi nhận hàng.</p>
                     </div>
                 </div>
+                <p style="margin-top: 25px;"><b>Cách nhập:</b> Chỉ nhập phần số nghìn. Ví dụ: <kbd>100</kbd> = 100.000 VNĐ.</p>
             </div>
+        </section>
 
-            @if (role == "AD")
-            {
-                <div class="feature-card" onclick="toggleCard(this)">
-                    <h4>🛡️ Công cụ dành cho Quản Trị (Admin)</h4>
-                    <div class="feature-details">
-                        <div class="sub-feature-container">
-                            <div class="sub-feature-item" onclick="toggleSubFeature(event, this)">
-                                <div class="sub-feature-header">🔍 Bộ lọc ngày <span>+</span></div>
-                                <div class="sub-feature-content">Admin có thể chọn bất kỳ ngày nào để xem lại doanh thu, số đơn và hiệu suất của toàn hệ thống trong ngày đó.</div>
-                            </div>
-                            <div class="sub-feature-item" onclick="toggleSubFeature(event, this)">
-                                <div class="sub-feature-header">👥 Giám sát nhân viên <span>+</span></div>
-                                <div class="sub-feature-content">Bảng <b>Hiệu suất hôm nay</b> cho biết ai đang online (🟢) và ai đang nghỉ (⚪). Nhấn vào tên nhân viên để soi chi tiết lịch sử làm việc của họ.</div>
-                            </div>
-                            <div class="sub-feature-item" onclick="toggleSubFeature(event, this)">
-                                <div class="sub-feature-header">📈 Biểu đồ Tăng trưởng <span>+</span></div>
-                                <div class="sub-feature-content">Theo dõi xu hướng doanh thu trong 7 ngày gần nhất qua biểu đồ đường trực quan.</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
-
-    <!-- 3. QUẢN LÝ HÀNG HÓA -->
-    <div class="guide-section">
-        <h2>📦 Nghiệp Vụ Đơn Hàng & Chuyến Xe</h2>
-        <div class="feature-grid">
-            <div class="feature-card" onclick="toggleCard(this)">
-                <h4>📑 Quản lý Đơn Hàng</h4>
-                <div class="feature-details">
-                    <div class="sub-feature-container">
-                        <div class="sub-feature-item" onclick="toggleSubFeature(event, this)">
-                            <div class="sub-feature-header"><span class="btn-ref bg-blue">🔍 Lọc Dữ Liệu</span> <span>+</span></div>
-                            <div class="sub-feature-content">Tìm đơn theo Trạm Gửi/Nhận, Ngày hoặc Trạng thái đơn.</div>
-                        </div>
-                        <div class="sub-feature-item" onclick="toggleSubFeature(event, this)">
-                            <div class="sub-feature-header"><span class="btn-ref bg-green">➕ Nhập Hàng Gửi</span> <span>+</span></div>
-                            <div class="sub-feature-content">Tạo mới đơn hàng khi khách tới gửi. Nhớ kiểm tra SĐT người nhận để tránh lỗi giao hàng.</div>
-                        </div>
-                        <div class="sub-feature-item" onclick="toggleSubFeature(event, this)">
-                            <div class="sub-feature-header">📦 Gán lên xe <span>+</span></div>
-                            <div class="sub-feature-content">Trong trang "Chuyến xe đi", dùng nút này để chất hàng hóa lên xe tải.</div>
-                        </div>
-                    </div>
-                </div>
+        <!-- 02. CA TRỰC -->
+        <section id="shift">
+            <h2 class="section-title"><i class="bi bi-clock-history"></i> 02. Quy trình Ca làm việc</h2>
+            <div class="doc-card">
+                <span class="badge-step">Bước 1</span>
+                <h4>Bắt đầu ca làm việc</h4>
+                <p>Ngay sau khi đăng nhập, tại Trang chủ, nhấn nút 🟢 <b>Bắt đầu ca</b> để hệ thống ghi nhận phiên làm việc cá nhân của bạn.</p>
             </div>
-
-            <div class="feature-card" onclick="toggleCard(this)">
-                <h4>🚛 Quản lý Chuyến Xe</h4>
-                <div class="feature-details">
-                    <div class="sub-feature-container">
-                        <div class="sub-feature-item" onclick="toggleSubFeature(event, this)">
-                            <div class="sub-feature-header">📋 Xem hàng hóa <span>+</span></div>
-                            <div class="sub-feature-content">Xem danh sách tất cả món hàng thực tế đang có trên xe tải đó.</div>
-                        </div>
-                        <div class="sub-feature-item" onclick="toggleSubFeature(event, this)">
-                            <div class="sub-feature-header"><span class="btn-ref bg-green">🏁 Đã đến</span> <span>+</span></div>
-                            <div class="sub-feature-content">Xác nhận xe đã về trạm. Hệ thống sẽ tự động chuyển trạng thái đơn hàng sang "Đã Chuyển" (Đã đến trạm nhận).</div>
-                        </div>
-                    </div>
-                </div>
+            <div class="doc-card">
+                <span class="badge-step">Bước 2</span>
+                <h4>Kết thúc ca làm việc</h4>
+                <p>Trước khi ra về, nhấn nút 🛑 <b>Kết thúc ca</b> tại trang Báo cáo để hệ thống chốt số liệu và tổng hợp doanh thu trong ngày.</p>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- NÚT QUAY LẠI TRANG CHỦ -->
-    <div style="text-align: center; margin-top: 40px;">
-        <a asp-controller="Home" asp-action="Index" class="btn-home" style="text-decoration:none; display:inline-block;">⬅ Quay lại Trang chủ</a>
-    </div>
-
-    <!-- FEEDBACK (Gợi ý: Module này có thể bổ sung logic sau) -->
-    <div class="feedback-section">
-        <h2>💬 Góp Ý Hệ Thống</h2>
-        <form class="feedback-form">
-            <textarea name="feedbackContent" rows="3" placeholder="Góp ý về các chức năng tại đây..." required></textarea>
-            <div style="text-align: right;">
-                <button type="button" class="btn-modern btn-primary-modern">🚀 Gửi (Tính năng đang phát triển)</button>
+        <!-- 03. NHẬP ĐƠN -->
+        <section id="order">
+            <h2 class="section-title"><i class="bi bi-box-seam"></i> 03. Nghiệp vụ Nhập hàng gửi</h2>
+            <div class="doc-card">
+                <p>Hướng dẫn tạo đơn hàng chuẩn:</p>
+                <ul style="padding-left: 20px; line-height: 2;">
+                    <li>Truy cập menu <b>Hàng hóa</b> -> <b>Nhập hàng gửi</b>.</li>
+                    <li>Nhập đầy đủ Họ tên & SĐT của người gửi và nhận.</li>
+                    <li>Lựa chọn chính xác <b>Trạm nhận</b> (Nơi hàng sẽ đến).</li>
+                    <li>Nhập tiền cước vào ô <b>Tr</b> hoặc <b>Ct</b> (Chưa trả).</li>
+                </ul>
             </div>
-        </form>
-    </div>
+        </section>
+
+        <!-- 04. ĐIỀU PHỐI -->
+        <section id="trip">
+            <h2 class="section-title"><i class="bi bi-truck"></i> 04. Điều phối Chuyến xe</h2>
+            <div class="doc-card">
+                <h4 style="color: var(--sys-primary);">Giai đoạn A: Tạo Chuyến</h4>
+                <p>Vào menu <b>Chuyến xe</b> -> <b>Thêm chuyến mới</b>. Chọn Xe và trạm đến.</p>
+                <h4 style="color: var(--sys-primary); margin-top: 20px;">Giai đoạn B: Gán hàng</h4>
+                <p>Nhấn 🚛 <b>Gán hàng</b>, tích chọn các đơn hàng rồi nhấn xác nhận để đưa hàng lên xe.</p>
+            </div>
+        </section>
+
+        <!-- 05. XE ĐẾN -->
+        <section id="arrival">
+            <h2 class="section-title"><i class="bi bi-flag"></i> 05. Quy trình Nhận hàng đến</h2>
+            <div class="doc-card">
+                <ol style="padding-left: 20px; line-height: 2;">
+                    <li>Vào menu <b>Chuyến xe</b> -> <b>Danh sách xe đến</b>.</li>
+                    <li>Xác định đúng mã chuyến xe vừa cập bến.</li>
+                    <li>Nhấn nút 🏁 <b>Đã đến</b> để đưa hàng vào kho.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- 06. NHẬT KÝ -->
+        <section id="history">
+            <h2 class="section-title"><i class="bi bi-journal-text"></i> 06. Xem lại Nhật ký làm việc</h2>
+            <div class="doc-card">
+                <p>Kiểm tra lại toàn bộ lịch sử thao tác tại tab 📜 <b>Nhật ký làm việc</b> trong trang Báo cáo. Nhấn vào <b>Chi tiết</b> để xem danh sách hàng hóa mình đã xử lý.</p>
+            </div>
+        </section>
+
+        <footer style="margin-top: 50px; padding-top: 30px; border-top: 1px solid var(--sys-border); text-align: center; color: var(--sys-muted); font-size: 0.85rem;">
+            &copy; @DateTime.Now.Year Delivery Operation Framework. Smart & Synced Layout.
+        </footer>
+    </main>
 </div>
 
-<script>
-    function toggleCard(card) {
-        if (event.target.closest('.sub-feature-item')) return;
-        const allCards = document.querySelectorAll('.feature-card');
-        allCards.forEach(c => { if (c !== card) c.classList.remove('active'); });
-        card.classList.toggle('active');
-    }
+@section Scripts {
+    <script>
+        const drop = document.getElementById('sideIndicator');
+        const links = document.querySelectorAll('.nav-link-item');
+        const sections = document.querySelectorAll('section, header');
 
-    function toggleSubFeature(event, item) {
-        event.stopPropagation();
-        const container = item.closest('.sub-feature-container');
-        const allItems = container.querySelectorAll('.sub-feature-item');
-        allItems.forEach(otherItem => {
-            if (otherItem !== item) {
-                otherItem.classList.remove('open');
-                const otherIcon = otherItem.querySelector('.sub-feature-header span:last-child');
-                if (otherIcon) otherIcon.textContent = '+';
+        function updateDrop(activeLink) {
+            if (activeLink) {
+                drop.style.opacity = '1';
+                drop.style.top = (activeLink.offsetTop + 5) + 'px';
+                drop.style.height = activeLink.offsetHeight + 'px';
             }
+        }
+
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    const offset = 130; 
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
         });
-        item.classList.toggle('open');
-        const icon = item.querySelector('.sub-feature-header span:last-child');
-        if (icon) { icon.textContent = item.classList.contains('open') ? '-' : '+'; }
-    }
-</script>
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (window.pageYOffset >= (sectionTop - 160)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            links.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                    updateDrop(link);
+                }
+            });
+        });
+
+        window.addEventListener('load', () => {
+            const activeLink = document.querySelector('.nav-link-item.active');
+            updateDrop(activeLink);
+        });
+    </script>
+}

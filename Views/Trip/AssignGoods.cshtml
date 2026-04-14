@@ -65,7 +65,6 @@
                             <th>Người Gửi</th>
                             <th>Người Nhận</th>
                             <th>Trạm Nhận</th>
-                            <th>Cước</th>
                             <th>Thao Tác</th>
                         </tr>
                     </thead>
@@ -81,7 +80,6 @@
                                 <td>@o.SenderName <br><small style="color:#888">@o.SenderPhone</small></td>
                                 <td>@o.ReceiverName <br><small style="color:#888">@o.ReceiverPhone</small></td>
                                 <td>@o.ReceiveStation</td>
-                                <td class="money">@string.Format("{0:N0}", o.Amount ?? 0)đ</td>
                                 <td>
                                     <button type="button" class="btn-assign" onclick="confirmSingleAssign('@o.OrderId')">Gán lẻ</button>
                                 </td>

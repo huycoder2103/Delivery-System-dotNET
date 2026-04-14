@@ -5,15 +5,10 @@
     ViewData["Title"] = "Báo Cáo Hệ Thống";
     var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
     var reportDate = ViewBag.ReportDate;
-    var shiftHistory = ViewBag.ShiftHistory as IEnumerable<Delivery_System.Models.TblWorkShift>;
-    var shiftOrders = ViewBag.ShiftOrders as IEnumerable<Delivery_System.Models.TblOrder>;
-    var viewShiftId = ViewBag.ViewShiftId;
-    var selectedStaffId = ViewBag.SelectedStaffId;
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/report.css">
-    
+    <link rel="stylesheet" href="~/css/report.css?v=@DateTime.Now.Ticks">
 }
 
 <div class="container-custom" style="max-width: 1600px; margin: 20px auto; padding: 0 20px;">
@@ -28,14 +23,14 @@
         </a>
     </div>
 
-    <div class="d-flex gap-3 mb-4" id="reportTabs" role="tablist">
-        <button class="report-tab-btn @(viewShiftId == null ? "active" : "")" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button">📋 Tổng Quan</button>
-        <button class="report-tab-btn @(viewShiftId != null ? "active" : "")" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button">📜 Nhật Ký Làm Việc</button>
+    <div class="d-flex gap-3 mb-4" id="reportTabs">
+        <button class="report-tab-btn active" type="button">📋 Tổng Quan</button>
+        <a href="@(role == "AD" ? Url.Action("Index", "Shift") : Url.Action("MyHistory", "Shift"))" class="report-tab-btn" style="text-decoration: none;">📜 Nhật Ký Làm Việc</a>
     </div>
 
     <div class="tab-content" id="reportTabsContent">
         <!-- ========================== TAB 1: TỔNG QUAN ========================== -->
-        <div class="tab-pane fade @(viewShiftId == null ? "show active" : "")" id="summary">
+        <div class="tab-pane fade show active" id="summary">
             @if (role == "AD")
             {
                 <div class="modern-card mb-4">
@@ -55,7 +50,7 @@
                     <div style="flex: 1;">
                         <div class="card report-card p-4 border-start border-primary border-5 shadow-sm">
                             <div class="stat-label">Doanh thu hệ thống (Ngày)</div>
-                            <div class="stat-value text-primary">@string.Format("{0:N0}", ViewBag.RevenueDateVal) K</div>
+                            <div class="stat-value text-primary">@string.Format("{0:N0}", ViewBag.RevenueDateVal) k</div>
                         </div>
                     </div>
                     <div style="flex: 1;">
@@ -64,59 +59,12 @@
                             <div class="stat-value text-info">@ViewBag.OrdersDateVal</div>
                         </div>
                     </div>
-                    <div style="flex: 1;">
-                        <div class="card report-card p-4 border-start border-warning border-5 shadow-sm">
-                            <div class="stat-label">Nhân sự đang Online</div>
-                            <div class="stat-value text-warning">@ViewBag.ActiveStaffCount</div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="card report-card p-4 mb-4">
                     <h5 class="fw-bold mb-4" style="color: #333;">🚀 Tăng Trưởng Doanh Thu Toàn Hệ Thống (7 Ngày)</h5>
                     <div style="height: 400px; width: 100%;">
                         <canvas id="realRevenueChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="card report-card p-4 mb-4">
-                    <h5 class="fw-bold mb-4" style="color: #333;">👥 Hiệu Suất Nhân Viên Hôm Nay</h5>
-                    <div class="table-responsive">
-                        <table class="table align-middle">
-                            <thead class="table-light">
-                                <tr style="font-size: 0.75rem; text-transform: uppercase; color: #6c757d;">
-                                    <th>Nhân Viên</th>
-                                    <th class="text-center">Trạng Thái</th>
-                                    <th class="text-center">Số Đơn Nhập</th>
-                                    <th class="text-end">Doanh Thu Thu Được</th>
-                                    <th class="text-center">Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (ViewBag.StaffPerformance != null)
-                                {
-                                    foreach (var p in ViewBag.StaffPerformance)
-                                    {
-                                        <tr class="leaderboard-row">
-                                            <td>
-                                                <div class="fw-bold text-dark">@p.StaffName</div>
-                                                <div style="font-size: 0.7rem; color: #888;">ID: @p.StaffId</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <span class="badge @(p.IsWorking ? "bg-success" : "bg-light text-muted")" style="font-size: 0.65rem;">
-                                                    @(p.IsWorking ? "ĐANG LÀM" : "OFFLINE")
-                                                </span>
-                                            </td>
-                                            <td class="text-center fw-bold">@p.DayOrders</td>
-                                            <td class="text-end fw-bold text-success">@string.Format("{0:N0}", p.DayRev) K</td>
-                                            <td class="text-center">
-                                                <a href="@Url.Action("Index", new { targetStaffId = p.StaffId })#history" class="btn-modern btn-primary-modern" style="padding: 5px 15px; font-size: 0.75rem;">Xem Nhật Ký</a>
-                                            </td>
-                                        </tr>
-                                    }
-                                }
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             }
@@ -159,27 +107,6 @@
                 </div>
             }
         </div>
-
-        <!-- ========================== TAB 2: LỊCH SỬ CA LÀM ========================== -->
-        <div class="tab-pane fade @(viewShiftId != null ? "show active" : "")" id="history">
-            <div class="modern-card p-5 text-center">
-                <div style="font-size: 4rem; margin-bottom: 20px;">⏰</div>
-                <h3 class="fw-bold mb-3">Hệ Thống Quản Lý Ca Làm Việc Mới</h3>
-                
-                @if (role == "AD")
-                {
-                    <a asp-controller="Shift" asp-action="Index" class="btn-modern btn-primary-modern" style="padding: 15px 40px; font-size: 1.1rem;text-decoration:none;">
-                        🚀 TRUY CẬP QUẢN LÝ CA TRỰC
-                    </a>
-                }
-                else
-                {
-                        <a asp-controller="Shift" asp-action="MyHistory" class="btn-modern btn-primary-modern" style="padding: 15px 40px; font-size: 1.1rem;text-decoration:none;">
-                        📖 XEM LỊCH SỬ LÀM VIỆC CỦA TÔI
-                    </a>
-                }
-            </div>
-        </div>
     </div>
 </div>
 
@@ -187,6 +114,22 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // Hiệu ứng hold bằng JS để đảm bảo cảm giác nhấn cực nhạy
+        document.querySelectorAll('.report-tab-btn').forEach(btn => {
+            btn.addEventListener('mousedown', function() {
+                this.style.transform = 'scale(0.92) translateY(2px)';
+                this.style.filter = 'brightness(0.85)';
+            });
+            btn.addEventListener('mouseup', function() {
+                this.style.transform = '';
+                this.style.filter = '';
+            });
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+                this.style.filter = '';
+            });
+        });
+
         @if (role == "AD") {
             <text>
             const ctxRev = document.getElementById('realRevenueChart');
@@ -196,7 +139,7 @@
                     data: {
                         labels: @Html.Raw(Json.Serialize(ViewBag.ChartLabels)),
                         datasets: [{
-                            label: 'Doanh thu hệ thống (K VNĐ)',
+                            label: 'Doanh thu hệ thống (.000 VNĐ)',
                             data: @Html.Raw(Json.Serialize(ViewBag.ChartData)),
                             borderColor: '#1a73e8',
                             backgroundColor: 'rgba(26, 115, 232, 0.1)',
@@ -217,25 +160,5 @@
             }
             </text>
         }
-
-        var buttons = document.querySelectorAll('.report-tab-btn');
-        buttons.forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                buttons.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        window.addEventListener('load', function() {
-            if (window.location.hash === '#history') {
-                var historyTabEl = document.getElementById('history-tab');
-                if (historyTabEl) {
-                    var bootstrapTab = new bootstrap.Tab(historyTabEl);
-                    bootstrapTab.show();
-                    buttons.forEach(b => b.classList.remove('active'));
-                    historyTabEl.classList.add('active');
-                }
-            }
-        });
     </script>
 }

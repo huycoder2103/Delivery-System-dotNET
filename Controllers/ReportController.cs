@@ -42,25 +42,11 @@ namespace Delivery_System.Controllers
                     .Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow)
                     .CountAsync();
 
-                ViewBag.ActiveStaffCount = await _context.TblWorkShifts.AsNoTracking().CountAsync(s => s.Status == "ACTIVE");
-                
                 var weekStart = vniNow.Date.AddDays(-6);
                 var weekEnd = vniNow.Date.AddDays(1);
                 var weeklyOrders = await _context.TblOrders.AsNoTracking()
                     .Where(o => o.CreatedAt >= weekStart && o.CreatedAt < weekEnd && o.ShipStatus == "Đã giao")
                     .ToListAsync();
-
-                // Dữ liệu nhân viên
-                var today = vniNow.Date;
-                var nextDay = today.AddDays(1);
-                var staffList = await _context.TblUsers.AsNoTracking().Where(u => u.RoleId == "US").Select(u => new { u.UserId, u.FullName }).ToListAsync();
-                
-                // Thống kê theo StaffInput (Người sở hữu đơn hàng)
-                var todayAllOrders = await _context.TblOrders.AsNoTracking()
-                    .Where(o => o.CreatedAt >= today && o.CreatedAt < nextDay)
-                    .ToListAsync();
-
-                var workingStaffIds = await _context.TblWorkShifts.AsNoTracking().Where(s => s.Status == "ACTIVE").Select(s => s.StaffId).ToListAsync();
 
                 var chartLabels = new List<string>();
                 var chartData = new List<decimal>();
@@ -74,18 +60,6 @@ namespace Delivery_System.Controllers
                 }
                 ViewBag.ChartLabels = chartLabels;
                 ViewBag.ChartData = chartData;
-
-                var workingStaffSet = workingStaffIds.ToHashSet();
-                ViewBag.StaffPerformance = staffList.Select(u => {
-                    var staffOrders = todayAllOrders.Where(o => o.StaffInput == u.UserId).ToList();
-                    return new {
-                        StaffName = u.FullName ?? "N/A",
-                        StaffId   = u.UserId,
-                        DayOrders = staffOrders.Count,
-                        DayRev    = staffOrders.Where(o => o.ShipStatus == "Đã giao").Sum(o => ParseSafe(o.Tr) + ParseSafe(o.Ct)),
-                        IsWorking = workingStaffSet.Contains(u.UserId)
-                    };
-                }).ToList();
             }
             else
             {

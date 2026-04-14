@@ -48,7 +48,6 @@
                         <th>Người Gửi</th>
                         <th>Người Nhận</th>
                         <th>Trạm Nhận</th>
-                        <th>Cước (K)</th>
                         <th>Trạng Thái</th>
                     </tr>
                 </thead>
@@ -63,7 +62,6 @@
                             <td>@o.SenderName <br><small class="text-muted-small">@o.SenderPhone</small></td>
                             <td>@o.ReceiverName <br><small class="text-muted-small">@o.ReceiverPhone</small></td>
                             <td>@o.ReceiveStation</td>
-                            <td class="text-green-bold">@string.Format("{0:N0}", o.Amount ?? 0)</td>
                             <td>
                                 <span class="badge @(o.ShipStatus == "Đã chuyển" ? "badge-success" : "badge-warning")">
                                     @o.ShipStatus
