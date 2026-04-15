@@ -3,15 +3,18 @@
 
 @if (Model != null && Model.Any())
 {
+    var stationList = ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>;
+    var stationDict = stationList?.ToDictionary(s => s.StationName, s => s.StationId.ToString());
+
     foreach (var t in Model)
     {
         <tr>
             <td><span class="trip-id-text">@t.TripId</span></td>
             <td class="col-route">
                 <div class="route-container">
-                    <span class="station-send">@t.Departure</span>
-                    <span class="route-arrow">➔</span>
-                    <span class="station-receive">@t.Destination</span>
+                    <span class="station-send">@(stationDict != null && t.Departure != null && stationDict.ContainsKey(t.Departure) ? stationDict[t.Departure] : t.Departure)</span>
+                    <span class="route-arrow">=></span>
+                    <span class="station-receive">@(stationDict != null && t.Destination != null && stationDict.ContainsKey(t.Destination) ? stationDict[t.Destination] : t.Destination)</span>
                 </div>
             </td>
             <td style="font-weight: 600;">@t.LicensePlate</td>

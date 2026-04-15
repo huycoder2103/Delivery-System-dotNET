@@ -18,11 +18,11 @@
     padding: 15px 20px !important;
 }
 .route-container {
-    min-width: 150px;
+    min-width: 100px;
     margin:0;
 }
-.station-send{color: #1a73e8;font-size: 12px;}
-.station-receive{color: #d93025;font-size: 12px;}
+.station-send{color: #1a73e8;font-size: 12.8px;font-weight: 700;}
+.station-receive{color: #d93025;font-size: 12.8px;font-weight: 700;}
 .loading-overlay {
     opacity: 0.5;
     pointer-events: none;

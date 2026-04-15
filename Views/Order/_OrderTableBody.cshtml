@@ -10,6 +10,9 @@
 
 @if (Model != null && Model.Any())
 {
+    var stationList = ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>;
+    var stationDict = stationList?.ToDictionary(s => s.StationName, s => s.StationId.ToString());
+
     foreach (var o in Model)
     {
         bool isShipped = !string.IsNullOrEmpty(o.TripId);
@@ -19,9 +22,9 @@
             <td class="col-item-name">@o.ItemName</td>
             <td class="col-route">
                 <div class="route-container">
-                    <span class="station-send">@o.SendStation</span>
-                    <span class="route-arrow">➔</span>
-                    <span class="station-receive">@o.ReceiveStation</span>
+                    <span class="station-send">@(stationDict != null && o.SendStation != null && stationDict.ContainsKey(o.SendStation) ? stationDict[o.SendStation] : o.SendStation)</span>
+                    <span class="route-arrow">=></span>
+                    <span class="station-receive">@(stationDict != null && o.ReceiveStation != null && stationDict.ContainsKey(o.ReceiveStation) ? stationDict[o.ReceiveStation] : o.ReceiveStation)</span>
                 </div>
             </td>
             <td class="col-customer">

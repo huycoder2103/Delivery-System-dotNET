@@ -36,7 +36,7 @@
 
 .loading-overlay { opacity: 0.5; pointer-events: none; transition: opacity 0.2s; }
 
-.col-route { min-width: 200px; width: 200px; text-align: center; }
+.col-route { min-width: 100px; width: 100px; text-align: center; }
 .col-Nv{font-size:12px}
 
 .route-container {
