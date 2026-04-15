@@ -6,16 +6,11 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/edit_order.css" />
+    <link rel="stylesheet" href="~/css/create_order.css?v=@DateTime.Now.Ticks" />
 }
 
-<div class="edit-wrap">
-    <div class="edit-title">
-        <h2>CHỈNH SỬA ĐƠN HÀNG</h2>
-        <div style="font-size: 0.85rem; color: #666; margin-top: 5px;">Mã đơn: <strong>@Model.OrderId</strong></div>
-    </div>
-
-    <form asp-action="Edit" method="POST" onsubmit="return validateEditForm()">
+<div class="order-container-modern">
+    <form id="editOrderForm" asp-action="Edit" method="POST" onsubmit="return validateEditForm()">
         @* Các trường ẩn để giữ nguyên dữ liệu gốc *@
         <input type="hidden" asp-for="OrderId" />
         <input type="hidden" asp-for="StaffInput" />
@@ -26,21 +21,25 @@
         <input type="hidden" asp-for="ShipStatus" />
         <input type="hidden" asp-for="Amount" />
 
-        <div class="toolbar">
-            <div class="toolbar-tab">Thông tin hàng hóa</div>
-            <input type="submit" value="Lưu Thay Đổi" class="btn-save">
+        <div class="modern-page-header">
+            <div>
+                <h2>📝 CHỈNH SỬA ĐƠN HÀNG</h2>
+                <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Mã đơn: <strong>@Model.OrderId</strong></div>
+            </div>
         </div>
 
-        <div class="form-body">
-            <div class="field" style="margin-bottom: 14px;">
-                <label>Tên Hàng Gửi <span style="color:red">*</span></label>
+        <div class="modern-card">
+            <div class="section-title">✨ Thông tin hàng hóa</div>
+            <div class="form-group">
+                <label>Tên Hàng Gửi <span class="required-star">*</span></label>
                 <input asp-for="ItemName" type="text" required placeholder="Nhập tên hàng hóa...">
             </div>
 
-            <div class="row2">
-                <div class="field">
-                    <label>Trạm Gửi</label>
-                    <select asp-for="SendStation" required>
+            <div class="form-row" style="margin-top: 20px;">
+                <div class="form-group">
+                    <label>Trạm Gửi <span class="required-star">*</span></label>
+                    <select asp-for="SendStation" id="sendStation" required>
+                        <option value="">-- Chọn Trạm Gửi --</option>
                         @if (stationList != null)
                         {
                             foreach (var s in stationList)
@@ -49,66 +48,69 @@
                             }
                         }                    </select>
                 </div>
-                <div class="field">
-                    <label>Trạm Nhận</label>
-                    <select asp-for="ReceiveStation" required>
+                <div class="form-group">
+                    <label>Trạm Nhận <span class="required-star">*</span></label>
+                    <select asp-for="ReceiveStation" id="receiveStation" required>
+                        <option value="">-- Chọn Trạm Nhận --</option>
                         @if (stationList != null)
                         {
                             foreach (var s in stationList)
                             {
                                 <option value="@s.StationName">@s.StationName (@s.StationId)</option>
                             }
-                        }
-                    </select>
+                        }                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="modern-card">
+            <div class="section-title">👤 Thông tin khách hàng</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Người Gửi (Mặc định: None)</label>
+                    <input asp-for="SenderName" type="text" placeholder="Tên khách hàng gửi...">
+                </div>
+                <div class="form-group">
+                    <label>Số Điện Thoại Gửi <span class="required-star">*</span></label>
+                    <input asp-for="SenderPhone" id="senderPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Nhập SĐT người gửi...">
                 </div>
             </div>
 
-            <div class="section-label">Thông tin khách hàng</div>
-            <div class="row2">
-                <div class="field">
-                    <label>Người Gửi (Trống: None)</label>
-                    <input asp-for="SenderName" type="text" placeholder="Tên người gửi...">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Người Nhận (Mặc định: None)</label>
+                    <input asp-for="ReceiverName" type="text" placeholder="Tên khách hàng nhận...">
                 </div>
-                <div class="field">
-                    <label>SĐT Gửi <span style="color:red">*</span></label>
-                    <input asp-for="SenderPhone" id="senderPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Số điện thoại người gửi...">
+                <div class="form-group">
+                    <label>Số Điện Thoại Nhận <span class="required-star">*</span></label>
+                    <input asp-for="ReceiverPhone" id="receiverPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Nhập SĐT người nhận...">
+                </div>
+            </div>
+        </div>
+
+        <div class="modern-card">
+            <div class="section-title">💰 Thanh toán & Ghi chú</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Đã Thanh Toán (Tr) - Đơn vị K</label>
+                    <input asp-for="Tr" id="trField" type="number" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label>Chưa Thanh Toán (Ct) - Đơn vị K</label>
+                    <input asp-for="Ct" id="ctField" type="number" placeholder="0">
                 </div>
             </div>
 
-            <div class="row2">
-                <div class="field">
-                    <label>Người Nhận (Trống: None)</label>
-                    <input asp-for="ReceiverName" type="text" placeholder="Tên người nhận...">
-                </div>
-                <div class="field">
-                    <label>SĐT Nhận <span style="color:red">*</span></label>
-                    <input asp-for="ReceiverPhone" id="receiverPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Số điện thoại người nhận...">
-                </div>
-            </div>
-
-            <div class="section-label">Thanh toán (đơn vị K)</div>
-            <div class="row2">
-                <div class="field">
-                    <label>Đã Thanh Toán (Tr)</label>
-                    <input asp-for="Tr" id="trField" type="text" placeholder="Nhập tiền đã trả (nếu có)">
-                </div>
-                <div class="field">
-                    <label>Chưa Thanh Toán (Ct)</label>
-                    <input asp-for="Ct" id="ctField" type="text" placeholder="Nhập tiền nợ (nếu có)">
-                </div>
-            </div>
-
-            <hr class="divider">
-
-            <div class="field">
-                <label>Ghi Chú</label>
-                <textarea asp-for="Note" rows="3" placeholder="Ghi chú thêm..."></textarea>
+            <div class="form-group">
+                <label>Ghi Chú Đơn Hàng</label>
+                <textarea asp-for="Note" rows="3" placeholder="Nhập các lưu ý đặc biệt về hàng hóa..."></textarea>
             </div>
         </div>
     </form>
 
-    <div class="footer-bar">
-        <a asp-action="List" class="btn-back" style="text-decoration:none; text-align:center;">⬅ Quay lại</a>
+    <div style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center;">
+        <a asp-action="List" class="btn-modern-back" style="text-decoration: none;">⬅ Quay lại danh sách</a>
+        <input type="submit" form="editOrderForm" value="💾 Lưu Thay Đổi" class="btn-modern-save" style="padding: 12px 40px; min-width: 200px;">
     </div>
 </div>
 
@@ -118,6 +120,13 @@
         var ct = document.getElementById("ctField").value.trim();
         var sPhone = document.getElementById("senderPhone").value.trim();
         var rPhone = document.getElementById("receiverPhone").value.trim();
+        var send = document.getElementById("sendStation").value;
+        var receive = document.getElementById("receiveStation").value;
+
+        if (send === receive && send !== "") {
+            Swal.fire({ icon: 'error', title: 'Trùng trạm', text: 'Trạm gửi và trạm nhận không được trùng nhau!' });
+            return false;
+        }
 
         var phoneRegex = /^\d{10,11}$/;
         if (!phoneRegex.test(sPhone) || !phoneRegex.test(rPhone)) {
@@ -126,10 +135,17 @@
         }
 
         if (tr === "" && ct === "") {
-            Swal.fire({ icon: 'info', title: 'Thanh toán', text: 'Bạn phải nhập thông tin tiền thanh toán (Trả rồi) hoặc chưa thanh toán (Chưa trả)!' });
+            Swal.fire({ icon: 'info', title: 'Thanh toán', text: 'Bạn phải nhập thông tin tiền thanh toán (Tr) hoặc chưa thanh toán (Ct)!' });
             return false;
         }
+
+        // Ngăn chặn bấm nút nhiều lần
+        const submitBtn = document.querySelector('input[type="submit"][form="editOrderForm"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.value = "⌛ Đang lưu...";
+        }
+
         return true;
     }
-
 </script>
