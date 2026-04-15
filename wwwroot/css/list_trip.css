@@ -15,6 +15,24 @@
     border: 2px solid #1a73e8 !important;
     transition: all 0.3s;
 }
+.filter-controls-group {
+    display: flex; /* Dàn hàng ngang */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    gap: 10px; /* Khoảng cách giữa các phần tử */
+    width: 80%; /* Trải dài hết chiều ngang container */
+}
+
+/* 2 ô Select và Thanh tìm kiếm sẽ tự chia không gian */
+.filter-select,
+.search-input-wrapper {
+    flex: 1; /* Chia đều độ rộng cho các ô nhập liệu */
+}
+
+/* Riêng nút bấm thì giữ nguyên kích thước theo nội dung chữ, không bị co giãn */
+.btn-modern {
+    flex-shrink: 0;
+    white-space: nowrap; /* Giữ chữ trên 1 hàng, không cho xuống dòng */
+}
 
 .loading-overlay { opacity: 0.5; pointer-events: none; transition: opacity 0.2s; }
 
