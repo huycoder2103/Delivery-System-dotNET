@@ -5,6 +5,11 @@
     ViewData["Title"] = "Cẩm nang Vận hành - Smart Layout";
 }
 
+@{
+    ViewData["Title"] = "Cẩm nang Vận hành - Smart Layout";
+    var stationList = ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>;
+}
+
 @section Styles {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -23,12 +28,13 @@
                 
                 <nav class="nav-menu">
                     <a href="#intro" class="nav-link-item active"><i class="bi bi-compass"></i> Giới thiệu</a>
+                    <a href="#stations" class="nav-link-item"><i class="bi bi-geo-alt"></i> Danh sách trạm</a>
                     <a href="#payment" class="nav-link-item"><i class="bi bi-wallet2"></i> Quy ước TR & CT</a>
                     <a href="#shift" class="nav-link-item"><i class="bi bi-clock-history"></i> Quy trình Ca trực</a>
-                    <a href="#order" class="nav-link-item"><i class="bi bi-box-seam"></i> Nhập hàng gửi</a>
+                    <a href="#order" class="nav-link-item"><i class="bi bi-box-seam"></i> Quản lý đơn hàng</a>
                     <a href="#trip" class="nav-link-item"><i class="bi bi-truck"></i> Điều phối Chuyến</a>
                     <a href="#arrival" class="nav-link-item"><i class="bi bi-flag"></i> Nhận hàng đến</a>
-                    <a href="#history" class="nav-link-item"><i class="bi bi-journal-text"></i> Xem Nhật ký</a>
+                    <a href="#report" class="nav-link-item"><i class="bi bi-bar-chart-line"></i> Báo cáo & Nhật ký</a>
                 </nav>
             </div>
 
@@ -42,8 +48,28 @@
     <main class="docs-main-content">
         <header class="hero-banner" id="intro">
             <h1>Cẩm nang <br>Nhân viên</h1>
-            <p>Quy trình vận hành chuẩn cho hệ thống quản lý trạm.</p>
+            <p>Tài liệu vận hành hệ thống quản lý giao nhận trạm toàn diện.</p>
         </header>
+
+        <!-- 00. DANH SÁCH TRẠM -->
+        <section id="stations">
+            <h2 class="section-title"><i class="bi bi-geo-alt"></i> 00. Danh sách Trạm & Mã</h2>
+            <div class="doc-card">
+                <p>Tra cứu nhanh Mã trạm (ID) để nhập đơn và điều phối chuyến xe chính xác:</p>
+                <div class="station-grid">
+                    @if (stationList != null)
+                    {
+                        foreach (var s in stationList)
+                        {
+                            <div class="station-item">
+                                <div class="s-id-badge">@s.StationId</div>
+                                <div class="s-name-text">@s.StationName</div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </section>
 
         <!-- 01. QUY ƯỚC -->
         <section id="payment">
@@ -51,52 +77,50 @@
             <div class="doc-card">
                 <div class="alert-premium">
                     <i class="bi bi-exclamation-triangle-fill"></i>
-                    <div><b>QUY ĐỊNH THANH TOÁN:</b> </div>
+                    <div><b>QUY ĐỊNH THANH TOÁN:</b></div>
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    
                     <div style="background: #f0fff4; padding: 25px; border-radius: 16px; border: 1px solid #c6f6d5;">
                         <span class="badge-step" style="background:#10b981">Cột TR</span>
-                        <h4>Người gửi đã Trả Rồi</h4>
-                        <p style="font-size: 0.85rem; opacity: 0.8;">Người Gửi sẽ thanh toán tiền trước khi giao.</p>
+                        <h4>Đã trả (Trả Rồi)</h4>
+                        <p style="font-size: 0.85rem; opacity: 0.8;">Người Gửi thanh toán ngay khi giao hàng tại trạm.</p>
                     </div>
                     <div style="background: #fffaf0; padding: 25px; border-radius: 16px; border: 1px solid #feebc8;">
                         <span class="badge-step" style="background:#f59e0b">Cột CT</span>
-                        <h4>Người gửi Chưa Trả</h4>
-                        <p style="font-size: 0.85rem; opacity: 0.8;">Người Nhận thanh toán khi nhận hàng.</p>
+                        <h4>Chưa trả (Còn Thiếu)</h4>
+                        <p style="font-size: 0.85rem; opacity: 0.8;">Người Nhận sẽ thanh toán tiền hàng khi xe đến.</p>
                     </div>
                 </div>
-                <p style="margin-top: 25px;"><b>Cách nhập:</b> Chỉ nhập phần số nghìn. Ví dụ: <kbd>100</kbd> = 100.000 VNĐ.</p>
+                <p style="margin-top: 25px;"><b>Đơn vị:</b> Chỉ nhập phần nghìn. Ví dụ: nhập <kbd>50</kbd> cho 50.000 VNĐ.</p>
             </div>
         </section>
 
         <!-- 02. CA TRỰC -->
         <section id="shift">
-            <h2 class="section-title"><i class="bi bi-clock-history"></i> 02. Quy trình Ca làm việc</h2>
+            <h2 class="section-title"><i class="bi bi-clock-history"></i> 02. Quản lý Ca làm việc</h2>
             <div class="doc-card">
-                <span class="badge-step">Bước 1</span>
-                <h4>Bắt đầu ca làm việc</h4>
-                <p>Ngay sau khi đăng nhập, tại Trang chủ, nhấn nút 🟢 <b>Bắt đầu ca</b> để hệ thống ghi nhận phiên làm việc cá nhân của bạn.</p>
-            </div>
-            <div class="doc-card">
-                <span class="badge-step">Bước 2</span>
-                <h4>Kết thúc ca làm việc</h4>
-                <p>Trước khi ra về, nhấn nút 🛑 <b>Kết thúc ca</b> tại trang Báo cáo để hệ thống chốt số liệu và tổng hợp doanh thu trong ngày.</p>
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <span class="badge-step">Bắt đầu</span>
+                        <p>Nhấn 🟢 <b>Bắt đầu ca</b> tại Trang chủ. Hệ thống sẽ ghi nhận giờ vào ca để tính doanh thu riêng cho bạn.</p>
+                    </div>
+                    <div style="flex: 1; min-width: 250px;">
+                        <span class="badge-step">Kết thúc</span>
+                        <p>Nhấn 🛑 <b>Kết thúc ca</b> tại mục Báo cáo. Doanh thu của bạn sẽ được chốt và gửi về cho Quản trị viên.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- 03. NHẬP ĐƠN -->
+        <!-- 03. ĐƠN HÀNG -->
         <section id="order">
-            <h2 class="section-title"><i class="bi bi-box-seam"></i> 03. Nghiệp vụ Nhập hàng gửi</h2>
+            <h2 class="section-title"><i class="bi bi-box-seam"></i> 03. Quản lý Đơn hàng</h2>
             <div class="doc-card">
-                <p>Hướng dẫn tạo đơn hàng chuẩn:</p>
-                <ul style="padding-left: 20px; line-height: 2;">
-                    <li>Truy cập menu <b>Hàng hóa</b> -> <b>Nhập hàng gửi</b>.</li>
-                    <li>Nhập đầy đủ Họ tên & SĐT của người gửi và nhận.</li>
-                    <li>Lựa chọn chính xác <b>Trạm nhận</b> (Nơi hàng sẽ đến).</li>
-                    <li>Nhập tiền cước vào ô <b>Tr</b> hoặc <b>Ct</b> (Chưa trả).</li>
-                </ul>
+                <span class="feature-tag tag-order">Nhập đơn</span>
+                <p>Vào <b>Hàng hóa</b> -> <b>Nhập hàng gửi</b>. Hệ thống sẽ tự động gán tên nhân viên nhập hàng.</p>
+                <span class="feature-tag tag-order">Chỉnh sửa</span>
+                <p>Bạn có thể chỉnh sửa đơn hàng (nút 📝) bất cứ lúc nào <b>trước khi hàng được gán lên chuyến xe</b>. Khi hàng đã lên xe, chức năng sửa sẽ bị khóa.</p>
             </div>
         </section>
 
@@ -104,30 +128,40 @@
         <section id="trip">
             <h2 class="section-title"><i class="bi bi-truck"></i> 04. Điều phối Chuyến xe</h2>
             <div class="doc-card">
-                <h4 style="color: var(--sys-primary);">Giai đoạn A: Tạo Chuyến</h4>
-                <p>Vào menu <b>Chuyến xe</b> -> <b>Thêm chuyến mới</b>. Chọn Xe và trạm đến.</p>
-                <h4 style="color: var(--sys-primary); margin-top: 20px;">Giai đoạn B: Gán hàng</h4>
-                <p>Nhấn 🚛 <b>Gán hàng</b>, tích chọn các đơn hàng rồi nhấn xác nhận để đưa hàng lên xe.</p>
+                <div class="alert-premium" style="border-left-color: #1a73e8; background: #eff6ff; color: #1e40af;">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <div><b>MẸO LỘ TRÌNH:</b> Bấm vào số <b>ID trạm</b> (ví dụ: <code style="background:#dbeafe; padding:2px 4px; border-radius:4px;">1</code>) trên bảng để xem chi tiết tên trạm.</div>
+                </div>
+                <h4 style="color: var(--sys-primary); margin-top: 20px;">Quy trình:</h4>
+                <ol style="padding-left: 20px; line-height: 2;">
+                    <li><b>Tạo chuyến:</b> Chọn xe, trạm đi/đến và giờ xuất phát.</li>
+                    <li><b>Gán hàng:</b> Nhấn 📦 <b>Thêm hàng</b>, hệ thống chỉ hiện các đơn hàng chưa lên xe có cùng lộ trình.</li>
+                    <li><b>Kiểm tra:</b> Dùng nút 📋 <b>Xem hàng</b> để xem danh sách và tổng cước (TR/CT) trên xe.</li>
+                </ol>
             </div>
         </section>
 
         <!-- 05. XE ĐẾN -->
         <section id="arrival">
-            <h2 class="section-title"><i class="bi bi-flag"></i> 05. Quy trình Nhận hàng đến</h2>
+            <h2 class="section-title"><i class="bi bi-flag"></i> 05. Nhận hàng đến (Arrival)</h2>
             <div class="doc-card">
-                <ol style="padding-left: 20px; line-height: 2;">
-                    <li>Vào menu <b>Chuyến xe</b> -> <b>Danh sách xe đến</b>.</li>
-                    <li>Xác định đúng mã chuyến xe vừa cập bến.</li>
-                    <li>Nhấn nút 🏁 <b>Đã đến</b> để đưa hàng vào kho.</li>
-                </ol>
+                <p>Khi xe từ trạm khác đến trạm của bạn:</p>
+                <ul style="padding-left: 20px; line-height: 2;">
+                    <li>Vào <b>Chuyến xe</b> -> <b>Danh sách xe đến</b>.</li>
+                    <li>Nhấn nút 🏁 <b>Đã đến</b> để xác nhận hoàn tất hành trình.</li>
+                    <li>Hàng hóa sẽ chuyển sang trạng thái <b>Đã giao</b> nếu không còn chặng tiếp theo.</li>
+                </ul>
             </div>
         </section>
 
-        <!-- 06. NHẬT KÝ -->
-        <section id="history">
-            <h2 class="section-title"><i class="bi bi-journal-text"></i> 06. Xem lại Nhật ký làm việc</h2>
+        <!-- 06. BÁO CÁO -->
+        <section id="report">
+            <h2 class="section-title"><i class="bi bi-bar-chart-line"></i> 06. Báo cáo & Doanh thu</h2>
             <div class="doc-card">
-                <p>Kiểm tra lại toàn bộ lịch sử thao tác tại tab 📜 <b>Nhật ký làm việc</b> trong trang Báo cáo. Nhấn vào <b>Chi tiết</b> để xem danh sách hàng hóa mình đã xử lý.</p>
+                <span class="feature-tag tag-report">Tổng quan</span>
+                <p>Xem tổng doanh thu ngày, tổng đơn hàng và các thống kê biểu đồ theo tháng.</p>
+                <span class="feature-tag tag-report">Nhật ký</span>
+                <p>Tất cả ca làm việc được lưu lại. Bạn có thể nhấn <b>Chi tiết</b> để xem lại từng đơn hàng, từng chuyến xe mình đã xử lý trong ca đó.</p>
             </div>
         </section>
 

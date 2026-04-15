@@ -14,7 +14,74 @@ body {
     color: var(--sys-text);
     margin: 0;
 }
+.station-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
 
+.station-item {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: 0.2s;
+}
+
+    .station-item:hover {
+        transform: translateY(-3px);
+        border-color: #1a73e8;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+.s-id-badge {
+    background: #1a73e8;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.s-name-text {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #1e293b;
+}
+
+.feature-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.tag-order {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.tag-trip {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.tag-report {
+    background: #dcfce7;
+    color: #15803d;
+}
 .docs-inner-wrapper {
     display: grid;
     grid-template-columns: 260px 1fr; /* Sidebar gọn hơn */
