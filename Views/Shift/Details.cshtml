@@ -16,8 +16,6 @@
         .header-right { text-align: right; }
         .status-badge-custom { font-size: 1rem; padding: 10px 20px; }
         .start-time-info { margin-top: 10px; font-weight: 600; color: #64748b; }
-        
-        .order-id-added { color: var(--primary); }
         .order-id-received { color: #10b981; }
         .trip-id-text { color: #f59e0b; }
         
@@ -77,7 +75,7 @@
                     <tbody>
                         @foreach(var o in addedOrders) {
                             <tr>
-                                <td><strong class="order-id-added">@o.OrderId</strong></td>
+                                <td>@o.OrderId</td>
                                 <td>@o.ItemName</td>
                                 <td>@o.SenderName</td>
                                 <td>@o.ReceiverName</td>

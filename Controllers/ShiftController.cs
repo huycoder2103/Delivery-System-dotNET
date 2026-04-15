@@ -25,13 +25,31 @@ namespace Delivery_System.Controllers
         public async Task<IActionResult> Index()
         {
             if (!IsAdmin()) return RedirectToAction("Index", "Home");
-
-            var shifts = await _context.TblWorkShifts
-                .Include(s => s.Staff)
-                .OrderByDescending(s => s.StartTime)
-                .ToListAsync();
-
+            var shifts = await GetShiftsWithRevenueAsync(null);
             return View(shifts);
+        }
+
+        private async Task<List<TblWorkShift>> GetShiftsWithRevenueAsync(string? userId)
+        {
+            var query = _context.TblWorkShifts.Include(s => s.Staff).AsQueryable();
+            if (!string.IsNullOrEmpty(userId))
+            {
+                query = query.Where(s => s.StaffId == userId);
+            }
+
+            var shifts = await query.OrderByDescending(s => s.StartTime).ToListAsync();
+
+            // Tính toán doanh thu cho từng ca
+            foreach (var s in shifts)
+            {
+                var orders = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.ShiftId == s.ShiftId && o.StaffInput == s.StaffId && o.ShipStatus == "Đã giao")
+                    .ToListAsync();
+                
+                s.Revenue = orders.Sum(o => ParseSafe(o.Tr) + ParseSafe(o.Ct));
+            }
+
+            return shifts;
         }
 
         // 2. BẮT ĐẦU CA LÀM VIỆC
@@ -151,11 +169,7 @@ namespace Delivery_System.Controllers
             var userId = HttpContext.Session.GetString("UserID");
             if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
 
-            var shifts = await _context.TblWorkShifts
-                .Include(s => s.Staff)
-                .Where(s => s.StaffId == userId)
-                .OrderByDescending(s => s.StartTime)
-                .ToListAsync();
+            var shifts = await GetShiftsWithRevenueAsync(userId);
 
             ViewBag.IsMyHistory = true; // Đánh dấu để view biết đang xem lịch sử cá nhân
             return View("Index", shifts);

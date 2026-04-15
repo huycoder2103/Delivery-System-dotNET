@@ -136,14 +136,14 @@
 .station-send {
     cursor: pointer;
     color: #1a73e8;
-    font-size: 12.8px;
+    font-size: 14px;
     font-weight: 700;
 }
 
 .station-receive {
     cursor: pointer;
     color: #d93025;
-    font-size: 12.8px;
+    font-size: 14px;
     font-weight: 700;
 }
 

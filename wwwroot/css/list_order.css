@@ -55,7 +55,7 @@
 .station-send {
     cursor: pointer;
     color: #1a73e8;
-    font-size: 12.8px;
+    font-size: 14px;
     font-weight: 700;
     flex-shrink: 0; /* Đảm bảo tên trạm không bị co lại quá mức */
     white-space: nowrap;
@@ -63,7 +63,7 @@
 .station-receive {
     cursor: pointer;
     color: #d93025;
-    font-size: 12.8px;
+    font-size: 14px;
     font-weight: 700;
     flex-shrink: 0; /* Đảm bảo tên trạm không bị co lại quá mức */
     white-space: nowrap;

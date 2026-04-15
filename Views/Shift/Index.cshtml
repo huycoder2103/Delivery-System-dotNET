@@ -16,11 +16,6 @@
         .avatar-circle-small { width: 36px; height: 36px; border-radius: 10px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--primary); font-size: 0.9rem; }
         .staff-name-text { font-weight: 700; color: var(--text-main); }
         .staff-id-text-mini { font-size: 0.75rem; color: var(--text-muted); }
-        
-        .start-time-text { font-weight: 500; }
-        .end-time-text { color: var(--text-muted); }
-        .duration-text { font-weight: 600; color: var(--text-main); }
-        
         .actions-cell-center { text-align: center; }
         .actions-group-center { justify-content: center; }
         .inline-form { display:inline; }
@@ -71,7 +66,7 @@
                         <th>Nhân Viên</th>
                         <th>Giờ Bắt Đầu</th>
                         <th>Giờ Kết Thúc</th>
-                        <th>Thời Lượng</th>
+                        <th>Doanh Thu (K)</th>
                         <th>Trạng Thái</th>
                         <th class="table-header-center">Thao Tác</th>
                     </tr>
@@ -94,15 +89,9 @@
                             <td class="start-time-text">@item.StartTime.ToString("dd/MM/yyyy HH:mm")</td>
                             <td class="end-time-text">@(item.EndTime?.ToString("dd/MM/yyyy HH:mm") ?? "—")</td>
                             <td>
-                                @if (item.EndTime.HasValue)
-                                {
-                                    var duration = item.EndTime.Value - item.StartTime;
-                                    <span class="duration-text">@((int)duration.TotalHours)h @duration.Minutes m</span>
-                                }
-                                else
-                                {
-                                    <span class="pulse-text">⚡ Đang tính...</span>
-                                }
+                                <span class="duration-text" style="color: #1a73e8; font-weight: 800;">
+                                    @string.Format("{0:N0}", item.Revenue)
+                                </span>
                             </td>
                             <td>
                                 <span class="badge @(item.Status == "ACTIVE" ? "badge-active" : "badge-ended")">
