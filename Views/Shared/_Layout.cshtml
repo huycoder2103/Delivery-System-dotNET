@@ -144,6 +144,21 @@
                 }
             }
         }
+
+        function showStationInfo(name, id) {
+            Swal.fire({
+                title: 'Thông tin trạm',
+                html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p><strong>Tên trạm:</strong> ${name}</p>
+                        <p><strong>Mã trạm:</strong> ${id}</p>
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonText: 'Đóng',
+                confirmButtonColor: '#1a73e8'
+            });
+        }
     </script>
     
     @RenderSection("Scripts", required: false)

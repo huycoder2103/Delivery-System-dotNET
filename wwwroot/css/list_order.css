@@ -18,11 +18,56 @@
     padding: 15px 20px !important;
 }
 .route-container {
-    min-width: 100px;
-    margin:0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    /* Các thuộc tính quan trọng để ép dòng */
+    white-space: nowrap; /* Chống xuống dòng cho văn bản bên trong */
+    flex-wrap: nowrap; /* Chống xuống dòng cho các thẻ con (span) */
 }
-.station-send{color: #1a73e8;font-size: 12.8px;font-weight: 700;}
-.station-receive{color: #d93025;font-size: 12.8px;font-weight: 700;}
+
+.route-arrow {
+    flex-shrink: 0; /* Đảm bảo mũi tên không bị bóp méo */
+    color: #ccc;
+}
+/* Nhóm các cột có cùng độ rộng 70px */
+.col-id,
+.col-route,
+.col-staff,
+.col-note,
+.col-time {
+    width: 70px;
+    max-width: 100px;
+}
+
+/* Nhóm cột có độ rộng đặc thù */
+.col-paid {
+    width: 30px;
+    max-width: 100px;
+}
+.col-act {
+    width: 60px;
+    max-width: 75px;
+}
+.station-send {
+    cursor: pointer;
+    color: #1a73e8;
+    font-size: 12.8px;
+    font-weight: 700;
+    flex-shrink: 0; /* Đảm bảo tên trạm không bị co lại quá mức */
+    white-space: nowrap;
+}
+.station-receive {
+    cursor: pointer;
+    color: #d93025;
+    font-size: 12.8px;
+    font-weight: 700;
+    flex-shrink: 0; /* Đảm bảo tên trạm không bị co lại quá mức */
+    white-space: nowrap;
+}
 .loading-overlay {
     opacity: 0.5;
     pointer-events: none;
@@ -32,7 +77,7 @@
 .status-tab-group { display: flex; gap: 10px; margin-bottom: 15px; }
 
 .btn-status-tab {
-    padding: 10px 20px;
+/*    padding: 10px 20px;*/
     border-radius: 12px;
     border: 2px solid #e8f0fe;
     background: white;
@@ -97,41 +142,76 @@
     margin-bottom: 15px;
     padding: 15px;
 }
-
-/* --- RESPONSIVE --- */
 @media (max-width: 768px) {
+    /* 1. Container bớt padding để tận dụng chiều ngang */
     .order-list-container {
-        padding: 0 10px;
+        padding: 0 8px;
     }
-
+    /* 2. Phần Header (Quản lý đơn hàng + 2 nút Chuyến xe) */
+    .modern-page-header {
+        padding: 15px !important;
+        margin-bottom: 10px !important;
+    }
+    .header-actions {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr; /* Chia đôi 2 nút Chuyến Xe Đi/Đến */
+        gap: 8px;
+        width: 100%;
+    }
+    /* 3. Thanh Filter: Đây là phần cần sửa nhất */
     .sticky-filter-bar {
-        position: relative;
+        position: relative !important;
         top: 0 !important;
-        margin-top: 10px;
-        border-radius: 15px !important;
-        border: 1px solid #1a73e8 !important;
+        padding: 12px !important;
+        border: none !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        background: #fff !important;
     }
-
+        /* Dàn các ô lọc theo dạng lưới 2 cột */
+        .sticky-filter-bar > div {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px !important;
+        }
+    /* Ô chọn ngày và ô tìm kiếm nên chiếm trọn hàng ngang */
+    input[type="date"],
+    .search-input-wrapper {
+        grid-column: span 2;
+    }
+    /* Nút "Làm mới" và "Nhập hàng" nằm cạnh nhau cho gọn */
+    .btn-modern, .btn-add {
+        grid-column: span 1; /* Thay vì chiếm cả hàng, cho nằm cạnh nhau */
+        height: 40px !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    /* 4. Các nút trạng thái (Tất cả, Chờ giao...) */
+    .status-tabs-container {
+        display: flex !important;
+        overflow-x: auto; /* Cho phép vuốt ngang qua các trạng thái */
+        white-space: nowrap;
+        gap: 8px;
+        padding: 5px 0 12px 0;
+        -webkit-overflow-scrolling: touch;
+    }
     .btn-status-tab {
-        padding: 8px 12px;
-        font-size: 0.8rem;
+        flex: 0 0 auto; /* Không cho các nút bị co lại */
+        padding: 8px 15px;
+        font-size: 13px;
+        border-radius: 10px;
     }
-
-    .sticky-filter-bar > div {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 10px;
+    /* 5. Bảng dữ liệu: Quan trọng nhất là không để bị méo */
+    .trip-table-card {
+        border-radius: 12px !important;
+        overflow-x: auto !important;
     }
-
-    .filter-input, .search-input {
-        width: 100% !important;
-        min-width: unset !important;
+    .modern-table {
+        min-width: 900px; /* Buộc bảng rộng ra để người dùng vuốt ngang thay vì bị nén */
     }
 }
-
 /* Partial Order Table Styles */
-.col-order-id { min-width: 110px; width: 110px; }
-.col-item-name { width: 220px;  font-size: 13px; }
+.col-item-name {width: 250px;font-size: 14px;font-weight: 500;}
 .col-customer { width: 140px;font-weight: 500;font-size: 12px; }
 .text-order-id { color: #1a73e8; font-size: 13px; font-weight: 500; }
 .customer-info-box { display: flex; flex-direction: column; }

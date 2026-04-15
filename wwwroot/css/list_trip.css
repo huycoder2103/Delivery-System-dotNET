@@ -1,7 +1,33 @@
-/* list_trip.css - Modern Version */
+/* --- 1. Containers & Headers Chung --- */
+.arrival-list-container, .list-trip-container {
+    max-width: 1750px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
 
-/* --- DESKTOP STYLES --- */
+.arrival-header, .trip-header {
+    background: linear-gradient(135deg, #1a73e8, #0d47a1);
+}
 
+.trip-count-meta {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-top: 4px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-header-action {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+    text-decoration: none;
+}
+
+/* --- 2. Filter Bar (Vị trí & Sticky) --- */
 .sticky-filter-bar {
     position: sticky;
     top: 155px;
@@ -15,29 +41,67 @@
     border: 2px solid #1a73e8 !important;
     transition: all 0.3s;
 }
-.filter-controls-group {
-    display: flex; /* Dàn hàng ngang */
-    align-items: center; /* Căn giữa theo chiều dọc */
-    gap: 10px; /* Khoảng cách giữa các phần tử */
-    width: 80%; /* Trải dài hết chiều ngang container */
+
+.filter-controls-group, .filter-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap; /* Hỗ trợ tự xuống dòng nếu quá dài */
 }
 
-/* 2 ô Select và Thanh tìm kiếm sẽ tự chia không gian */
-.filter-select,
+/* --- 3. Inputs, Selects & Buttons --- */
+/* 2 ô Select: Giảm không gian chiếm dụng */
+.filter-select {
+    flex: 0.5; /* Chiếm 1 nửa so với mặc định (1) */
+    min-width: 120px; /* Đảm bảo không bị quá nhỏ khi co màn hình */
+    max-width: 220px;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+/* Thanh tìm kiếm: Giữ nguyên hoặc tăng lên để bù vào khoảng trống */
 .search-input-wrapper {
-    flex: 1; /* Chia đều độ rộng cho các ô nhập liệu */
+    flex: 1; /* Tăng độ rộng để chiếm phần không gian select vừa nhường lại */
+    position: relative;
 }
 
-/* Riêng nút bấm thì giữ nguyên kích thước theo nội dung chữ, không bị co giãn */
+/* Giữ nguyên các phần khác */
+.search-input-field {
+    min-width: 120px;
+    width: 250px; /* Đảm bảo input bên trong đầy wrapper */
+    padding: 8px 40px 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
 .btn-modern {
     flex-shrink: 0;
-    white-space: nowrap; /* Giữ chữ trên 1 hàng, không cho xuống dòng */
+    white-space: nowrap;
 }
 
-.loading-overlay { opacity: 0.5; pointer-events: none; transition: opacity 0.2s; }
+/* --- 4. Table & Badges --- */
+.trip-table-card {
+    padding: 0;
+    overflow-x: auto;
+}
+.trip-id-text {
+    color: #1a73e8;
+    font-weight: 600;
+    font-size: 14px;
+}
+.col-id, .col-route {
+    width: 100px;
+    min-width: 100px;
+}
 
-.col-route { min-width: 100px; width: 100px; text-align: center; }
-.col-Nv{font-size:12px}
+.col-route {
+    text-align: center;
+}
+
+.col-Nv {
+    font-size: 12px;
+}
 
 .route-container {
     display: flex;
@@ -47,12 +111,6 @@
     font-weight: 700;
     font-size: 0.8rem;
 }
-
-.station-send { color: #1a73e8; }
-.station-receive { color: #d93025; }
-.route-arrow { color: #ccc; }
-
-.trip-id-text { color: #1a73e8; font-size: 13px; font-weight: 500; }
 
 .badge-status-m {
     padding: 6px 12px;
@@ -64,22 +122,37 @@
 }
 
 .badge-going {
-    background-color: rgba(217, 48, 37, 0.1);
+    background: rgba(217, 48, 37, 0.1);
     color: #d93025;
     border: 1px solid rgba(217, 48, 37, 0.2);
 }
 
 .badge-arrived {
-    background-color: rgba(24, 128, 56, 0.1);
+    background: rgba(24, 128, 56, 0.1);
     color: #188038;
     border: 1px solid rgba(24, 128, 56, 0.2);
 }
+.station-send {
+    cursor: pointer;
+    color: #1a73e8;
+    font-size: 12.8px;
+    font-weight: 700;
+}
 
-.td-departure { color: #d93025; font-weight: 600; }
-.td-destination { color: #188038; font-weight: 600; }
-.td-created-at { font-size: 0.75rem; color: #888; }
+.station-receive {
+    cursor: pointer;
+    color: #d93025;
+    font-size: 12.8px;
+    font-weight: 700;
+}
 
-.action-btns-grid { display: flex; flex-direction: column; gap: 5px; align-items: center; }
+/* --- 5. Actions --- */
+.action-btns-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+}
 
 .btn-action-trip {
     border: none;
@@ -88,69 +161,66 @@
     font-weight: 500;
     cursor: pointer;
     width: 110px;
-    display: inline-block;
     text-align: center;
     transition: 0.2s;
     text-decoration: none;
 }
 
-.btn-action-trip:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    filter: brightness(0.9);
+.btn-status-arrived {
+    background: #e6f4ea;
+    color: #1e8e3e;
+    font-size: 12px;
+    width: 130px !important;
 }
 
-.btn-status-arrived { background: #e6f4ea; color: #1e8e3e; width:130px !important; }
-.btn-status-assign { background: #fff3cd; color: #856404; font-size: 12px }
-.btn-status-view { background: #e8f0fe; color: #1a73e8; font-size: 12px}
+.btn-status-assign {
+    background: #fff3cd;
+    color: #856404;
+    font-size: 12px;
+}
 
-/* --- MOBILE RESPONSIVE --- */
+.btn-status-view {
+    background: #e8f0fe;
+    color: #1a73e8;
+    font-size: 12px;
+}
+
+/* --- 6. Pagination & Footer --- */
+.pagination-flex {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-actions-row {
+    margin-top: 20px;
+}
+
+.btn-footer-back {
+    text-decoration: none;
+    display: inline-block;
+}
+
+/* --- 7. Mobile Responsive --- */
 @media (max-width: 768px) {
-    .modern-page-header {
+    .modern-page-header, .sticky-filter-bar {
         position: relative !important;
         top: 0 !important;
         margin-top: 10px !important;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
     }
 
-    .sticky-filter-bar {
-        position: relative !important;
-        top: 0 !important;
-        margin-top: 15px !important;
-        border-radius: 15px !important;
-    }
+        .sticky-filter-bar > div {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+        }
 
-    .sticky-filter-bar > div {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: flex-start !important; /* Căn trái */
-        gap: 12px !important;
-    }
-
-    /* Thu ngắn các ô chọn và nhập trên di động */
-    .sticky-filter-bar select, 
-    .sticky-filter-bar input[type="text"],
-    .sticky-filter-bar div[style*="relative"] {
-        width: 220px !important; /* Ngắn lại khoảng 1 nửa */
-        min-width: unset !important;
-        flex: none !important;
-    }
-
-    .sticky-filter-bar .btn-modern {
-        width: 150px !important;
-        justify-content: center;
-    }
-
-    .modern-card {
-        overflow-x: auto !important;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .modern-table {
-        min-width: 1000px;
-    }
-
-    body { padding-top: 100px !important; }
+        .sticky-filter-bar select,
+        .sticky-filter-bar input[type="text"],
+        .sticky-filter-bar .search-input-wrapper {
+            width: 100% !important; /* Thay vì 220px, để 100% sẽ đẹp hơn trên mobile */
+            flex: none !important;
+        }
 }

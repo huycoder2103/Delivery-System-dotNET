@@ -12,9 +12,13 @@
             <td><span class="trip-id-text">@t.TripId</span></td>
             <td class="col-route">
                 <div class="route-container">
-                    <span class="station-send">@(stationDict != null && t.Departure != null && stationDict.ContainsKey(t.Departure) ? stationDict[t.Departure] : t.Departure)</span>
-                    <span class="route-arrow">=></span>
-                    <span class="station-receive">@(stationDict != null && t.Destination != null && stationDict.ContainsKey(t.Destination) ? stationDict[t.Destination] : t.Destination)</span>
+                    @{
+                        var depID = (stationDict != null && t.Departure != null && stationDict.ContainsKey(t.Departure) ? stationDict[t.Departure] : t.Departure);
+                        var destID = (stationDict != null && t.Destination != null && stationDict.ContainsKey(t.Destination) ? stationDict[t.Destination] : t.Destination);
+                    }
+                    <span class="station-send" onclick="showStationInfo('@t.Departure', '@depID')">@depID</span>
+                    <span class="route-arrow">➔</span>
+                    <span class="station-receive"onclick="showStationInfo('@t.Destination', '@destID')">@destID</span>
                 </div>
             </td>
             <td style="font-weight: 600;">@t.LicensePlate</td>

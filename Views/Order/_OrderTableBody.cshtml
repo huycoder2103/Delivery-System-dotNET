@@ -22,9 +22,13 @@
             <td class="col-item-name">@o.ItemName</td>
             <td class="col-route">
                 <div class="route-container">
-                    <span class="station-send">@(stationDict != null && o.SendStation != null && stationDict.ContainsKey(o.SendStation) ? stationDict[o.SendStation] : o.SendStation)</span>
-                    <span class="route-arrow">=></span>
-                    <span class="station-receive">@(stationDict != null && o.ReceiveStation != null && stationDict.ContainsKey(o.ReceiveStation) ? stationDict[o.ReceiveStation] : o.ReceiveStation)</span>
+                    @{
+                        var sendID = (stationDict != null && o.SendStation != null && stationDict.ContainsKey(o.SendStation) ? stationDict[o.SendStation] : o.SendStation);
+                        var receiveID = (stationDict != null && o.ReceiveStation != null && stationDict.ContainsKey(o.ReceiveStation) ? stationDict[o.ReceiveStation] : o.ReceiveStation);
+                    }
+                    <span class="station-send" onclick="showStationInfo('@o.SendStation', '@sendID')">@sendID</span>
+                    <span class="route-arrow">➔</span>
+                    <span class="station-receive"  onclick="showStationInfo('@o.ReceiveStation', '@receiveID')">@receiveID</span>
                 </div>
             </td>
             <td class="col-customer">
@@ -74,7 +78,7 @@
                     <span class="badge badge-info status-badge-fixed">Đang chuyển</span>
                 }
             </td> *@
-            <td class="col-order-id">
+            <td class="col-act">
                 <div class="action-btns-grid">
                     @* Hàng 1: Nút Chuyển (Chỉ hiện khi chưa chuyển) hoặc Xem Chuyến (Nếu đã chuyển) *@
                     @if (!isShipped)
