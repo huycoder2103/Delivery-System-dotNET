@@ -3,6 +3,9 @@ using Delivery_System.Models;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Delivery_System.Controllers
 {
@@ -19,7 +22,7 @@ namespace Delivery_System.Controllers
         public IActionResult Login() => View();
 
         [HttpPost]
-        public async Task<IActionResult> Login(string username, string password)
+        public async Task<IActionResult> Login(string username, string password, bool rememberMe = true)
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
@@ -37,10 +40,34 @@ namespace Delivery_System.Controllers
 
             if (user != null)
             {
+                // 1. Tạo danh sách Claims (Thông tin người dùng sẽ lưu trong Cookie)
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.UserId),
+                    new Claim(ClaimTypes.Name, user.FullName ?? "Người dùng"),
+                    new Claim(ClaimTypes.Role, user.RoleId),
+                    new Claim("Email", user.Email ?? "")
+                };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = rememberMe, // Nếu true, cookie sẽ tồn tại kể cả khi đóng trình duyệt
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
+                };
+
+                // 2. Thực hiện Đăng nhập vào hệ thống Cookie
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties);
+
+                // 3. Vẫn có thể lưu vào Session nếu các View cũ đang dùng HttpContext.Session
                 HttpContext.Session.SetString("UserID", user.UserId);
                 HttpContext.Session.SetString("FullName", user.FullName ?? "Người dùng");
                 HttpContext.Session.SetString("Role", user.RoleId);
-                HttpContext.Session.SetString("Email", user.Email ?? "");
+
                 return RedirectToAction("Index", "Home");
             }
 
@@ -50,9 +77,14 @@ namespace Delivery_System.Controllers
         }
 
         [HttpPost]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
+            // Xóa Cookie đăng nhập
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            
+            // Xóa Session
             HttpContext.Session.Clear();
+            
             return RedirectToAction("Login", "Account");
         }
 

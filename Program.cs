@@ -44,7 +44,20 @@ builder.Services.AddDbContextPool<AppDbContext>(options =>
                 errorNumbersToAdd: null);
         }));
 
-// Kích hoạt Session
+// Cấu hình Cookie Authentication
+builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.ExpireTimeSpan = TimeSpan.FromDays(7); // Duy trì đăng nhập trong 7 ngày
+        options.SlidingExpiration = true; // Tự động gia hạn khi người dùng có hoạt động
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+        options.Cookie.Name = ".DeliverySystem.Auth";
+    });
+
+// Kích hoạt Session (Vẫn giữ lại nếu bạn muốn dùng cho các mục đích khác)
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -81,6 +94,8 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseRouting();
 app.UseOutputCache();
+
+app.UseAuthentication(); // Thêm dòng này trước UseAuthorization
 app.UseAuthorization();
 app.UseSession();
 
