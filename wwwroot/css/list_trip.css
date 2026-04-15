@@ -90,18 +90,19 @@
     font-weight: 600;
     font-size: 14px;
 }
-.col-id, .col-route {
-    width: 100px;
-    min-width: 100px;
+.col-id,
+.col-route,
+.col-staff,
+.col-plate,
+.col-time {
+    width: 70px;
+    max-width: 100px;
+}
+.col-act {
+    width: 80px;
+    max-width: 90px;
 }
 
-.col-route {
-    text-align: center;
-}
-
-.col-Nv {
-    font-size: 12px;
-}
 
 .route-container {
     display: flex;
