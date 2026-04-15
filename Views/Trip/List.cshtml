@@ -55,14 +55,14 @@
     }
 
     <div class="modern-card sticky-filter-bar">
-        <div class="filter-controls-row">
+        <div class="filter-controls-group">
             <select id="filterDeparture" class="filter-select">
                 <option value="">-- Từ Trạm (Đi) --</option>
                 @if (stationList != null)
                 {
                     foreach (var s in stationList)
                     {
-                        <option value="@s.StationName">@s.StationName (@s.StationId)</option>
+                        <option value="@s.StationName" selected="@(s.StationName == ViewBag.DepartureFilter ? "selected" : null)">@s.StationName (@s.StationId)</option>
                     }
                 }            </select>
 
@@ -72,7 +72,7 @@
                 {
                     foreach (var s in stationList)
                     {
-                        <option value="@s.StationName">@s.StationName (@s.StationId)</option>
+                        <option value="@s.StationName" selected="@(s.StationName == ViewBag.DestinationFilter ? "selected" : null)">@s.StationName (@s.StationId)</option>
                     }
                 }
             </select>
@@ -82,6 +82,7 @@
                        value="@ViewBag.SearchTruck" class="search-input-field">
                 <span class="search-icon-inside">🔍</span>
             </div>
+
 
             <button onclick="resetFilters()" class="btn-modern btn-secondary-modern">🔄 Làm mới</button>
             
