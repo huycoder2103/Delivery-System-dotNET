@@ -32,6 +32,7 @@
                     <a href="#payment" class="nav-link-item"><i class="bi bi-wallet2"></i> Quy ước TR & CT</a>
                     <a href="#shift" class="nav-link-item"><i class="bi bi-clock-history"></i> Quy trình Ca trực</a>
                     <a href="#order" class="nav-link-item"><i class="bi bi-box-seam"></i> Quản lý đơn hàng</a>
+                    <a href="#print" class="nav-link-item"><i class="bi bi-printer"></i> In ấn hóa đơn</a>
                     <a href="#trip" class="nav-link-item"><i class="bi bi-truck"></i> Điều phối Chuyến</a>
                     <a href="#arrival" class="nav-link-item"><i class="bi bi-flag"></i> Nhận hàng đến</a>
                     <a href="#report" class="nav-link-item"><i class="bi bi-bar-chart-line"></i> Báo cáo & Nhật ký</a>
@@ -100,6 +101,10 @@
         <section id="shift">
             <h2 class="section-title"><i class="bi bi-clock-history"></i> 02. Quản lý Ca làm việc</h2>
             <div class="doc-card">
+                <div class="alert-premium" style="border-left-color: #ef4444; background: #fef2f2; color: #991b1b;">
+                    <i class="bi bi-shield-lock-fill"></i>
+                    <div><b>BẮT BUỘC:</b> Bạn phải bắt đầu ca làm việc để có quyền sử dụng các tính năng <b>Nhập hàng</b> và <b>Tạo chuyến xe</b>.</div>
+                </div>
                 <div style="display: flex; gap: 20px; flex-wrap: wrap;">
                     <div style="flex: 1; min-width: 250px;">
                         <span class="badge-step">Bắt đầu</span>
@@ -118,50 +123,63 @@
             <h2 class="section-title"><i class="bi bi-box-seam"></i> 03. Quản lý Đơn hàng</h2>
             <div class="doc-card">
                 <span class="feature-tag tag-order">Nhập đơn</span>
-                <p>Vào <b>Hàng hóa</b> -> <b>Nhập hàng gửi</b>. Hệ thống sẽ tự động gán tên nhân viên nhập hàng.</p>
+                <p>Vào <b>Hàng hóa</b> -> <b>Nhập hàng gửi</b>. Ô tìm kiếm tại danh sách cho phép tìm nhanh theo <b>Mã đơn</b> hoặc <b>Số điện thoại</b>.</p>
                 <span class="feature-tag tag-order">Chỉnh sửa</span>
                 <p>Bạn có thể chỉnh sửa đơn hàng (nút 📝) bất cứ lúc nào <b>trước khi hàng được gán lên chuyến xe</b>. Khi hàng đã lên xe, chức năng sửa sẽ bị khóa.</p>
             </div>
         </section>
 
-        <!-- 04. ĐIỀU PHỐI -->
+        <!-- 04. IN ẤN -->
+        <section id="print">
+            <h2 class="section-title"><i class="bi bi-printer"></i> 04. In ấn Hóa đơn</h2>
+            <div class="doc-card">
+                <p>Tại danh sách đơn hàng, nhấn nút <b>In</b> để chọn định dạng:</p>
+                <ul style="padding-left: 20px; line-height: 2;">
+                    <li><b>🧾 In Biên Lai (K80):</b> Dùng cho máy in nhiệt mini, đưa cho người gửi hàng.</li>
+                    <li><b>📄 In Phơi Giao (A5):</b> Dùng cho máy in văn phòng, dán kèm lên kiện hàng để kiểm kho.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 05. ĐIỀU PHỐI -->
         <section id="trip">
-            <h2 class="section-title"><i class="bi bi-truck"></i> 04. Điều phối Chuyến xe</h2>
+            <h2 class="section-title"><i class="bi bi-truck"></i> 05. Điều phối Chuyến xe</h2>
             <div class="doc-card">
                 <div class="alert-premium" style="border-left-color: #1a73e8; background: #eff6ff; color: #1e40af;">
                     <i class="bi bi-info-circle-fill"></i>
-                    <div><b>MẸO LỘ TRÌNH:</b> Bấm vào số <b>ID trạm</b> (ví dụ: <code style="background:#dbeafe; padding:2px 4px; border-radius:4px;">1</code>) trên bảng để xem chi tiết tên trạm.</div>
+                    <div><b>MẸO LỘ TRÌNH:</b> Bấm vào số <b>ID trạm</b> trên bảng để xem chi tiết tên trạm.</div>
                 </div>
-                <h4 style="color: var(--sys-primary); margin-top: 20px;">Quy trình:</h4>
+                <h4 style="color: var(--sys-primary); margin-top: 20px;">Quy trình & Sửa lỗi:</h4>
                 <ol style="padding-left: 20px; line-height: 2;">
-                    <li><b>Tạo chuyến:</b> Chọn xe, trạm đi/đến và giờ xuất phát.</li>
-                    <li><b>Gán hàng:</b> Nhấn 📦 <b>Thêm hàng</b>, hệ thống chỉ hiện các đơn hàng chưa lên xe có cùng lộ trình.</li>
-                    <li><b>Kiểm tra:</b> Dùng nút 📋 <b>Xem hàng</b> để xem danh sách và tổng cước (TR/CT) trên xe.</li>
+                    <li><b>Gán hàng:</b> Nhấn 📦 <b>Thêm hàng</b>, tích chọn các đơn rồi xác nhận.</li>
+                    <li><b>Sửa lỗi gán nhầm:</b> Vào nút 📋 <b>Xem hàng</b>, bấm vào <b>Mã đơn hàng</b> (màu xanh) để xác nhận gỡ hàng xuống xe.</li>
                 </ol>
             </div>
         </section>
 
-        <!-- 05. XE ĐẾN -->
+        <!-- 06. XE ĐẾN -->
         <section id="arrival">
-            <h2 class="section-title"><i class="bi bi-flag"></i> 05. Nhận hàng đến (Arrival)</h2>
+            <h2 class="section-title"><i class="bi bi-flag"></i> 06. Nhận hàng đến (Arrival)</h2>
             <div class="doc-card">
                 <p>Khi xe từ trạm khác đến trạm của bạn:</p>
                 <ul style="padding-left: 20px; line-height: 2;">
                     <li>Vào <b>Chuyến xe</b> -> <b>Danh sách xe đến</b>.</li>
                     <li>Nhấn nút 🏁 <b>Đã đến</b> để xác nhận hoàn tất hành trình.</li>
-                    <li>Hàng hóa sẽ chuyển sang trạng thái <b>Đã giao</b> nếu không còn chặng tiếp theo.</li>
+                    <li>Hàng hóa sẽ chuyển sang trạng thái <b>Đã giao</b> nếu trạm của bạn là điểm đích cuối cùng.</li>
                 </ul>
             </div>
         </section>
 
-        <!-- 06. BÁO CÁO -->
+        <!-- 07. BÁO CÁO -->
         <section id="report">
-            <h2 class="section-title"><i class="bi bi-bar-chart-line"></i> 06. Báo cáo & Doanh thu</h2>
+            <h2 class="section-title"><i class="bi bi-bar-chart-line"></i> 07. Báo cáo & Nhật ký</h2>
             <div class="doc-card">
-                <span class="feature-tag tag-report">Tổng quan</span>
-                <p>Xem tổng doanh thu ngày, tổng đơn hàng và các thống kê biểu đồ theo tháng.</p>
-                <span class="feature-tag tag-report">Nhật ký</span>
-                <p>Tất cả ca làm việc được lưu lại. Bạn có thể nhấn <b>Chi tiết</b> để xem lại từng đơn hàng, từng chuyến xe mình đã xử lý trong ca đó.</p>
+                <div class="alert-premium" style="border-left-color: #10b981; background: #ecfdf5; color: #065f46;">
+                    <i class="bi bi-link-45deg"></i>
+                    <div><b>LIÊN KẾT THÔNG MINH:</b> Tại bảng Chi tiết ca, bấm vào <b>Mã Đơn/Xe</b> để chuyển nhanh đến trang quản lý và tự động tìm kiếm mã đó.</div>
+                </div>
+                <span class="feature-tag tag-report">Doanh thu ca</span>
+                <p>Doanh thu cá nhân được tính dựa trên các đơn hàng bạn đã nhập và đã được giao thành công.</p>
             </div>
         </section>
 

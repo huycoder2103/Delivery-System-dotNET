@@ -74,7 +74,11 @@
             <tbody>
                 @foreach(var o in addedOrders) {
                     <tr>
-                        <td><strong class="order-id-added">@o.OrderId</strong></td>
+                        <td>
+                            <a asp-controller="Order" asp-action="List" asp-route-searchPhone="@o.OrderId" title="Tìm kiếm đơn hàng này" style="text-decoration: none;">
+                                <strong class="order-id-added">@o.OrderId</strong>
+                            </a>
+                        </td>
                         <td class="table-text-bold">@o.ItemName</td>
                         <td>
                             @if (o.ShipStatus == "Đã giao") {
@@ -105,7 +109,11 @@
             <tbody>
                 @foreach(var o in receivedOrders) {
                     <tr>
-                        <td><strong class="order-id-received">@o.OrderId</strong></td>
+                        <td>
+                            <a asp-controller="Order" asp-action="List" asp-route-searchPhone="@o.OrderId" title="Tìm kiếm đơn hàng này" style="text-decoration: none;">
+                                <strong class="order-id-received">@o.OrderId</strong>
+                            </a>
+                        </td>
                         <td class="table-text-bold">@o.ItemName</td>
                         <td><span class="badge badge-active badge-rounded">@o.ReceiveStation</span></td>
                         <td class="table-col-time">@o.CreatedAt?.ToString("HH:mm")</td>
@@ -130,7 +138,11 @@
             <tbody>
                 @foreach(var t in createdTrips) {
                     <tr>
-                        <td><strong class="trip-id-text">@t.TripId</strong></td>
+                        <td>
+                            <a asp-controller="Trip" asp-action="List" asp-route-searchTruck="@t.TripId" title="Tìm kiếm chuyến xe này" style="text-decoration: none;">
+                                <strong class="trip-id-text">@t.TripId</strong>
+                            </a>
+                        </td>
                         <td class="trip-route-text">@t.Departure ➔ @t.Destination</td>
                         <td><span class="badge badge-info badge-trip-type">@t.TripType</span></td>
                         <td class="table-col-time">@t.CreatedAt?.ToString("HH:mm")</td>

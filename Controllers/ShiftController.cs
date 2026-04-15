@@ -106,16 +106,20 @@ namespace Delivery_System.Controllers
             return RedirectToAction("Index");
         }
 
-        // 5. CHI TIẾT HOẠT ĐỘNG TRONG CA (ADMIN XEM)
+        // 5. CHI TIẾT HOẠT ĐỘNG TRONG CA (ADMIN HOẶC NHÂN VIÊN TỰ XEM)
         public async Task<IActionResult> Details(int id)
         {
-            if (!IsAdmin()) return Forbid();
+            var userId = HttpContext.Session.GetString("UserID");
+            var role = HttpContext.Session.GetString("Role");
 
             var shift = await _context.TblWorkShifts
                 .Include(s => s.Staff)
                 .FirstOrDefaultAsync(s => s.ShiftId == id);
 
             if (shift == null) return NotFound();
+
+            // Chỉ Admin hoặc chính nhân viên đó mới được xem
+            if (role != "AD" && shift.StaffId != userId) return Forbid();
 
             // Lấy danh sách hàng hóa do nhân viên này NHẬP trong ca này
             var addedOrders = await _context.TblOrders.AsNoTracking()
