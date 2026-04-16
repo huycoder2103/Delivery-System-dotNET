@@ -18,11 +18,14 @@
             </div>
         </div>
 
+        <div asp-validation-summary="All" class="text-danger mb-20"></div>
+
         <div class="modern-card">
             <div class="section-title">✨ Thông tin hàng hóa</div>
             <div class="form-group">
                 <label>Tên Hàng Gửi <span class="required-star">*</span></label>
                 <input asp-for="ItemName" type="text" required placeholder="Nhập tên hàng hóa...">
+                <span asp-validation-for="ItemName" class="text-danger"></span>
             </div>
 
             <div class="form-row form-row-mt-20">
@@ -38,6 +41,7 @@
                             }
                         }
                     </select>
+                    <span asp-validation-for="SendStation" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label>Trạm Nhận <span class="required-star">*</span></label>
@@ -51,6 +55,7 @@
                             }
                         }
                     </select>
+                    <span asp-validation-for="ReceiveStation" class="text-danger"></span>
                 </div>
             </div>
         </div>
@@ -59,23 +64,25 @@
             <div class="section-title">👤 Thông tin khách hàng</div>
             <div class="form-row">
                 <div class="form-group">
-                    <label>Người Gửi (Mặc định: None)</label>
-                    <input asp-for="SenderName" type="text" placeholder="Tên khách hàng gửi..." value="None">
+                    <label>Người Gửi</label>
+                    <input asp-for="SenderName" type="text" placeholder="Tên khách hàng gửi...">
                 </div>
                 <div class="form-group">
                     <label>Số Điện Thoại Gửi <span class="required-star">*</span></label>
                     <input asp-for="SenderPhone" id="senderPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Nhập SĐT người gửi...">
+                    <span asp-validation-for="SenderPhone" class="text-danger"></span>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label>Người Nhận (Mặc định: None)</label>
-                    <input asp-for="ReceiverName" type="text" placeholder="Tên khách hàng nhận..." value="None">
+                    <label>Người Nhận</label>
+                    <input asp-for="ReceiverName" type="text" placeholder="Tên khách hàng nhận...">
                 </div>
                 <div class="form-group">
                     <label>Số Điện Thoại Nhận <span class="required-star">*</span></label>
                     <input asp-for="ReceiverPhone" id="receiverPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Nhập SĐT người nhận...">
+                    <span asp-validation-for="ReceiverPhone" class="text-danger"></span>
                 </div>
             </div>
         </div>
@@ -85,11 +92,13 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Đã Thanh Toán (Tr) - Đơn vị K</label>
-                    <input asp-for="Tr" id="trField" type="number" placeholder="0">
+                    <input asp-for="Tr" id="trField" type="number" step="any" placeholder="0">
+                    <span asp-validation-for="Tr" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label>Chưa Thanh Toán (Ct) - Đơn vị K</label>
-                    <input asp-for="Ct" id="ctField" type="number" placeholder="0">
+                    <input asp-for="Ct" id="ctField" type="number" step="any" placeholder="0">
+                    <span asp-validation-for="Ct" class="text-danger"></span>
                 </div>
             </div>
 
@@ -127,8 +136,6 @@
 
 <script>
     function validateForm() {
-        var tr = document.getElementById("trField").value.trim();
-        var ct = document.getElementById("ctField").value.trim();
         var sPhone = document.getElementById("senderPhone").value.trim();
         var rPhone = document.getElementById("receiverPhone").value.trim();
         var send = document.getElementById("sendStation").value;
@@ -142,11 +149,6 @@
         var phoneRegex = /^\d{10,11}$/;
         if (!phoneRegex.test(sPhone) || !phoneRegex.test(rPhone)) {
             Swal.fire({ icon: 'warning', title: 'SĐT không hợp lệ', text: 'Số điện thoại phải là chữ số và có độ dài từ 10 đến 11 ký tự!' });
-            return false;
-        }
-
-        if (tr === "" && ct === "") {
-            Swal.fire({ icon: 'info', title: 'Thanh toán', text: 'Bạn phải nhập thông tin tiền thanh toán (Tr) hoặc chưa thanh toán (Ct)!' });
             return false;
         }
 

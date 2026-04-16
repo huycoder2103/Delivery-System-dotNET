@@ -126,6 +126,11 @@ public partial class AppDbContext : DbContext
 
             entity.HasIndex(e => e.StaffReceive, "staffReceive");
 
+            entity.HasIndex(e => e.SendStation, "idx_orders_sendStation");
+            entity.HasIndex(e => e.ReceiveStation, "idx_orders_receiveStation");
+            entity.HasIndex(e => e.SenderPhone, "idx_orders_senderPhone");
+            entity.HasIndex(e => e.ReceiverPhone, "idx_orders_receiverPhone");
+
             entity.Property(e => e.OrderId)
                 .HasMaxLength(20)
                 .HasColumnName("orderID");
@@ -274,6 +279,9 @@ public partial class AppDbContext : DbContext
             entity.HasIndex(e => e.StaffCreated, "staffCreated");
 
             entity.HasIndex(e => e.TruckId, "truckID");
+
+            entity.HasIndex(e => e.Departure, "idx_trips_departure");
+            entity.HasIndex(e => e.Destination, "idx_trips_destination");
 
             entity.Property(e => e.TripId)
                 .HasMaxLength(20)

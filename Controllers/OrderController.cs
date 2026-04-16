@@ -59,19 +59,43 @@ namespace Delivery_System.Controllers
             int totalRecords = await query.CountAsync();
             int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
             
+            // 2. TỐI ƯU: Sử dụng Projection để chỉ lấy các trường cần thiết hiển thị lên View
             var list = await query.OrderByDescending(o => o.CreatedAt)
                 .Skip((page - 1) * pageSize).Take(pageSize)
+                .Select(o => new TblOrder {
+                    OrderId = o.OrderId,
+                    SenderName = o.SenderName,
+                    SenderPhone = o.SenderPhone,
+                    ReceiverName = o.ReceiverName,
+                    ReceiverPhone = o.ReceiverPhone,
+                    SendStation = o.SendStation,
+                    ReceiveStation = o.ReceiveStation,
+                    ItemName = o.ItemName,
+                    Amount = o.Amount,
+                    Tr = o.Tr,
+                    Ct = o.Ct,
+                    Note = o.Note,
+                    StaffInput = o.StaffInput,
+                    ShipStatus = o.ShipStatus,
+                    TripId = o.TripId,
+                    CreatedAt = o.CreatedAt
+                })
                 .ToListAsync();
             
-            var countsQuery = _context.TblOrders.AsNoTracking();
-            var counts = await countsQuery
-                .GroupBy(o => o.ShipStatus == "Đã giao" ? "delivered" : (string.IsNullOrEmpty(o.TripId) ? "pending" : "shipped"))
-                .Select(g => new { Status = g.Key, Count = g.Count() })
+            // 3. TỐI ƯU: Đơn giản hóa GroupBy để MySQL xử lý tốt hơn
+            var counts = await _context.TblOrders
+                .AsNoTracking()
+                .GroupBy(o => new { o.ShipStatus, HasTripId = !string.IsNullOrEmpty(o.TripId) })
+                .Select(g => new { 
+                    Status = g.Key.ShipStatus, 
+                    HasTrip = g.Key.HasTripId, 
+                    Count = g.Count() 
+                })
                 .ToListAsync();
 
-            ViewBag.CountPending = counts.FirstOrDefault(c => c.Status == "pending")?.Count ?? 0;
-            ViewBag.CountShipped = counts.FirstOrDefault(c => c.Status == "shipped")?.Count ?? 0;
-            ViewBag.CountDelivered = counts.FirstOrDefault(c => c.Status == "delivered")?.Count ?? 0;
+            ViewBag.CountPending = counts.Where(c => !c.HasTrip && c.Status != "Đã giao").Sum(c => c.Count);
+            ViewBag.CountShipped = counts.Where(c => c.HasTrip && c.Status != "Đã giao").Sum(c => c.Count);
+            ViewBag.CountDelivered = counts.Where(c => c.Status == "Đã giao").Sum(c => c.Count);
             ViewBag.CountAll     = ViewBag.CountPending + ViewBag.CountShipped + ViewBag.CountDelivered;
             
             ViewBag.CurrentPage = page;
@@ -268,52 +292,76 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(TblOrder order)
         {
-            if (!ModelState.IsValid)
-            {
-                ViewBag.StationList = await GetCachedStationsAsync();
-                return View(order);
-            }
-
             var userId = User.GetUserId();
             var role = User.GetRole();
             var vniTime = TimeHelper.NowVni();
+
+            // 1. Tự động tạo mã đơn hàng trước khi kiểm tra hợp lệ
+            try {
+                var lastOrder = await _context.TblOrders.AsNoTracking().IgnoreQueryFilters()
+                    .Where(o => o.OrderId.StartsWith("ORD-"))
+                    .OrderByDescending(o => o.OrderId)
+                    .FirstOrDefaultAsync();
+
+                int nextIdNum = 1;
+                if (lastOrder != null && int.TryParse(lastOrder.OrderId.Replace("ORD-", ""), out int lastId)) 
+                    nextIdNum = lastId + 1;
+
+                order.OrderId = "ORD-" + nextIdNum.ToString("D6");
+            } catch {
+                order.OrderId = "ORD-" + DateTime.Now.Ticks.ToString().Substring(10);
+            }
+
+            // Xóa lỗi validate của OrderId vì chúng ta đã tự tạo ở trên
+            ModelState.Remove("OrderId");
+
+            // Đảm bảo giá trị decimal không bị null
+            order.Tr ??= 0;
+            order.Ct ??= 0;
+            if (string.IsNullOrWhiteSpace(order.SenderName)) order.SenderName = "";
+            if (string.IsNullOrWhiteSpace(order.ReceiverName)) order.ReceiverName = "";
 
             // Lấy ShiftId đang hoạt động của nhân viên
             var activeShift = await _context.TblWorkShifts
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
 
-            if (role != "AD" && activeShift == null)
+            if (!ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Bạn chưa bắt đầu ca làm việc! Vui lòng bắt đầu ca tại trang chủ trước khi thêm hàng.";
+                ViewBag.HasActiveShift = (role == "AD" || activeShift != null);
                 ViewBag.StationList = await GetCachedStationsAsync();
                 return View(order);
             }
 
-            var lastOrder = await _context.TblOrders.AsNoTracking().IgnoreQueryFilters().Where(o => o.OrderId.StartsWith("ORD-")).OrderByDescending(o => o.OrderId).FirstOrDefaultAsync();
+            if (role != "AD" && activeShift == null)
+            {
+                TempData["ErrorMessage"] = "Bạn chưa bắt đầu ca làm việc!";
+                ViewBag.HasActiveShift = false;
+                ViewBag.StationList = await GetCachedStationsAsync();
+                return View(order);
+            }
 
-            int nextIdNum = 1;
-            if (lastOrder != null && int.TryParse(lastOrder.OrderId.Replace("ORD-", ""), out int lastId)) nextIdNum = lastId + 1;
+            try {
+                order.StaffInput = userId;
+                order.ShipStatus = "Chưa Chuyển";
+                order.IsDeleted = false;
+                order.CreatedAt = vniTime;
+                order.ShiftId = activeShift?.ShiftId;
 
-            order.OrderId = "ORD-" + nextIdNum.ToString("D6");
-            order.StaffInput = userId;
-            order.ShipStatus = "Chưa Chuyển";
-            order.IsDeleted = false;
-            order.CreatedAt = vniTime;
-            order.ShiftId = activeShift?.ShiftId; // Gán ShiftId nếu có
+                _context.TblOrders.Add(order);
+                await _context.SaveChangesAsync();
 
-            // Default empty names to "None"
-            if (string.IsNullOrWhiteSpace(order.SenderName)) order.SenderName = "None";
-            if (string.IsNullOrWhiteSpace(order.ReceiverName)) order.ReceiverName = "None";
-
-            _context.TblOrders.Add(order);
-            await _context.SaveChangesAsync();
-
-            // Gửi thông báo Real-time
-            await _hubContext.Clients.All.SendAsync("UpdateOrderList");
-
-            TempData["SuccessMessage"] = "Thêm đơn hàng thành công!";
-            return RedirectToAction("List");
+                await _hubContext.Clients.All.SendAsync("UpdateOrderList");
+                TempData["SuccessMessage"] = "Thêm đơn hàng thành công!";
+                return RedirectToAction("List");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Lỗi lưu Database: " + ex.Message);
+                ViewBag.HasActiveShift = (role == "AD" || activeShift != null);
+                ViewBag.StationList = await GetCachedStationsAsync();
+                return View(order);
+            }
         }
         [HttpGet]
         public async Task<IActionResult> Trash()
