@@ -149,10 +149,7 @@
                                         </button>
                                         @if (isInShift)
                                         {
-                                            <form asp-action="AdminEndShift" method="POST" class="display-inline" onsubmit="return confirm('Bạn có chắc chắn muốn kết thúc ca hộ nhân viên này?')">
-                                                <input type="hidden" name="userId" value="@user.UserId">
-                                                <button type="submit" class="btn-s btn-s-red">Kết ca</button>
-                                            </form>
+                                            <button type="button" class="btn-s btn-s-red" onclick="adminEndShiftDirect('@user.UserId', '@user.FullName')">Kết ca</button>
                                         }
 
                                         @if (user.RoleId != "AD")
@@ -665,6 +662,37 @@
                 location.reload();
             } else {
                 Swal.fire('Lỗi', data.message, 'error');
+            }
+        }
+
+        async function adminEndShiftDirect(userId, fullName) {
+            const { isConfirmed } = await Swal.fire({
+                title: 'Kết thúc ca hộ?',
+                text: `Bạn muốn kết thúc ca làm việc của nhân viên: ${fullName}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '🛑 Kết thúc ngay',
+                cancelButtonText: 'Hủy'
+            });
+
+            if (isConfirmed) {
+                const formData = new FormData();
+                formData.append('userId', userId);
+
+                try {
+                    const resp = await fetch('/Admin/AdminEndShift', { method: 'POST', body: formData });
+                    const result = await resp.json();
+                    if (result.success) {
+                        Toast.fire({ icon: 'success', title: result.message });
+                        setTimeout(() => location.reload(), 1000); // Reload sau 1s để cập nhật UI đồng bộ
+                    } else {
+                        Swal.fire('Lỗi', result.message, 'error');
+                    }
+                } catch (err) {
+                    Swal.fire('Lỗi', 'Không thể kết nối đến server', 'error');
+                }
             }
         }
 

@@ -30,34 +30,38 @@ namespace Delivery_System.Controllers
             DateTime selectedDate = DateTime.Parse(reportDate).Date;
             DateTime tomorrow = selectedDate.AddDays(1);
 
+            ViewBag.SelectedDate = reportDate;
+
             if (role == "AD")
             {
                 var startOfMonth = new DateTime(vniNow.Year, vniNow.Month, 1);
                 var sevenDaysAgo = vniNow.Date.AddDays(-6);
 
-                ViewBag.RevenueDateVal = await _context.TblOrders.AsNoTracking()
-                    .Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow && o.ShipStatus == "Đã giao")
-                    .SumAsync(o => (o.Tr ?? 0) + (o.Ct ?? 0));
+                // TỐI ƯU TUYỆT ĐỐI: Lấy tất cả thông số trong 1 lần truy vấn duy nhất (SQL Aggregation)
+                var stats = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.IsDeleted == false || o.IsDeleted == null)
+                    .GroupBy(o => 1)
+                    .Select(g => new {
+                        RevDate = g.Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow && o.ShipStatus == "Đã giao").Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)),
+                        OrderDate = g.Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow).Count(),
+                        RevWeekly = g.Where(o => o.CreatedAt >= sevenDaysAgo && o.ShipStatus == "Đã giao").Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)),
+                        RevMonthly = g.Where(o => o.CreatedAt >= startOfMonth && o.ShipStatus == "Đã giao").Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)),
+                        RevTotal = g.Where(o => o.ShipStatus == "Đã giao").Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0))
+                    })
+                    .FirstOrDefaultAsync();
 
-                ViewBag.OrdersDateVal = await _context.TblOrders.AsNoTracking()
-                    .Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow).CountAsync();
+                ViewBag.RevenueDateVal = stats?.RevDate ?? 0;
+                ViewBag.OrdersDateVal = stats?.OrderDate ?? 0;
+                ViewBag.RevenueWeekly = stats?.RevWeekly ?? 0;
+                ViewBag.RevenueMonthly = stats?.RevMonthly ?? 0;
+                ViewBag.RevenueTotalSystem = stats?.RevTotal ?? 0;
 
-                ViewBag.RevenueWeekly = await _context.TblOrders.AsNoTracking()
-                    .Where(o => o.CreatedAt >= sevenDaysAgo && o.CreatedAt < vniNow.Date.AddDays(1) && o.ShipStatus == "Đã giao")
-                    .SumAsync(o => (o.Tr ?? 0) + (o.Ct ?? 0));
-
-                ViewBag.RevenueMonthly = await _context.TblOrders.AsNoTracking()
-                    .Where(o => o.CreatedAt >= startOfMonth && o.CreatedAt < vniNow.Date.AddDays(1) && o.ShipStatus == "Đã giao")
-                    .SumAsync(o => (o.Tr ?? 0) + (o.Ct ?? 0));
-
-                ViewBag.RevenueTotalSystem = await _context.TblOrders.AsNoTracking()
-                    .Where(o => o.ShipStatus == "Đã giao").SumAsync(o => (o.Tr ?? 0) + (o.Ct ?? 0));
-
-                // Biểu đồ
+                // Lấy dữ liệu biểu đồ (Truy vấn thứ 2)
                 var weeklyData = await _context.TblOrders.AsNoTracking()
-                    .Where(o => o.CreatedAt >= sevenDaysAgo && o.CreatedAt < vniNow.Date.AddDays(1) && o.ShipStatus == "Đã giao")
+                    .Where(o => o.CreatedAt >= sevenDaysAgo && o.ShipStatus == "Đã giao" && (o.IsDeleted == false || o.IsDeleted == null))
                     .GroupBy(o => o.CreatedAt!.Value.Date)
-                    .Select(g => new { Day = g.Key, Total = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)) }).ToListAsync();
+                    .Select(g => new { Day = g.Key, Total = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)) })
+                    .ToListAsync();
 
                 var labels = new List<string>();
                 var data = new List<decimal>();
@@ -71,19 +75,22 @@ namespace Delivery_System.Controllers
             }
             else
             {
-                ViewBag.RevenueDateVal = await _context.TblOrders.AsNoTracking()
-                    .Where(o => o.StaffInput == userId && o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow && o.ShipStatus == "Đã giao")
-                    .SumAsync(o => (o.Tr ?? 0) + (o.Ct ?? 0));
+                // Tối ưu cho nhân viên: Gộp thành 1 truy vấn
+                var stats = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.StaffInput == userId && (o.IsDeleted == false || o.IsDeleted == null))
+                    .GroupBy(o => 1)
+                    .Select(g => new {
+                        RevDate = g.Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow && o.ShipStatus == "Đã giao").Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)),
+                        OrderDate = g.Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow).Count(),
+                        TotalCount = g.Where(o => o.ShipStatus == "Đã giao").Count(),
+                        TotalRev = g.Where(o => o.ShipStatus == "Đã giao").Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0))
+                    })
+                    .FirstOrDefaultAsync();
 
-                ViewBag.OrdersDateVal = await _context.TblOrders.AsNoTracking()
-                    .Where(o => o.StaffInput == userId && o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow && o.ShipStatus == "Đã giao")
-                    .CountAsync();
-
-                var stats = await _context.TblOrders.AsNoTracking().Where(o => o.StaffInput == userId && o.ShipStatus == "Đã giao")
-                    .GroupBy(o => 1).Select(g => new { Count = g.Count(), Revenue = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)) }).FirstOrDefaultAsync();
-                
-                ViewBag.DeliveredOrders = stats?.Count ?? 0;
-                ViewBag.TotalRevenue = stats?.Revenue ?? 0;
+                ViewBag.RevenueDateVal = stats?.RevDate ?? 0;
+                ViewBag.OrdersDateVal = stats?.OrderDate ?? 0;
+                ViewBag.DeliveredOrders = stats?.TotalCount ?? 0;
+                ViewBag.TotalRevenue = stats?.TotalRev ?? 0;
                 ViewBag.CurrentShift = await _context.TblWorkShifts.AsNoTracking().FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
                 return PartialView("_TabSummaryStaff");
             }
@@ -94,27 +101,24 @@ namespace Delivery_System.Controllers
             var role = User.GetRole();
             var userId = User.GetUserId();
             
-            var query = _context.TblWorkShifts.AsNoTracking().AsQueryable();
+            var query = _context.TblWorkShifts.AsNoTracking().Include(s => s.Staff).AsQueryable();
             if (role != "AD") query = query.Where(s => s.StaffId == userId);
 
-            // TỐI ƯU: Sử dụng Select để MySQL tính toán doanh thu (Revenue) ngay trong câu lệnh SQL
-            var shifts = await query.OrderByDescending(s => s.StartTime)
-                .Take(20)
-                .Select(s => new TblWorkShift {
-                    ShiftId = s.ShiftId,
-                    StaffId = s.StaffId,
-                    StartTime = s.StartTime,
-                    EndTime = s.EndTime,
-                    Status = s.Status,
-                    Staff = new TblUser {
-                        FullName = s.Staff.FullName
-                    },
-                    // Tính doanh thu trực tiếp bằng Subquery (MySQL xử lý cực nhanh)
-                    Revenue = _context.TblOrders
-                        .Where(o => o.ShiftId == s.ShiftId && o.ShipStatus == "Đã giao")
-                        .Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0))
-                })
-                .ToListAsync();
+            // 1. Lấy 20 ca làm việc trước
+            var shifts = await query.OrderByDescending(s => s.StartTime).Take(20).ToListAsync();
+            var shiftIds = shifts.Select(s => s.ShiftId).ToList();
+
+            // 2. TỐI ƯU NHẬT KÝ: Lấy doanh thu của 20 ca này bằng 1 truy vấn duy nhất
+            var shiftRevenues = await _context.TblOrders.AsNoTracking()
+                .Where(o => o.ShiftId.HasValue && shiftIds.Contains(o.ShiftId.Value) && o.ShipStatus == "Đã giao")
+                .GroupBy(o => o.ShiftId)
+                .Select(g => new { ShiftId = g.Key!.Value, Total = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)) })
+                .ToDictionaryAsync(x => x.ShiftId, x => x.Total);
+
+            // 3. Gán ngược lại dữ liệu
+            foreach (var s in shifts) {
+                s.Revenue = shiftRevenues.GetValueOrDefault(s.ShiftId, 0);
+            }
 
             return PartialView("_TabHistory", shifts);
         }

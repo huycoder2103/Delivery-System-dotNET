@@ -49,7 +49,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         let currentActiveTab = sessionStorage.getItem('activeReportTab') || 'summary';
-        const defaultDate = '@defaultDate';
+        let selectedReportDate = '@defaultDate'; // Khởi tạo với ngày mặc định từ server
 
         window.onload = function() {
             switchTab(currentActiveTab);
@@ -79,10 +79,14 @@
                 // Nếu submit form lọc, lấy dữ liệu từ form
                 const formData = new FormData(event.target);
                 params = new URLSearchParams(formData).toString();
+                
+                // Cập nhật lại ngày đã chọn toàn cục để dùng khi chuyển tab
+                if (formData.has('reportDate')) selectedReportDate = formData.get('reportDate');
+                if (formData.has('logDate')) selectedReportDate = formData.get('logDate');
             } else {
-                // Mặc định
-                if (tabId === 'summary') params = `reportDate=${defaultDate}`;
-                else params = `logDate=${defaultDate}`;
+                // Sử dụng ngày đã chọn (hoặc mặc định)
+                if (tabId === 'summary') params = `reportDate=${selectedReportDate}`;
+                else params = `logDate=${selectedReportDate}`;
             }
 
             switch(tabId) {

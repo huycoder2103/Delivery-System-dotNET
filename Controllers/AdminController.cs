@@ -24,59 +24,52 @@ namespace Delivery_System.Controllers
 
             var today = Delivery_System.Helpers.TimeHelper.DateVni();
             var tomorrow = today.AddDays(1);
-
-            // Tính doanh thu hôm nay theo logic Report: Tổng (TR + CT) của các đơn ĐÃ GIAO trong ngày
-            ViewBag.RevenueToday = await _context.TblOrders.AsNoTracking()
-                .Where(o => o.CreatedAt >= today && o.CreatedAt < tomorrow && o.ShipStatus == "Đã giao" && (o.IsDeleted == false || o.IsDeleted == null))
-                .SumAsync(o => (o.Tr ?? 0) + (o.Ct ?? 0));
-
-            ViewBag.ActiveStaffCount = await _context.TblWorkShifts.AsNoTracking()
-                .CountAsync(s => s.Status == "ACTIVE");
-
-            // Lấy danh sách user kèm theo ca làm việc đang hoạt động (nếu có)
-            var userList = await _context.TblUsers
-                .Include(u => u.Station)
-                .Include(u => u.TblWorkShifts.Where(s => s.Status == "ACTIVE"))
-                .OrderBy(u => u.RoleId)
-                .ToListAsync();
-
-            var stationList = await _context.TblStations.AsNoTracking()
-                .OrderBy(s => s.StationId)
-                .ToListAsync();
-
-            ViewBag.StationList = stationList;
-            // ... (rest of Index logic remains the same)
-            ViewBag.Announcements = await _context.TblAnnouncements.AsNoTracking()
-                .Include(a => a.CreatedByNavigation)
-                .OrderByDescending(a => a.CreatedAt)
-                .ToListAsync();
-
-            // Chuẩn bị dữ liệu biểu đồ doanh thu 7 ngày gần nhất
             var sevenDaysAgo = today.AddDays(-6);
-            var weeklyData = await _context.TblOrders.AsNoTracking()
+
+            // TỐI ƯU: Lấy doanh thu hôm nay và doanh thu 7 ngày trong 1 lần GroupBy
+            var weeklyDataRaw = await _context.TblOrders.AsNoTracking()
                 .Where(o => o.CreatedAt >= sevenDaysAgo && o.CreatedAt < tomorrow && o.ShipStatus == "Đã giao" && (o.IsDeleted == false || o.IsDeleted == null))
                 .GroupBy(o => o.CreatedAt!.Value.Date)
                 .Select(g => new { Day = g.Key, Total = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)) })
                 .ToListAsync();
 
+            ViewBag.RevenueToday = weeklyDataRaw.FirstOrDefault(x => x.Day == today)?.Total ?? 0;
+
+            ViewBag.ActiveStaffCount = await _context.TblWorkShifts.AsNoTracking()
+                .CountAsync(s => s.Status == "ACTIVE");
+
+            // Lấy danh sách user (Thêm AsNoTracking để tăng tốc)
+            var userList = await _context.TblUsers.AsNoTracking()
+                .Include(u => u.Station)
+                .Include(u => u.TblWorkShifts.Where(s => s.Status == "ACTIVE"))
+                .OrderBy(u => u.RoleId)
+                .ToListAsync();
+
+            ViewBag.StationList = await _context.TblStations.AsNoTracking()
+                .OrderBy(s => s.StationId)
+                .ToListAsync();
+
+            ViewBag.Announcements = await _context.TblAnnouncements.AsNoTracking()
+                .Include(a => a.CreatedByNavigation)
+                .OrderByDescending(a => a.CreatedAt)
+                .ToListAsync();
+
+            // Chuẩn bị dữ liệu biểu đồ
             var chartLabels = new List<string>();
             var chartData = new List<decimal>();
-
             for (int i = 6; i >= 0; i--)
             {
                 var d = today.AddDays(-i);
                 chartLabels.Add(d.ToString("dd/MM"));
-                var dayTotal = weeklyData.FirstOrDefault(x => x.Day == d)?.Total ?? 0;
-                chartData.Add(dayTotal);
+                chartData.Add(weeklyDataRaw.FirstOrDefault(x => x.Day == d)?.Total ?? 0);
             }
-
             ViewBag.ChartLabels = chartLabels;
             ViewBag.ChartData = chartData;
 
             return View(userList);
         }
 
-        // Action mới: Admin kết thúc ca từ danh sách nhân viên
+        // TỐI ƯU: Trả về JSON để xử lý AJAX, không load lại cả trang nặng
         [HttpPost]
         public async Task<IActionResult> AdminEndShift(string userId)
         {
@@ -90,9 +83,9 @@ namespace Delivery_System.Controllers
                 activeShift.Status = "ENDED";
                 activeShift.EndTime = TimeHelper.NowVni();
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = $"Đã kết thúc ca làm việc của nhân viên {userId}!";
+                return Json(new { success = true, message = $"Đã kết thúc ca làm việc của nhân viên {userId}!" });
             }
-            return RedirectToAction("Index");
+            return Json(new { success = false, message = "Không tìm thấy ca làm việc đang hoạt động." });
         }
 
         [HttpPost]
