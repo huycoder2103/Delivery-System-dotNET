@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Delivery_System.Models;
 using Microsoft.AspNetCore.ResponseCompression;
 using System.IO.Compression;
+using FluentValidation.AspNetCore;
+using Delivery_System.Hubs;
+using Delivery_System.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,11 +29,14 @@ builder.Services.AddOutputCache(options =>
     options.AddPolicy("TripCache", b => b.Expire(TimeSpan.FromSeconds(30)).SetVaryByQuery("page", "departureFilter", "destinationFilter"));
 });
 
+builder.Services.AddSignalR();
+
 // 4. BẢO MẬT TẬP TRUNG: Thêm Filter kiểm tra Login toàn cục
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<Delivery_System.Filters.SessionAuthorizeFilter>();
-});
+})
+.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<OrderValidator>());
 
 // Đăng ký kết nối Database MySQL với DbContext Pooling để tối ưu hóa hiệu suất
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
@@ -86,9 +92,10 @@ app.UseStaticFiles(new StaticFileOptions
 app.UseRouting();
 app.UseOutputCache();
 
-app.UseAuthentication(); // Thêm dòng này trước UseAuthorization
+app.UseAuthentication(); 
 app.UseAuthorization();
 
+app.MapHub<DeliveryHub>("/deliveryHub");
 app.MapStaticAssets();
 
 app.MapControllerRoute(

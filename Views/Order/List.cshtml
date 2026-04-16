@@ -135,7 +135,45 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
     <script>
+        // --- SIGNALR REAL-TIME ---
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/deliveryHub")
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on("UpdateOrderList", function () {
+            console.log("Nhận thông báo cập nhật đơn hàng...");
+            // Cập nhật bảng bằng AJAX
+            const sendStation = document.getElementById('filterSendStation').value;
+            const receiveStation = document.getElementById('filterReceiveStation').value;
+            const date = document.getElementById('filterDate').value;
+            const phone = document.getElementById('filterSearchPhone').value;
+
+            const url = `@Url.Action("List", "Order")?sendStationFilter=${encodeURIComponent(sendStation)}&receiveStationFilter=${encodeURIComponent(receiveStation)}&searchPhone=${encodeURIComponent(phone)}&dateFilter=${encodeURIComponent(date)}&statusFilter=${currentStatus}&page=${currentPage}`;
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+                success: function (data) {
+                    $('#orderTableBody').html(data);
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+                    Toast.fire({ icon: 'info', title: 'Danh sách đơn hàng vừa được cập nhật!' });
+                }
+            });
+        });
+
+        connection.start().catch(err => console.error(err.toString()));
+
+        // --- EXISTING LOGIC ---
         let searchTimeout;
         let currentStatus = '@(ViewBag.CurrentStatus ?? "all")';
         let currentPage = @(ViewBag.CurrentPage ?? 1);

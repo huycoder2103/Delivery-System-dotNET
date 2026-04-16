@@ -416,8 +416,25 @@
     </div>
 
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // --- SIGNALR REAL-TIME ---
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/deliveryHub")
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on("UpdateOrderList", function () {
+            console.log("Admin nhận thông báo cập nhật dữ liệu...");
+            // Tải lại trang Admin để cập nhật con số doanh thu và biểu đồ
+            // Để chuyên nghiệp hơn, ta có thể dùng AJAX, nhưng reload trang là cách an toàn nhất để cập nhật toàn bộ KPI
+            location.reload(); 
+        });
+
+        connection.start().catch(err => console.error(err.toString()));
+
+        // --- EXISTING CHART LOGIC ---
         const ctx = document.getElementById('revenueChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',

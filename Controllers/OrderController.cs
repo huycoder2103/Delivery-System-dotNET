@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.SignalR;
 using Delivery_System.Models;
 using Delivery_System.Helpers;
+using Delivery_System.Hubs;
 
 namespace Delivery_System.Controllers
 {
@@ -10,11 +12,13 @@ namespace Delivery_System.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IMemoryCache _cache;
+        private readonly IHubContext<DeliveryHub> _hubContext;
 
-        public OrderController(AppDbContext context, IMemoryCache cache)
+        public OrderController(AppDbContext context, IMemoryCache cache, IHubContext<DeliveryHub> hubContext)
         {
             _context = context;
             _cache = cache;
+            _hubContext = hubContext;
         }
 
         private async Task<List<TblStation>> GetCachedStationsAsync()
@@ -208,6 +212,12 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(TblOrder order)
         {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.StationList = await GetCachedStationsAsync();
+                return View(order);
+            }
+            
             var userId = User.GetUserId();
             var role = User.GetRole();
             
@@ -219,6 +229,9 @@ namespace Delivery_System.Controllers
                 existing.ReceiverName = string.IsNullOrWhiteSpace(order.ReceiverName) ? "None" : order.ReceiverName;
                 existing.ReceiverPhone = order.ReceiverPhone; existing.Amount = order.Amount; existing.Tr = order.Tr; existing.Ct = order.Ct; existing.Note = order.Note;
                 await _context.SaveChangesAsync();
+
+                // Gửi thông báo Real-time
+                await _hubContext.Clients.All.SendAsync("UpdateOrderList");
             }
             return RedirectToAction("List");
         }
@@ -255,6 +268,12 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(TblOrder order)
         {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.StationList = await GetCachedStationsAsync();
+                return View(order);
+            }
+
             var userId = User.GetUserId();
             var role = User.GetRole();
             var vniTime = TimeHelper.NowVni();
@@ -289,6 +308,10 @@ namespace Delivery_System.Controllers
 
             _context.TblOrders.Add(order);
             await _context.SaveChangesAsync();
+
+            // Gửi thông báo Real-time
+            await _hubContext.Clients.All.SendAsync("UpdateOrderList");
+
             TempData["SuccessMessage"] = "Thêm đơn hàng thành công!";
             return RedirectToAction("List");
         }
