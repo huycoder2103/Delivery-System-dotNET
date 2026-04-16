@@ -1,7 +1,7 @@
 @model Delivery_System.Models.TblOrder
 
 @{
-    ViewData["Title"] = "Nhập Hàng Gửi";
+    ViewData["Title"] = "Nhập Hàng Mới";
     var stationList = ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>;
 }
 
@@ -10,12 +10,11 @@
 }
 
 <div class="order-container-modern @(ViewBag.HasActiveShift == false ? "content-blurred" : "")">
-    <form id="orderForm" asp-action="Create" method="POST" onsubmit="return validateOrderForm()">
-        @* ... existing form content ... *@
+    <form id="orderForm" asp-action="Create" method="POST" onsubmit="return validateForm()">
         <div class="modern-page-header">
             <div>
-                <h2>📦 NHẬP HÀNG GỬI MỚI</h2>
-                <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Điền đầy đủ thông tin đơn hàng bên dưới</div>
+                <h2>📦 NHẬP ĐƠN HÀNG MỚI</h2>
+                <div class="modern-page-header-desc">Điền đầy đủ thông tin đơn hàng bên dưới</div>
             </div>
         </div>
 
@@ -23,10 +22,10 @@
             <div class="section-title">✨ Thông tin hàng hóa</div>
             <div class="form-group">
                 <label>Tên Hàng Gửi <span class="required-star">*</span></label>
-                <input asp-for="ItemName" type="text"  required>
+                <input asp-for="ItemName" type="text" required placeholder="Nhập tên hàng hóa...">
             </div>
 
-            <div class="form-row" style="margin-top: 20px;">
+            <div class="form-row form-row-mt-20">
                 <div class="form-group">
                     <label>Trạm Gửi <span class="required-star">*</span></label>
                     <select asp-for="SendStation" id="sendStation" required>
@@ -37,7 +36,8 @@
                             {
                                 <option value="@s.StationName">@s.StationName (@s.StationId)</option>
                             }
-                        }                    </select>
+                        }
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Trạm Nhận <span class="required-star">*</span></label>
@@ -49,7 +49,8 @@
                             {
                                 <option value="@s.StationName">@s.StationName (@s.StationId)</option>
                             }
-                        }                    </select>
+                        }
+                    </select>
                 </div>
             </div>
         </div>
@@ -59,7 +60,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Người Gửi (Mặc định: None)</label>
-                    <input asp-for="SenderName" type="text" placeholder="Tên khách hàng gửi...">
+                    <input asp-for="SenderName" type="text" placeholder="Tên khách hàng gửi..." value="None">
                 </div>
                 <div class="form-group">
                     <label>Số Điện Thoại Gửi <span class="required-star">*</span></label>
@@ -70,7 +71,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Người Nhận (Mặc định: None)</label>
-                    <input asp-for="ReceiverName" type="text" placeholder="Tên khách hàng nhận...">
+                    <input asp-for="ReceiverName" type="text" placeholder="Tên khách hàng nhận..." value="None">
                 </div>
                 <div class="form-group">
                     <label>Số Điện Thoại Nhận <span class="required-star">*</span></label>
@@ -99,37 +100,33 @@
         </div>
     </form>
 
-    <div style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center;">
-        <a asp-action="List" class="btn-modern-back" style="text-decoration: none;">⬅ Quay lại danh sách</a>
-        <input type="submit" form="orderForm" value="💾 Lưu Đơn Hàng" class="btn-modern-save" style="padding: 12px 40px; min-width: 200px;" @(ViewBag.HasActiveShift == false ? "disabled" : "")>
+    <div class="footer-actions-between">
+        <a asp-action="List" class="btn-modern-back no-decoration">⬅ Quay lại danh sách</a>
+        <input type="submit" form="orderForm" value="💾 Lưu Đơn Hàng" class="btn-modern-save btn-footer-save" @(ViewBag.HasActiveShift == false ? "disabled" : "")>
     </div>
 </div>
 
 @if (ViewBag.HasActiveShift == false)
 {
-    <div id="shiftRequiredModal" class="modal" style="display: flex; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; backdrop-filter: blur(5px);">
-        <div class="modal-content" style="background: white; padding: 40px; border-radius: 20px; width: 450px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
-            <div style="font-size: 4rem; margin-bottom: 20px;">⏰</div>
-            <h2 style="color: #1e293b; margin-bottom: 15px; font-weight: 800;">Chưa Vào Ca Làm Việc!</h2>
-            <p style="color: #64748b; margin-bottom: 30px; line-height: 1.6;">Bạn cần phải bắt đầu ca làm việc trước khi có thể nhập hàng mới vào hệ thống.</p>
-            
-            <form asp-controller="Shift" asp-action="Start" method="POST">
-                <button type="submit" class="btn-modern-save" style="width: 100%; padding: 15px; font-size: 1.1rem; background: linear-gradient(135deg, #6366f1, #4f46e5); border: none; cursor: pointer;">
-                    🚀 BẮT ĐẦU CA NGAY
+    <div id="shiftRequiredModal" class="modal-backdrop-blur">
+        <div class="modal-content-rounded">
+            <div class="modal-icon-large">⏰</div>
+            <h2 class="modal-title-bold">Chưa Vào Ca Làm Việc!</h2>
+            <p class="modal-text-muted">Bạn cần phải bắt đầu ca làm việc trước khi có thể nhập hàng mới vào hệ thống.</p>
+            <form asp-controller="Shift" asp-action="StartShift" method="POST">
+                <button type="submit" class="btn-full-modern">
+                    🚀 Bắt Đầu Ca Ngay
                 </button>
             </form>
-            
-            <div style="margin-top: 20px;">
-                <a asp-action="List" style="color: #94a3b8; text-decoration: none; font-weight: 600;">Quay lại danh sách</a>
+            <div>
+                <a asp-action="List" class="back-link-muted">Quay lại danh sách</a>
             </div>
         </div>
     </div>
 }
 
-
-
 <script>
-    function validateOrderForm() {
+    function validateForm() {
         var tr = document.getElementById("trField").value.trim();
         var ct = document.getElementById("ctField").value.trim();
         var sPhone = document.getElementById("senderPhone").value.trim();
@@ -153,7 +150,6 @@
             return false;
         }
 
-        // Ngăn chặn bấm nút nhiều lần
         const submitBtn = document.querySelector('input[type="submit"][form="orderForm"]');
         if (submitBtn) {
             submitBtn.disabled = true;

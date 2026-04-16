@@ -225,3 +225,9 @@
             flex: none !important;
         }
 }
+
+/* TABLE UTILITIES */
+.col-plate-bold { font-weight: 600; }
+.col-actions-min { min-width: 130px; }
+.no-trip-found { padding: 50px; color: #999; text-align: center; }
+

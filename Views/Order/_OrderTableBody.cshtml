@@ -50,14 +50,14 @@
                 {
                     <span class="badge badge-success">@(o.Tr)k</span>
                 }
-                else { <span style="color:#ccc">—</span> }
+                else { <span class="empty-dash">—</span> }
             </td>
             <td>
                 @if (!string.IsNullOrEmpty(o.Ct))
                 {
                     <span class="badge badge-danger">@(o.Ct)k</span>
                 }
-                else { <span style="color:#ccc">—</span> }
+                else { <span class="empty-dash">—</span> }
             </td>
             
             <td class="note-cell">@o.Note</td>

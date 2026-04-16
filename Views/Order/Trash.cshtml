@@ -5,34 +5,29 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/trash_order.css" />
+    <link rel="stylesheet" href="~/css/list_order.css?v=@DateTime.Now.Ticks">
 }
 
-<div style="max-width: 1550px; margin: 20px auto; padding: 0 20px;">
-    
-    <div class="trash-page-header">
+<div class="trash-container">
+    <div class="modern-page-header">
         <div>
-            <h3>🗑 THÙNG RÁC ĐƠN HÀNG</h3>
-            <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">Danh sách đơn hàng đã bị xóa tạm thời</div>
+            <h3>🗑️ Thùng Rác Đơn Hàng</h3>
+            <div class="trash-subtitle">Danh sách đơn hàng đã bị xóa tạm thời</div>
         </div>
-        <a asp-action="List" class="btn-modern-back" style="text-decoration:none;">📦 Quay lại Danh Sách</a>
+        <a asp-action="List" class="btn-back">📦 Quay lại Danh Sách</a>
     </div>
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert-success-modern">✅ @TempData["SuccessMessage"]</div>
-    }
-
-    <div class="modern-card-trash">
-        <table class="trash-table">
+    <div class="modern-card trip-table-card">
+        <table class="modern-table">
             <thead>
                 <tr>
                     <th>Mã Đơn</th>
                     <th>Tên Hàng</th>
-                    <th>Trạm Gửi</th>
-                    <th>Trạm Nhận</th>
                     <th>Người Gửi</th>
                     <th>Người Nhận</th>
+                    <th>Trạm Gửi</th>
+                    <th>Trạm Nhận</th>
+                    <th>Ngày Xóa</th>
                     <th>Thao Tác</th>
                 </tr>
             </thead>
@@ -42,22 +37,23 @@
                     foreach (var o in Model)
                     {
                         <tr>
-                            <td><strong>@o.OrderId</strong></td>
-                            <td>@o.ItemName</td>
-                            <td>@o.SendStation</td>
-                            <td>@o.ReceiveStation</td>
-                            <td>@o.SenderName <br><small>@o.SenderPhone</small></td>
-                            <td>@o.ReceiverName <br><small>@o.ReceiverPhone</small></td>
-                            <td>
-                                <div style="display: flex; gap: 5px;">
-                                    <form asp-action="Restore" method="POST">
-                                        <input type="hidden" name="id" value="@o.OrderId" />
-                                        <button type="submit" class="btn-restore">🔄 Khôi phục</button>
+                            <td><span class="text-order-id">@o.OrderId</span></td>
+                            <td class="col-item-name">@o.ItemName</td>
+                            <td class="col-customer">@o.SenderName</td>
+                            <td class="col-customer">@o.ReceiverName</td>
+                            <td class="col-staff">@o.SendStation</td>
+                            <td class="col-staff">@o.ReceiveStation</td>
+                            <td class="time-cell">@o.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="col-act">
+                                <div class="action-flex-gap">
+                                    <form asp-action="Restore" asp-route-id="@o.OrderId" method="POST">
+                                        <button type="submit" class="btn-action-text btn-s-edit" title="Khôi phục">🔄</button>
                                     </form>
-                                    <form id="hardDeleteForm-@o.OrderId" asp-action="HardDelete" method="POST" style="display:none;">
+                                    <button type="button" class="btn-action-text btn-s-delete" onclick="confirmHardDelete('@o.OrderId')" title="Xóa vĩnh viễn">🗑️</button>
+                                    
+                                    <form id="hardDeleteForm-@o.OrderId" asp-action="HardDelete" method="POST" class="hidden-form">
                                         <input type="hidden" name="id" value="@o.OrderId" />
                                     </form>
-                                    <button type="button" class="btn-hard-delete" onclick="confirmHardDelete('@o.OrderId')">💀 Xóa vĩnh viễn</button>
                                 </div>
                             </td>
                         </tr>
@@ -66,7 +62,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="8" style="padding: 100px; text-align: center; color: #999;">Thùng rác trống rỗng.</td>
+                        <td colspan="8" class="no-trash-msg">Thùng rác trống rỗng.</td>
                     </tr>
                 }
             </tbody>
@@ -74,21 +70,23 @@
     </div>
 </div>
 
-<script>
-    function confirmHardDelete(id) {
-        Swal.fire({
-            title: 'Xóa vĩnh viễn?',
-            text: "Dữ liệu đơn hàng " + id + " sẽ không thể khôi phục lại!",
-            icon: 'error',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: '💀 Xóa ngay',
-            cancelButtonText: 'Hủy'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('hardDeleteForm-' + id).submit();
-            }
-        })
-    }
-</script>
+@section Scripts {
+    <script>
+        function confirmHardDelete(id) {
+            Swal.fire({
+                title: 'Xóa vĩnh viễn?',
+                text: "Đơn hàng này sẽ bị xóa khỏi hệ thống và không thể khôi phục!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Xóa luôn!',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('hardDeleteForm-' + id).submit();
+                }
+            })
+        }
+    </script>
+}

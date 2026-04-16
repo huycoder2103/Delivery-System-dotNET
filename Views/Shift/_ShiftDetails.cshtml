@@ -21,7 +21,7 @@
             @(Model.Status == "ACTIVE" ? "● Đang làm việc" : "● Ca đã kết thúc")
         </span>
         <div class="shift-detail-revenue">
-            💰 @string.Format("{0:N0}", ViewBag.TotalRevenue) .000 VNĐ
+            💰 @string.Format("{0:N0}", ViewBag.TotalRevenue),000 VNĐ
         </div>
     </div>
 </div>
@@ -48,7 +48,7 @@
                 @foreach(var o in addedOrders) {
                     <tr>
                         <td>
-                            <a asp-controller="Order" asp-action="List" asp-route-searchPhone="@o.OrderId" title="Tìm kiếm đơn hàng này" style="text-decoration: none;">
+                            <a class=" text-decoration-none" asp-controller="Order" asp-action="List" asp-route-searchPhone="@o.OrderId" title="Tìm kiếm đơn hàng này" >
                                 <strong class="order-id-added">@o.OrderId</strong>
                             </a>
                         </td>
@@ -83,7 +83,7 @@
                 @foreach(var o in receivedOrders) {
                     <tr>
                         <td>
-                            <a asp-controller="Order" asp-action="List" asp-route-searchPhone="@o.OrderId" title="Tìm kiếm đơn hàng này" style="text-decoration: none;">
+                            <a class=" text-decoration-none" asp-controller="Order" asp-action="List" asp-route-searchPhone="@o.OrderId" title="Tìm kiếm đơn hàng này" >
                                 <strong class="order-id-received">@o.OrderId</strong>
                             </a>
                         </td>
@@ -112,7 +112,7 @@
                 @foreach(var t in createdTrips) {
                     <tr>
                         <td>
-                            <a asp-controller="Trip" asp-action="List" asp-route-searchTruck="@t.TripId" title="Tìm kiếm chuyến xe này" style="text-decoration: none;">
+                            <a class=" text-decoration-none" asp-controller="Trip" asp-action="List" asp-route-searchTruck="@t.TripId" title="Tìm kiếm chuyến xe này" >
                                 <strong class="trip-id-text">@t.TripId</strong>
                             </a>
                         </td>

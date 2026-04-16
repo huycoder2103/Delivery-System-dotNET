@@ -139,7 +139,7 @@
                     data: {
                         labels: @Html.Raw(Json.Serialize(ViewBag.ChartLabels)),
                         datasets: [{
-                            label: 'Doanh thu hệ thống (.000 VNĐ)',
+                            label: 'Doanh thu hệ thống (,000 VNĐ)',
                             data: @Html.Raw(Json.Serialize(ViewBag.ChartData)),
                             borderColor: '#1a73e8',
                             backgroundColor: 'rgba(26, 115, 232, 0.1)',

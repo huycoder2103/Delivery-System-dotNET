@@ -225,8 +225,13 @@ tr:hover td { background-color: #fcfdfe; }
 .btn-s-blue:hover { background: #0284c7; color: white; transform: translateY(-2px); }
 .btn-s-red { background: #fee2e2; color: #dc2626; }
 .btn-s-red:hover { background: #dc2626; color: white; transform: translateY(-2px); }
-
-.pulse-text { color: var(--primary); font-weight: 700; animation: soft-pulse 2s infinite; }
+.text-decoration-none {text-decoration: none;}
+.text-revenue {color: #1a73e8; font-weight: 800} 
+.pulse-text {
+    color: var(--primary);
+    font-weight: 700;
+    animation: soft-pulse 2s infinite;
+}
 @keyframes soft-pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
 
 /* Backdrop Blur cho Modal */
@@ -326,7 +331,7 @@ tr:hover td { background-color: #fcfdfe; }
 .tab-content-pane.active { display: block; }
 
 .table-col-right { text-align: right; }
-.table-col-time { text-align: right; color: var(--text-muted); font-weight: 500; }
+.table-col-time { text-align: left; color: var(--text-muted); font-weight: 500; }
 .table-text-bold { font-weight: 600; }
 
 .order-id-added { color: var(--primary); font-weight: bold; }

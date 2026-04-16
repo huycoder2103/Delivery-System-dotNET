@@ -142,6 +142,12 @@
     margin-bottom: 15px;
     padding: 15px;
 }
+.pagination-container {
+    margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 10px;
+}
+.current-page {
+ font-weight: bold; color: #1a73e8;
+}
 @media (max-width: 768px) {
     /* 1. Container bớt padding để tận dụng chiều ngang */
     .order-list-container {
@@ -152,6 +158,7 @@
         padding: 15px !important;
         margin-bottom: 10px !important;
     }
+
     .header-actions {
         display: grid !important;
         grid-template-columns: 1fr 1fr; /* Chia đôi 2 nút Chuyến Xe Đi/Đến */
@@ -195,6 +202,7 @@
         padding: 5px 0 12px 0;
         -webkit-overflow-scrolling: touch;
     }
+
     .btn-status-tab {
         flex: 0 0 auto; /* Không cho các nút bị co lại */
         padding: 8px 15px;
@@ -206,6 +214,7 @@
         border-radius: 12px !important;
         overflow-x: auto !important;
     }
+
     .modern-table {
         min-width: 900px; /* Buộc bảng rộng ra để người dùng vuốt ngang thay vì bị nén */
     }
@@ -261,3 +270,20 @@
 .btn-s-delete { background: #fce8e6; color: #d93025; }
 .btn-disabled { opacity: 0.5; cursor: not-allowed; background: #eee; color: #aaa; }
 .status-badge-fixed { display: inline-block; width: 70px; text-align: center; font-size: 10px; padding: 4px 0; line-height: 1; white-space: nowrap; vertical-align: middle; font-weight: 600; }
+
+/* EXTRA ORDER UTILITIES */
+.empty-dash { color: #ccc; }
+.badge-delivered { background: #dcfce7 !important; color: #15803d !important; border: 1px solid #bbf7d0 !important; }
+
+/* TRASH VIEW CLASSES */
+.trash-container { max-width: 1550px; margin: 20px auto; padding: 0 20px; }
+.trash-subtitle { font-size: 0.85rem; opacity: 0.8; margin-top: 4px; }
+.action-flex-gap { display: flex; gap: 5px; }
+.no-trash-msg { padding: 100px; text-align: center; color: #999; }
+
+/* SHIP VIEW CLASSES */
+.alert-success-modern { background: #d4edda; color: #155724; padding: 9px 14px; border-radius: 4px; margin-bottom: 12px; font-weight: 600; }
+.route-info-blue { color: #2980b9; font-weight: 600; }
+.search-empty-icon { font-size: 2rem; margin-bottom: 8px; }
+.back-btn-ship { text-decoration: none; display: inline-block; text-align: center; margin-top: 20px; }
+

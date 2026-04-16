@@ -139,3 +139,14 @@ tr:hover td {
 .table-summary-row:hover {
     background-color: #f1f5f9;
 }
+
+/* PRICE CLASSES */
+.price-tr { color: #27ae60; font-weight: 500; }
+.price-ct { color: #e67e22; font-weight: 500; }
+
+/* NO DATA CLASSES */
+.no-data-msg { text-align: center; padding: 40px; color: #888; }
+.no-data-icon { font-size: 2rem; margin-bottom: 8px; }
+
+/* LAYOUT CLASSES */
+.back-link-container { margin-top: 20px; }

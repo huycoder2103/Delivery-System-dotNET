@@ -8,341 +8,250 @@
     <link rel="stylesheet" href="~/css/admin.css">
 }
 
-<div class="admin-wrapper">
-    <!-- --- MODERN PAGE HEADER --- -->
-    <div class="modern-page-header">
-        <div>
-            <h3>🛡️ Quản Lý Hệ Thống</h3>
-            <div class="modern-page-header-meta">Chào mừng quản trị viên, đây là tình trạng vận hành hôm nay.</div>
-        </div>
+    <div class="admin-wrapper">
+        <div class="modern-page-header">
+            <div>
+                <h3>🛡️ Quản Lý Hệ Thống</h3>
+                <div class="modern-page-header-meta">Chào mừng quản trị viên, đây là tình trạng vận hành hôm nay.</div>
+            </div>
         
-        <div class="header-actions">
-            <a asp-controller="Shift" asp-action="Index" class="btn-header-action">
-                ⏰ Ca Làm Việc
-            </a>
-            <button class="btn-modern btn-add" onclick="showAddModal()">
-                ➕ Thêm Nhân Viên Mới
-            </button>
-            <button class="btn-modern btn-add" onclick="showStationModal()">
-                🏢 Thêm Trạm Mới
-            </button>
-        </div>
-    </div>
-
-    <!-- --- KPI SECTION --- -->
-    <section class="kpi-grid-main">
-        <div class="kpi-card-base card-revenue">
-            <div class="stat-label">Doanh thu hệ thống (Ngày)</div>
-            <div class="stat-value text-primary">@string.Format("{0:N0}", ViewBag.RevenueToday).000 VNĐ</div>
-            <div class="stat-note">(Tổng TR + CT đơn đã giao)</div>
-        </div>
-
-        <div class="kpi-card-base card-staff-count">
-            <span class="label stat-label">Nhân viên trực ca</span>
-            <span class="value stat-value text-success">@ViewBag.ActiveStaffCount</span>
-            <span class="stat-note">Ca làm đang hoạt động</span>
-        </div>
-
-        <div class="chart-container-card">
-            <h4 class="chart-title">Doanh thu 7 ngày gần nhất</h4>
-            <canvas id="revenueChart" style="max-height: 120px; width: 100%;"></canvas>
-        </div>
-    </section>
-
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert-box alert-error">⚠️ @TempData["ErrorMessage"]</div>
-    }
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert-box alert-success">✅ @TempData["SuccessMessage"]</div>
-    }
-
-    <!-- --- TAB SELECTION --- -->
-    <div class="tabs-container">
-        <button id="btnTabStaff" class="btn-tab active" onclick="showTab('staff')">👥 Quản Lý Nhân Viên</button>
-        <button id="btnTabStation" class="btn-tab" onclick="showTab('station')">🏢 Quản Lý Trạm</button>
-    </div>
-
-    <!-- --- STAFF MANAGEMENT --- -->
-    <main id="tabStaff" class="content-card tab-content active">
-        <div class="section-title">
-            <h2>Danh Sách Đội Ngũ Nhân Viên</h2>
-            <div class="staff-meta-badges">
-                <span class="badge badge-user">Tổng: @Model.Count()</span>
-                <span class="badge badge-active">Mở: @Model.Count(u => u.Status == true)</span>
-                <span class="badge badge-locked">Khóa: @Model.Count(u => u.Status != true)</span>
+            <div class="header-actions">
+                <a asp-controller="Shift" asp-action="Index" class="btn-header-action">
+                    ⏰ Ca Làm Việc
+                </a>
+                <button class="btn-modern btn-add" onclick="showAddModal()">
+                    ➕ Thêm Nhân Viên Mới
+                </button>
+                <button class="btn-modern btn-add" onclick="showStationModal()">
+                    🏢 Thêm Trạm Mới
+                </button>
             </div>
         </div>
 
-        <div class="search-container">
-            <i>🔍</i>
-            <input type="text" id="staffSearch" placeholder="Tìm kiếm tên hoặc số điện thoại..." oninput="filterStaff(this.value)">
+        <section class="kpi-grid-main">
+            <div class="kpi-card-base card-revenue">
+                <div class="stat-label">Doanh thu hệ thống (Ngày)</div>
+                <div class="stat-value text-primary">@string.Format("{0:N0}", ViewBag.RevenueToday),000 VNĐ</div>
+                <div class="stat-note">(Tổng TR + CT đơn đã giao)</div>
+            </div>
+
+            <div class="kpi-card-base card-staff-count">
+                <span class="label stat-label">Nhân viên trực ca</span>
+                <span class="value stat-value text-success">@ViewBag.ActiveStaffCount</span>
+                <span class="stat-note">Ca làm đang hoạt động</span>
+            </div>
+
+            <div class="chart-container-card">
+                <h4 class="chart-title">Doanh thu 7 ngày gần nhất</h4>
+                <canvas id="revenueChart" class="revenue-chart"></canvas>
+            </div>
+        </section>
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert-box alert-error">⚠️ @TempData["ErrorMessage"]</div>
+        }
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert-box alert-success">✅ @TempData["SuccessMessage"]</div>
+        }
+
+        <div class="tabs-container">
+            <button id="btnTabStaff" class="btn-tab active" onclick="showTab('staff')">👥 Quản Lý Nhân Viên</button>
+            <button id="btnTabStation" class="btn-tab" onclick="showTab('station')">🏢 Quản Lý Trạm</button>
         </div>
 
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Mã NV</th>
-                        <th>Họ Tên Nhân Viên</th>
-                        <th>Trạm Làm Việc</th>
-                        <th>SĐT</th>
-                        <th>Quyền Hạn</th>
-                        <th>Trạng Thái</th>
-                        <th style="text-align: center;">Thao Tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var user in Model)
-                    {
-                        <tr class="staff-row" data-name="@user.FullName.ToLower()" data-phone="@user.Phone">
-                            <td><strong class="text-primary">@user.UserId</strong></td>
-                            <td>
-                                <div style="font-weight: 700;">@user.FullName</div>
-                            </td>
-                            <td>
-                                @if (user.Station != null)
-                                {
-                                    <span class="badge station-badge" onclick="showAssignStationModal('@user.UserId', '@user.FullName')">
-                                        📍 @user.Station.StationName
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="badge station-badge-empty" onclick="showAssignStationModal('@user.UserId', '@user.FullName')">
-                                        Chưa có trạm
-                                    </span>
-                                }
-                            </td>
-                            <td>@(string.IsNullOrEmpty(user.Phone) ? "—" : user.Phone)</td>
-                            <td>
-                                <span class="badge @(user.RoleId == "AD" ? "badge-admin" : "badge-user")">
-                                    @(user.RoleId == "AD" ? "🛡️ Admin" : "👤 Nhân Viên")
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge @(user.Status == true ? "badge-active" : "badge-locked")">
-                                    @(user.Status == true ? "● Hoạt động" : "● Đã khóa")
-                                </span>
-                            </td>
-                            <td>
-                                <div class="action-group">
-                                    <button class="btn-s btn-s-blue" onclick="showChangePassModal('@user.UserId', '@user.FullName')">Đổi MK</button>
-                                    
-                                    <button class="btn-s btn-s-cyan" 
-                                            onclick="showDetailsModal('@user.UserId', '@user.Username', '@user.FullName', '@(user.RoleId == "AD" ? "Admin" : "Nhân Viên")', '@user.Phone', '@user.Email', '@user.Status', '@user.CreatedAt?.ToString("dd/MM/yyyy HH:mm")', '@(user.StationId)')">Chi tiết</button>
+        <main id="tabStaff" class="content-card tab-content active">
+            <div class="section-title">
+                <h2>Danh Sách Đội Ngũ Nhân Viên</h2>
+                <div class="staff-meta-badges">
+                    <span class="badge badge-user">Tổng: @Model.Count()</span>
+                    <span class="badge badge-active">Mở: @Model.Count(u => u.Status == true)</span>
+                    <span class="badge badge-locked">Khóa: @Model.Count(u => u.Status != true)</span>
+                </div>
+            </div>
 
-                                    @if (user.RoleId != "AD")
-                                    {
-                                        <form asp-action="ToggleUser" method="POST" style="display:inline;">
-                                            <input type="hidden" name="userID" value="@user.UserId">
-                                            <button type="submit" class="btn-s @(user.Status == true ? "btn-s-orange" : "btn-s-green")">
-                                                @(user.Status == true ? "Khóa" : "Mở")
-                                            </button>
-                                        </form>
+            <div class="search-container">
+                <i>🔍</i>
+                <input type="text" id="staffSearch" placeholder="Tìm kiếm tên hoặc số điện thoại..." oninput="filterStaff(this.value)">
+            </div>
 
-                                        <button type="button" class="btn-s btn-s-red" onclick="confirmDeleteUser('@user.UserId')">Xóa</button>
-                                        <form id="deleteUserForm-@user.UserId" asp-action="DeleteUser" method="POST" style="display:none;">
-                                            <input type="hidden" name="userID" value="@user.UserId" />
-                                        </form>
-                                    }
-                                </div>
-                            </td>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã NV</th>
+                            <th>Họ Tên Nhân Viên</th>
+                            <th>Trạm Làm Việc</th>
+                            <th>SĐT</th>
+                            <th>Quyền Hạn</th>
+                            <th>Trạng Thái</th>
+                            <th class="text-center">Thao Tác</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </main>
-
-    <!-- --- STATION MANAGEMENT --- -->
-    @{
-        var stationList = ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>;
-    }
-    <main id="tabStation" class="content-card tab-content" style="display: none;">
-        <div class="section-title">
-            <h2>Danh Sách Các Trạm</h2>
-            <div class="staff-meta-badges">
-                <span class="badge badge-active">Tổng: @(stationList?.Count() ?? 0)</span>
-            </div>
-        </div>
-
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Tên Trạm</th>
-                        <th>Địa Chỉ</th>
-                        <th>SĐT</th>
-                        <th>Trạng Thái</th>
-                        <th style="text-align: center;">Thao Tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (stationList != null)
-                    {
-                        foreach (var s in stationList)
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
                         {
-                            <tr>
-                                <td><strong class="text-primary">@s.StationId</strong></td>
-                                <td><div style="font-weight: 700;">@s.StationName</div></td>
-                                <td>@s.Address</td>
-                                <td>@s.Phone</td>
+                            <tr class="staff-row" data-name="@user.FullName.ToLower()" data-phone="@user.Phone">
+                                <td><strong class="text-primary">@user.UserId</strong></td>
                                 <td>
-                                    <span class="badge @(s.IsActive == true ? "badge-active" : "badge-locked")">
-                                        @(s.IsActive == true ? "● Hoạt động" : "● Tạm dừng")
+                                    <div class="font-bold">@user.FullName</div>
+                                </td>
+                                <td>
+                                    @if (user.Station != null)
+                                    {
+                                        <span class="badge station-badge" onclick="showAssignStationModal('@user.UserId', '@user.FullName')">
+                                            📍 @user.Station.StationName
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge station-badge-empty" onclick="showAssignStationModal('@user.UserId', '@user.FullName')">
+                                            Chưa có trạm
+                                        </span>
+                                    }
+                                </td>
+                                <td>@(string.IsNullOrEmpty(user.Phone) ? "—" : user.Phone)</td>
+                                <td>
+                                    <span class="badge @(user.RoleId == "AD" ? "badge-admin" : "badge-user")">
+                                        @(user.RoleId == "AD" ? "🛡️ Admin" : "👤 Nhân Viên")
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge @(user.Status == true ? "badge-active" : "badge-locked")">
+                                        @(user.Status == true ? "● Hoạt động" : "● Đã khóa")
                                     </span>
                                 </td>
                                 <td>
                                     <div class="action-group">
-                                        <button class="btn-s btn-s-blue" onclick="showStationModal(@s.StationId, '@s.StationName', '@s.Address', '@s.Phone')">Sửa</button>
-                                        
-                                        <button class="btn-s btn-s-cyan" onclick="showStaffStationModal(@s.StationId, '@s.StationName')">👥 Nhân sự</button>
+                                        <button class="btn-s btn-s-blue" onclick="showChangePassModal('@user.UserId', '@user.FullName')">Đổi MK</button>
+                                    
+                                        <button class="btn-s btn-s-cyan"
+                                                onclick="showDetailsModal('@user.UserId', '@user.Username', '@user.FullName', '@(user.RoleId == "AD" ? "Admin" : "Nhân Viên")', '@user.Phone', '@user.Email', '@user.Status', '@user.CreatedAt?.ToString("dd/MM/yyyy HH:mm")', '@(user.StationId)')">
+                                            Chi tiết
+                                        </button>
 
-                                        <form asp-action="ToggleStation" method="POST" style="display:inline;">
-                                            <input type="hidden" name="stationId" value="@s.StationId">
-                                            <button type="submit" class="btn-s @(s.IsActive == true ? "btn-s-orange" : "btn-s-green")">
-                                                @(s.IsActive == true ? "Tạm dừng" : "Kích hoạt")
-                                            </button>
-                                        </form>
+                                        @if (user.RoleId != "AD")
+                                        {
+                                            <form asp-action="ToggleUser" method="POST" class="display-inline">
+                                                <input type="hidden" name="userID" value="@user.UserId">
+                                                <button type="submit" class="btn-s @(user.Status == true ? "btn-s-orange" : "btn-s-green")">
+                                                    @(user.Status == true ? "Khóa" : "Mở")
+                                                </button>
+                                            </form>
 
-                                        <button type="button" class="btn-s btn-s-red" onclick="confirmDeleteStation(@s.StationId)">Xóa</button>
-                                        <form id="deleteStationForm-@s.StationId" asp-action="DeleteStation" method="POST" style="display:none;">
-                                            <input type="hidden" name="stationId" value="@s.StationId" />
-                                        </form>
+                                            <button type="button" class="btn-s btn-s-red" onclick="confirmDeleteUser('@user.UserId')">Xóa</button>
+                                            <form id="deleteUserForm-@user.UserId" asp-action="DeleteUser" method="POST" class="display-none">
+                                                <input type="hidden" name="userID" value="@user.UserId" />
+                                            </form>
+                                        }
                                     </div>
                                 </td>
                             </tr>
                         }
-                    }
-                </tbody>
-            </table>
-        </div>
-    </main>
-</div>
-
-<!-- --- MODALS --- -->
-
-<div id="stationModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header"><h3 id="stationModalTitle">🏢 Thêm Trạm Mới</h3></div>
-        <form asp-action="SaveStation" method="POST">
-            <input type="hidden" name="stationId" id="stationId">
-            <div class="form-group"><label>Tên Trạm</label><input type="text" name="stationName" id="stationName" required></div>
-            <div class="form-group"><label>Địa Chỉ</label><input type="text" name="address" id="stationAddress"></div>
-            <div class="form-group"><label>Số Điện Thoại</label><input type="tel" name="phone" id="stationPhone"></div>
-
-            <div class="modal-footer">
-                <button type="submit" class="btn-m btn-add" style="flex:2">Lưu Thông Tin</button>
-                <button type="button" onclick="hideStationModal()" class="btn-cancel">Hủy</button>
+                    </tbody>
+                </table>
             </div>
-        </form>
-    </div>
-</div>
+        </main>
 
-<div id="addModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header"><h3>➕ Thêm Nhân Viên Mới</h3></div>
-        <form asp-action="SaveUser" method="POST" onsubmit="return validateAddForm()">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group"><label>Mã Nhân Viên</label><input type="text" name="newUserID" id="newUserID" required></div>
-                <div class="form-group"><label>Tên Đăng Nhập</label><input type="text" name="newUsername" id="newUsername" required></div>
+        @{
+            var stationList = ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>;
+        }
+        <main id="tabStation" class="content-card tab-content display-none">
+            <div class="section-title">
+                <h2>Danh Sách Các Trạm</h2>
+                <div class="staff-meta-badges">
+                    <span class="badge badge-active">Tổng: @(stationList?.Count() ?? 0)</span>
+                </div>
             </div>
-            
-            <div class="form-group"><label>Họ Và Tên</label><input type="text" name="newFullName" required></div>
-            
-            <div class="form-group">
-                <label>Trạm Làm Việc</label>
-                <select name="newStationID" class="form-control-modern">
-                    <option value="">-- Chọn trạm (Không bắt buộc) --</option>
-                    @if (stationList != null)
-                    {
-                        foreach (var s in stationList)
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên Trạm</th>
+                            <th>Địa Chỉ</th>
+                            <th>SĐT</th>
+                            <th>Trạng Thái</th>
+                            <th class="text-center">Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (stationList != null)
                         {
-                            <option value="@s.StationId">@s.StationName (@s.StationId)</option>
+                            foreach (var s in stationList)
+                            {
+                                <tr>
+                                    <td><strong class="text-primary">@s.StationId</strong></td>
+                                    <td><div class="font-bold">@s.StationName</div></td>
+                                    <td>@s.Address</td>
+                                    <td>@s.Phone</td>
+                                    <td>
+                                        <span class="badge @(s.IsActive == true ? "badge-active" : "badge-locked")">
+                                            @(s.IsActive == true ? "● Hoạt động" : "● Tạm dừng")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="action-group">
+                                            <button class="btn-s btn-s-blue" onclick="showStationModal(@s.StationId, '@s.StationName', '@s.Address', '@s.Phone')">Sửa</button>
+                                        
+                                            <button class="btn-s btn-s-cyan" onclick="showStaffStationModal(@s.StationId, '@s.StationName')">👥 Nhân sự</button>
+
+                                            <form asp-action="ToggleStation" method="POST" class="display-inline">
+                                                <input type="hidden" name="stationId" value="@s.StationId">
+                                                <button type="submit" class="btn-s @(s.IsActive == true ? "btn-s-orange" : "btn-s-green")">
+                                                    @(s.IsActive == true ? "Tạm dừng" : "Kích hoạt")
+                                                </button>
+                                            </form>
+
+                                            <button type="button" class="btn-s btn-s-red" onclick="confirmDeleteStation(@s.StationId)">Xóa</button>
+                                            <form id="deleteStationForm-@s.StationId" asp-action="DeleteStation" method="POST" class="display-none">
+                                                <input type="hidden" name="stationId" value="@s.StationId" />
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
                         }
-                    }
-                </select>
+                    </tbody>
+                </table>
             </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group"><label>Mật Khẩu</label><input type="password" name="newPassword" id="newPassword" required></div>
-                <div class="form-group"><label>Xác Nhận MK</label><input type="password" id="newConfirmPassword" required></div>
-            </div>
-            <small id="addPassErr" style="color:var(--danger);display:none;font-weight:700;margin-top:-10px;margin-bottom:10px;">Mật khẩu không khớp!</small>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group"><label>Số Điện Thoại</label><input type="tel" name="newPhone" required></div>
-                <div class="form-group"><label>Email</label><input type="email" name="newEmail" required></div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="submit" class="btn-m btn-add" style="flex:2">Lưu Nhân Viên</button>
-                <button type="button" onclick="hideAddModal()" class="btn-cancel">Hủy</button>
-            </div>
-        </form>
+        </main>
     </div>
-</div>
 
-<div id="changePassModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header"><h3>🔑 Đổi Mật Khẩu</h3></div>
-        <p id="cpUserLabel"></p>
-        <form asp-action="ChangePassword" method="POST" onsubmit="return validateChangePassForm()">
-            <input type="hidden" name="cpUserID" id="cpUserID">
-            <div class="form-group"><label>Mật Khẩu Mới</label><input type="password" name="cpNewPassword" id="cpNewPassword" required></div>
-            <div class="form-group"><label>Xác Nhận MK</label><input type="password" id="cpConfirmPassword" required>
-            <small id="cpPassErr" style="color:var(--danger);display:none;font-weight:700;">MK không khớp!</small></div>
-            <div class="modal-footer">
-                <button type="submit" class="btn-m btn-add" style="flex:2">Cập Nhật</button>
-                <button type="button" onclick="hideChangePassModal()" class="btn-cancel">Hủy</button>
-            </div>
-        </form>
-    </div>
-</div>
+    <div id="stationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3 id="stationModalTitle">🏢 Thêm Trạm Mới</h3></div>
+            <form asp-action="SaveStation" method="POST">
+                <input type="hidden" name="stationId" id="stationId">
+                <div class="form-group"><label>Tên Trạm</label><input type="text" name="stationName" id="stationName" required></div>
+                <div class="form-group"><label>Địa Chỉ</label><input type="text" name="address" id="stationAddress"></div>
+                <div class="form-group"><label>Số Điện Thoại</label><input type="tel" name="phone" id="stationPhone"></div>
 
-<div id="detailsModal" class="modal">
-    <div class="modal-content details-form-container">
-        <div class="modal-header">
-            <h3 class="details-header-h3">👤 Hồ Sơ & Chỉnh Sửa Nhân Viên</h3>
+                <div class="modal-footer">
+                    <button type="submit" class="btn-m btn-add flex-2">Lưu Thông Tin</button>
+                    <button type="button" onclick="hideStationModal()" class="btn-cancel">Hủy</button>
+                </div>
+            </form>
         </div>
-        
-        <form asp-action="UpdateUser" method="POST">
-            <input type="hidden" name="userId" id="detUserIdInp">
+    </div>
+
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>➕ Thêm Nhân Viên Mới</h3></div>
+            <form asp-action="SaveUser" method="POST" onsubmit="return validateAddForm()">
+                <div class="grid-2-col">
+                    <div class="form-group"><label>Mã Nhân Viên</label><input type="text" name="newUserID" id="newUserID" required></div>
+                    <div class="form-group"><label>Tên Đăng Nhập</label><input type="text" name="newUsername" id="newUsername" required></div>
+                </div>
             
-            <div class="details-list">
-                <div class="details-row-flex">
-                    <span class="det-label">Mã Nhân Viên:</span>
-                    <span class="det-value det-highlight" id="detUserId"></span>
-                </div>
-
-                <div class="details-row-flex">
-                    <span class="det-label">Tên Đăng Nhập:</span>
-                    <span class="det-value" id="detUsernameText" style="color: #1e293b; font-weight: 600;"></span>
-                    <input type="hidden" id="detUsername">
-                </div>
-
-                <div class="form-group" style="margin-top: 15px;">
-                    <label>Họ Và Tên</label>
-                    <input type="text" name="fullName" id="detFullName" class="form-control-modern" required>
-                </div>
-
-                <div class="form-group" style="margin-top: 15px;">
-                    <label>Số Điện Thoại</label>
-                    <input type="tel" name="phone" id="detPhone" class="form-control-modern">
-                </div>
-
-                <div class="form-group" style="margin-top: 15px;">
-                    <label>Địa Chỉ Email</label>
-                    <input type="email" name="email" id="detEmail" class="form-control-modern">
-                </div>
-
-                <div class="form-group" style="margin-top: 15px;">
+                <div class="form-group"><label>Họ Và Tên</label><input type="text" name="newFullName" required></div>
+            
+                <div class="form-group">
                     <label>Trạm Làm Việc</label>
-                    <select name="stationId" id="detStationId" class="form-control-modern form-select-beautify">
-                        <option value="">-- Chưa gán trạm --</option>
+                    <select name="newStationID" class="form-control-modern">
+                        <option value="">-- Chọn trạm (Không bắt buộc) --</option>
                         @if (stationList != null)
                         {
                             foreach (var s in stationList)
@@ -353,70 +262,158 @@
                     </select>
                 </div>
 
-                <div class="details-footer-meta">
-                    <div>Quyền: <strong id="detRole" style="color: #334155;"></strong></div>
-                    <div style="text-align: right;">Trạng thái: <span id="detStatus"></span></div>
-                    <div style="grid-column: span 2; margin-top: 5px; color: #94a3b8;">Ngày tạo: <span id="detCreatedAt"></span></div>
+                <div class="grid-2-col">
+                    <div class="form-group"><label>Mật Khẩu</label><input type="password" name="newPassword" id="newPassword" required></div>
+                    <div class="form-group"><label>Xác Nhận MK</label><input type="password" id="newConfirmPassword" required></div>
+                </div>
+                <small id="addPassErr" class="text-danger font-bold mt-n10 mb-10 display-none">Mật khẩu không khớp!</small>
+
+                <div class="grid-2-col">
+                    <div class="form-group"><label>Số Điện Thoại</label><input type="tel" name="newPhone" required></div>
+                    <div class="form-group"><label>Email</label><input type="email" name="newEmail" required></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn-m btn-add flex-2">Lưu Nhân Viên</button>
+                    <button type="button" onclick="hideAddModal()" class="btn-cancel">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="changePassModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>🔑 Đổi Mật Khẩu</h3></div>
+            <p id="cpUserLabel" class="text-center font-bold mb-15 user-text-dark"></p>
+            <form asp-action="ChangePassword" method="POST" onsubmit="return validateChangePassForm()">
+                <input type="hidden" name="cpUserID" id="cpUserID">
+                <div class="form-group"><label>Mật Khẩu Mới</label><input type="password" name="cpNewPassword" id="cpNewPassword" required></div>
+                <div class="form-group">
+                    <label>Xác Nhận MK</label>
+                    <input type="password" id="cpConfirmPassword" required>
+                    <small id="cpPassErr" class="text-danger font-bold display-none">MK không khớp!</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn-m btn-add flex-2">Cập Nhật</button>
+                    <button type="button" onclick="hideChangePassModal()" class="btn-cancel">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="detailsModal" class="modal">
+        <div class="modal-content details-form-container">
+            <div class="modal-header">
+                <h3 class="details-header-h3">👤 Hồ Sơ & Chỉnh Sửa Nhân Viên</h3>
+            </div>
+        
+            <form asp-action="UpdateUser" method="POST">
+                <input type="hidden" name="userId" id="detUserIdInp">
+            
+                <div class="details-list">
+                    <div class="details-row-flex">
+                        <span class="det-label">Mã Nhân Viên:</span>
+                        <span class="det-value det-highlight" id="detUserId"></span>
+                    </div>
+
+                    <div class="details-row-flex">
+                        <span class="det-label">Tên Đăng Nhập:</span>
+                        <span class="det-value font-semibold" id="detUsernameText"></span>
+                    </div>
+
+                    <div class="form-group mt-15">
+                        <label>Họ Và Tên</label>
+                        <input type="text" name="fullName" id="detFullName" class="form-control-modern" required>
+                    </div>
+
+                    <div class="form-group mt-15">
+                        <label>Số Điện Thoại</label>
+                        <input type="tel" name="phone" id="detPhone" class="form-control-modern">
+                    </div>
+
+                    <div class="form-group mt-15">
+                        <label>Địa Chỉ Email</label>
+                        <input type="email" name="email" id="detEmail" class="form-control-modern">
+                    </div>
+
+                    <div class="form-group mt-15">
+                        <label>Trạm Làm Việc</label>
+                        <select name="stationId" id="detStationId" class="form-control-modern form-select-beautify">
+                            <option value="">-- Chưa gán trạm --</option>
+                            @if (stationList != null)
+                            {
+                                foreach (var s in stationList)
+                                {
+                                    <option value="@s.StationId">@s.StationName (@s.StationId)</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="details-footer-meta">
+                        <div>Quyền: <strong id="detRole" class="role-text-dark"></strong></div>
+                        <div class="text-right">Trạng thái: <span id="detStatus"></span></div>
+                        <div class="date-meta-text">Ngày tạo: <span id="detCreatedAt"></span></div>
+                    </div>
+                </div>
+
+                <div class="modal-footer details-footer-btns">
+                    <button type="submit" class="btn-m btn-add w-full font-bold">💾 Lưu Thay Đổi</button>
+                    <button type="button" onclick="hideDetailsModal()" class="btn-cancel w-full font-bold">Đóng</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="staffStationModal" class="modal">
+        <div class="modal-content modal-station-manage">
+            <div class="modal-header"><h3 id="staffStationModalTitle">👥 Quản Lý Nhân Sự Tại Trạm</h3></div>
+            <input type="hidden" id="currentStationId">
+        
+            <div class="station-staff-grid">
+                <div class="station-staff-zone">
+                    <h4 class="section-subtitle-primary">📍 NHÂN VIÊN TRONG TRẠM</h4>
+                    <div id="inStationList" class="staff-list-box"></div>
+                </div>
+
+                <div class="station-staff-zone">
+                    <h4 class="section-subtitle-muted">📢 NHÂN VIÊN CHƯA CÓ TRẠM</h4>
+                    <div id="availableList" class="staff-list-box"></div>
                 </div>
             </div>
 
-            <div class="modal-footer details-footer-btns">
-                <button type="submit" class="btn-m btn-add" style="width: 100%; font-weight: 700;">💾 Lưu Thay Đổi</button>
-                <button type="button" onclick="hideDetailsModal()" class="btn-cancel" style="width: 100%; font-weight: 700;">Đóng</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div id="staffStationModal" class="modal">
-    <div class="modal-content modal-station-manage">
-        <div class="modal-header"><h3 id="staffStationModalTitle">👥 Quản Lý Nhân Sự Tại Trạm</h3></div>
-        <input type="hidden" id="currentStationId">
-        
-        <div class="station-staff-grid">
-            <div class="station-staff-zone">
-                <h4 style="margin-bottom: 10px; font-size: 0.9rem; color: var(--primary);">📍 NHÂN VIÊN TRONG TRẠM</h4>
-                <div id="inStationList" class="staff-list-box"></div>
-            </div>
-
-            <div class="station-staff-zone">
-                <h4 style="margin-bottom: 10px; font-size: 0.9rem; color: var(--text-muted);">📢 NHÂN VIÊN CHƯA CÓ TRẠM</h4>
-                <div id="availableList" class="staff-list-box"></div>
+            <div class="modal-footer">
+                <button type="button" onclick="hideStaffStationModal()" class="btn-cancel">Đóng</button>
             </div>
         </div>
-
-        <div class="modal-footer">
-            <button type="button" onclick="hideStaffStationModal()" class="btn-cancel">Đóng</button>
-        </div>
     </div>
-</div>
 
-<div id="assignStationModal" class="modal">
-    <div class="modal-content" style="max-width: 450px;">
-        <div class="modal-header"><h3>📍 Gán Trạm Làm Việc</h3></div>
-        <p id="asUserLabel" style="font-weight: 700; color: var(--primary); margin-bottom: 15px; text-align: center;"></p>
-        <input type="hidden" id="asUserId">
+    <div id="assignStationModal" class="modal">
+        <div class="modal-content modal-content-small">
+            <div class="modal-header"><h3>📍 Gán Trạm Làm Việc</h3></div>
+            <p id="asUserLabel" class="text-center font-bold mb-15 text-primary"></p>
+            <input type="hidden" id="asUserId">
         
-        <div class="form-group">
-            <label>Chọn Trạm</label>
-            <select id="asStationId" class="form-control-modern">
-                <option value="">-- Chọn trạm để gán --</option>
-                @if (stationList != null)
-                {
-                    foreach (var s in stationList)
+            <div class="form-group">
+                <label>Chọn Trạm</label>
+                <select id="asStationId" class="form-control-modern">
+                    <option value="">-- Chọn trạm để gán --</option>
+                    @if (stationList != null)
                     {
-                        <option value="@s.StationId">@s.StationName (@s.StationId)</option>
+                        foreach (var s in stationList)
+                        {
+                            <option value="@s.StationId">@s.StationName (@s.StationId)</option>
+                        }
                     }
-                }
-            </select>
-        </div>
+                </select>
+            </div>
 
-        <div class="modal-footer">
-            <button type="button" onclick="submitAssignStation()" class="btn-m btn-add" style="flex:2">Xác Nhận Gán</button>
-            <button type="button" onclick="hideAssignStationModal()" class="btn-cancel">Hủy</button>
+            <div class="modal-footer">
+                <button type="button" onclick="submitAssignStation()" class="btn-m btn-add flex-2">Xác Nhận Gán</button>
+                <button type="button" onclick="hideAssignStationModal()" class="btn-cancel">Hủy</button>
+            </div>
         </div>
     </div>
-</div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

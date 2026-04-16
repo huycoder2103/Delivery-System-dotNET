@@ -57,11 +57,11 @@
                         <span class="d-email">@email</span>
                     </div>
                     <div class="dropdown-body">
-                        <form asp-controller="Account" asp-action="Logout" method="POST" style="margin: 0;">
-                            <button type="submit" class="dropdown-item" style="width:100%; border:none; background:none; cursor:pointer; color:#e53e3e; text-align: left; display: block;">
-                                🚪 Đăng xuất hệ thống
-                            </button>
-                        </form>
+                        <form asp-controller="Account" asp-action="Logout" method="POST" class="m-0">
+                                                    <button type="submit" class="btn-logout-dropdown">
+                                                        🚪 Đăng Xuất
+                                                    </button>
+                                                </form>
                     </div>
                 </div>
             </div>
@@ -149,7 +149,7 @@
             Swal.fire({
                 title: 'Thông tin trạm',
                 html: `
-                    <div style="text-align: left; padding: 10px;">
+                    <div class="text-left p-10">
                         <p><strong>Tên trạm:</strong> ${name}</p>
                         <p><strong>Mã trạm:</strong> ${id}</p>
                     </div>

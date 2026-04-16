@@ -1,115 +1,93 @@
-@model IEnumerable<Delivery_System.Models.VwTripList>
+@model Delivery_System.Models.TblOrder
 
 @{
-    ViewData["Title"] = "Chọn Chuyến Xe Chuyển Hàng";
-    var order = ViewBag.OrderForShip as Delivery_System.Models.TblOrder;
+    ViewData["Title"] = "Điều Phối Đơn Hàng";
+    var availableTrips = ViewBag.AvailableTrips as IEnumerable<Delivery_System.Models.VwTripList>;
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/ship_order.css">
+    <link rel="stylesheet" href="~/css/list_order.css?v=@DateTime.Now.Ticks">
 }
 
-<div class="page-wrap">
-    <div class="hdr">
-        <h3>🚚 CHUYỂN HÀNG — CHỌN CHUYẾN XE</h3>
-        @if (order != null)
-        {
-            <div class="meta">
-                <span class="badge">Đơn: @order.OrderId</span>
-                <span class="badge">Hàng: @order.ItemName</span>
-                <span class="badge">Trạm gửi: @order.SendStation</span>
-                <span class="badge">Trạm nhận: @order.ReceiveStation</span>
-            </div>
-        }
+<div class="order-list-container">
+    <div class="modern-page-header">
+        <div>
+            <h3>🚛 ĐIỀU PHỐI ĐƠN HÀNG</h3>
+            <div class="modern-page-header-meta">Mã Đơn: <strong>@Model.OrderId</strong> | Tên hàng: <strong>@Model.ItemName</strong></div>
+        </div>
+        <div class="header-actions">
+            <div class="badge-status-m badge-going">@Model.SendStation ➔ @Model.ReceiveStation</div>
+        </div>
     </div>
 
-    <div class="body">
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <div style="background:#d4edda;color:#155724;padding:9px 14px;border-radius:4px;margin-bottom:12px;font-weight:600;">
-                ✅ @TempData["SuccessMessage"]
-            </div>
-        }
-
-        <div class="info">
-            Hiển thị các chuyến xe có trạm xuất phát là <strong>"@order?.SendStation"</strong>
-            và trạm đến là <strong>"@order?.ReceiveStation"</strong> — phù hợp để chuyển đơn hàng này.
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert-success-modern">
+            ✅ @TempData["Success"]
         </div>
+    }
 
-        @if (Model != null && Model.Any())
-        {
-            <table>
+    <div class="modern-card">
+        <h4 class="mb-3">Tìm chuyến xe phù hợp:</h4>
+        <div class="trip-table-card">
+            <table class="modern-table">
                 <thead>
                     <tr>
-                        <th>#</th>
                         <th>Mã Chuyến</th>
                         <th>Lộ Trình</th>
                         <th>Biển Số</th>
-                        <th>Tài Xế</th>
-                        <th>Giờ Đi</th>
-                        <th>Trạng Thái</th>
+                        <th>Ngày Đi</th>
                         <th>Thao Tác</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @{ int i = 1; }
-                    @foreach (var t in Model)
+                    @if (availableTrips != null && availableTrips.Any())
                     {
-                        bool done = t.Status == "Đã đến";
-                        <tr>
-                            <td>@(i++)</td>
-                            <td><strong>@t.TripId</strong></td>
-                            <td style="color:#2980b9;font-weight:600;">@t.RouteInfo</td>
-                            <td>@(t.LicensePlate ?? "-")</td>
-                            <td>@(t.DriverName ?? "-")</td>
-                            <td>@(t.DepartureTime ?? "-")</td>
-                            <td>
-                                @if (done) { <span class="st-done">🏁 Đã đến</span> }
-                                else { <span class="st-going">🚛 Đang đi</span> }
-                            </td>
-                            <td>
-                                @if (!done && order != null)
-                                {
-                                    <button type="button" class="btn-pick" onclick="confirmShip('@order.OrderId', '@t.TripId')">✓ Chọn chuyến này</button>
-                                    <form id="shipForm-@t.TripId" asp-action="AssignToTrip" method="POST" style="display:none;">
-                                        <input type="hidden" name="orderId" value="@order.OrderId">
-                                        <input type="hidden" name="tripId" value="@t.TripId">
-                                        <input type="hidden" name="source" value="ship">
+                        foreach (var t in availableTrips)
+                        {
+                            <tr>
+                                <td><span class="trip-id-link">@t.TripId</span></td>
+                                <td class="route-info-blue">@t.RouteInfo</td>
+                                <td class="col-plate-bold">@t.LicensePlate</td>
+                                <td class="time-cell">@t.DepartureTime</td>
+                                <td class="col-act">
+                                    <button type="button" class="btn-action-text btn-s-ship btn-full-width" onclick="confirmShip('@t.TripId', '@t.RouteInfo')">🚚 Gán Xe</button>
+                                    
+                                    <form id="shipForm-@t.TripId" asp-action="AssignToTrip" method="POST" class="hidden-form">
+                                        <input type="hidden" name="orderId" value="@Model.OrderId" />
+                                        <input type="hidden" name="tripId" value="@t.TripId" />
                                     </form>
-                                }
-                                else
-                                {
-                                    <button class="btn-disabled" disabled>Không khả dụng</button>
-                                }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="no-data-msg">
+                                <div class="search-empty-icon">🔍</div>
+                                <div>Không tìm thấy chuyến xe nào có lộ trình phù hợp đang chờ hàng!</div>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
-        }
-        else
-        {
-            <div class="no-data">
-                <div style="font-size:2rem;margin-bottom:8px;">🔍</div>
-                <p>Không tìm thấy chuyến xe phù hợp từ trạm <strong>"@order?.SendStation"</strong> đến trạm <strong>"@order?.ReceiveStation"</strong>.</p>
-            </div>
-        }
-
-        <a asp-action="List" class="btn-back" style="text-decoration:none; display:inline-block; text-align:center; margin-top: 20px;">⬅ Quay lại DS Hàng</a>
+        </div>
+        <a asp-action="List" class="btn-back back-btn-ship">⬅ Quay lại DS Hàng</a>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        function confirmShip(orderId, tripId) {
+        function confirmShip(tripId, route) {
             Swal.fire({
-                title: 'Xác nhận chuyển hàng?',
-                text: "Chuyển đơn " + orderId + " lên chuyến " + tripId + "?",
+                title: 'Xác nhận gán xe?',
+                text: `Bạn muốn gán đơn hàng này vào chuyến ${tripId} (${route})?`,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#1a73e8',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Đúng, chuyển ngay!',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Đúng, gán ngay!',
                 cancelButtonText: 'Hủy'
             }).then((result) => {
                 if (result.isConfirmed) {

@@ -59,7 +59,7 @@
 
     <div class="menu-grid">
         <!-- 1. Quản lý hàng hóa -->
-        <a asp-controller="Goods" asp-action="Index" class="menu-card" style="text-decoration:none; color:inherit;">
+        <a asp-controller="Goods" asp-action="Index" class="menu-card no-decoration color-inherit">
             <div class="card-icon">📦</div>
             <h3>Quản lý hàng hóa</h3>
             <p>Nhập đơn hàng, bộ phận hàng, quản lý đơn hàng.</p>
@@ -67,7 +67,7 @@
         </a>
 
         <!-- 2. Báo cáo & Thống kê -->
-        <a asp-controller="Report" asp-action="Index" class="menu-card" style="text-decoration:none; color:inherit;">
+        <a asp-controller="Report" asp-action="Index" class="menu-card no-decoration color-inherit">
             <div class="card-icon">📊</div>
             <h3>Báo cáo & Thống kê</h3>
             <p>Xem doanh thu, số lượng đơn theo ngày/tháng.</p>
@@ -77,7 +77,7 @@
         <!-- 3. Hệ thống quản trị -->
         @if (role == "AD")
         {
-            <a asp-controller="Admin" asp-action="Index" class="menu-card admin-card" style="text-decoration:none; color:inherit;">
+            <a asp-controller="Admin" asp-action="Index" class="menu-card admin-card no-decoration color-inherit">
                 <div class="card-icon">🛡️</div>
                 <h3>Hệ thống quản trị</h3>
                 <p>Quản lý nhân viên, cấu hình trạm xe, bảo mật.</p>

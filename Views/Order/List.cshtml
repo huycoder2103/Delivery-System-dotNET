@@ -115,7 +115,7 @@
     </div>
 
     <!-- Pagination Controls -->
-    <div class="pagination-container" style="margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 10px;">
+    <div class="pagination-container">
         @if (ViewBag.TotalPages > 1)
         {
             var currentPage = (int)ViewBag.CurrentPage;
@@ -125,7 +125,7 @@
                 « Trang trước
             </button>
             
-            <div style="font-weight: bold; color: #1a73e8;">
+            <div class="current-page">
                 Trang @currentPage / @totalPages
             </div>
 

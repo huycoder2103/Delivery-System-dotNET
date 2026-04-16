@@ -21,7 +21,7 @@
                     <span class="station-receive"onclick="showStationInfo('@t.Destination', '@destID')">@destID</span>
                 </div>
             </td>
-            <td style="font-weight: 600;">@t.LicensePlate</td>
+            <td class="col-plate-bold">@t.LicensePlate</td>
             <td>@t.DepartureTime</td>
             <td>@t.DriverName</td>
             <td>
@@ -36,7 +36,7 @@
             </td>
             <td class="col-staff">@t.StaffCreated</td>
             <td>@t.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
-            <td style="min-width: 130px;">
+            <td class="col-actions-min">
                 <div class="action-btns-grid">
                     @{
                         var orderCounts = ViewBag.OrderCounts as Dictionary<string, int>;
@@ -49,7 +49,7 @@
                         <button type="button" class="btn-action-trip btn-status-arrived"
                                 onclick="confirmArrive('@t.TripId')">🏁 Đã đến</button>
                         
-                        <form id="arriveForm-@t.TripId" asp-action="Arrive" method="POST" style="display:none;">
+                        <form id="arriveForm-@t.TripId" asp-action="Arrive" method="POST" class="hidden-form">
                             <input type="hidden" name="id" value="@t.TripId" />
                         </form>
                     }
@@ -69,6 +69,6 @@
 else
 {
     <tr>
-        <td colspan="10" style="padding: 50px; color: #999; text-align: center;">📭 Không tìm thấy chuyến xe nào phù hợp!</td>
+        <td colspan="10" class="no-trip-found">📭 Không tìm thấy chuyến xe nào phù hợp!</td>
     </tr>
 }

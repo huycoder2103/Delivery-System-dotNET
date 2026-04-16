@@ -202,3 +202,59 @@ tr:hover { background: #f8fafc; }
 
 .tab-content { animation: fadeIn 0.4s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ADMIN UTILITIES */
+.revenue-chart { max-height: 120px; width: 100%; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.font-extrabold { font-weight: 800; }
+.display-inline { display: inline; }
+.display-none { display: none; }
+.grid-2-col { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.mt-15 { margin-top: 15px; }
+.mt-n10 { margin-top: -10px; }
+.mb-10 { margin-bottom: 10px; }
+.mb-15 { margin-bottom: 15px; }
+.grid-span-2 { grid-column: span 2; }
+.w-full { width: 100%; }
+.flex-2 { flex: 2; }
+.modal-content-small { max-width: 450px; }
+.status-active-text { color: #10b981; font-weight: 700; }
+.status-locked-text { color: #ef4444; font-weight: 700; }
+.no-personnel-msg { font-size: 0.8rem; color: #94a3b8; text-align: center; }
+.section-subtitle-primary { margin-bottom: 10px; font-size: 0.9rem; color: var(--primary); text-transform: uppercase; }
+.section-subtitle-muted { margin-bottom: 10px; font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; }
+.role-text-dark { color: #334155; }
+.date-meta-text { grid-column: span 2; margin-top: 5px; color: #94a3b8; }
+.text-danger { color: var(--danger); }
+.user-text-dark { color: #1e293b; }
+.staff-name-small { font-weight: 700; font-size: 0.85rem; }
+.staff-id-small { font-size: 0.75rem; color: #64748b; }
+
+/* TABLE ACTIONS */
+.action-group {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.staff-meta-badges {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.alert-box {
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+.alert-error { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
+.alert-success { background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; }
+
+
+

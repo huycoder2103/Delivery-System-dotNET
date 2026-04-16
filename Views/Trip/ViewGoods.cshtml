@@ -67,7 +67,7 @@
                                         <strong class="order-id-link" onclick="confirmRemove('@o.OrderId', '@trip?.TripId')" title="Bấm để gỡ hàng xuống xe">
                                             @o.OrderId
                                         </strong>
-                                        <form id="removeForm-@o.OrderId" asp-controller="Order" asp-action="RemoveFromTrip" method="POST" style="display:none;">
+                                        <form id="removeForm-@o.OrderId" asp-controller="Order" asp-action="RemoveFromTrip" method="POST" class="hidden-form">
                                             <input type="hidden" name="orderId" value="@o.OrderId">
                                             <input type="hidden" name="tripId" value="@trip?.TripId">
                                         </form>
@@ -87,8 +87,8 @@
                                         <span class="station-receive" onclick="showStationInfo('@o.ReceiveStation', '@(receiveStationId?.ToString() ?? "??")')">@(receiveStationId?.ToString() ?? "??")</span>
                                     </span>
                                 </td>
-                                <td><span style="color:#27ae60; font-weight:500;">@o.Tr</span></td>
-                                <td><span style="color:#e67e22; font-weight:500;">@o.Ct</span></td>
+                                <td><span class="price-tr">@o.Tr</span></td>
+                                <td><span class="price-ct">@o.Ct</span></td>
                             </tr>
                         }
                     </tbody>
@@ -103,14 +103,14 @@
             }
             else
             {
-                <div class="no-data" style="text-align:center; padding:40px; color:#888;">
-                    <div style="font-size:2rem;margin-bottom:8px;">📭</div>
+                <div class="no-data no-data-msg">
+                    <div class="no-data-icon">📭</div>
                     <p>Hiện chưa có đơn hàng nào trên chuyến xe này.</p>
                 </div>
             }
 
-            <div style="margin-top: 20px;">
-                <a asp-controller="Trip" asp-action="List" class="btn-back" style="text-decoration:none; display:inline-block; text-align:center;">⬅ Quay lại DS Chuyến Xe</a>
+            <div class="back-link-container">
+                <a asp-controller="Trip" asp-action="List" class="btn-back">⬅ Quay lại DS Chuyến Xe</a>
             </div>
         </div>
     </div>
