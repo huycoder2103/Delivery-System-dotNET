@@ -154,17 +154,11 @@
 
                                         @if (user.RoleId != "AD")
                                         {
-                                            <form asp-action="ToggleUser" method="POST" class="display-inline">
-                                                <input type="hidden" name="userID" value="@user.UserId">
-                                                <button type="submit" class="btn-s @(user.Status == true ? "btn-s-orange" : "btn-s-green")">
-                                                    @(user.Status == true ? "Khóa" : "Mở")
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn-s @(user.Status == true ? "btn-s-orange" : "btn-s-green")" onclick="toggleUserDirect('@user.UserId')">
+                                                @(user.Status == true ? "Khóa" : "Mở")
+                                            </button>
 
-                                            <button type="button" class="btn-s btn-s-red" onclick="confirmDeleteUser('@user.UserId')">Xóa</button>
-                                            <form id="deleteUserForm-@user.UserId" asp-action="DeleteUser" method="POST" class="display-none">
-                                                <input type="hidden" name="userID" value="@user.UserId" />
-                                            </form>
+                                            <button type="button" class="btn-s btn-s-red" onclick="deleteUserDirect('@user.UserId', '@user.FullName')">Xóa</button>
                                         }
                                     </div>
                                 </td>
@@ -219,17 +213,11 @@
                                         
                                             <button class="btn-s btn-s-cyan" onclick="showStaffStationModal(@s.StationId, '@s.StationName')">👥 Nhân sự</button>
 
-                                            <form asp-action="ToggleStation" method="POST" class="display-inline">
-                                                <input type="hidden" name="stationId" value="@s.StationId">
-                                                <button type="submit" class="btn-s @(s.IsActive == true ? "btn-s-orange" : "btn-s-green")">
-                                                    @(s.IsActive == true ? "Tạm dừng" : "Kích hoạt")
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn-s @(s.IsActive == true ? "btn-s-orange" : "btn-s-green")" onclick="toggleStationDirect(@s.StationId)">
+                                                @(s.IsActive == true ? "Tạm dừng" : "Kích hoạt")
+                                            </button>
 
-                                            <button type="button" class="btn-s btn-s-red" onclick="confirmDeleteStation(@s.StationId)">Xóa</button>
-                                            <form id="deleteStationForm-@s.StationId" asp-action="DeleteStation" method="POST" class="display-none">
-                                                <input type="hidden" name="stationId" value="@s.StationId" />
-                                            </form>
+                                            <button type="button" class="btn-s btn-s-red" onclick="deleteStationDirect(@s.StationId, '@s.StationName')">Xóa</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -693,6 +681,70 @@
                 } catch (err) {
                     Swal.fire('Lỗi', 'Không thể kết nối đến server', 'error');
                 }
+            }
+        }
+
+        async function toggleUserDirect(userId) {
+            const formData = new FormData();
+            formData.append('userID', userId);
+            try {
+                const resp = await fetch('/Admin/ToggleUser', { method: 'POST', body: formData });
+                const result = await resp.json();
+                if (result.success) {
+                    Toast.fire({ icon: 'success', title: result.message });
+                    setTimeout(() => location.reload(), 800);
+                } else Swal.fire('Lỗi', result.message, 'error');
+            } catch (err) { Swal.fire('Lỗi', 'Lỗi kết nối', 'error'); }
+        }
+
+        async function deleteUserDirect(userId, fullName) {
+            const { isConfirmed } = await Swal.fire({
+                title: 'Xác nhận xóa?', text: `Bạn có chắc muốn xóa nhân viên ${fullName}?`,
+                icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Xóa ngay'
+            });
+            if (isConfirmed) {
+                const formData = new FormData();
+                formData.append('userID', userId);
+                try {
+                    const resp = await fetch('/Admin/DeleteUser', { method: 'POST', body: formData });
+                    const result = await resp.json();
+                    if (result.success) {
+                        Toast.fire({ icon: 'success', title: result.message });
+                        setTimeout(() => location.reload(), 800);
+                    } else Swal.fire('Lỗi', result.message, 'error');
+                } catch (err) { Swal.fire('Lỗi', 'Lỗi kết nối', 'error'); }
+            }
+        }
+
+        async function toggleStationDirect(stationId) {
+            const formData = new FormData();
+            formData.append('stationId', stationId);
+            try {
+                const resp = await fetch('/Admin/ToggleStation', { method: 'POST', body: formData });
+                const result = await resp.json();
+                if (result.success) {
+                    Toast.fire({ icon: 'success', title: result.message });
+                    setTimeout(() => location.reload(), 800);
+                } else Swal.fire('Lỗi', result.message, 'error');
+            } catch (err) { Swal.fire('Lỗi', 'Lỗi kết nối', 'error'); }
+        }
+
+        async function deleteStationDirect(stationId, name) {
+            const { isConfirmed } = await Swal.fire({
+                title: 'Xác nhận xóa trạm?', text: `Bạn có chắc muốn xóa trạm ${name}?`,
+                icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Xóa ngay'
+            });
+            if (isConfirmed) {
+                const formData = new FormData();
+                formData.append('stationId', stationId);
+                try {
+                    const resp = await fetch('/Admin/DeleteStation', { method: 'POST', body: formData });
+                    const result = await resp.json();
+                    if (result.success) {
+                        Toast.fire({ icon: 'success', title: result.message });
+                        setTimeout(() => location.reload(), 800);
+                    } else Swal.fire('Lỗi', result.message, 'error');
+                } catch (err) { Swal.fire('Lỗi', 'Lỗi kết nối', 'error'); }
             }
         }
 

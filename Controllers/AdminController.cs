@@ -92,145 +92,30 @@ namespace Delivery_System.Controllers
         public async Task<IActionResult> ToggleUser(string userID)
         {
             if (!IsAdmin()) return Forbid();
-            
             var user = await _context.TblUsers.FirstOrDefaultAsync(u => u.UserId == userID);
             if (user != null)
             {
-                if (user.RoleId == "AD")
-                {
-                    TempData["ErrorMessage"] = "Không thể khóa tài khoản quản trị viên!";
-                    return RedirectToAction("Index");
-                }
+                if (user.RoleId == "AD") return Json(new { success = false, message = "Không thể khóa Admin!" });
                 user.Status = !(user.Status ?? false);
                 await _context.SaveChangesAsync();
+                return Json(new { success = true, message = user.Status == true ? "Đã mở khóa nhân viên" : "Đã khóa nhân viên" });
             }
-            return RedirectToAction("Index");
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> SaveUser(string newUserID, string newUsername, string newFullName, string newPassword, string newPhone, string newEmail, int? newStationID)
-        {
-            // Kiểm tra trùng lặp Mã nhân viên hoặc Tên đăng nhập
-            var existingUser = await _context.TblUsers
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.UserId == newUserID || u.Username == newUsername);
-
-            if (existingUser != null)
-            {
-                if (existingUser.UserId == newUserID)
-                    TempData["ErrorMessage"] = $"Mã nhân viên '{newUserID}' đã tồn tại trên hệ thống!";
-                else
-                    TempData["ErrorMessage"] = $"Tên đăng nhập '{newUsername}' đã được người khác sử dụng!";
-                
-                return RedirectToAction("Index");
-            }
-
-            var user = new TblUser
-            {
-                UserId = newUserID,
-                Username = newUsername,
-                FullName = newFullName,
-                Password = HashSha256(newPassword),
-                Phone = newPhone,
-                Email = newEmail,
-                RoleId = "US",
-                StationId = newStationID,
-                Status = true,
-                CreatedAt = DateTime.Now
-            };
-            _context.TblUsers.Add(user);
-            await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Thêm nhân viên mới thành công!";
-            return RedirectToAction("Index");
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> ChangePassword(string cpUserID, string cpNewPassword)
-        {
-            var user = await _context.TblUsers.FindAsync(cpUserID);
-            if (user != null)
-            {
-                user.Password = HashSha256(cpNewPassword);
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToAction("Index");
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> UpdateUser(string userId, string fullName, string phone, string email, int? stationId)
-        {
-            if (!IsAdmin()) return Forbid();
-            
-            var user = await _context.TblUsers.FindAsync(userId);
-            if (user == null)
-            {
-                TempData["ErrorMessage"] = "Không tìm thấy nhân viên!";
-                return RedirectToAction("Index");
-            }
-
-            user.FullName = fullName;
-            user.Phone = phone;
-            user.Email = email;
-            user.StationId = stationId;
-
-            await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = $"Cập nhật thông tin nhân viên {userId} thành công!";
-            return RedirectToAction("Index");
+            return Json(new { success = false, message = "Không tìm thấy nhân viên" });
         }
 
         [HttpPost]
         public async Task<IActionResult> DeleteUser(string userID)
         {
-            var user = await _context.TblUsers.FindAsync(userID);
+            if (!IsAdmin()) return Forbid();
+            var user = await _context.TblUsers.FirstOrDefaultAsync(u => u.UserId == userID);
             if (user != null)
             {
-                if (user.RoleId == "AD")
-                {
-                    TempData["ErrorMessage"] = "Không thể xóa tài khoản quản trị viên!";
-                    return RedirectToAction("Index");
-                }
+                if (user.RoleId == "AD") return Json(new { success = false, message = "Không thể xóa Admin!" });
                 _context.TblUsers.Remove(user);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Xóa nhân viên thành công!";
+                return Json(new { success = true, message = "Xóa nhân viên thành công!" });
             }
-            return RedirectToAction("Index");
-        }
-
-        // --- STATION MANAGEMENT ---
-
-        [HttpPost]
-        public async Task<IActionResult> SaveStation(int? stationId, string stationName, string address, string phone)
-        {
-            if (!IsAdmin()) return Forbid();
-
-            if (stationId.HasValue && stationId.Value > 0)
-            {
-                // Update
-                var existing = await _context.TblStations.FindAsync(stationId.Value);
-                if (existing != null)
-                {
-                    existing.StationName = stationName;
-                    existing.Address = address;
-                    existing.Phone = phone;
-                    await _context.SaveChangesAsync();
-                    TempData["SuccessMessage"] = "Cập nhật trạm thành công!";
-                }
-            }
-            else
-            {
-                // Create
-                var station = new TblStation
-                {
-                    StationName = stationName,
-                    Address = address,
-                    Phone = phone,
-                    IsActive = true
-                };
-                _context.TblStations.Add(station);
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Thêm trạm mới thành công!";
-            }
-            return RedirectToAction("Index");
+            return Json(new { success = false, message = "Không tìm thấy nhân viên" });
         }
 
         [HttpPost]
@@ -242,8 +127,9 @@ namespace Delivery_System.Controllers
             {
                 station.IsActive = !(station.IsActive ?? false);
                 await _context.SaveChangesAsync();
+                return Json(new { success = true, message = station.IsActive == true ? "Đã kích hoạt trạm" : "Đã tạm dừng trạm" });
             }
-            return RedirectToAction("Index");
+            return Json(new { success = false, message = "Không tìm thấy trạm" });
         }
 
         [HttpPost]
@@ -255,57 +141,81 @@ namespace Delivery_System.Controllers
             {
                 _context.TblStations.Remove(station);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Xóa trạm thành công!";
+                return Json(new { success = true, message = "Xóa trạm thành công!" });
+            }
+            return Json(new { success = false, message = "Không tìm thấy trạm" });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveUser(string newUserID, string newUsername, string newFullName, string newPassword, string newPhone, string newEmail, int? newStationID)
+        {
+            var existingUser = await _context.TblUsers.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == newUserID || u.Username == newUsername);
+            if (existingUser != null)
+            {
+                TempData["ErrorMessage"] = (existingUser.UserId == newUserID) ? $"Mã NV '{newUserID}' đã tồn tại!" : $"Tên đăng nhập '{newUsername}' đã tồn tại!";
+                return RedirectToAction("Index");
+            }
+            var user = new TblUser { UserId = newUserID, Username = newUsername, FullName = newFullName, Password = HashSha256(newPassword), Phone = newPhone, Email = newEmail, RoleId = "US", StationId = newStationID, Status = true, CreatedAt = DateTime.Now };
+            _context.TblUsers.Add(user);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Thêm nhân viên thành công!";
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(string cpUserID, string cpNewPassword)
+        {
+            var user = await _context.TblUsers.FindAsync(cpUserID);
+            if (user != null) { user.Password = HashSha256(cpNewPassword); await _context.SaveChangesAsync(); }
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateUser(string userId, string fullName, string phone, string email, int? stationId)
+        {
+            var user = await _context.TblUsers.FindAsync(userId);
+            if (user != null) { user.FullName = fullName; user.Phone = phone; user.Email = email; user.StationId = stationId; await _context.SaveChangesAsync(); }
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveStation(int? stationId, string stationName, string address, string phone)
+        {
+            if (stationId.HasValue && stationId.Value > 0)
+            {
+                var existing = await _context.TblStations.FindAsync(stationId.Value);
+                if (existing != null) { existing.StationName = stationName; existing.Address = address; existing.Phone = phone; await _context.SaveChangesAsync(); }
+            }
+            else
+            {
+                var station = new TblStation { StationName = stationName, Address = address, Phone = phone, IsActive = true };
+                _context.TblStations.Add(station); await _context.SaveChangesAsync();
             }
             return RedirectToAction("Index");
         }
 
-        // --- STAFF STATION MANAGEMENT ---
-
         [HttpGet]
         public async Task<IActionResult> GetStaffByStation(int stationId)
         {
-            if (!IsAdmin()) return Forbid();
-
-            var inStation = await _context.TblUsers.AsNoTracking()
-                .Where(u => u.StationId == stationId)
-                .Select(u => new { u.UserId, u.FullName, u.Phone })
-                .ToListAsync();
-
-            var available = await _context.TblUsers.AsNoTracking()
-                .Where(u => u.StationId == null && u.RoleId != "AD")
-                .Select(u => new { u.UserId, u.FullName, u.Phone })
-                .ToListAsync();
-
+            var inStation = await _context.TblUsers.AsNoTracking().Where(u => u.StationId == stationId).Select(u => new { u.UserId, u.FullName, u.Phone }).ToListAsync();
+            var available = await _context.TblUsers.AsNoTracking().Where(u => u.StationId == null && u.RoleId != "AD").Select(u => new { u.UserId, u.FullName, u.Phone }).ToListAsync();
             return Json(new { inStation, available });
         }
 
         [HttpPost]
         public async Task<IActionResult> AddStaffToStation(string userId, int stationId)
         {
-            if (!IsAdmin()) return Forbid();
             var user = await _context.TblUsers.FindAsync(userId);
-            if (user != null)
-            {
-                user.StationId = stationId;
-                await _context.SaveChangesAsync();
-                return Json(new { success = true });
-            }
-            return Json(new { success = false, message = "Không tìm thấy nhân viên" });
+            if (user != null) { user.StationId = stationId; await _context.SaveChangesAsync(); return Json(new { success = true }); }
+            return Json(new { success = false });
         }
 
         [HttpPost]
         public async Task<IActionResult> RemoveStaffFromStation(string userId)
         {
-            if (!IsAdmin()) return Forbid();
             var user = await _context.TblUsers.FindAsync(userId);
-            if (user != null)
-            {
-                user.StationId = null;
-                await _context.SaveChangesAsync();
-                return Json(new { success = true });
-            }
-            return Json(new { success = false, message = "Không tìm thấy nhân viên" });
+            if (user != null) { user.StationId = null; await _context.SaveChangesAsync(); return Json(new { success = true }); }
+            return Json(new { success = false });
         }
 
         private string HashSha256(string rawData)
