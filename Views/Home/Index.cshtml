@@ -1,10 +1,7 @@
-@using Microsoft.AspNetCore.Http
-@inject IHttpContextAccessor HttpContextAccessor
-
 @{
     ViewData["Title"] = "Trang Chủ";
-    var fullName = HttpContextAccessor.HttpContext.Session.GetString("FullName") ?? "Nhân viên";
-    var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
+    var fullName = User.Identity.Name ?? "Nhân viên";
+    var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
     var currentShift = ViewBag.CurrentShift as Delivery_System.Models.TblWorkShift;
 }
 

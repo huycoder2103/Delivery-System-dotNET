@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Delivery_System.Helpers;
 
 namespace Delivery_System.Controllers
 {
@@ -6,7 +7,7 @@ namespace Delivery_System.Controllers
     {
         public IActionResult Index()
         {
-            var userId = HttpContext.Session.GetString("UserID");
+            var userId = User.GetUserId();
             if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
 
             return View();

@@ -1,10 +1,8 @@
-@using Microsoft.AspNetCore.Http
-@inject IHttpContextAccessor HttpContextAccessor
 @model Delivery_System.Models.TblOrder
 
 @{
     Layout = null;
-    var currentUserID = HttpContextAccessor.HttpContext.Session.GetString("UserID");
+    var currentUserID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
     
     // Hàm che số điện thoại, giữ lại 4 số cuối
     string MaskPhone(string phone) 
@@ -171,11 +169,11 @@
         <div class="meta-info">
             @{
                 string payInfo = "";
-                if (!string.IsNullOrEmpty(Model.Tr) && Model.Tr != "0") payInfo += $"Phí Đã Thu: {Model.Tr}k";
-                if (!string.IsNullOrEmpty(Model.Ct) && Model.Ct != "0") 
+                if (Model.Tr.HasValue && Model.Tr != 0) payInfo += $"Phí Đã Thu: {Model.Tr.Value.ToString("N0")}k";
+                if (Model.Ct.HasValue && Model.Ct != 0) 
                 {
                     if (payInfo != "") payInfo += " - ";
-                    payInfo += $"Phí chưa thu: {Model.Ct}k";
+                    payInfo += $"Phí chưa thu: {Model.Ct.Value.ToString("N0")}k";
                 }
                 if (string.IsNullOrEmpty(payInfo)) payInfo = "Phí Đã Thu: 0k - Phí chưa thu: 0k";
             }

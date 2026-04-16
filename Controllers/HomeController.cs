@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Delivery_System.Models;
 using Microsoft.EntityFrameworkCore;
+using Delivery_System.Helpers;
 
 namespace Delivery_System.Controllers
 {
@@ -13,15 +14,9 @@ namespace Delivery_System.Controllers
             _context = context;
         }
 
-        private decimal ParseSafe(string? val)
-        {
-            if (string.IsNullOrWhiteSpace(val)) return 0;
-            return decimal.TryParse(val, out decimal res) ? res : 0;
-        }
-
         public async Task<IActionResult> Index()
         {
-            var userId = HttpContext.Session.GetString("UserID");
+            var userId = User.GetUserId();
 
             // Lấy Ca làm việc hiện tại của User này (Status = "ACTIVE")
             var currentShift = await _context.TblWorkShifts
@@ -34,13 +29,19 @@ namespace Delivery_System.Controllers
             if (currentShift != null)
             {
                 // Lấy danh sách đơn hàng đã chuyển của nhân viên này để tính toán (TR + CT)
-                var myDeliveredOrders = await _context.TblOrders
+                // Tính toán trực tiếp tại database để tối ưu
+                var stats = await _context.TblOrders
                     .AsNoTracking()
                     .Where(o => o.StaffInput == userId && o.ShipStatus == "Đã giao")
-                    .ToListAsync();
+                    .GroupBy(o => 1)
+                    .Select(g => new { 
+                        Count = g.Count(), 
+                        Revenue = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)) 
+                    })
+                    .FirstOrDefaultAsync();
                 
-                ViewBag.DeliveredCount = myDeliveredOrders.Count;
-                ViewBag.TotalRevenue = myDeliveredOrders.Sum(o => ParseSafe(o.Tr) + ParseSafe(o.Ct));
+                ViewBag.DeliveredCount = stats?.Count ?? 0;
+                ViewBag.TotalRevenue = stats?.Revenue ?? 0;
             }
 
             return View();

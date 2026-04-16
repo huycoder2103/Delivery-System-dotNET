@@ -85,8 +85,8 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> Ship(string id)
         {
-            var userId = HttpContext.Session.GetString("UserID") ?? "";
-            var role = HttpContext.Session.GetString("Role") ?? "";
+            var userId = User.GetUserId();
+            var role = User.GetRole();
             
             var order = await _context.TblOrders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == id);
             if (order == null) return NotFound();
@@ -100,8 +100,8 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> AssignToTrip(List<string> orderIds, string? orderId, string tripId, string source)
         {
-            var userId = HttpContext.Session.GetString("UserID") ?? "";
-            var role = HttpContext.Session.GetString("Role") ?? "";
+            var userId = User.GetUserId();
+            var role = User.GetRole();
 
             if (orderIds == null) orderIds = new List<string>();
             if (!string.IsNullOrEmpty(orderId)) orderIds.Add(orderId);
@@ -160,8 +160,8 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> RemoveFromTrip(string orderId, string tripId)
         {
-            var userId = HttpContext.Session.GetString("UserID") ?? "";
-            var role = HttpContext.Session.GetString("Role") ?? "";
+            var userId = User.GetUserId();
+            var role = User.GetRole();
 
             var order = await _context.TblOrders.FindAsync(orderId);
             if (order == null)
@@ -195,8 +195,8 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
-            var userId = HttpContext.Session.GetString("UserID") ?? "";
-            var role = HttpContext.Session.GetString("Role") ?? "";
+            var userId = User.GetUserId();
+            var role = User.GetRole();
             
             var order = await _context.TblOrders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == id);
             if (order == null || (role != "AD" && order.StaffInput != userId)) return RedirectToAction("List");
@@ -208,8 +208,8 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(TblOrder order)
         {
-            var userId = HttpContext.Session.GetString("UserID") ?? "";
-            var role = HttpContext.Session.GetString("Role") ?? "";
+            var userId = User.GetUserId();
+            var role = User.GetRole();
             
             var existing = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == order.OrderId);
             if (existing != null && (role == "AD" || existing.StaffInput == userId)) {
@@ -226,8 +226,8 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
-            var userId = HttpContext.Session.GetString("UserID") ?? "";
-            var role = HttpContext.Session.GetString("Role") ?? "";
+            var userId = User.GetUserId();
+            var role = User.GetRole();
             
             var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == id);
             if (order != null && (role == "AD" || order.StaffInput == userId)) {
@@ -240,8 +240,8 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var userId = HttpContext.Session.GetString("UserID");
-            var role = HttpContext.Session.GetString("Role") ?? "";
+            var userId = User.GetUserId();
+            var role = User.GetRole();
 
             var activeShift = await _context.TblWorkShifts
                 .AsNoTracking()
@@ -255,8 +255,8 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(TblOrder order)
         {
-            var userId = HttpContext.Session.GetString("UserID");
-            var role = HttpContext.Session.GetString("Role") ?? "";
+            var userId = User.GetUserId();
+            var role = User.GetRole();
             var vniTime = TimeHelper.NowVni();
 
             // Lấy ShiftId đang hoạt động của nhân viên

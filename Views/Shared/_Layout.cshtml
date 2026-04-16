@@ -1,10 +1,9 @@
-@using Microsoft.AspNetCore.Http
-@inject IHttpContextAccessor HttpContextAccessor
+@using System.Security.Claims
 
 @{
-    var fullName = HttpContextAccessor.HttpContext.Session.GetString("FullName") ?? "Người dùng";
-    var email = HttpContextAccessor.HttpContext.Session.GetString("Email") ?? "Chưa cập nhật email";
-    var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
+    var fullName = User.Identity?.Name ?? "Người dùng";
+    var email = User.FindFirst("Email")?.Value ?? "Chưa cập nhật email";
+    var role = User.FindFirst(ClaimTypes.Role)?.Value;
     var initial = !string.IsNullOrEmpty(fullName) ? fullName.Substring(0, 1).ToUpper() : "U";
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 }

@@ -31,7 +31,7 @@
         <section class="kpi-grid-main">
             <div class="kpi-card-base card-revenue">
                 <div class="stat-label">Doanh thu hệ thống (Ngày)</div>
-                <div class="stat-value text-primary">@string.Format("{0:N0}", ViewBag.RevenueToday),000 VNĐ</div>
+                <div class="stat-value text-primary">@ViewBag.RevenueToday.ToString("N0") k</div>
                 <div class="stat-note">(Tổng TR + CT đơn đã giao)</div>
             </div>
 

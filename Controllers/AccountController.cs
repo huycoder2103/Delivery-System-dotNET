@@ -46,7 +46,9 @@ namespace Delivery_System.Controllers
                     new Claim(ClaimTypes.NameIdentifier, user.UserId),
                     new Claim(ClaimTypes.Name, user.FullName ?? "Người dùng"),
                     new Claim(ClaimTypes.Role, user.RoleId),
-                    new Claim("Email", user.Email ?? "")
+                    new Claim("Username", user.Username),
+                    new Claim("Email", user.Email ?? ""),
+                    new Claim("StationID", user.StationId?.ToString() ?? "")
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -63,11 +65,6 @@ namespace Delivery_System.Controllers
                     new ClaimsPrincipal(claimsIdentity),
                     authProperties);
 
-                // 3. Vẫn có thể lưu vào Session nếu các View cũ đang dùng HttpContext.Session
-                HttpContext.Session.SetString("UserID", user.UserId);
-                HttpContext.Session.SetString("FullName", user.FullName ?? "Người dùng");
-                HttpContext.Session.SetString("Role", user.RoleId);
-
                 return RedirectToAction("Index", "Home");
             }
 
@@ -81,9 +78,6 @@ namespace Delivery_System.Controllers
         {
             // Xóa Cookie đăng nhập
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            
-            // Xóa Session
-            HttpContext.Session.Clear();
             
             return RedirectToAction("Login", "Account");
         }

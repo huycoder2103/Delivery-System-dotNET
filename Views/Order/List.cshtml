@@ -1,11 +1,9 @@
-@using Microsoft.AspNetCore.Http
-@inject IHttpContextAccessor HttpContextAccessor
 @model IEnumerable<Delivery_System.Models.TblOrder>
 
 @{
     ViewData["Title"] = "Danh Sách Đơn Hàng";
-    var currentUserRole = HttpContextAccessor.HttpContext.Session.GetString("Role");
-    var currentUserID = HttpContextAccessor.HttpContext.Session.GetString("UserID");
+    var currentUserRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+    var currentUserID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
     var stationList = ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>;
 }
 

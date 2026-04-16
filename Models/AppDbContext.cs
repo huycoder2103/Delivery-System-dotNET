@@ -138,8 +138,8 @@ public partial class AppDbContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("createdAt");
             entity.Property(e => e.Ct)
-                .HasMaxLength(200)
-                .HasDefaultValueSql("''")
+                .HasPrecision(18, 2)
+                .HasDefaultValueSql("'0.00'")
                 .HasColumnName("ct");
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValueSql("'0'")
@@ -183,8 +183,8 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(20)
                 .HasColumnName("staffReceive");
             entity.Property(e => e.Tr)
-                .HasMaxLength(50)
-                .HasDefaultValueSql("''")
+                .HasPrecision(18, 2)
+                .HasDefaultValueSql("'0.00'")
                 .HasColumnName("tr");
             entity.Property(e => e.TripId)
                 .HasMaxLength(20)
@@ -451,8 +451,8 @@ entity.HasOne(d => d.Role).WithMany(p => p.TblUsers)
                 .HasColumnType("datetime")
                 .HasColumnName("createdAt");
             entity.Property(e => e.Ct)
-                .HasMaxLength(200)
-                .HasDefaultValueSql("''")
+                .HasPrecision(18, 2)
+                .HasDefaultValueSql("'0.00'")
                 .HasColumnName("ct");
             entity.Property(e => e.ItemName)
                 .HasMaxLength(200)
@@ -501,8 +501,8 @@ entity.HasOne(d => d.Role).WithMany(p => p.TblUsers)
                 .HasMaxLength(100)
                 .HasColumnName("staffReceiveName");
             entity.Property(e => e.Tr)
-                .HasMaxLength(50)
-                .HasDefaultValueSql("''")
+                .HasPrecision(18, 2)
+                .HasDefaultValueSql("'0.00'")
                 .HasColumnName("tr");
             entity.Property(e => e.TripId)
                 .HasMaxLength(20)

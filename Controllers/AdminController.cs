@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Delivery_System.Models;
+using Delivery_System.Helpers;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -15,13 +16,7 @@ namespace Delivery_System.Controllers
             _context = context;
         }
 
-        private bool IsAdmin() => HttpContext.Session.GetString("Role") == "AD";
-
-        private decimal ParseSafe(string? val)
-        {
-            if (string.IsNullOrWhiteSpace(val)) return 0;
-            return decimal.TryParse(val, out decimal res) ? res : 0;
-        }
+        private bool IsAdmin() => User.GetRole() == "AD";
 
         public async Task<IActionResult> Index()
         {
@@ -31,11 +26,9 @@ namespace Delivery_System.Controllers
             var tomorrow = today.AddDays(1);
 
             // Tính doanh thu hôm nay theo logic Report: Tổng (TR + CT) của các đơn ĐÃ GIAO trong ngày
-            var dailyOrders = await _context.TblOrders.AsNoTracking()
+            ViewBag.RevenueToday = await _context.TblOrders.AsNoTracking()
                 .Where(o => o.CreatedAt >= today && o.CreatedAt < tomorrow && o.ShipStatus == "Đã giao" && (o.IsDeleted == false || o.IsDeleted == null))
-                .ToListAsync();
-            
-            ViewBag.RevenueToday = dailyOrders.Sum(o => ParseSafe(o.Tr) + ParseSafe(o.Ct));
+                .SumAsync(o => (o.Tr ?? 0) + (o.Ct ?? 0));
 
             ViewBag.ActiveStaffCount = await _context.TblWorkShifts.AsNoTracking()
                 .CountAsync(s => s.Status == "ACTIVE");
@@ -56,10 +49,12 @@ namespace Delivery_System.Controllers
                 .OrderByDescending(a => a.CreatedAt)
                 .ToListAsync();
 
-            // Chuẩn bị dữ liệu biểu đồ doanh thu 7 ngày gần nhất (theo logic Report)
+            // Chuẩn bị dữ liệu biểu đồ doanh thu 7 ngày gần nhất
             var sevenDaysAgo = today.AddDays(-6);
-            var weeklyOrders = await _context.TblOrders.AsNoTracking()
+            var weeklyData = await _context.TblOrders.AsNoTracking()
                 .Where(o => o.CreatedAt >= sevenDaysAgo && o.CreatedAt < tomorrow && o.ShipStatus == "Đã giao" && (o.IsDeleted == false || o.IsDeleted == null))
+                .GroupBy(o => o.CreatedAt!.Value.Date)
+                .Select(g => new { Day = g.Key, Total = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)) })
                 .ToListAsync();
 
             var chartLabels = new List<string>();
@@ -69,9 +64,8 @@ namespace Delivery_System.Controllers
             {
                 var d = today.AddDays(-i);
                 chartLabels.Add(d.ToString("dd/MM"));
-                var daySum = weeklyOrders.Where(o => o.CreatedAt!.Value.Date == d)
-                    .Sum(o => ParseSafe(o.Tr) + ParseSafe(o.Ct));
-                chartData.Add(daySum);
+                var dayTotal = weeklyData.FirstOrDefault(x => x.Day == d)?.Total ?? 0;
+                chartData.Add(dayTotal);
             }
 
             ViewBag.ChartLabels = chartLabels;

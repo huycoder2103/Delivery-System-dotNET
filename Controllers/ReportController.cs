@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Delivery_System.Models;
+using Delivery_System.Helpers;
 
 namespace Delivery_System.Controllers
 {
@@ -13,18 +14,12 @@ namespace Delivery_System.Controllers
             _context = context;
         }
 
-        private decimal ParseSafe(string? val)
-        {
-            if (string.IsNullOrWhiteSpace(val)) return 0;
-            return decimal.TryParse(val, out decimal res) ? res : 0;
-        }
-
         public async Task<IActionResult> Index(string? reportDate, int? viewShiftId, string? targetStaffId)
         {
-            var userId = HttpContext.Session.GetString("UserID") ?? "";
-            var role = HttpContext.Session.GetString("Role") ?? "";
+            var userId = User.GetUserId();
+            var role = User.GetRole();
 
-            var vniNow = Delivery_System.Helpers.TimeHelper.NowVni();
+            var vniNow = TimeHelper.NowVni();
             DateTime date = string.IsNullOrEmpty(reportDate) ? vniNow.Date : DateTime.Parse(reportDate);
             var selectedDate = date.Date;
             var tomorrow = selectedDate.AddDays(1);
@@ -32,11 +27,10 @@ namespace Delivery_System.Controllers
 
             if (role == "AD")
             {
-                // Tính doanh thu hệ thống theo ngày (TR + CT)
-                var dailyOrders = await _context.TblOrders.AsNoTracking()
+                // Tính doanh thu hệ thống theo ngày (TR + CT) trực tiếp tại Database
+                ViewBag.RevenueDateVal = await _context.TblOrders.AsNoTracking()
                     .Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow && o.ShipStatus == "Đã giao")
-                    .ToListAsync();
-                ViewBag.RevenueDateVal = dailyOrders.Sum(o => ParseSafe(o.Tr) + ParseSafe(o.Ct));
+                    .SumAsync(o => (o.Tr ?? 0) + (o.Ct ?? 0));
 
                 ViewBag.OrdersDateVal = await _context.TblOrders.AsNoTracking()
                     .Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow)
@@ -44,8 +38,12 @@ namespace Delivery_System.Controllers
 
                 var weekStart = vniNow.Date.AddDays(-6);
                 var weekEnd = vniNow.Date.AddDays(1);
-                var weeklyOrders = await _context.TblOrders.AsNoTracking()
+                
+                // Lấy dữ liệu biểu đồ tuần: Chỉ lấy tổng theo ngày, không lấy cả danh sách đơn hàng
+                var weeklyData = await _context.TblOrders.AsNoTracking()
                     .Where(o => o.CreatedAt >= weekStart && o.CreatedAt < weekEnd && o.ShipStatus == "Đã giao")
+                    .GroupBy(o => o.CreatedAt!.Value.Date)
+                    .Select(g => new { Day = g.Key, Total = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)) })
                     .ToListAsync();
 
                 var chartLabels = new List<string>();
@@ -54,22 +52,26 @@ namespace Delivery_System.Controllers
                 {
                     var d = vniNow.Date.AddDays(-i);
                     chartLabels.Add(d.ToString("dd/MM"));
-                    var daySum = weeklyOrders.Where(o => o.CreatedAt!.Value.Date == d)
-                        .Sum(o => ParseSafe(o.Tr) + ParseSafe(o.Ct));
-                    chartData.Add(daySum);
+                    var dayTotal = weeklyData.FirstOrDefault(x => x.Day == d)?.Total ?? 0;
+                    chartData.Add(dayTotal);
                 }
                 ViewBag.ChartLabels = chartLabels;
                 ViewBag.ChartData = chartData;
             }
             else
             {
-                // Dữ liệu cá nhân nhân viên
-                var myOrders = await _context.TblOrders.AsNoTracking()
+                // Dữ liệu cá nhân nhân viên: Tính toán tại Database
+                var stats = await _context.TblOrders.AsNoTracking()
                     .Where(o => o.StaffInput == userId && o.ShipStatus == "Đã giao")
-                    .ToListAsync();
+                    .GroupBy(o => 1)
+                    .Select(g => new { 
+                        Count = g.Count(), 
+                        Revenue = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)) 
+                    })
+                    .FirstOrDefaultAsync();
                 
-                ViewBag.DeliveredOrders = myOrders.Count;
-                ViewBag.TotalRevenue = myOrders.Sum(o => ParseSafe(o.Tr) + ParseSafe(o.Ct));
+                ViewBag.DeliveredOrders = stats?.Count ?? 0;
+                ViewBag.TotalRevenue = stats?.Revenue ?? 0;
                 
                 ViewBag.CurrentShift = await _context.TblWorkShifts.AsNoTracking().FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
             }

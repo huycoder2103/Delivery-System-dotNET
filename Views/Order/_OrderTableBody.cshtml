@@ -1,10 +1,8 @@
-@using Microsoft.AspNetCore.Http
-@inject IHttpContextAccessor HttpContextAccessor
 @model IEnumerable<Delivery_System.Models.TblOrder>
 
 @{
-    var currentUserRole = HttpContextAccessor.HttpContext.Session.GetString("Role");
-    var currentUserID = HttpContextAccessor.HttpContext.Session.GetString("UserID");
+    var currentUserRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+    var currentUserID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 }
 
 
@@ -46,16 +44,16 @@
             <td class="staff-input-badge">@o.StaffInput</td>
             
             <td>
-                @if (!string.IsNullOrEmpty(o.Tr))
+                @if (o.Tr.HasValue && o.Tr != 0)
                 {
-                    <span class="badge badge-success">@(o.Tr)k</span>
+                    <span class="badge badge-success">@(o.Tr.Value.ToString("N0"))k</span>
                 }
                 else { <span class="empty-dash">—</span> }
             </td>
             <td>
-                @if (!string.IsNullOrEmpty(o.Ct))
+                @if (o.Ct.HasValue && o.Ct != 0)
                 {
-                    <span class="badge badge-danger">@(o.Ct)k</span>
+                    <span class="badge badge-danger">@(o.Ct.Value.ToString("N0"))k</span>
                 }
                 else { <span class="empty-dash">—</span> }
             </td>

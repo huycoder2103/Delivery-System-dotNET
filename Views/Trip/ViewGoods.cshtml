@@ -45,19 +45,13 @@
                             int i = 1;
                             decimal totalTr = 0;
                             decimal totalCt = 0;
-
-                            decimal ParseDecimal(string? s)
-                            {
-                                if (string.IsNullOrEmpty(s)) return 0;
-                                return decimal.TryParse(s, out decimal res) ? res : 0;
-                            }
                         }
                         @foreach (var o in Model)
                         {
                             var sendStationId = stations.FirstOrDefault(s => s.StationName == o.SendStation)?.StationId;
                             var receiveStationId = stations.FirstOrDefault(s => s.StationName == o.ReceiveStation)?.StationId;
-                            totalTr += ParseDecimal(o.Tr);
-                            totalCt += ParseDecimal(o.Ct);
+                            totalTr += o.Tr ?? 0;
+                            totalCt += o.Ct ?? 0;
                         
                             <tr>
                                 <td>@(i++)</td>
@@ -87,16 +81,16 @@
                                         <span class="station-receive" onclick="showStationInfo('@o.ReceiveStation', '@(receiveStationId?.ToString() ?? "??")')">@(receiveStationId?.ToString() ?? "??")</span>
                                     </span>
                                 </td>
-                                <td><span class="price-tr">@o.Tr</span></td>
-                                <td><span class="price-ct">@o.Ct</span></td>
+                                <td><span class="price-tr">@(o.Tr?.ToString("N0") ?? "0")</span></td>
+                                <td><span class="price-ct">@(o.Ct?.ToString("N0") ?? "0")</span></td>
                             </tr>
                         }
                     </tbody>
                     <tfoot>
                         <tr class="table-summary-row">
                             <td colspan="6" class="summary-label">Tổng cộng:</td>
-                            <td class="summary-value value-total-tr">@string.Format("{0:N0}", totalTr)</td>
-                            <td class="summary-value value-total-ct">@string.Format("{0:N0}", totalCt)</td>
+                            <td class="summary-value value-total-tr">@totalTr.ToString("N0")</td>
+                            <td class="summary-value value-total-ct">@totalCt.ToString("N0")</td>
                         </tr>
                     </tfoot>
                 </table>

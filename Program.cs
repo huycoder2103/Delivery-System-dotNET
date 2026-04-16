@@ -57,15 +57,6 @@ builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.C
         options.Cookie.Name = ".DeliverySystem.Auth";
     });
 
-// Kích hoạt Session (Vẫn giữ lại nếu bạn muốn dùng cho các mục đích khác)
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
-
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
@@ -97,7 +88,6 @@ app.UseOutputCache();
 
 app.UseAuthentication(); // Thêm dòng này trước UseAuthorization
 app.UseAuthorization();
-app.UseSession();
 
 app.MapStaticAssets();
 

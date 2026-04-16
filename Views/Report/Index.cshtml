@@ -1,9 +1,6 @@
-@using Microsoft.AspNetCore.Http
-@inject IHttpContextAccessor HttpContextAccessor
-
 @{
     ViewData["Title"] = "Báo Cáo Hệ Thống";
-    var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
+    var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
     var reportDate = ViewBag.ReportDate;
 }
 
@@ -50,7 +47,7 @@
                     <div class="stat-card-wrapper">
                         <div class="card report-card p-4 border-start border-primary border-5 shadow-sm">
                             <div class="stat-label">Doanh thu hệ thống (Ngày)</div>
-                            <div class="stat-value text-primary">@string.Format("{0:N0}", ViewBag.RevenueDateVal) k</div>
+                            <div class="stat-value text-primary">@ViewBag.RevenueDateVal.ToString("N0") k</div>
                         </div>
                     </div>
                     <div class="stat-card-wrapper">
@@ -96,7 +93,7 @@
                         
                         <div class="card report-card p-5 text-center border-bottom border-primary border-5 shadow us-report-card">
                             <div class="stat-label us-stat-label">Tổng doanh thu thu được</div>
-                            <div class="stat-value text-primary us-stat-value">@string.Format("{0:N0}", ViewBag.TotalRevenue) K</div>
+                            <div class="stat-value text-primary us-stat-value">@ViewBag.TotalRevenue.ToString("N0") K</div>
                             <div class="us-footer-note">Tổng số tiền cước từ các đơn hàng bạn xử lý</div>
                         </div>
                     </div>

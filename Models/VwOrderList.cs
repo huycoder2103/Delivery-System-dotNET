@@ -31,9 +31,9 @@ public partial class VwOrderList
 
     public string? StaffReceiveName { get; set; }
 
-    public string? Tr { get; set; }
+    public decimal? Tr { get; set; }
 
-    public string? Ct { get; set; }
+    public decimal? Ct { get; set; }
 
     public string? ReceiveDate { get; set; }
 

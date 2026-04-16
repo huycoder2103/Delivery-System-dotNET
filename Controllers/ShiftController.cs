@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Delivery_System.Models;
 using Microsoft.EntityFrameworkCore;
+using Delivery_System.Helpers;
 
 namespace Delivery_System.Controllers
 {
@@ -13,13 +14,7 @@ namespace Delivery_System.Controllers
             _context = context;
         }
 
-        private bool IsAdmin() => HttpContext.Session.GetString("Role") == "AD";
-
-        private decimal ParseSafe(string? val)
-        {
-            if (string.IsNullOrWhiteSpace(val)) return 0;
-            return decimal.TryParse(val, out decimal res) ? res : 0;
-        }
+        private bool IsAdmin() => User.GetRole() == "AD";
 
         // 1. TRANG QUẢN LÝ CA LÀM VIỆC (DÀNH CHO ADMIN)
         public async Task<IActionResult> Index()
@@ -39,14 +34,18 @@ namespace Delivery_System.Controllers
 
             var shifts = await query.OrderByDescending(s => s.StartTime).ToListAsync();
 
-            // Tính toán doanh thu cho từng ca
+            // Lấy danh sách tất cả shiftId để truy vấn doanh thu một lần
+            var shiftIds = shifts.Select(s => s.ShiftId).ToList();
+            var revenues = await _context.TblOrders.AsNoTracking()
+                .Where(o => o.ShiftId.HasValue && shiftIds.Contains(o.ShiftId.Value) && o.ShipStatus == "Đã giao")
+                .GroupBy(o => o.ShiftId)
+                .Select(g => new { ShiftId = g.Key, Total = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)) })
+                .ToDictionaryAsync(x => x.ShiftId, x => x.Total);
+
+            // Gán lại doanh thu cho từng ca
             foreach (var s in shifts)
             {
-                var orders = await _context.TblOrders.AsNoTracking()
-                    .Where(o => o.ShiftId == s.ShiftId && o.StaffInput == s.StaffId && o.ShipStatus == "Đã giao")
-                    .ToListAsync();
-                
-                s.Revenue = orders.Sum(o => ParseSafe(o.Tr) + ParseSafe(o.Ct));
+                s.Revenue = revenues.ContainsKey(s.ShiftId) ? revenues[s.ShiftId] : 0;
             }
 
             return shifts;
@@ -56,7 +55,7 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Start()
         {
-            var userId = HttpContext.Session.GetString("UserID");
+            var userId = User.GetUserId();
             if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
 
             var activeShift = await _context.TblWorkShifts
@@ -67,7 +66,7 @@ namespace Delivery_System.Controllers
                 var newShift = new TblWorkShift
                 {
                     StaffId = userId,
-                    StartTime = Delivery_System.Helpers.TimeHelper.NowVni(),
+                    StartTime = TimeHelper.NowVni(),
                     Status = "ACTIVE"
                 };
                 _context.TblWorkShifts.Add(newShift);
@@ -86,7 +85,7 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> End()
         {
-            var userId = HttpContext.Session.GetString("UserID");
+            var userId = User.GetUserId();
             if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
 
             var activeShift = await _context.TblWorkShifts
@@ -95,7 +94,7 @@ namespace Delivery_System.Controllers
             if (activeShift != null)
             {
                 activeShift.Status = "ENDED";
-                activeShift.EndTime = Delivery_System.Helpers.TimeHelper.NowVni();
+                activeShift.EndTime = TimeHelper.NowVni();
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Đã kết thúc ca làm việc!";
             }
@@ -117,7 +116,7 @@ namespace Delivery_System.Controllers
             if (shift != null && shift.Status == "ACTIVE")
             {
                 shift.Status = "ENDED";
-                shift.EndTime = Delivery_System.Helpers.TimeHelper.NowVni();
+                shift.EndTime = TimeHelper.NowVni();
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Đã kết thúc ca làm việc của nhân viên!";
             }
@@ -127,8 +126,8 @@ namespace Delivery_System.Controllers
         // 5. CHI TIẾT HOẠT ĐỘNG TRONG CA (ADMIN HOẶC NHÂN VIÊN TỰ XEM)
         public async Task<IActionResult> Details(int id)
         {
-            var userId = HttpContext.Session.GetString("UserID");
-            var role = HttpContext.Session.GetString("Role");
+            var userId = User.GetUserId();
+            var role = User.GetRole();
 
             var shift = await _context.TblWorkShifts
                 .Include(s => s.Staff)
@@ -148,7 +147,7 @@ namespace Delivery_System.Controllers
             // Doanh thu tính cho người NHẬP đơn (TR + CT) cho những đơn đã giao
             ViewBag.TotalRevenue = addedOrders
                 .Where(o => o.ShipStatus == "Đã giao")
-                .Sum(o => ParseSafe(o.Tr) + ParseSafe(o.Ct));
+                .Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0));
 
             // Lấy danh sách hàng hóa nhân viên này thực hiện GIAO (xác nhận đến) trong ca này
             // Lưu ý: Phần này để theo dõi công việc vận chuyển, không tính vào doanh thu cá nhân của họ nếu họ không phải người nhập.
@@ -166,7 +165,7 @@ namespace Delivery_System.Controllers
         // 6. NHÂN VIÊN TỰ XEM LỊCH SỬ CỦA MÌNH
         public async Task<IActionResult> MyHistory()
         {
-            var userId = HttpContext.Session.GetString("UserID");
+            var userId = User.GetUserId();
             if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
 
             var shifts = await GetShiftsWithRevenueAsync(userId);
@@ -176,3 +175,4 @@ namespace Delivery_System.Controllers
         }
     }
 }
+

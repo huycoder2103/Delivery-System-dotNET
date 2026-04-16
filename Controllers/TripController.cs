@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Delivery_System.Models;
+using Delivery_System.Helpers;
 
 namespace Delivery_System.Controllers
 {
@@ -69,7 +70,7 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> ArrivalList(string? departureFilter, string? destinationFilter, string? searchTruck, int page = 1)
         {
-            var userId = HttpContext.Session.GetString("UserID");
+            var userId = User.GetUserId();
             if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
             const int pageSize = 20; if (page < 1) page = 1;
 
@@ -97,8 +98,8 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var userId = HttpContext.Session.GetString("UserID");
-            var role = HttpContext.Session.GetString("Role") ?? "";
+            var userId = User.GetUserId();
+            var role = User.GetRole();
 
             var activeShift = await _context.TblWorkShifts
                 .AsNoTracking()
@@ -113,8 +114,8 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(TblTrip trip)
         {
-            var userId = HttpContext.Session.GetString("UserID");
-            var role = HttpContext.Session.GetString("Role") ?? "";
+            var userId = User.GetUserId();
+            var role = User.GetRole();
 
             // Lấy ShiftId đang hoạt động của nhân viên
             var activeShift = await _context.TblWorkShifts
@@ -135,7 +136,7 @@ namespace Delivery_System.Controllers
 
             trip.TripId = "TRP-" + nextIdNum.ToString("D6");
             trip.StaffCreated = userId;
-            trip.CreatedAt = Delivery_System.Helpers.TimeHelper.NowVni();
+            trip.CreatedAt = TimeHelper.NowVni();
             trip.Status = "Đang đi";
             trip.TripType = "depart";
             trip.ShiftId = activeShift?.ShiftId; // Gán ShiftId nếu có
@@ -181,7 +182,7 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Arrive(string id)
         {
-            var userId = HttpContext.Session.GetString("UserID");
+            var userId = User.GetUserId();
             var trip = await _context.TblTrips.FindAsync(id);
             if (trip != null)
             {
@@ -197,7 +198,7 @@ namespace Delivery_System.Controllers
                 {
                     o.ShipStatus = "Đã giao";
                     o.StaffReceive = userId; // Người xác nhận xe đến là người nhận hàng tại kho
-                    o.ReceiveDate = Delivery_System.Helpers.TimeHelper.NowVni().ToString("dd/MM/yyyy HH:mm");
+                    o.ReceiveDate = TimeHelper.NowVni().ToString("dd/MM/yyyy HH:mm");
                 }
                 
                 await _context.SaveChangesAsync();
