@@ -78,7 +78,11 @@
 .rp-avatar { width: 40px; height: 40px; background: #1a73e8; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1rem; }
 .rp-staff-name { font-weight: 600; color: #2c3e50; font-size: 0.95rem; }
 .rp-staff-id { font-size: 0.75rem; color: #7f8c8d; }
-.rp-text-revenue { color: #1a73e8; font-weight: 800; font-size: 1.05rem; }
+.rp-text-revenue {
+    color: #4F936D;
+    font-weight: 800;
+    font-size: 1.05rem;
+}
 .rp-badge { padding: 6px 14px; border-radius: 99px; font-weight: 700; font-size: 0.75rem; display: inline-flex; align-items: center; }
 .rp-badge-active { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
 .rp-badge-ended { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }

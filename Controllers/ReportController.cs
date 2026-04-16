@@ -14,7 +14,7 @@ namespace Delivery_System.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string? reportDate, int? viewShiftId, string? targetStaffId)
+        public async Task<IActionResult> Index(string? reportDate, int? viewShiftId, string? targetStaffId, int? stationId, string? searchStaff, string? logDate)
         {
             var userId = User.GetUserId();
             var role = User.GetRole();
@@ -27,6 +27,8 @@ namespace Delivery_System.Controllers
 
             if (role == "AD")
             {
+                ViewBag.StationList = await _context.TblStations.AsNoTracking().Where(s => s.IsActive == true).ToListAsync();
+                
                 // Tính doanh thu hệ thống theo ngày (TR + CT) trực tiếp tại Database
                 ViewBag.RevenueDateVal = await _context.TblOrders.AsNoTracking()
                     .Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow && o.ShipStatus == "Đã giao")
@@ -88,17 +90,36 @@ namespace Delivery_System.Controllers
             }
 
             // --- LỊCH SỬ CA LÀM VIỆC (CHO TAB NHẬT KÝ) ---
-            string staffToFetch = (role == "AD" && !string.IsNullOrEmpty(targetStaffId)) ? targetStaffId : userId;
-            ViewBag.SelectedStaffId = staffToFetch;
+            ViewBag.StationId = stationId;
+            ViewBag.SearchStaff = searchStaff;
+            ViewBag.LogDate = logDate;
 
             var shiftQuery = _context.TblWorkShifts.Include(s => s.Staff).AsQueryable();
             if (role != "AD") 
             {
                 shiftQuery = shiftQuery.Where(s => s.StaffId == userId);
             }
-            else if (!string.IsNullOrEmpty(targetStaffId))
+            else
             {
-                shiftQuery = shiftQuery.Where(s => s.StaffId == targetStaffId);
+                if (stationId.HasValue)
+                {
+                    shiftQuery = shiftQuery.Where(s => s.Staff.StationId == stationId.Value);
+                }
+                if (!string.IsNullOrEmpty(searchStaff))
+                {
+                    shiftQuery = shiftQuery.Where(s => s.StaffId.Contains(searchStaff) || s.Staff.FullName.Contains(searchStaff));
+                }
+                if (!string.IsNullOrEmpty(targetStaffId))
+                {
+                    shiftQuery = shiftQuery.Where(s => s.StaffId == targetStaffId);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(logDate))
+            {
+                var lDate = DateTime.Parse(logDate).Date;
+                var lNext = lDate.AddDays(1);
+                shiftQuery = shiftQuery.Where(s => s.StartTime >= lDate && s.StartTime < lNext);
             }
 
             var shifts = await shiftQuery.OrderByDescending(s => s.StartTime).Take(50).ToListAsync();
@@ -108,7 +129,7 @@ namespace Delivery_System.Controllers
             var shiftRevenues = await _context.TblOrders.AsNoTracking()
                 .Where(o => o.ShiftId.HasValue && shiftIds.Contains(o.ShiftId.Value) && o.ShipStatus == "Đã giao")
                 .GroupBy(o => o.ShiftId)
-                .Select(g => new { ShiftId = g.Key, Total = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)) })
+                .Select(g => new { ShiftId = g.Key!.Value, Total = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)) })
                 .ToDictionaryAsync(x => x.ShiftId, x => x.Total);
 
             foreach (var s in shifts)

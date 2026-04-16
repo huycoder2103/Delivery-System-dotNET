@@ -12126,3 +12126,1394 @@ GROUP BY `t`.`shiftID`
 2026-04-16 13:19:34.731 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
 2026-04-16 13:19:34.733 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
 2026-04-16 13:19:34.735 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Goods/Index - 200 null text/html; charset=utf-8 46.9007ms
+2026-04-16 13:25:00.694 +07:00 [INF] User profile is available. Using 'C:\Users\jayke\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-04-16 13:25:00.855 +07:00 [INF] Now listening on: http://localhost:5122
+2026-04-16 13:25:00.890 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-04-16 13:25:00.892 +07:00 [INF] Hosting environment: Development
+2026-04-16 13:25:00.893 +07:00 [INF] Content root path: E:\C#\Delivery-System
+2026-04-16 13:25:01.197 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/ - null null
+2026-04-16 13:25:01.295 +07:00 [WRN] Failed to determine the https port for redirect.
+2026-04-16 13:25:01.384 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.AccountController.Login (Delivery-System)'
+2026-04-16 13:25:01.412 +07:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Login() on controller Delivery_System.Controllers.AccountController (Delivery-System).
+2026-04-16 13:25:02.593 +07:00 [INF] Executing ViewResult, running view Login.
+2026-04-16 13:25:02.718 +07:00 [INF] Executed ViewResult - view Login executed in 125.8219ms.
+2026-04-16 13:25:02.723 +07:00 [INF] Executed action Delivery_System.Controllers.AccountController.Login (Delivery-System) in 1307.3553ms
+2026-04-16 13:25:02.725 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.AccountController.Login (Delivery-System)'
+2026-04-16 13:25:02.744 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:25:02.753 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:25:02.763 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/ - 200 null text/html; charset=utf-8 1569.2745ms
+2026-04-16 13:25:07.443 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/ - application/x-www-form-urlencoded 251
+2026-04-16 13:25:07.454 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.AccountController.Login (Delivery-System)'
+2026-04-16 13:25:07.475 +07:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(System.String, System.String, Boolean) on controller Delivery_System.Controllers.AccountController (Delivery-System).
+2026-04-16 13:25:08.176 +07:00 [WRN] Entity 'TblOrder' has a global query filter defined and is the required end of a relationship with the entity 'TblOrderTrip'. This may lead to unexpected results when the required entity is filtered out. Either configure the navigation as optional, or define matching query filters for both entities in the navigation. See https://go.microsoft.com/fwlink/?linkid=2131316 for more information.
+2026-04-16 13:25:09.512 +07:00 [INF] Executed DbCommand (141ms) [Parameters=[@__username_0='?' (Size = 50), @__hashedPassword_1='?' (Size = 100)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`userID`, `t`.`createdAt`, `t`.`email`, `t`.`fullName`, `t`.`password`, `t`.`phone`, `t`.`roleID`, `t`.`stationID`, `t`.`status`, `t`.`username`
+FROM `tblUsers` AS `t`
+WHERE ((`t`.`username` = @__username_0) AND (`t`.`password` = @__hashedPassword_1)) AND `t`.`status`
+LIMIT 1
+2026-04-16 13:25:09.664 +07:00 [INF] AuthenticationScheme: Cookies signed in.
+2026-04-16 13:25:09.670 +07:00 [INF] Executing RedirectResult, redirecting to /Home/Index.
+2026-04-16 13:25:09.673 +07:00 [INF] Executed action Delivery_System.Controllers.AccountController.Login (Delivery-System) in 2194.0683ms
+2026-04-16 13:25:09.675 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.AccountController.Login (Delivery-System)'
+2026-04-16 13:25:09.683 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/ - 302 null null 2240.3309ms
+2026-04-16 13:25:09.687 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Home/Index - null null
+2026-04-16 13:25:09.700 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.HomeController.Index (Delivery-System)'
+2026-04-16 13:25:09.712 +07:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller Delivery_System.Controllers.HomeController (Delivery-System).
+2026-04-16 13:25:09.935 +07:00 [INF] Executed DbCommand (95ms) [Parameters=[@__userId_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`
+FROM `tblWorkShifts` AS `t`
+WHERE (`t`.`staffID` = @__userId_0) AND (`t`.`status` = 'ACTIVE')
+LIMIT 1
+2026-04-16 13:25:09.944 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:25:09.996 +07:00 [INF] Executed ViewResult - view Index executed in 52.9251ms.
+2026-04-16 13:25:09.998 +07:00 [INF] Executed action Delivery_System.Controllers.HomeController.Index (Delivery-System) in 283.7406ms
+2026-04-16 13:25:10.000 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.HomeController.Index (Delivery-System)'
+2026-04-16 13:25:10.002 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:25:10.004 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:25:10.007 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Home/Index - 200 null text/html; charset=utf-8 319.4067ms
+2026-04-16 13:25:11.154 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Goods/Index - null null
+2026-04-16 13:25:11.166 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.GoodsController.Index (Delivery-System)'
+2026-04-16 13:25:11.170 +07:00 [INF] Route matched with {action = "Index", controller = "Goods"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller Delivery_System.Controllers.GoodsController (Delivery-System).
+2026-04-16 13:25:11.176 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:25:11.192 +07:00 [INF] Executed ViewResult - view Index executed in 18.5187ms.
+2026-04-16 13:25:11.195 +07:00 [INF] Executed action Delivery_System.Controllers.GoodsController.Index (Delivery-System) in 21.3887ms
+2026-04-16 13:25:11.196 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.GoodsController.Index (Delivery-System)'
+2026-04-16 13:25:11.199 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:25:11.201 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:25:11.204 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Goods/Index - 200 null text/html; charset=utf-8 49.353ms
+2026-04-16 13:25:12.226 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/List - null null
+2026-04-16 13:25:12.234 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-16 13:25:12.249 +07:00 [INF] Route matched with {action = "List", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] List(System.String, System.String, System.String, System.String, System.String, Int32) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-16 13:25:12.470 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`stationID`, `t`.`address`, `t`.`isActive`, `t`.`phone`, `t`.`stationName`
+FROM `tblStations` AS `t`
+WHERE `t`.`isActive`
+2026-04-16 13:25:12.728 +07:00 [INF] Executed DbCommand (98ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+2026-04-16 13:25:12.944 +07:00 [INF] Executed DbCommand (97ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID`, `t`.`amount`, `t`.`createdAt`, `t`.`ct`, `t`.`isDeleted`, `t`.`itemName`, `t`.`note`, `t`.`receiveDate`, `t`.`receiveStation`, `t`.`receiverName`, `t`.`receiverPhone`, `t`.`sendStation`, `t`.`senderName`, `t`.`senderPhone`, `t`.`shiftID`, `t`.`shipStatus`, `t`.`staffInput`, `t`.`staffReceive`, `t`.`tr`, `t`.`tripID`
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+ORDER BY `t`.`createdAt` DESC
+LIMIT @__p_1 OFFSET @__p_0
+2026-04-16 13:25:13.228 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Status`, COUNT(*) AS `Count`
+FROM (
+    SELECT CASE
+        WHEN `t`.`shipStatus` = 'Đã giao' THEN 'delivered'
+        WHEN `t`.`tripID` IS NULL OR (`t`.`tripID` = '') THEN 'pending'
+        ELSE 'shipped'
+    END AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:25:13.257 +07:00 [INF] Executing ViewResult, running view List.
+2026-04-16 13:25:13.352 +07:00 [INF] Executed ViewResult - view List executed in 95.27ms.
+2026-04-16 13:25:13.355 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.List (Delivery-System) in 1102.5787ms
+2026-04-16 13:25:13.356 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-16 13:25:13.359 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:25:13.361 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:25:13.363 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/List - 200 null text/html; charset=utf-8 1137.1977ms
+2026-04-16 13:25:13.500 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-16 13:25:13.506 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-16 13:25:13.515 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-16 13:25:13.518 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 17.1599ms
+2026-04-16 13:25:13.575 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=0QDmfutV5Bln8N6_-O65Jw - null null
+2026-04-16 13:25:13.580 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-16 13:25:15.788 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/PrintReceipt/ORD-000023?type=receipt - null null
+2026-04-16 13:25:15.798 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.PrintReceipt (Delivery-System)'
+2026-04-16 13:25:15.809 +07:00 [INF] Route matched with {action = "PrintReceipt", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] PrintReceipt(System.String, System.String) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-16 13:25:16.028 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[@__id_0='?' (Size = 20)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID`, `t`.`amount`, `t`.`createdAt`, `t`.`ct`, `t`.`isDeleted`, `t`.`itemName`, `t`.`note`, `t`.`receiveDate`, `t`.`receiveStation`, `t`.`receiverName`, `t`.`receiverPhone`, `t`.`sendStation`, `t`.`senderName`, `t`.`senderPhone`, `t`.`shiftID`, `t`.`shipStatus`, `t`.`staffInput`, `t`.`staffReceive`, `t`.`tr`, `t`.`tripID`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (`t`.`orderID` = @__id_0)
+LIMIT 1
+2026-04-16 13:25:16.036 +07:00 [INF] Executing ViewResult, running view PrintReceipt.
+2026-04-16 13:25:16.050 +07:00 [INF] Executed ViewResult - view PrintReceipt executed in 16.4729ms.
+2026-04-16 13:25:16.052 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.PrintReceipt (Delivery-System) in 239.0773ms
+2026-04-16 13:25:16.054 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.PrintReceipt (Delivery-System)'
+2026-04-16 13:25:16.056 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:25:16.058 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:25:16.060 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/PrintReceipt/ORD-000023?type=receipt - 200 null text/html; charset=utf-8 271.4783ms
+2026-04-16 13:25:23.974 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/PrintReceipt/ORD-000022?type=delivery - null null
+2026-04-16 13:25:23.982 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.PrintReceipt (Delivery-System)'
+2026-04-16 13:25:23.984 +07:00 [INF] Route matched with {action = "PrintReceipt", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] PrintReceipt(System.String, System.String) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-16 13:25:24.185 +07:00 [INF] Executed DbCommand (97ms) [Parameters=[@__id_0='?' (Size = 20)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID`, `t`.`amount`, `t`.`createdAt`, `t`.`ct`, `t`.`isDeleted`, `t`.`itemName`, `t`.`note`, `t`.`receiveDate`, `t`.`receiveStation`, `t`.`receiverName`, `t`.`receiverPhone`, `t`.`sendStation`, `t`.`senderName`, `t`.`senderPhone`, `t`.`shiftID`, `t`.`shipStatus`, `t`.`staffInput`, `t`.`staffReceive`, `t`.`tr`, `t`.`tripID`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (`t`.`orderID` = @__id_0)
+LIMIT 1
+2026-04-16 13:25:24.190 +07:00 [INF] Executing ViewResult, running view PrintDeliverySheet.
+2026-04-16 13:25:24.206 +07:00 [INF] Executed ViewResult - view PrintDeliverySheet executed in 16.8659ms.
+2026-04-16 13:25:24.208 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.PrintReceipt (Delivery-System) in 221.9696ms
+2026-04-16 13:25:24.209 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.PrintReceipt (Delivery-System)'
+2026-04-16 13:25:24.212 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:25:24.215 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:25:24.217 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/PrintReceipt/ORD-000022?type=delivery - 200 null text/html; charset=utf-8 242.3266ms
+2026-04-16 13:26:04.857 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Admin/Index - null null
+2026-04-16 13:26:04.865 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.AdminController.Index (Delivery-System)'
+2026-04-16 13:26:04.876 +07:00 [INF] Route matched with {action = "Index", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller Delivery_System.Controllers.AdminController (Delivery-System).
+2026-04-16 13:26:05.113 +07:00 [INF] Executed DbCommand (95ms) [Parameters=[@__today_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((((`t`.`createdAt` >= @__today_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao')) AND ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)))
+2026-04-16 13:26:05.317 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblWorkShifts` AS `t`
+WHERE `t`.`status` = 'ACTIVE'
+2026-04-16 13:26:05.553 +07:00 [INF] Executed DbCommand (100ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`userID`, `t`.`createdAt`, `t`.`email`, `t`.`fullName`, `t`.`password`, `t`.`phone`, `t`.`roleID`, `t`.`stationID`, `t`.`status`, `t`.`username`, `t0`.`stationID`, `t0`.`address`, `t0`.`isActive`, `t0`.`phone`, `t0`.`stationName`
+FROM `tblUsers` AS `t`
+LEFT JOIN `tblStations` AS `t0` ON `t`.`stationID` = `t0`.`stationID`
+ORDER BY `t`.`roleID`
+2026-04-16 13:26:05.757 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`stationID`, `t`.`address`, `t`.`isActive`, `t`.`phone`, `t`.`stationName`
+FROM `tblStations` AS `t`
+ORDER BY `t`.`stationID`
+2026-04-16 13:26:05.977 +07:00 [INF] Executed DbCommand (97ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`id`, `t`.`content`, `t`.`createdAt`, `t`.`createdBy`, `t`.`isActive`, `t`.`title`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM `tblAnnouncements` AS `t`
+LEFT JOIN `tblUsers` AS `t0` ON `t`.`createdBy` = `t0`.`userID`
+ORDER BY `t`.`createdAt` DESC
+2026-04-16 13:26:06.189 +07:00 [INF] Executed DbCommand (97ms) [Parameters=[@__sevenDaysAgo_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Day`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Total`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, CONVERT(`t`.`createdAt`, date) AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((((`t`.`createdAt` >= @__sevenDaysAgo_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao')) AND ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)))
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:26:06.200 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:26:06.260 +07:00 [INF] Executed ViewResult - view Index executed in 61.8683ms.
+2026-04-16 13:26:06.263 +07:00 [INF] Executed action Delivery_System.Controllers.AdminController.Index (Delivery-System) in 1384.0817ms
+2026-04-16 13:26:06.265 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.AdminController.Index (Delivery-System)'
+2026-04-16 13:26:06.267 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:26:06.269 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:26:06.271 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Admin/Index - 200 null text/html; charset=utf-8 1413.9243ms
+2026-04-16 13:26:06.286 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-16 13:26:06.288 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=0QDmfutV5Bln8N6_-O65Jw - 101 null null 52712.607ms
+2026-04-16 13:26:06.389 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-16 13:26:06.395 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-16 13:26:06.397 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-16 13:26:06.401 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 12.3726ms
+2026-04-16 13:26:06.450 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=p5U-lx4mEeurolYP8dCqiw - null null
+2026-04-16 13:26:06.455 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-16 13:26:11.644 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Index - null null
+2026-04-16 13:26:11.651 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:26:11.662 +07:00 [INF] Route matched with {action = "Index", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.Nullable`1[System.Int32], System.String) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:26:11.912 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:26:12.111 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1))
+2026-04-16 13:26:12.316 +07:00 [INF] Executed DbCommand (97ms) [Parameters=[@__weekStart_0='?' (DbType = DateTime), @__weekEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Day`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Total`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, CONVERT(`t`.`createdAt`, date) AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__weekStart_0) AND (`t`.`createdAt` < @__weekEnd_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:26:12.533 +07:00 [INF] Executed DbCommand (98ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t1`.`shiftID`, `t1`.`endTime`, `t1`.`staffID`, `t1`.`startTime`, `t1`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM (
+    SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`
+    FROM `tblWorkShifts` AS `t`
+    ORDER BY `t`.`startTime` DESC
+    LIMIT @__p_0
+) AS `t1`
+INNER JOIN `tblUsers` AS `t0` ON `t1`.`staffID` = `t0`.`userID`
+ORDER BY `t1`.`startTime` DESC
+2026-04-16 13:26:12.812 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID` AS `ShiftId`, COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0) AS `Total`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` IS NOT NULL AND `t`.`shiftID` IN (11, 10, 9, 8, 7, 6, 5, 4, 3, 2)) AND (`t`.`shipStatus` = 'Đã giao'))
+GROUP BY `t`.`shiftID`
+2026-04-16 13:26:12.822 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:26:12.861 +07:00 [INF] Executed ViewResult - view Index executed in 39.7716ms.
+2026-04-16 13:26:12.864 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Index (Delivery-System) in 1198.3629ms
+2026-04-16 13:26:12.866 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:26:12.869 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:26:12.871 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:26:12.873 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Index - 200 null text/html; charset=utf-8 1228.849ms
+2026-04-16 13:26:12.877 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-16 13:26:12.880 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=p5U-lx4mEeurolYP8dCqiw - 101 null null 6430.0755ms
+2026-04-16 13:26:12.898 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119427728523417 - null null
+2026-04-16 13:26:12.916 +07:00 [INF] Sending file. Request path: '/css/report.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\report.css'
+2026-04-16 13:26:12.919 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119427728523417 - 200 null text/css 20.9927ms
+2026-04-16 13:26:17.995 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Details/7 - null null
+2026-04-16 13:26:18.000 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Details (Delivery-System)'
+2026-04-16 13:26:18.010 +07:00 [INF] Route matched with {action = "Details", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Details(Int32) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:26:18.221 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM `tblWorkShifts` AS `t`
+INNER JOIN `tblUsers` AS `t0` ON `t`.`staffID` = `t0`.`userID`
+WHERE `t`.`shiftID` = @__id_0
+LIMIT 1
+2026-04-16 13:26:18.428 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[@__id_0='?' (DbType = Int32), @__shift_StaffId_1='?' (Size = 20)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID`, `t`.`amount`, `t`.`createdAt`, `t`.`ct`, `t`.`isDeleted`, `t`.`itemName`, `t`.`note`, `t`.`receiveDate`, `t`.`receiveStation`, `t`.`receiverName`, `t`.`receiverPhone`, `t`.`sendStation`, `t`.`senderName`, `t`.`senderPhone`, `t`.`shiftID`, `t`.`shipStatus`, `t`.`staffInput`, `t`.`staffReceive`, `t`.`tr`, `t`.`tripID`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` = @__id_0) AND (`t`.`staffInput` = @__shift_StaffId_1))
+2026-04-16 13:26:18.649 +07:00 [INF] Executed DbCommand (97ms) [Parameters=[@__shift_StaffId_0='?' (Size = 20), @__shift_StartTime_1='?' (DbType = DateTime), @__shift_EndTime_2='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID`, `t`.`amount`, `t`.`createdAt`, `t`.`ct`, `t`.`isDeleted`, `t`.`itemName`, `t`.`note`, `t`.`receiveDate`, `t`.`receiveStation`, `t`.`receiverName`, `t`.`receiverPhone`, `t`.`sendStation`, `t`.`senderName`, `t`.`senderPhone`, `t`.`shiftID`, `t`.`shipStatus`, `t`.`staffInput`, `t`.`staffReceive`, `t`.`tr`, `t`.`tripID`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((((`t`.`staffReceive` = @__shift_StaffId_0) AND (`t`.`shipStatus` = 'Đã giao')) AND (`t`.`createdAt` >= @__shift_StartTime_1)) AND (`t`.`createdAt` <= @__shift_EndTime_2))
+2026-04-16 13:26:18.865 +07:00 [INF] Executed DbCommand (97ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`tripID`, `t`.`assistantName`, `t`.`createdAt`, `t`.`departure`, `t`.`departureTime`, `t`.`destination`, `t`.`driverName`, `t`.`notes`, `t`.`shiftID`, `t`.`staffCreated`, `t`.`status`, `t`.`tripType`, `t`.`truckID`, `t0`.`truckID`, `t0`.`driverName`, `t0`.`driverPhone`, `t0`.`licensePlate`, `t0`.`notes`, `t0`.`status`
+FROM `tblTrips` AS `t`
+INNER JOIN `tblTrucks` AS `t0` ON `t`.`truckID` = `t0`.`truckID`
+WHERE `t`.`shiftID` = @__id_0
+2026-04-16 13:26:18.874 +07:00 [INF] Executing PartialViewResult, running view _ShiftDetails.
+2026-04-16 13:26:18.894 +07:00 [INF] Executed PartialViewResult - view _ShiftDetails executed in 21.0826ms.
+2026-04-16 13:26:18.896 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Details (Delivery-System) in 882.464ms
+2026-04-16 13:26:18.897 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Details (Delivery-System)'
+2026-04-16 13:26:18.899 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Details/7 - 200 null text/html; charset=utf-8 904.4454ms
+2026-04-16 13:27:51.422 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Details/7 - null null
+2026-04-16 13:27:51.427 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Details (Delivery-System)'
+2026-04-16 13:27:51.429 +07:00 [INF] Route matched with {action = "Details", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Details(Int32) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:27:51.625 +07:00 [INF] Executed DbCommand (95ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM `tblWorkShifts` AS `t`
+INNER JOIN `tblUsers` AS `t0` ON `t`.`staffID` = `t0`.`userID`
+WHERE `t`.`shiftID` = @__id_0
+LIMIT 1
+2026-04-16 13:27:51.822 +07:00 [INF] Executed DbCommand (97ms) [Parameters=[@__id_0='?' (DbType = Int32), @__shift_StaffId_1='?' (Size = 20)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID`, `t`.`amount`, `t`.`createdAt`, `t`.`ct`, `t`.`isDeleted`, `t`.`itemName`, `t`.`note`, `t`.`receiveDate`, `t`.`receiveStation`, `t`.`receiverName`, `t`.`receiverPhone`, `t`.`sendStation`, `t`.`senderName`, `t`.`senderPhone`, `t`.`shiftID`, `t`.`shipStatus`, `t`.`staffInput`, `t`.`staffReceive`, `t`.`tr`, `t`.`tripID`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` = @__id_0) AND (`t`.`staffInput` = @__shift_StaffId_1))
+2026-04-16 13:27:52.026 +07:00 [INF] Executed DbCommand (101ms) [Parameters=[@__shift_StaffId_0='?' (Size = 20), @__shift_StartTime_1='?' (DbType = DateTime), @__shift_EndTime_2='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID`, `t`.`amount`, `t`.`createdAt`, `t`.`ct`, `t`.`isDeleted`, `t`.`itemName`, `t`.`note`, `t`.`receiveDate`, `t`.`receiveStation`, `t`.`receiverName`, `t`.`receiverPhone`, `t`.`sendStation`, `t`.`senderName`, `t`.`senderPhone`, `t`.`shiftID`, `t`.`shipStatus`, `t`.`staffInput`, `t`.`staffReceive`, `t`.`tr`, `t`.`tripID`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((((`t`.`staffReceive` = @__shift_StaffId_0) AND (`t`.`shipStatus` = 'Đã giao')) AND (`t`.`createdAt` >= @__shift_StartTime_1)) AND (`t`.`createdAt` <= @__shift_EndTime_2))
+2026-04-16 13:27:52.225 +07:00 [INF] Executed DbCommand (97ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`tripID`, `t`.`assistantName`, `t`.`createdAt`, `t`.`departure`, `t`.`departureTime`, `t`.`destination`, `t`.`driverName`, `t`.`notes`, `t`.`shiftID`, `t`.`staffCreated`, `t`.`status`, `t`.`tripType`, `t`.`truckID`, `t0`.`truckID`, `t0`.`driverName`, `t0`.`driverPhone`, `t0`.`licensePlate`, `t0`.`notes`, `t0`.`status`
+FROM `tblTrips` AS `t`
+INNER JOIN `tblTrucks` AS `t0` ON `t`.`truckID` = `t0`.`truckID`
+WHERE `t`.`shiftID` = @__id_0
+2026-04-16 13:27:52.229 +07:00 [INF] Executing PartialViewResult, running view _ShiftDetails.
+2026-04-16 13:27:52.232 +07:00 [INF] Executed PartialViewResult - view _ShiftDetails executed in 3.0685ms.
+2026-04-16 13:27:52.234 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Details (Delivery-System) in 800.9986ms
+2026-04-16 13:27:52.235 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Details (Delivery-System)'
+2026-04-16 13:27:52.237 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Details/7 - 200 null text/html; charset=utf-8 815.2618ms
+2026-04-16 13:28:24.756 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Index - null null
+2026-04-16 13:28:24.768 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:28:24.779 +07:00 [INF] Route matched with {action = "Index", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.Nullable`1[System.Int32], System.String) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:28:24.974 +07:00 [INF] Executed DbCommand (93ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:28:25.170 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1))
+2026-04-16 13:28:25.365 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[@__weekStart_0='?' (DbType = DateTime), @__weekEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Day`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Total`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, CONVERT(`t`.`createdAt`, date) AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__weekStart_0) AND (`t`.`createdAt` < @__weekEnd_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:28:25.562 +07:00 [INF] Executed DbCommand (97ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t1`.`shiftID`, `t1`.`endTime`, `t1`.`staffID`, `t1`.`startTime`, `t1`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM (
+    SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`
+    FROM `tblWorkShifts` AS `t`
+    ORDER BY `t`.`startTime` DESC
+    LIMIT @__p_0
+) AS `t1`
+INNER JOIN `tblUsers` AS `t0` ON `t1`.`staffID` = `t0`.`userID`
+ORDER BY `t1`.`startTime` DESC
+2026-04-16 13:28:25.758 +07:00 [INF] Executed DbCommand (97ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID` AS `ShiftId`, COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0) AS `Total`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` IS NOT NULL AND `t`.`shiftID` IN (11, 10, 9, 8, 7, 6, 5, 4, 3, 2)) AND (`t`.`shipStatus` = 'Đã giao'))
+GROUP BY `t`.`shiftID`
+2026-04-16 13:28:25.763 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:28:25.782 +07:00 [INF] Executed ViewResult - view Index executed in 19.7989ms.
+2026-04-16 13:28:25.784 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Index (Delivery-System) in 1002.1756ms
+2026-04-16 13:28:25.785 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:28:25.788 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:28:25.790 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:28:25.793 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Index - 200 null text/html; charset=utf-8 1037.0389ms
+2026-04-16 13:28:25.813 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119429057805628 - null null
+2026-04-16 13:28:25.813 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - null null
+2026-04-16 13:28:25.819 +07:00 [INF] Sending file. Request path: '/css/report.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\report.css'
+2026-04-16 13:28:25.821 +07:00 [INF] Sending file. Request path: '/css/main-bundle.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\main-bundle.css'
+2026-04-16 13:28:25.823 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119429057805628 - 200 null text/css 10.8541ms
+2026-04-16 13:28:25.825 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - 200 null text/css 12.6835ms
+2026-04-16 13:28:26.048 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/favicon.ico - null null
+2026-04-16 13:28:26.054 +07:00 [INF] Sending file. Request path: '/favicon.ico'. Physical path: 'E:\C#\Delivery-System\wwwroot\favicon.ico'
+2026-04-16 13:28:26.056 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/favicon.ico - 200 5430 image/x-icon 8.2943ms
+2026-04-16 13:28:30.623 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Details/7 - null null
+2026-04-16 13:28:30.631 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Details (Delivery-System)'
+2026-04-16 13:28:30.641 +07:00 [INF] Route matched with {action = "Details", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Details(Int32) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:28:30.834 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM `tblWorkShifts` AS `t`
+INNER JOIN `tblUsers` AS `t0` ON `t`.`staffID` = `t0`.`userID`
+WHERE `t`.`shiftID` = @__id_0
+LIMIT 1
+2026-04-16 13:28:31.030 +07:00 [INF] Executed DbCommand (97ms) [Parameters=[@__id_0='?' (DbType = Int32), @__shift_StaffId_1='?' (Size = 20)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID`, `t`.`amount`, `t`.`createdAt`, `t`.`ct`, `t`.`isDeleted`, `t`.`itemName`, `t`.`note`, `t`.`receiveDate`, `t`.`receiveStation`, `t`.`receiverName`, `t`.`receiverPhone`, `t`.`sendStation`, `t`.`senderName`, `t`.`senderPhone`, `t`.`shiftID`, `t`.`shipStatus`, `t`.`staffInput`, `t`.`staffReceive`, `t`.`tr`, `t`.`tripID`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` = @__id_0) AND (`t`.`staffInput` = @__shift_StaffId_1))
+2026-04-16 13:28:31.226 +07:00 [INF] Executed DbCommand (97ms) [Parameters=[@__shift_StaffId_0='?' (Size = 20), @__shift_StartTime_1='?' (DbType = DateTime), @__shift_EndTime_2='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID`, `t`.`amount`, `t`.`createdAt`, `t`.`ct`, `t`.`isDeleted`, `t`.`itemName`, `t`.`note`, `t`.`receiveDate`, `t`.`receiveStation`, `t`.`receiverName`, `t`.`receiverPhone`, `t`.`sendStation`, `t`.`senderName`, `t`.`senderPhone`, `t`.`shiftID`, `t`.`shipStatus`, `t`.`staffInput`, `t`.`staffReceive`, `t`.`tr`, `t`.`tripID`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((((`t`.`staffReceive` = @__shift_StaffId_0) AND (`t`.`shipStatus` = 'Đã giao')) AND (`t`.`createdAt` >= @__shift_StartTime_1)) AND (`t`.`createdAt` <= @__shift_EndTime_2))
+2026-04-16 13:28:31.431 +07:00 [INF] Executed DbCommand (95ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`tripID`, `t`.`assistantName`, `t`.`createdAt`, `t`.`departure`, `t`.`departureTime`, `t`.`destination`, `t`.`driverName`, `t`.`notes`, `t`.`shiftID`, `t`.`staffCreated`, `t`.`status`, `t`.`tripType`, `t`.`truckID`, `t0`.`truckID`, `t0`.`driverName`, `t0`.`driverPhone`, `t0`.`licensePlate`, `t0`.`notes`, `t0`.`status`
+FROM `tblTrips` AS `t`
+INNER JOIN `tblTrucks` AS `t0` ON `t`.`truckID` = `t0`.`truckID`
+WHERE `t`.`shiftID` = @__id_0
+2026-04-16 13:28:31.435 +07:00 [INF] Executing PartialViewResult, running view _ShiftDetails.
+2026-04-16 13:28:31.456 +07:00 [INF] Executed PartialViewResult - view _ShiftDetails executed in 21.6467ms.
+2026-04-16 13:28:31.458 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Details (Delivery-System) in 814.8154ms
+2026-04-16 13:28:31.460 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Details (Delivery-System)'
+2026-04-16 13:28:31.462 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Details/7 - 200 null text/html; charset=utf-8 839.0912ms
+2026-04-16 13:30:00.226 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Admin/Index - null null
+2026-04-16 13:30:00.237 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.AdminController.Index (Delivery-System)'
+2026-04-16 13:30:00.249 +07:00 [INF] Route matched with {action = "Index", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller Delivery_System.Controllers.AdminController (Delivery-System).
+2026-04-16 13:30:00.444 +07:00 [INF] Executed DbCommand (95ms) [Parameters=[@__today_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((((`t`.`createdAt` >= @__today_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao')) AND ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)))
+2026-04-16 13:30:00.640 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblWorkShifts` AS `t`
+WHERE `t`.`status` = 'ACTIVE'
+2026-04-16 13:30:00.842 +07:00 [INF] Executed DbCommand (99ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`userID`, `t`.`createdAt`, `t`.`email`, `t`.`fullName`, `t`.`password`, `t`.`phone`, `t`.`roleID`, `t`.`stationID`, `t`.`status`, `t`.`username`, `t0`.`stationID`, `t0`.`address`, `t0`.`isActive`, `t0`.`phone`, `t0`.`stationName`
+FROM `tblUsers` AS `t`
+LEFT JOIN `tblStations` AS `t0` ON `t`.`stationID` = `t0`.`stationID`
+ORDER BY `t`.`roleID`
+2026-04-16 13:30:01.037 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`stationID`, `t`.`address`, `t`.`isActive`, `t`.`phone`, `t`.`stationName`
+FROM `tblStations` AS `t`
+ORDER BY `t`.`stationID`
+2026-04-16 13:30:01.232 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`id`, `t`.`content`, `t`.`createdAt`, `t`.`createdBy`, `t`.`isActive`, `t`.`title`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM `tblAnnouncements` AS `t`
+LEFT JOIN `tblUsers` AS `t0` ON `t`.`createdBy` = `t0`.`userID`
+ORDER BY `t`.`createdAt` DESC
+2026-04-16 13:30:01.428 +07:00 [INF] Executed DbCommand (97ms) [Parameters=[@__sevenDaysAgo_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Day`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Total`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, CONVERT(`t`.`createdAt`, date) AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((((`t`.`createdAt` >= @__sevenDaysAgo_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao')) AND ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)))
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:30:01.434 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:30:01.447 +07:00 [INF] Executed ViewResult - view Index executed in 14.0861ms.
+2026-04-16 13:30:01.449 +07:00 [INF] Executed action Delivery_System.Controllers.AdminController.Index (Delivery-System) in 1196.3097ms
+2026-04-16 13:30:01.451 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.AdminController.Index (Delivery-System)'
+2026-04-16 13:30:01.454 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:30:01.456 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:30:01.458 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Admin/Index - 200 null text/html; charset=utf-8 1231.7228ms
+2026-04-16 13:30:01.505 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-16 13:30:01.510 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-16 13:30:01.512 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-16 13:30:01.515 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 9.8227ms
+2026-04-16 13:30:01.593 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=tXCdWXDi-hkQO5c2j-KN0g - null null
+2026-04-16 13:30:01.599 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-16 13:30:05.613 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/Admin/AddStaffToStation - multipart/form-data; boundary=----WebKitFormBoundaryNXMHWJPu7ubk9WMy 241
+2026-04-16 13:30:05.621 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.AdminController.AddStaffToStation (Delivery-System)'
+2026-04-16 13:30:05.630 +07:00 [INF] Route matched with {action = "AddStaffToStation", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] AddStaffToStation(System.String, Int32) on controller Delivery_System.Controllers.AdminController (Delivery-System).
+2026-04-16 13:30:05.851 +07:00 [INF] Executed DbCommand (97ms) [Parameters=[@__p_0='?' (Size = 20)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`userID`, `t`.`createdAt`, `t`.`email`, `t`.`fullName`, `t`.`password`, `t`.`phone`, `t`.`roleID`, `t`.`stationID`, `t`.`status`, `t`.`username`
+FROM `tblUsers` AS `t`
+WHERE `t`.`userID` = @__p_0
+LIMIT 1
+2026-04-16 13:30:06.164 +07:00 [INF] Executed DbCommand (99ms) [Parameters=[@p1='?' (Size = 20), @p0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SET AUTOCOMMIT = 1;
+UPDATE `tblUsers` SET `stationID` = @p0
+WHERE `userID` = @p1;
+SELECT ROW_COUNT();
+2026-04-16 13:30:06.182 +07:00 [INF] Executing JsonResult, writing value of type '<>f__AnonymousType3`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-04-16 13:30:06.189 +07:00 [INF] Executed action Delivery_System.Controllers.AdminController.AddStaffToStation (Delivery-System) in 556.1137ms
+2026-04-16 13:30:06.191 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.AdminController.AddStaffToStation (Delivery-System)'
+2026-04-16 13:30:06.193 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/Admin/AddStaffToStation - 200 null application/json; charset=utf-8 579.1356ms
+2026-04-16 13:30:06.211 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Admin/Index - null null
+2026-04-16 13:30:06.217 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.AdminController.Index (Delivery-System)'
+2026-04-16 13:30:06.218 +07:00 [INF] Route matched with {action = "Index", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller Delivery_System.Controllers.AdminController (Delivery-System).
+2026-04-16 13:30:06.420 +07:00 [INF] Executed DbCommand (102ms) [Parameters=[@__today_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((((`t`.`createdAt` >= @__today_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao')) AND ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)))
+2026-04-16 13:30:06.615 +07:00 [INF] Executed DbCommand (95ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblWorkShifts` AS `t`
+WHERE `t`.`status` = 'ACTIVE'
+2026-04-16 13:30:06.813 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`userID`, `t`.`createdAt`, `t`.`email`, `t`.`fullName`, `t`.`password`, `t`.`phone`, `t`.`roleID`, `t`.`stationID`, `t`.`status`, `t`.`username`, `t0`.`stationID`, `t0`.`address`, `t0`.`isActive`, `t0`.`phone`, `t0`.`stationName`
+FROM `tblUsers` AS `t`
+LEFT JOIN `tblStations` AS `t0` ON `t`.`stationID` = `t0`.`stationID`
+ORDER BY `t`.`roleID`
+2026-04-16 13:30:07.017 +07:00 [INF] Executed DbCommand (105ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`stationID`, `t`.`address`, `t`.`isActive`, `t`.`phone`, `t`.`stationName`
+FROM `tblStations` AS `t`
+ORDER BY `t`.`stationID`
+2026-04-16 13:30:07.212 +07:00 [INF] Executed DbCommand (96ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`id`, `t`.`content`, `t`.`createdAt`, `t`.`createdBy`, `t`.`isActive`, `t`.`title`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM `tblAnnouncements` AS `t`
+LEFT JOIN `tblUsers` AS `t0` ON `t`.`createdBy` = `t0`.`userID`
+ORDER BY `t`.`createdAt` DESC
+2026-04-16 13:30:07.409 +07:00 [INF] Executed DbCommand (98ms) [Parameters=[@__sevenDaysAgo_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Day`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Total`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, CONVERT(`t`.`createdAt`, date) AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((((`t`.`createdAt` >= @__sevenDaysAgo_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao')) AND ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)))
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:30:07.413 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:30:07.418 +07:00 [INF] Executed ViewResult - view Index executed in 5.0457ms.
+2026-04-16 13:30:07.420 +07:00 [INF] Executed action Delivery_System.Controllers.AdminController.Index (Delivery-System) in 1199.2257ms
+2026-04-16 13:30:07.422 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.AdminController.Index (Delivery-System)'
+2026-04-16 13:30:07.424 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:30:07.427 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:30:07.429 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Admin/Index - 200 null text/html; charset=utf-8 1217.5217ms
+2026-04-16 13:30:07.432 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-16 13:30:07.435 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=tXCdWXDi-hkQO5c2j-KN0g - 101 null null 5841.7148ms
+2026-04-16 13:30:07.465 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-16 13:30:07.469 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-16 13:30:07.471 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-16 13:30:07.473 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 7.86ms
+2026-04-16 13:30:07.544 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=Tq_BeKujVZQhlGWqnebhIg - null null
+2026-04-16 13:30:07.550 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-16 13:32:37.894 +07:00 [INF] User profile is available. Using 'C:\Users\jayke\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-04-16 13:32:38.077 +07:00 [INF] Now listening on: http://localhost:5122
+2026-04-16 13:32:38.119 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-04-16 13:32:38.121 +07:00 [INF] Hosting environment: Development
+2026-04-16 13:32:38.123 +07:00 [INF] Content root path: E:\C#\Delivery-System
+2026-04-16 13:32:38.378 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/ - null null
+2026-04-16 13:32:38.487 +07:00 [WRN] Failed to determine the https port for redirect.
+2026-04-16 13:32:38.583 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.AccountController.Login (Delivery-System)'
+2026-04-16 13:32:38.613 +07:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Login() on controller Delivery_System.Controllers.AccountController (Delivery-System).
+2026-04-16 13:32:39.881 +07:00 [INF] Executing ViewResult, running view Login.
+2026-04-16 13:32:40.009 +07:00 [INF] Executed ViewResult - view Login executed in 127.1715ms.
+2026-04-16 13:32:40.013 +07:00 [INF] Executed action Delivery_System.Controllers.AccountController.Login (Delivery-System) in 1394.9994ms
+2026-04-16 13:32:40.015 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.AccountController.Login (Delivery-System)'
+2026-04-16 13:32:40.034 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:32:40.044 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:32:40.056 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/ - 200 null text/html; charset=utf-8 1681.0134ms
+2026-04-16 13:32:41.951 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/ - application/x-www-form-urlencoded 251
+2026-04-16 13:32:41.962 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.AccountController.Login (Delivery-System)'
+2026-04-16 13:32:41.984 +07:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(System.String, System.String, Boolean) on controller Delivery_System.Controllers.AccountController (Delivery-System).
+2026-04-16 13:32:42.694 +07:00 [WRN] Entity 'TblOrder' has a global query filter defined and is the required end of a relationship with the entity 'TblOrderTrip'. This may lead to unexpected results when the required entity is filtered out. Either configure the navigation as optional, or define matching query filters for both entities in the navigation. See https://go.microsoft.com/fwlink/?linkid=2131316 for more information.
+2026-04-16 13:32:44.129 +07:00 [INF] Executed DbCommand (171ms) [Parameters=[@__username_0='?' (Size = 50), @__hashedPassword_1='?' (Size = 100)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`userID`, `t`.`createdAt`, `t`.`email`, `t`.`fullName`, `t`.`password`, `t`.`phone`, `t`.`roleID`, `t`.`stationID`, `t`.`status`, `t`.`username`
+FROM `tblUsers` AS `t`
+WHERE ((`t`.`username` = @__username_0) AND (`t`.`password` = @__hashedPassword_1)) AND `t`.`status`
+LIMIT 1
+2026-04-16 13:32:44.278 +07:00 [INF] AuthenticationScheme: Cookies signed in.
+2026-04-16 13:32:44.283 +07:00 [INF] Executing RedirectResult, redirecting to /Home/Index.
+2026-04-16 13:32:44.286 +07:00 [INF] Executed action Delivery_System.Controllers.AccountController.Login (Delivery-System) in 2298.0749ms
+2026-04-16 13:32:44.288 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.AccountController.Login (Delivery-System)'
+2026-04-16 13:32:44.296 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/ - 302 null null 2346.0141ms
+2026-04-16 13:32:44.300 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Home/Index - null null
+2026-04-16 13:32:44.314 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.HomeController.Index (Delivery-System)'
+2026-04-16 13:32:44.326 +07:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller Delivery_System.Controllers.HomeController (Delivery-System).
+2026-04-16 13:32:44.581 +07:00 [INF] Executed DbCommand (110ms) [Parameters=[@__userId_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`
+FROM `tblWorkShifts` AS `t`
+WHERE (`t`.`staffID` = @__userId_0) AND (`t`.`status` = 'ACTIVE')
+LIMIT 1
+2026-04-16 13:32:44.590 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:32:44.640 +07:00 [INF] Executed ViewResult - view Index executed in 51.4981ms.
+2026-04-16 13:32:44.643 +07:00 [INF] Executed action Delivery_System.Controllers.HomeController.Index (Delivery-System) in 314.099ms
+2026-04-16 13:32:44.645 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.HomeController.Index (Delivery-System)'
+2026-04-16 13:32:44.648 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:32:44.650 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:32:44.652 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Home/Index - 200 null text/html; charset=utf-8 351.2985ms
+2026-04-16 13:32:45.944 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Goods/Index - null null
+2026-04-16 13:32:45.954 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.GoodsController.Index (Delivery-System)'
+2026-04-16 13:32:45.957 +07:00 [INF] Route matched with {action = "Index", controller = "Goods"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller Delivery_System.Controllers.GoodsController (Delivery-System).
+2026-04-16 13:32:45.963 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:32:45.981 +07:00 [INF] Executed ViewResult - view Index executed in 20.2833ms.
+2026-04-16 13:32:45.984 +07:00 [INF] Executed action Delivery_System.Controllers.GoodsController.Index (Delivery-System) in 23.1644ms
+2026-04-16 13:32:45.985 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.GoodsController.Index (Delivery-System)'
+2026-04-16 13:32:45.988 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:32:45.990 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:32:45.993 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Goods/Index - 200 null text/html; charset=utf-8 48.9327ms
+2026-04-16 13:32:49.599 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Index - null null
+2026-04-16 13:32:49.607 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:32:49.621 +07:00 [INF] Route matched with {action = "Index", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.Nullable`1[System.Int32], System.String, System.Nullable`1[System.Int32], System.String) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:32:49.880 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`stationID`, `t`.`address`, `t`.`isActive`, `t`.`phone`, `t`.`stationName`
+FROM `tblStations` AS `t`
+WHERE `t`.`isActive`
+2026-04-16 13:32:50.173 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:32:50.428 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1))
+2026-04-16 13:32:50.713 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__weekStart_0='?' (DbType = DateTime), @__weekEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Day`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Total`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, CONVERT(`t`.`createdAt`, date) AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__weekStart_0) AND (`t`.`createdAt` < @__weekEnd_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:32:51.022 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t1`.`shiftID`, `t1`.`endTime`, `t1`.`staffID`, `t1`.`startTime`, `t1`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM (
+    SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`
+    FROM `tblWorkShifts` AS `t`
+    ORDER BY `t`.`startTime` DESC
+    LIMIT @__p_0
+) AS `t1`
+INNER JOIN `tblUsers` AS `t0` ON `t1`.`staffID` = `t0`.`userID`
+ORDER BY `t1`.`startTime` DESC
+2026-04-16 13:32:51.330 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID` AS `ShiftId`, COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0) AS `Total`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` IS NOT NULL AND `t`.`shiftID` IN (11, 10, 9, 8, 7, 6, 5, 4, 3, 2)) AND (`t`.`shipStatus` = 'Đã giao'))
+GROUP BY `t`.`shiftID`
+2026-04-16 13:32:51.340 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:32:51.414 +07:00 [INF] Executed ViewResult - view Index executed in 74.9268ms.
+2026-04-16 13:32:51.416 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Index (Delivery-System) in 1792.7016ms
+2026-04-16 13:32:51.418 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:32:51.420 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:32:51.422 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:32:51.425 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Index - 200 null text/html; charset=utf-8 1826.3312ms
+2026-04-16 13:32:51.453 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119431713929419 - null null
+2026-04-16 13:32:51.472 +07:00 [INF] Sending file. Request path: '/css/report.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\report.css'
+2026-04-16 13:32:51.474 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119431713929419 - 200 null text/css 21.7261ms
+2026-04-16 13:32:59.231 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Index?reportDate=2026-04-16&stationId=2&searchStaff= - null null
+2026-04-16 13:32:59.241 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:32:59.243 +07:00 [INF] Route matched with {action = "Index", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.Nullable`1[System.Int32], System.String, System.Nullable`1[System.Int32], System.String) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:32:59.483 +07:00 [INF] Executed DbCommand (115ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`stationID`, `t`.`address`, `t`.`isActive`, `t`.`phone`, `t`.`stationName`
+FROM `tblStations` AS `t`
+WHERE `t`.`isActive`
+2026-04-16 13:32:59.712 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:32:59.940 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1))
+2026-04-16 13:33:00.168 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__weekStart_0='?' (DbType = DateTime), @__weekEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Day`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Total`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, CONVERT(`t`.`createdAt`, date) AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__weekStart_0) AND (`t`.`createdAt` < @__weekEnd_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:33:00.411 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__stationId_Value_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM `tblWorkShifts` AS `t`
+INNER JOIN `tblUsers` AS `t0` ON `t`.`staffID` = `t0`.`userID`
+WHERE `t0`.`stationID` = @__stationId_Value_0
+ORDER BY `t`.`startTime` DESC
+LIMIT @__p_1
+2026-04-16 13:33:00.645 +07:00 [INF] Executed DbCommand (114ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID` AS `ShiftId`, COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0) AS `Total`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` IS NOT NULL AND `t`.`shiftID` IN (11, 7, 6, 2)) AND (`t`.`shipStatus` = 'Đã giao'))
+GROUP BY `t`.`shiftID`
+2026-04-16 13:33:00.649 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:33:00.653 +07:00 [INF] Executed ViewResult - view Index executed in 4.5248ms.
+2026-04-16 13:33:00.655 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Index (Delivery-System) in 1409.4471ms
+2026-04-16 13:33:00.657 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:33:00.659 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:33:00.661 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:33:00.662 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Index?reportDate=2026-04-16&stationId=2&searchStaff= - 200 null text/html; charset=utf-8 1431.852ms
+2026-04-16 13:33:00.692 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119431806525343 - null null
+2026-04-16 13:33:00.697 +07:00 [INF] Sending file. Request path: '/css/report.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\report.css'
+2026-04-16 13:33:00.700 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119431806525343 - 200 null text/css 7.2707ms
+2026-04-16 13:33:10.369 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Index?reportDate=2026-04-16&stationId=1&searchStaff= - null null
+2026-04-16 13:33:10.378 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:33:10.380 +07:00 [INF] Route matched with {action = "Index", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.Nullable`1[System.Int32], System.String, System.Nullable`1[System.Int32], System.String) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:33:10.606 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`stationID`, `t`.`address`, `t`.`isActive`, `t`.`phone`, `t`.`stationName`
+FROM `tblStations` AS `t`
+WHERE `t`.`isActive`
+2026-04-16 13:33:10.835 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:33:11.063 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1))
+2026-04-16 13:33:11.298 +07:00 [INF] Executed DbCommand (120ms) [Parameters=[@__weekStart_0='?' (DbType = DateTime), @__weekEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Day`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Total`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, CONVERT(`t`.`createdAt`, date) AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__weekStart_0) AND (`t`.`createdAt` < @__weekEnd_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:33:11.537 +07:00 [INF] Executed DbCommand (123ms) [Parameters=[@__stationId_Value_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM `tblWorkShifts` AS `t`
+INNER JOIN `tblUsers` AS `t0` ON `t`.`staffID` = `t0`.`userID`
+WHERE `t0`.`stationID` = @__stationId_Value_0
+ORDER BY `t`.`startTime` DESC
+LIMIT @__p_1
+2026-04-16 13:33:11.767 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID` AS `ShiftId`, COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0) AS `Total`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` IS NOT NULL AND `t`.`shiftID` IN (5, 4, 3)) AND (`t`.`shipStatus` = 'Đã giao'))
+GROUP BY `t`.`shiftID`
+2026-04-16 13:33:11.771 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:33:11.774 +07:00 [INF] Executed ViewResult - view Index executed in 2.8729ms.
+2026-04-16 13:33:11.776 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Index (Delivery-System) in 1393.5488ms
+2026-04-16 13:33:11.777 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:33:11.779 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:33:11.781 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:33:11.783 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Index?reportDate=2026-04-16&stationId=1&searchStaff= - 200 null text/html; charset=utf-8 1414.346ms
+2026-04-16 13:33:11.813 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119431917737375 - null null
+2026-04-16 13:33:11.818 +07:00 [INF] Sending file. Request path: '/css/report.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\report.css'
+2026-04-16 13:33:11.821 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119431917737375 - 200 null text/css 8.1452ms
+2026-04-16 13:33:19.153 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Index?reportDate=2026-04-16&stationId=&searchStaff= - null null
+2026-04-16 13:33:19.159 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:33:19.161 +07:00 [INF] Route matched with {action = "Index", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.Nullable`1[System.Int32], System.String, System.Nullable`1[System.Int32], System.String) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:33:19.387 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`stationID`, `t`.`address`, `t`.`isActive`, `t`.`phone`, `t`.`stationName`
+FROM `tblStations` AS `t`
+WHERE `t`.`isActive`
+2026-04-16 13:33:19.615 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:33:19.843 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1))
+2026-04-16 13:33:20.072 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__weekStart_0='?' (DbType = DateTime), @__weekEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Day`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Total`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, CONVERT(`t`.`createdAt`, date) AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__weekStart_0) AND (`t`.`createdAt` < @__weekEnd_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:33:20.301 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t1`.`shiftID`, `t1`.`endTime`, `t1`.`staffID`, `t1`.`startTime`, `t1`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM (
+    SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`
+    FROM `tblWorkShifts` AS `t`
+    ORDER BY `t`.`startTime` DESC
+    LIMIT @__p_0
+) AS `t1`
+INNER JOIN `tblUsers` AS `t0` ON `t1`.`staffID` = `t0`.`userID`
+ORDER BY `t1`.`startTime` DESC
+2026-04-16 13:33:20.532 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID` AS `ShiftId`, COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0) AS `Total`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` IS NOT NULL AND `t`.`shiftID` IN (11, 10, 9, 8, 7, 6, 5, 4, 3, 2)) AND (`t`.`shipStatus` = 'Đã giao'))
+GROUP BY `t`.`shiftID`
+2026-04-16 13:33:20.536 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:33:20.539 +07:00 [INF] Executed ViewResult - view Index executed in 3.1685ms.
+2026-04-16 13:33:20.541 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Index (Delivery-System) in 1377.6087ms
+2026-04-16 13:33:20.543 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:33:20.546 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:33:20.548 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:33:20.550 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Index?reportDate=2026-04-16&stationId=&searchStaff= - 200 null text/html; charset=utf-8 1396.8676ms
+2026-04-16 13:33:20.579 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119432005387091 - null null
+2026-04-16 13:33:20.584 +07:00 [INF] Sending file. Request path: '/css/report.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\report.css'
+2026-04-16 13:33:20.586 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119432005387091 - 200 null text/css 7.1738ms
+2026-04-16 13:33:26.064 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Index?reportDate=2026-04-16&stationId=&searchStaff=01 - null null
+2026-04-16 13:33:26.072 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:33:26.074 +07:00 [INF] Route matched with {action = "Index", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.Nullable`1[System.Int32], System.String, System.Nullable`1[System.Int32], System.String) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:33:26.300 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`stationID`, `t`.`address`, `t`.`isActive`, `t`.`phone`, `t`.`stationName`
+FROM `tblStations` AS `t`
+WHERE `t`.`isActive`
+2026-04-16 13:33:26.528 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:33:26.755 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1))
+2026-04-16 13:33:26.984 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__weekStart_0='?' (DbType = DateTime), @__weekEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Day`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Total`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, CONVERT(`t`.`createdAt`, date) AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__weekStart_0) AND (`t`.`createdAt` < @__weekEnd_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:33:27.239 +07:00 [INF] Executed DbCommand (116ms) [Parameters=[@__searchStaff_0_contains='?' (Size = 50), @__searchStaff_0_contains_1='?' (Size = 100), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM `tblWorkShifts` AS `t`
+INNER JOIN `tblUsers` AS `t0` ON `t`.`staffID` = `t0`.`userID`
+WHERE (`t`.`staffID` LIKE @__searchStaff_0_contains) OR (`t0`.`fullName` LIKE @__searchStaff_0_contains_1)
+ORDER BY `t`.`startTime` DESC
+LIMIT @__p_1
+2026-04-16 13:33:27.468 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID` AS `ShiftId`, COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0) AS `Total`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` IS NOT NULL AND `t`.`shiftID` IN (11, 7, 6, 2)) AND (`t`.`shipStatus` = 'Đã giao'))
+GROUP BY `t`.`shiftID`
+2026-04-16 13:33:27.471 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:33:27.476 +07:00 [INF] Executed ViewResult - view Index executed in 4.6607ms.
+2026-04-16 13:33:27.478 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Index (Delivery-System) in 1401.0083ms
+2026-04-16 13:33:27.479 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:33:27.482 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:33:27.484 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:33:27.486 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Index?reportDate=2026-04-16&stationId=&searchStaff=01 - 200 null text/html; charset=utf-8 1421.4764ms
+2026-04-16 13:33:27.523 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119432074757269 - null null
+2026-04-16 13:33:27.528 +07:00 [INF] Sending file. Request path: '/css/report.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\report.css'
+2026-04-16 13:33:27.530 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119432074757269 - 200 null text/css 6.9292ms
+2026-04-16 13:33:32.809 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Index?reportDate=2026-04-16&stationId=&searchStaff=Xu - null null
+2026-04-16 13:33:32.817 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:33:32.819 +07:00 [INF] Route matched with {action = "Index", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.Nullable`1[System.Int32], System.String, System.Nullable`1[System.Int32], System.String) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:33:33.045 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`stationID`, `t`.`address`, `t`.`isActive`, `t`.`phone`, `t`.`stationName`
+FROM `tblStations` AS `t`
+WHERE `t`.`isActive`
+2026-04-16 13:33:33.272 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:33:33.501 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1))
+2026-04-16 13:33:33.729 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__weekStart_0='?' (DbType = DateTime), @__weekEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Day`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Total`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, CONVERT(`t`.`createdAt`, date) AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__weekStart_0) AND (`t`.`createdAt` < @__weekEnd_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:33:33.956 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__searchStaff_0_contains='?' (Size = 50), @__searchStaff_0_contains_1='?' (Size = 100), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM `tblWorkShifts` AS `t`
+INNER JOIN `tblUsers` AS `t0` ON `t`.`staffID` = `t0`.`userID`
+WHERE (`t`.`staffID` LIKE @__searchStaff_0_contains) OR (`t0`.`fullName` LIKE @__searchStaff_0_contains_1)
+ORDER BY `t`.`startTime` DESC
+LIMIT @__p_1
+2026-04-16 13:33:34.185 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID` AS `ShiftId`, COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0) AS `Total`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` IS NOT NULL AND `t`.`shiftID` IN (11, 7, 6, 2)) AND (`t`.`shipStatus` = 'Đã giao'))
+GROUP BY `t`.`shiftID`
+2026-04-16 13:33:34.188 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:33:34.191 +07:00 [INF] Executed ViewResult - view Index executed in 3.0713ms.
+2026-04-16 13:33:34.194 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Index (Delivery-System) in 1371.8194ms
+2026-04-16 13:33:34.195 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:33:34.198 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:33:34.200 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:33:34.202 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Index?reportDate=2026-04-16&stationId=&searchStaff=Xu - 200 null text/html; charset=utf-8 1392.4356ms
+2026-04-16 13:33:34.235 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119432141910507 - null null
+2026-04-16 13:33:34.240 +07:00 [INF] Sending file. Request path: '/css/report.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\report.css'
+2026-04-16 13:33:34.243 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119432141910507 - 200 null text/css 7.4645ms
+2026-04-16 13:33:37.029 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Index?reportDate=2026-04-16&stationId=&searchStaff=%C4%91 - null null
+2026-04-16 13:33:37.036 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:33:37.039 +07:00 [INF] Route matched with {action = "Index", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.Nullable`1[System.Int32], System.String, System.Nullable`1[System.Int32], System.String) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:33:37.268 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`stationID`, `t`.`address`, `t`.`isActive`, `t`.`phone`, `t`.`stationName`
+FROM `tblStations` AS `t`
+WHERE `t`.`isActive`
+2026-04-16 13:33:37.496 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:33:37.724 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1))
+2026-04-16 13:33:37.953 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__weekStart_0='?' (DbType = DateTime), @__weekEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Day`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Total`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, CONVERT(`t`.`createdAt`, date) AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__weekStart_0) AND (`t`.`createdAt` < @__weekEnd_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:33:38.181 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__searchStaff_0_contains='?' (Size = 50), @__searchStaff_0_contains_1='?' (Size = 100), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM `tblWorkShifts` AS `t`
+INNER JOIN `tblUsers` AS `t0` ON `t`.`staffID` = `t0`.`userID`
+WHERE (`t`.`staffID` LIKE @__searchStaff_0_contains) OR (`t0`.`fullName` LIKE @__searchStaff_0_contains_1)
+ORDER BY `t`.`startTime` DESC
+LIMIT @__p_1
+2026-04-16 13:33:38.408 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID` AS `ShiftId`, COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0) AS `Total`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` IS NOT NULL AND `t`.`shiftID` IN (10, 9, 8, 5, 4, 3)) AND (`t`.`shipStatus` = 'Đã giao'))
+GROUP BY `t`.`shiftID`
+2026-04-16 13:33:38.412 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:33:38.415 +07:00 [INF] Executed ViewResult - view Index executed in 3.2851ms.
+2026-04-16 13:33:38.417 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Index (Delivery-System) in 1375.7861ms
+2026-04-16 13:33:38.419 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:33:38.421 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:33:38.423 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:33:38.425 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Index?reportDate=2026-04-16&stationId=&searchStaff=%C4%91 - 200 null text/html; charset=utf-8 1395.9359ms
+2026-04-16 13:33:38.458 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119432184147090 - null null
+2026-04-16 13:33:38.463 +07:00 [INF] Sending file. Request path: '/css/report.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\report.css'
+2026-04-16 13:33:38.465 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119432184147090 - 200 null text/css 7.0983ms
+2026-04-16 13:33:48.578 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Index?reportDate=2026-04-16&stationId=&searchStaff=%C4%91at - null null
+2026-04-16 13:33:48.617 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:33:48.619 +07:00 [INF] Route matched with {action = "Index", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.Nullable`1[System.Int32], System.String, System.Nullable`1[System.Int32], System.String) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:33:48.844 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`stationID`, `t`.`address`, `t`.`isActive`, `t`.`phone`, `t`.`stationName`
+FROM `tblStations` AS `t`
+WHERE `t`.`isActive`
+2026-04-16 13:33:49.073 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:33:49.301 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1))
+2026-04-16 13:33:49.528 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__weekStart_0='?' (DbType = DateTime), @__weekEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Day`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Total`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, CONVERT(`t`.`createdAt`, date) AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__weekStart_0) AND (`t`.`createdAt` < @__weekEnd_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:33:49.761 +07:00 [INF] Executed DbCommand (118ms) [Parameters=[@__searchStaff_0_contains='?' (Size = 50), @__searchStaff_0_contains_1='?' (Size = 100), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM `tblWorkShifts` AS `t`
+INNER JOIN `tblUsers` AS `t0` ON `t`.`staffID` = `t0`.`userID`
+WHERE (`t`.`staffID` LIKE @__searchStaff_0_contains) OR (`t0`.`fullName` LIKE @__searchStaff_0_contains_1)
+ORDER BY `t`.`startTime` DESC
+LIMIT @__p_1
+2026-04-16 13:33:49.987 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID` AS `ShiftId`, COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0) AS `Total`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` IS NOT NULL AND `t`.`shiftID` IN (5, 4, 3)) AND (`t`.`shipStatus` = 'Đã giao'))
+GROUP BY `t`.`shiftID`
+2026-04-16 13:33:49.991 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:33:49.994 +07:00 [INF] Executed ViewResult - view Index executed in 3.381ms.
+2026-04-16 13:33:49.996 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Index (Delivery-System) in 1375.4526ms
+2026-04-16 13:33:49.998 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:33:50.001 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:33:50.002 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:33:50.005 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Index?reportDate=2026-04-16&stationId=&searchStaff=%C4%91at - 200 null text/html; charset=utf-8 1426.4806ms
+2026-04-16 13:33:50.040 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119432299940404 - null null
+2026-04-16 13:33:50.045 +07:00 [INF] Sending file. Request path: '/css/report.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\report.css'
+2026-04-16 13:33:50.048 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119432299940404 - 200 null text/css 7.9625ms
+2026-04-16 13:33:54.432 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Index?reportDate=2026-04-16 - null null
+2026-04-16 13:33:54.439 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:33:54.440 +07:00 [INF] Route matched with {action = "Index", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.Nullable`1[System.Int32], System.String, System.Nullable`1[System.Int32], System.String) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:33:54.673 +07:00 [INF] Executed DbCommand (118ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`stationID`, `t`.`address`, `t`.`isActive`, `t`.`phone`, `t`.`stationName`
+FROM `tblStations` AS `t`
+WHERE `t`.`isActive`
+2026-04-16 13:33:54.899 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:33:55.127 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1))
+2026-04-16 13:33:55.356 +07:00 [INF] Executed DbCommand (114ms) [Parameters=[@__weekStart_0='?' (DbType = DateTime), @__weekEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Day`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Total`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, CONVERT(`t`.`createdAt`, date) AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__weekStart_0) AND (`t`.`createdAt` < @__weekEnd_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:33:55.583 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t1`.`shiftID`, `t1`.`endTime`, `t1`.`staffID`, `t1`.`startTime`, `t1`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM (
+    SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`
+    FROM `tblWorkShifts` AS `t`
+    ORDER BY `t`.`startTime` DESC
+    LIMIT @__p_0
+) AS `t1`
+INNER JOIN `tblUsers` AS `t0` ON `t1`.`staffID` = `t0`.`userID`
+ORDER BY `t1`.`startTime` DESC
+2026-04-16 13:33:55.812 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID` AS `ShiftId`, COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0) AS `Total`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` IS NOT NULL AND `t`.`shiftID` IN (11, 10, 9, 8, 7, 6, 5, 4, 3, 2)) AND (`t`.`shipStatus` = 'Đã giao'))
+GROUP BY `t`.`shiftID`
+2026-04-16 13:33:55.815 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:33:55.818 +07:00 [INF] Executed ViewResult - view Index executed in 3.0021ms.
+2026-04-16 13:33:55.820 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Index (Delivery-System) in 1377.1453ms
+2026-04-16 13:33:55.821 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:33:55.824 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:33:55.826 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:33:55.827 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Index?reportDate=2026-04-16 - 200 null text/html; charset=utf-8 1395.1451ms
+2026-04-16 13:33:55.857 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119432358181453 - null null
+2026-04-16 13:33:55.862 +07:00 [INF] Sending file. Request path: '/css/report.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\report.css'
+2026-04-16 13:33:55.865 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119432358181453 - 200 null text/css 7.5708ms
+2026-04-16 13:34:12.062 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/Account/Logout - application/x-www-form-urlencoded 225
+2026-04-16 13:34:12.068 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.AccountController.Logout (Delivery-System)'
+2026-04-16 13:34:12.079 +07:00 [INF] Route matched with {action = "Logout", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Logout() on controller Delivery_System.Controllers.AccountController (Delivery-System).
+2026-04-16 13:34:12.084 +07:00 [INF] AuthenticationScheme: Cookies signed out.
+2026-04-16 13:34:12.086 +07:00 [INF] Executing RedirectResult, redirecting to /.
+2026-04-16 13:34:12.087 +07:00 [INF] Executed action Delivery_System.Controllers.AccountController.Logout (Delivery-System) in 5.924ms
+2026-04-16 13:34:12.089 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.AccountController.Logout (Delivery-System)'
+2026-04-16 13:34:12.090 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/Account/Logout - 302 null null 28.2674ms
+2026-04-16 13:34:12.096 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/ - null null
+2026-04-16 13:34:12.100 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.AccountController.Login (Delivery-System)'
+2026-04-16 13:34:12.101 +07:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Login() on controller Delivery_System.Controllers.AccountController (Delivery-System).
+2026-04-16 13:34:12.104 +07:00 [INF] Executing ViewResult, running view Login.
+2026-04-16 13:34:12.107 +07:00 [INF] Executed ViewResult - view Login executed in 2.8949ms.
+2026-04-16 13:34:12.108 +07:00 [INF] Executed action Delivery_System.Controllers.AccountController.Login (Delivery-System) in 4.6291ms
+2026-04-16 13:34:12.110 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.AccountController.Login (Delivery-System)'
+2026-04-16 13:34:12.112 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:34:12.114 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:34:12.116 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/ - 200 null text/html; charset=utf-8 20.684ms
+2026-04-16 13:34:14.250 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/ - application/x-www-form-urlencoded 209
+2026-04-16 13:34:14.255 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.AccountController.Login (Delivery-System)'
+2026-04-16 13:34:14.257 +07:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(System.String, System.String, Boolean) on controller Delivery_System.Controllers.AccountController (Delivery-System).
+2026-04-16 13:34:14.485 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__username_0='?' (Size = 50), @__hashedPassword_1='?' (Size = 100)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`userID`, `t`.`createdAt`, `t`.`email`, `t`.`fullName`, `t`.`password`, `t`.`phone`, `t`.`roleID`, `t`.`stationID`, `t`.`status`, `t`.`username`
+FROM `tblUsers` AS `t`
+WHERE ((`t`.`username` = @__username_0) AND (`t`.`password` = @__hashedPassword_1)) AND `t`.`status`
+LIMIT 1
+2026-04-16 13:34:14.490 +07:00 [INF] AuthenticationScheme: Cookies signed in.
+2026-04-16 13:34:14.492 +07:00 [INF] Executing RedirectResult, redirecting to /Home/Index.
+2026-04-16 13:34:14.493 +07:00 [INF] Executed action Delivery_System.Controllers.AccountController.Login (Delivery-System) in 234.0693ms
+2026-04-16 13:34:14.496 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.AccountController.Login (Delivery-System)'
+2026-04-16 13:34:14.497 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/ - 302 null null 247.2995ms
+2026-04-16 13:34:14.502 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Home/Index - null null
+2026-04-16 13:34:14.509 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.HomeController.Index (Delivery-System)'
+2026-04-16 13:34:14.511 +07:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller Delivery_System.Controllers.HomeController (Delivery-System).
+2026-04-16 13:34:14.737 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__userId_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`
+FROM `tblWorkShifts` AS `t`
+WHERE (`t`.`staffID` = @__userId_0) AND (`t`.`status` = 'ACTIVE')
+LIMIT 1
+2026-04-16 13:34:14.741 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:34:14.744 +07:00 [INF] Executed ViewResult - view Index executed in 3.0459ms.
+2026-04-16 13:34:14.745 +07:00 [INF] Executed action Delivery_System.Controllers.HomeController.Index (Delivery-System) in 232.7675ms
+2026-04-16 13:34:14.747 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.HomeController.Index (Delivery-System)'
+2026-04-16 13:34:14.749 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:34:14.751 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:34:14.753 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Home/Index - 200 null text/html; charset=utf-8 250.3542ms
+2026-04-16 13:34:16.901 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Index - null null
+2026-04-16 13:34:16.907 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:34:16.909 +07:00 [INF] Route matched with {action = "Index", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.Nullable`1[System.Int32], System.String, System.Nullable`1[System.Int32], System.String) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:34:17.141 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__userId_0='?' (Size = 20), @__selectedDate_1='?' (DbType = DateTime), @__tomorrow_2='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((((`t`.`staffInput` = @__userId_0) AND (`t`.`createdAt` >= @__selectedDate_1)) AND (`t`.`createdAt` < @__tomorrow_2)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:34:17.374 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__userId_0='?' (Size = 20), @__selectedDate_1='?' (DbType = DateTime), @__tomorrow_2='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((((`t`.`staffInput` = @__userId_0) AND (`t`.`createdAt` >= @__selectedDate_1)) AND (`t`.`createdAt` < @__tomorrow_2)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:34:17.385 +07:00 [WRN] The query uses the 'First'/'FirstOrDefault' operator without 'OrderBy' and filter operators. This may lead to unpredictable results.
+2026-04-16 13:34:17.613 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__userId_0='?' (Size = 20)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) AS `Count`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Revenue`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, 1 AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`staffInput` = @__userId_0) AND (`t`.`shipStatus` = 'Đã giao'))
+) AS `t0`
+GROUP BY `t0`.`Key`
+LIMIT 1
+2026-04-16 13:34:17.856 +07:00 [INF] Executed DbCommand (119ms) [Parameters=[@__userId_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`
+FROM `tblWorkShifts` AS `t`
+WHERE (`t`.`staffID` = @__userId_0) AND (`t`.`status` = 'ACTIVE')
+LIMIT 1
+2026-04-16 13:34:18.096 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__userId_0='?' (Size = 50), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t1`.`shiftID`, `t1`.`endTime`, `t1`.`staffID`, `t1`.`startTime`, `t1`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM (
+    SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`
+    FROM `tblWorkShifts` AS `t`
+    WHERE `t`.`staffID` = @__userId_0
+    ORDER BY `t`.`startTime` DESC
+    LIMIT @__p_1
+) AS `t1`
+INNER JOIN `tblUsers` AS `t0` ON `t1`.`staffID` = `t0`.`userID`
+ORDER BY `t1`.`startTime` DESC
+2026-04-16 13:34:18.325 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID` AS `ShiftId`, COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0) AS `Total`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` IS NOT NULL AND `t`.`shiftID` IN (11, 7, 6, 2)) AND (`t`.`shipStatus` = 'Đã giao'))
+GROUP BY `t`.`shiftID`
+2026-04-16 13:34:18.329 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:34:18.340 +07:00 [INF] Executed ViewResult - view Index executed in 10.7344ms.
+2026-04-16 13:34:18.343 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Index (Delivery-System) in 1430.8514ms
+2026-04-16 13:34:18.344 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:34:18.347 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:34:18.349 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:34:18.351 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Index - 200 null text/html; charset=utf-8 1449.7928ms
+2026-04-16 13:34:18.381 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119432583394005 - null null
+2026-04-16 13:34:18.385 +07:00 [INF] Sending file. Request path: '/css/report.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\report.css'
+2026-04-16 13:34:18.388 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119432583394005 - 200 null text/css 7.0856ms
+2026-04-16 13:35:27.329 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Index - null null
+2026-04-16 13:35:27.341 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:35:27.354 +07:00 [INF] Route matched with {action = "Index", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.Nullable`1[System.Int32], System.String, System.Nullable`1[System.Int32], System.String, System.String) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:35:27.598 +07:00 [INF] Executed DbCommand (111ms) [Parameters=[@__userId_0='?' (Size = 20), @__selectedDate_1='?' (DbType = DateTime), @__tomorrow_2='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((((`t`.`staffInput` = @__userId_0) AND (`t`.`createdAt` >= @__selectedDate_1)) AND (`t`.`createdAt` < @__tomorrow_2)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:35:27.826 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__userId_0='?' (Size = 20), @__selectedDate_1='?' (DbType = DateTime), @__tomorrow_2='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((((`t`.`staffInput` = @__userId_0) AND (`t`.`createdAt` >= @__selectedDate_1)) AND (`t`.`createdAt` < @__tomorrow_2)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:35:28.054 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__userId_0='?' (Size = 20)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) AS `Count`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Revenue`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, 1 AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`staffInput` = @__userId_0) AND (`t`.`shipStatus` = 'Đã giao'))
+) AS `t0`
+GROUP BY `t0`.`Key`
+LIMIT 1
+2026-04-16 13:35:28.282 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__userId_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`
+FROM `tblWorkShifts` AS `t`
+WHERE (`t`.`staffID` = @__userId_0) AND (`t`.`status` = 'ACTIVE')
+LIMIT 1
+2026-04-16 13:35:28.510 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__userId_0='?' (Size = 50), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t1`.`shiftID`, `t1`.`endTime`, `t1`.`staffID`, `t1`.`startTime`, `t1`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM (
+    SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`
+    FROM `tblWorkShifts` AS `t`
+    WHERE `t`.`staffID` = @__userId_0
+    ORDER BY `t`.`startTime` DESC
+    LIMIT @__p_1
+) AS `t1`
+INNER JOIN `tblUsers` AS `t0` ON `t1`.`staffID` = `t0`.`userID`
+ORDER BY `t1`.`startTime` DESC
+2026-04-16 13:35:28.742 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID` AS `ShiftId`, COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0) AS `Total`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` IS NOT NULL AND `t`.`shiftID` IN (11, 7, 6, 2)) AND (`t`.`shipStatus` = 'Đã giao'))
+GROUP BY `t`.`shiftID`
+2026-04-16 13:35:28.748 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:35:28.814 +07:00 [INF] Executed ViewResult - view Index executed in 68.2305ms.
+2026-04-16 13:35:28.817 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Index (Delivery-System) in 1459.5802ms
+2026-04-16 13:35:28.819 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:35:28.822 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:35:28.824 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:35:28.827 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Index - 200 null text/html; charset=utf-8 1497.2111ms
+2026-04-16 13:35:28.862 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - null null
+2026-04-16 13:35:28.864 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119433288110266 - null null
+2026-04-16 13:35:28.868 +07:00 [INF] Sending file. Request path: '/css/main-bundle.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\main-bundle.css'
+2026-04-16 13:35:28.872 +07:00 [INF] Sending file. Request path: '/css/report.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\report.css'
+2026-04-16 13:35:28.874 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - 200 null text/css 12.1349ms
+2026-04-16 13:35:28.876 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119433288110266 - 200 null text/css 12.8192ms
+2026-04-16 13:35:29.222 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/favicon.ico - null null
+2026-04-16 13:35:29.228 +07:00 [INF] Sending file. Request path: '/favicon.ico'. Physical path: 'E:\C#\Delivery-System\wwwroot\favicon.ico'
+2026-04-16 13:35:29.230 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/favicon.ico - 200 5430 image/x-icon 7.6291ms
+2026-04-16 13:35:36.989 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/Account/Logout - application/x-www-form-urlencoded 225
+2026-04-16 13:35:36.999 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.AccountController.Logout (Delivery-System)'
+2026-04-16 13:35:37.009 +07:00 [INF] Route matched with {action = "Logout", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Logout() on controller Delivery_System.Controllers.AccountController (Delivery-System).
+2026-04-16 13:35:37.012 +07:00 [INF] AuthenticationScheme: Cookies signed out.
+2026-04-16 13:35:37.014 +07:00 [INF] Executing RedirectResult, redirecting to /.
+2026-04-16 13:35:37.015 +07:00 [INF] Executed action Delivery_System.Controllers.AccountController.Logout (Delivery-System) in 3.3192ms
+2026-04-16 13:35:37.017 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.AccountController.Logout (Delivery-System)'
+2026-04-16 13:35:37.018 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/Account/Logout - 302 null null 29.189ms
+2026-04-16 13:35:37.024 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/ - null null
+2026-04-16 13:35:37.030 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.AccountController.Login (Delivery-System)'
+2026-04-16 13:35:37.033 +07:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Login() on controller Delivery_System.Controllers.AccountController (Delivery-System).
+2026-04-16 13:35:37.037 +07:00 [INF] Executing ViewResult, running view Login.
+2026-04-16 13:35:37.047 +07:00 [INF] Executed ViewResult - view Login executed in 10.7141ms.
+2026-04-16 13:35:37.049 +07:00 [INF] Executed action Delivery_System.Controllers.AccountController.Login (Delivery-System) in 13.0714ms
+2026-04-16 13:35:37.051 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.AccountController.Login (Delivery-System)'
+2026-04-16 13:35:37.053 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:35:37.054 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:35:37.056 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/ - 200 null text/html; charset=utf-8 31.8084ms
+2026-04-16 13:35:39.035 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/ - application/x-www-form-urlencoded 208
+2026-04-16 13:35:39.042 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.AccountController.Login (Delivery-System)'
+2026-04-16 13:35:39.053 +07:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(System.String, System.String, Boolean) on controller Delivery_System.Controllers.AccountController (Delivery-System).
+2026-04-16 13:35:39.283 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__username_0='?' (Size = 50), @__hashedPassword_1='?' (Size = 100)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`userID`, `t`.`createdAt`, `t`.`email`, `t`.`fullName`, `t`.`password`, `t`.`phone`, `t`.`roleID`, `t`.`stationID`, `t`.`status`, `t`.`username`
+FROM `tblUsers` AS `t`
+WHERE ((`t`.`username` = @__username_0) AND (`t`.`password` = @__hashedPassword_1)) AND `t`.`status`
+LIMIT 1
+2026-04-16 13:35:39.287 +07:00 [INF] AuthenticationScheme: Cookies signed in.
+2026-04-16 13:35:39.290 +07:00 [INF] Executing RedirectResult, redirecting to /Home/Index.
+2026-04-16 13:35:39.292 +07:00 [INF] Executed action Delivery_System.Controllers.AccountController.Login (Delivery-System) in 235.2373ms
+2026-04-16 13:35:39.294 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.AccountController.Login (Delivery-System)'
+2026-04-16 13:35:39.296 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/ - 302 null null 260.6259ms
+2026-04-16 13:35:39.302 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Home/Index - null null
+2026-04-16 13:35:39.308 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.HomeController.Index (Delivery-System)'
+2026-04-16 13:35:39.318 +07:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller Delivery_System.Controllers.HomeController (Delivery-System).
+2026-04-16 13:35:39.547 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__userId_0='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`
+FROM `tblWorkShifts` AS `t`
+WHERE (`t`.`staffID` = @__userId_0) AND (`t`.`status` = 'ACTIVE')
+LIMIT 1
+2026-04-16 13:35:39.553 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:35:39.563 +07:00 [INF] Executed ViewResult - view Index executed in 11.683ms.
+2026-04-16 13:35:39.565 +07:00 [INF] Executed action Delivery_System.Controllers.HomeController.Index (Delivery-System) in 242.7123ms
+2026-04-16 13:35:39.567 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.HomeController.Index (Delivery-System)'
+2026-04-16 13:35:39.569 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:35:39.572 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:35:39.574 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Home/Index - 200 null text/html; charset=utf-8 271.9205ms
+2026-04-16 13:35:41.593 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Index - null null
+2026-04-16 13:35:41.602 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:35:41.604 +07:00 [INF] Route matched with {action = "Index", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.Nullable`1[System.Int32], System.String, System.Nullable`1[System.Int32], System.String, System.String) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:35:41.841 +07:00 [INF] Executed DbCommand (121ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`stationID`, `t`.`address`, `t`.`isActive`, `t`.`phone`, `t`.`stationName`
+FROM `tblStations` AS `t`
+WHERE `t`.`isActive`
+2026-04-16 13:35:42.069 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:35:42.297 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1))
+2026-04-16 13:35:42.525 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__weekStart_0='?' (DbType = DateTime), @__weekEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Day`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Total`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, CONVERT(`t`.`createdAt`, date) AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__weekStart_0) AND (`t`.`createdAt` < @__weekEnd_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:35:42.753 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t1`.`shiftID`, `t1`.`endTime`, `t1`.`staffID`, `t1`.`startTime`, `t1`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM (
+    SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`
+    FROM `tblWorkShifts` AS `t`
+    ORDER BY `t`.`startTime` DESC
+    LIMIT @__p_0
+) AS `t1`
+INNER JOIN `tblUsers` AS `t0` ON `t1`.`staffID` = `t0`.`userID`
+ORDER BY `t1`.`startTime` DESC
+2026-04-16 13:35:42.981 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID` AS `ShiftId`, COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0) AS `Total`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` IS NOT NULL AND `t`.`shiftID` IN (11, 10, 9, 8, 7, 6, 5, 4, 3, 2)) AND (`t`.`shipStatus` = 'Đã giao'))
+GROUP BY `t`.`shiftID`
+2026-04-16 13:35:42.984 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:35:43.004 +07:00 [INF] Executed ViewResult - view Index executed in 19.9977ms.
+2026-04-16 13:35:43.006 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Index (Delivery-System) in 1398.6332ms
+2026-04-16 13:35:43.009 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:35:43.011 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:35:43.013 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:35:43.014 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Index - 200 null text/html; charset=utf-8 1421.7935ms
+2026-04-16 13:35:43.057 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119433429959408 - null null
+2026-04-16 13:35:43.061 +07:00 [INF] Sending file. Request path: '/css/report.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\report.css'
+2026-04-16 13:35:43.063 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119433429959408 - 200 null text/css 6.8254ms
+2026-04-16 13:37:24.059 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Goods/Index - null null
+2026-04-16 13:37:24.071 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.GoodsController.Index (Delivery-System)'
+2026-04-16 13:37:24.075 +07:00 [INF] Route matched with {action = "Index", controller = "Goods"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller Delivery_System.Controllers.GoodsController (Delivery-System).
+2026-04-16 13:37:24.081 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:37:24.094 +07:00 [INF] Executed ViewResult - view Index executed in 14.4816ms.
+2026-04-16 13:37:24.097 +07:00 [INF] Executed action Delivery_System.Controllers.GoodsController.Index (Delivery-System) in 17.2295ms
+2026-04-16 13:37:24.099 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.GoodsController.Index (Delivery-System)'
+2026-04-16 13:37:24.102 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:37:24.104 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:37:24.106 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Goods/Index - 200 null text/html; charset=utf-8 47.5676ms
+2026-04-16 13:37:24.748 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/List - null null
+2026-04-16 13:37:24.754 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-16 13:37:24.768 +07:00 [INF] Route matched with {action = "List", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] List(System.String, System.String, System.String, System.String, System.String, Int32) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-16 13:37:25.019 +07:00 [INF] Executed DbCommand (117ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`stationID`, `t`.`address`, `t`.`isActive`, `t`.`phone`, `t`.`stationName`
+FROM `tblStations` AS `t`
+WHERE `t`.`isActive`
+2026-04-16 13:37:25.248 +07:00 [INF] Executed DbCommand (108ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+2026-04-16 13:37:25.491 +07:00 [INF] Executed DbCommand (115ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID`, `t`.`amount`, `t`.`createdAt`, `t`.`ct`, `t`.`isDeleted`, `t`.`itemName`, `t`.`note`, `t`.`receiveDate`, `t`.`receiveStation`, `t`.`receiverName`, `t`.`receiverPhone`, `t`.`sendStation`, `t`.`senderName`, `t`.`senderPhone`, `t`.`shiftID`, `t`.`shipStatus`, `t`.`staffInput`, `t`.`staffReceive`, `t`.`tr`, `t`.`tripID`
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+ORDER BY `t`.`createdAt` DESC
+LIMIT @__p_1 OFFSET @__p_0
+2026-04-16 13:37:25.740 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Status`, COUNT(*) AS `Count`
+FROM (
+    SELECT CASE
+        WHEN `t`.`shipStatus` = 'Đã giao' THEN 'delivered'
+        WHEN `t`.`tripID` IS NULL OR (`t`.`tripID` = '') THEN 'pending'
+        ELSE 'shipped'
+    END AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:37:25.762 +07:00 [INF] Executing ViewResult, running view List.
+2026-04-16 13:37:25.845 +07:00 [INF] Executed ViewResult - view List executed in 82.8689ms.
+2026-04-16 13:37:25.847 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.List (Delivery-System) in 1076.2062ms
+2026-04-16 13:37:25.849 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-16 13:37:25.851 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:37:25.853 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:37:25.854 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/List - 200 null text/html; charset=utf-8 1105.8563ms
+2026-04-16 13:37:25.952 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-16 13:37:25.957 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-16 13:37:25.961 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-16 13:37:25.963 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 11.1764ms
+2026-04-16 13:37:26.021 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=gjk-_pi7Du8Vw8e1QTNhYg - null null
+2026-04-16 13:37:26.025 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-16 13:38:25.233 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Index - null null
+2026-04-16 13:38:25.241 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:38:25.243 +07:00 [INF] Route matched with {action = "Index", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.Nullable`1[System.Int32], System.String, System.Nullable`1[System.Int32], System.String, System.String) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:38:25.474 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`stationID`, `t`.`address`, `t`.`isActive`, `t`.`phone`, `t`.`stationName`
+FROM `tblStations` AS `t`
+WHERE `t`.`isActive`
+2026-04-16 13:38:25.701 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:38:25.929 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1))
+2026-04-16 13:38:26.156 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__weekStart_0='?' (DbType = DateTime), @__weekEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Day`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Total`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, CONVERT(`t`.`createdAt`, date) AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__weekStart_0) AND (`t`.`createdAt` < @__weekEnd_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:38:26.385 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t1`.`shiftID`, `t1`.`endTime`, `t1`.`staffID`, `t1`.`startTime`, `t1`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM (
+    SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`
+    FROM `tblWorkShifts` AS `t`
+    ORDER BY `t`.`startTime` DESC
+    LIMIT @__p_0
+) AS `t1`
+INNER JOIN `tblUsers` AS `t0` ON `t1`.`staffID` = `t0`.`userID`
+ORDER BY `t1`.`startTime` DESC
+2026-04-16 13:38:26.612 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID` AS `ShiftId`, COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0) AS `Total`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` IS NOT NULL AND `t`.`shiftID` IN (11, 10, 9, 8, 7, 6, 5, 4, 3, 2)) AND (`t`.`shipStatus` = 'Đã giao'))
+GROUP BY `t`.`shiftID`
+2026-04-16 13:38:26.616 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:38:26.619 +07:00 [INF] Executed ViewResult - view Index executed in 3.0771ms.
+2026-04-16 13:38:26.621 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Index (Delivery-System) in 1373.7969ms
+2026-04-16 13:38:26.623 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:38:26.625 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:38:26.627 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:38:26.629 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Index - 200 null text/html; charset=utf-8 1396.2225ms
+2026-04-16 13:38:26.644 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-16 13:38:26.646 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=gjk-_pi7Du8Vw8e1QTNhYg - 101 null null 60624.6973ms
+2026-04-16 13:38:26.662 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119435066188239 - null null
+2026-04-16 13:38:26.668 +07:00 [INF] Sending file. Request path: '/css/report.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\report.css'
+2026-04-16 13:38:26.671 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119435066188239 - 200 null text/css 8.7237ms
+2026-04-16 13:38:31.289 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Details/7 - null null
+2026-04-16 13:38:31.294 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Details (Delivery-System)'
+2026-04-16 13:38:31.304 +07:00 [INF] Route matched with {action = "Details", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Details(Int32) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:38:31.548 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM `tblWorkShifts` AS `t`
+INNER JOIN `tblUsers` AS `t0` ON `t`.`staffID` = `t0`.`userID`
+WHERE `t`.`shiftID` = @__id_0
+LIMIT 1
+2026-04-16 13:38:31.785 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__id_0='?' (DbType = Int32), @__shift_StaffId_1='?' (Size = 20)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID`, `t`.`amount`, `t`.`createdAt`, `t`.`ct`, `t`.`isDeleted`, `t`.`itemName`, `t`.`note`, `t`.`receiveDate`, `t`.`receiveStation`, `t`.`receiverName`, `t`.`receiverPhone`, `t`.`sendStation`, `t`.`senderName`, `t`.`senderPhone`, `t`.`shiftID`, `t`.`shipStatus`, `t`.`staffInput`, `t`.`staffReceive`, `t`.`tr`, `t`.`tripID`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` = @__id_0) AND (`t`.`staffInput` = @__shift_StaffId_1))
+2026-04-16 13:38:32.030 +07:00 [INF] Executed DbCommand (114ms) [Parameters=[@__shift_StaffId_0='?' (Size = 20), @__shift_StartTime_1='?' (DbType = DateTime), @__shift_EndTime_2='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID`, `t`.`amount`, `t`.`createdAt`, `t`.`ct`, `t`.`isDeleted`, `t`.`itemName`, `t`.`note`, `t`.`receiveDate`, `t`.`receiveStation`, `t`.`receiverName`, `t`.`receiverPhone`, `t`.`sendStation`, `t`.`senderName`, `t`.`senderPhone`, `t`.`shiftID`, `t`.`shipStatus`, `t`.`staffInput`, `t`.`staffReceive`, `t`.`tr`, `t`.`tripID`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((((`t`.`staffReceive` = @__shift_StaffId_0) AND (`t`.`shipStatus` = 'Đã giao')) AND (`t`.`createdAt` >= @__shift_StartTime_1)) AND (`t`.`createdAt` <= @__shift_EndTime_2))
+2026-04-16 13:38:32.274 +07:00 [INF] Executed DbCommand (115ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`tripID`, `t`.`assistantName`, `t`.`createdAt`, `t`.`departure`, `t`.`departureTime`, `t`.`destination`, `t`.`driverName`, `t`.`notes`, `t`.`shiftID`, `t`.`staffCreated`, `t`.`status`, `t`.`tripType`, `t`.`truckID`, `t0`.`truckID`, `t0`.`driverName`, `t0`.`driverPhone`, `t0`.`licensePlate`, `t0`.`notes`, `t0`.`status`
+FROM `tblTrips` AS `t`
+INNER JOIN `tblTrucks` AS `t0` ON `t`.`truckID` = `t0`.`truckID`
+WHERE `t`.`shiftID` = @__id_0
+2026-04-16 13:38:32.284 +07:00 [INF] Executing PartialViewResult, running view _ShiftDetails.
+2026-04-16 13:38:32.309 +07:00 [INF] Executed PartialViewResult - view _ShiftDetails executed in 25.2179ms.
+2026-04-16 13:38:32.311 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Details (Delivery-System) in 1003.494ms
+2026-04-16 13:38:32.312 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Details (Delivery-System)'
+2026-04-16 13:38:32.315 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Details/7 - 200 null text/html; charset=utf-8 1026.2374ms
+2026-04-16 13:39:04.020 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Index - null null
+2026-04-16 13:39:04.026 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:39:04.028 +07:00 [INF] Route matched with {action = "Index", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.Nullable`1[System.Int32], System.String, System.Nullable`1[System.Int32], System.String, System.String) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:39:04.254 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`stationID`, `t`.`address`, `t`.`isActive`, `t`.`phone`, `t`.`stationName`
+FROM `tblStations` AS `t`
+WHERE `t`.`isActive`
+2026-04-16 13:39:04.482 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+2026-04-16 13:39:04.730 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__selectedDate_0='?' (DbType = DateTime), @__tomorrow_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`createdAt` >= @__selectedDate_0) AND (`t`.`createdAt` < @__tomorrow_1))
+2026-04-16 13:39:04.960 +07:00 [INF] Executed DbCommand (114ms) [Parameters=[@__weekStart_0='?' (DbType = DateTime), @__weekEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`Key` AS `Day`, COALESCE(SUM(COALESCE(`t0`.`tr`, 0.0) + COALESCE(`t0`.`ct`, 0.0)), 0.0) AS `Total`
+FROM (
+    SELECT `t`.`ct`, `t`.`tr`, CONVERT(`t`.`createdAt`, date) AS `Key`
+    FROM `tblOrders` AS `t`
+    WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (((`t`.`createdAt` >= @__weekStart_0) AND (`t`.`createdAt` < @__weekEnd_1)) AND (`t`.`shipStatus` = 'Đã giao'))
+) AS `t0`
+GROUP BY `t0`.`Key`
+2026-04-16 13:39:05.190 +07:00 [INF] Executed DbCommand (110ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t1`.`shiftID`, `t1`.`endTime`, `t1`.`staffID`, `t1`.`startTime`, `t1`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM (
+    SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`
+    FROM `tblWorkShifts` AS `t`
+    ORDER BY `t`.`startTime` DESC
+    LIMIT @__p_0
+) AS `t1`
+INNER JOIN `tblUsers` AS `t0` ON `t1`.`staffID` = `t0`.`userID`
+ORDER BY `t1`.`startTime` DESC
+2026-04-16 13:39:05.418 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID` AS `ShiftId`, COALESCE(SUM(COALESCE(`t`.`tr`, 0.0) + COALESCE(`t`.`ct`, 0.0)), 0.0) AS `Total`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` IS NOT NULL AND `t`.`shiftID` IN (11, 10, 9, 8, 7, 6, 5, 4, 3, 2)) AND (`t`.`shipStatus` = 'Đã giao'))
+GROUP BY `t`.`shiftID`
+2026-04-16 13:39:05.422 +07:00 [INF] Executing ViewResult, running view Index.
+2026-04-16 13:39:05.424 +07:00 [INF] Executed ViewResult - view Index executed in 2.7127ms.
+2026-04-16 13:39:05.426 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Index (Delivery-System) in 1396.1899ms
+2026-04-16 13:39:05.428 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Index (Delivery-System)'
+2026-04-16 13:39:05.431 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:39:05.433 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-16 13:39:05.436 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Index - 200 null text/html; charset=utf-8 1415.7844ms
+2026-04-16 13:39:05.472 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - null null
+2026-04-16 13:39:05.472 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119435454241732 - null null
+2026-04-16 13:39:05.479 +07:00 [INF] Sending file. Request path: '/css/main-bundle.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\main-bundle.css'
+2026-04-16 13:39:05.484 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - 200 null text/css 11.5159ms
+2026-04-16 13:39:05.498 +07:00 [INF] Sending file. Request path: '/css/report.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\report.css'
+2026-04-16 13:39:05.501 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/report.css?v=639119435454241732 - 200 null text/css 28.3881ms
+2026-04-16 13:39:05.745 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/favicon.ico - null null
+2026-04-16 13:39:05.750 +07:00 [INF] Sending file. Request path: '/favicon.ico'. Physical path: 'E:\C#\Delivery-System\wwwroot\favicon.ico'
+2026-04-16 13:39:05.753 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/favicon.ico - 200 5430 image/x-icon 7.7868ms
+2026-04-16 13:39:17.010 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Report/Details/4 - null null
+2026-04-16 13:39:17.016 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.ReportController.Details (Delivery-System)'
+2026-04-16 13:39:17.017 +07:00 [INF] Route matched with {action = "Details", controller = "Report"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Details(Int32) on controller Delivery_System.Controllers.ReportController (Delivery-System).
+2026-04-16 13:39:17.245 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`shiftID`, `t`.`endTime`, `t`.`staffID`, `t`.`startTime`, `t`.`status`, `t0`.`userID`, `t0`.`createdAt`, `t0`.`email`, `t0`.`fullName`, `t0`.`password`, `t0`.`phone`, `t0`.`roleID`, `t0`.`stationID`, `t0`.`status`, `t0`.`username`
+FROM `tblWorkShifts` AS `t`
+INNER JOIN `tblUsers` AS `t0` ON `t`.`staffID` = `t0`.`userID`
+WHERE `t`.`shiftID` = @__id_0
+LIMIT 1
+2026-04-16 13:39:17.473 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__id_0='?' (DbType = Int32), @__shift_StaffId_1='?' (Size = 20)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID`, `t`.`amount`, `t`.`createdAt`, `t`.`ct`, `t`.`isDeleted`, `t`.`itemName`, `t`.`note`, `t`.`receiveDate`, `t`.`receiveStation`, `t`.`receiverName`, `t`.`receiverPhone`, `t`.`sendStation`, `t`.`senderName`, `t`.`senderPhone`, `t`.`shiftID`, `t`.`shipStatus`, `t`.`staffInput`, `t`.`staffReceive`, `t`.`tr`, `t`.`tripID`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`shiftID` = @__id_0) AND (`t`.`staffInput` = @__shift_StaffId_1))
+2026-04-16 13:39:17.702 +07:00 [INF] Executed DbCommand (113ms) [Parameters=[@__shift_StaffId_0='?' (Size = 20), @__shift_StartTime_1='?' (DbType = DateTime), @__shift_EndTime_2='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID`, `t`.`amount`, `t`.`createdAt`, `t`.`ct`, `t`.`isDeleted`, `t`.`itemName`, `t`.`note`, `t`.`receiveDate`, `t`.`receiveStation`, `t`.`receiverName`, `t`.`receiverPhone`, `t`.`sendStation`, `t`.`senderName`, `t`.`senderPhone`, `t`.`shiftID`, `t`.`shipStatus`, `t`.`staffInput`, `t`.`staffReceive`, `t`.`tr`, `t`.`tripID`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((((`t`.`staffReceive` = @__shift_StaffId_0) AND (`t`.`shipStatus` = 'Đã giao')) AND (`t`.`createdAt` >= @__shift_StartTime_1)) AND (`t`.`createdAt` <= @__shift_EndTime_2))
+2026-04-16 13:39:17.929 +07:00 [INF] Executed DbCommand (112ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`tripID`, `t`.`assistantName`, `t`.`createdAt`, `t`.`departure`, `t`.`departureTime`, `t`.`destination`, `t`.`driverName`, `t`.`notes`, `t`.`shiftID`, `t`.`staffCreated`, `t`.`status`, `t`.`tripType`, `t`.`truckID`, `t0`.`truckID`, `t0`.`driverName`, `t0`.`driverPhone`, `t0`.`licensePlate`, `t0`.`notes`, `t0`.`status`
+FROM `tblTrips` AS `t`
+INNER JOIN `tblTrucks` AS `t0` ON `t`.`truckID` = `t0`.`truckID`
+WHERE `t`.`shiftID` = @__id_0
+2026-04-16 13:39:17.932 +07:00 [INF] Executing PartialViewResult, running view _ShiftDetails.
+2026-04-16 13:39:17.935 +07:00 [INF] Executed PartialViewResult - view _ShiftDetails executed in 2.2777ms.
+2026-04-16 13:39:17.936 +07:00 [INF] Executed action Delivery_System.Controllers.ReportController.Details (Delivery-System) in 916.7399ms
+2026-04-16 13:39:17.938 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.ReportController.Details (Delivery-System)'
+2026-04-16 13:39:17.940 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Report/Details/4 - 200 null text/html; charset=utf-8 929.5581ms

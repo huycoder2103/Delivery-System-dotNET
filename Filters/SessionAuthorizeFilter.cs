@@ -18,7 +18,7 @@ namespace Delivery_System.Filters
 
             // 2. KIỂM TRA AUTHENTICATION (COOKIE)
             var user = context.HttpContext.User;
-            if (user == null || !user.Identity.IsAuthenticated)
+            if (user == null || user.Identity?.IsAuthenticated != true)
             {
                 context.Result = new RedirectToActionResult("Login", "Account", null);
                 return;

@@ -45,7 +45,7 @@ namespace Delivery_System.Controllers
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.UserId),
                     new Claim(ClaimTypes.Name, user.FullName ?? "Người dùng"),
-                    new Claim(ClaimTypes.Role, user.RoleId),
+                    new Claim(ClaimTypes.Role, user.RoleId ?? ""),
                     new Claim("Username", user.Username),
                     new Claim("Email", user.Email ?? ""),
                     new Claim("StationID", user.StationId?.ToString() ?? "")

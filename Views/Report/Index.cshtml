@@ -91,8 +91,41 @@
     <!-- ========================== TAB 2: NHẬT KÝ LÀM VIỆC ========================== -->
     <div id="tab-history" class="rp-tab-pane">
         <main class="rp-card">
-            <div class="rp-card-title">
+            <div class="rp-card-title rp-d-flex rp-justify-between rp-align-center">
                 <h2>📜 Lịch Sử Hoạt Động gần nhất</h2>
+            </div>
+
+            <div class="rp-card" style="background: #f8fafc; border: 1px dashed #cbd5e1; margin-bottom: 20px; padding: 20px;">
+                <form asp-action="Index" method="GET" class="rp-filter-bar">
+                    <input type="hidden" name="reportDate" value="@reportDate" />
+                    
+                    @if (role == "AD")
+                    {
+                        <div class="rp-filter-group">
+                            <label class="rp-filter-label">Theo Trạm</label>
+                            <select name="stationId" class="rp-filter-input">
+                                <option value="">-- Tất cả các trạm --</option>
+                                @foreach (var s in ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>)
+                                {
+                                    <option value="@s.StationId" selected="@(ViewBag.StationId == s.StationId ? "selected" : null)">@s.StationName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="rp-filter-group">
+                            <label class="rp-filter-label">Tìm Nhân Viên (Tên/ID)</label>
+                            <input type="text" name="searchStaff" class="rp-filter-input" placeholder="Nhập tên hoặc ID..." value="@ViewBag.SearchStaff" />
+                        </div>
+                    }
+
+                    <div class="rp-filter-group">
+                        <label class="rp-filter-label">Theo Ngày</label>
+                        <input type="date" name="logDate" class="rp-filter-input" value="@ViewBag.LogDate" />
+                    </div>
+
+                    <button type="submit" class="rp-btn rp-btn-primary" onclick="sessionStorage.setItem('activeReportTab', 'history')">🔍 LỌC NHẬT KÝ</button>
+                    <a asp-action="Index" asp-route-reportDate="@reportDate" class="rp-btn" style="background: #94a3b8; color: white;" onclick="sessionStorage.setItem('activeReportTab', 'history')">🔄 Reset</a>
+                </form>
             </div>
 
             <div class="rp-table-wrap">
@@ -167,8 +200,23 @@
             document.querySelectorAll('.rp-tab-btn').forEach(b => b.classList.remove('active'));
             
             document.getElementById('tab-' + tabId).classList.add('active');
-            btn.classList.add('active');
+            if (btn) {
+                btn.classList.add('active');
+            } else {
+                // Find button if btn is not provided (e.g. from sessionStorage)
+                document.querySelectorAll('.rp-tab-btn').forEach(b => {
+                    if (b.getAttribute('onclick').includes(tabId)) b.classList.add('active');
+                });
+            }
+            sessionStorage.setItem('activeReportTab', tabId);
         }
+
+        window.onload = function() {
+            const activeTab = sessionStorage.getItem('activeReportTab');
+            if (activeTab && activeTab !== 'summary') {
+                switchReportTab(activeTab);
+            }
+        };
 
         async function openShiftDetails(id) {
             const modal = document.getElementById('shiftDetailsModal');
