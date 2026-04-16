@@ -10,16 +10,25 @@ namespace Delivery_System.Filters
             var controllerName = context.RouteData.Values["controller"]?.ToString();
             var actionName = context.RouteData.Values["action"]?.ToString();
 
-            // 1. NGOẠI LỆ: Không kiểm tra cho trang Login
-            if (controllerName == "Account" && actionName == "Login")
+            // 1. NGOẠI LỆ: Cho phép truy cập trang Login và các trang công khai mà không cần Login
+            if (string.Equals(controllerName, "Account", StringComparison.OrdinalIgnoreCase) && 
+                string.Equals(actionName, "Login", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            if (string.Equals(controllerName, "Home", StringComparison.OrdinalIgnoreCase) && 
+                (string.Equals(actionName, "Error", StringComparison.OrdinalIgnoreCase) || 
+                 string.Equals(actionName, "Privacy", StringComparison.OrdinalIgnoreCase)))
             {
                 return;
             }
 
             // 2. KIỂM TRA AUTHENTICATION (COOKIE)
             var user = context.HttpContext.User;
-            if (user == null || user.Identity?.IsAuthenticated != true)
+            if (user?.Identity?.IsAuthenticated != true)
             {
+                // Nếu chưa login, đẩy về trang Login
                 context.Result = new RedirectToActionResult("Login", "Account", null);
                 return;
             }

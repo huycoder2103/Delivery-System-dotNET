@@ -89,37 +89,51 @@ namespace Delivery_System.Controllers
             }
         }
 
-        // 3. ACTION: LẤY DỮ LIỆU TAB NHẬT KÝ
-        public async Task<IActionResult> GetHistory(string? logDate, int? stationId, string? searchStaff)
+        public async Task<IActionResult> GetHistory()
         {
             var role = User.GetRole();
             var userId = User.GetUserId();
-            var vniNow = TimeHelper.NowVni();
-            ViewBag.StationList = await _context.TblStations.AsNoTracking().Where(s => s.IsActive == true).ToListAsync();
-
-            var query = _context.TblWorkShifts.Include(s => s.Staff).AsQueryable();
-            if (role != "AD") query = query.Where(s => s.StaffId == userId);
-            else {
-                if (stationId.HasValue) query = query.Where(s => s.Staff.StationId == stationId.Value);
-                if (!string.IsNullOrEmpty(searchStaff)) query = query.Where(s => s.StaffId.Contains(searchStaff) || s.Staff.FullName.Contains(searchStaff));
-            }
-
-            // Nếu không chọn ngày, mặc định lấy ngày hiện tại
-            DateTime filterDate = string.IsNullOrEmpty(logDate) ? vniNow.Date : DateTime.Parse(logDate).Date;
-            query = query.Where(s => s.StartTime >= filterDate && s.StartTime < filterDate.AddDays(1));
-
-            var shifts = await query.OrderByDescending(s => s.StartTime).Take(100).ToListAsync();
-            var shiftIds = shifts.Select(s => s.ShiftId).ToList();
             
-            var shiftRevenues = await _context.TblOrders.AsNoTracking()
-                .Where(o => o.ShiftId.HasValue && shiftIds.Contains(o.ShiftId.Value) && o.ShipStatus == "Đã giao")
-                .GroupBy(o => o.ShiftId).Select(g => new { ShiftId = g.Key!.Value, Total = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)) })
-                .ToDictionaryAsync(x => x.ShiftId, x => x.Total);
+            var query = _context.TblWorkShifts.AsNoTracking().AsQueryable();
+            if (role != "AD") query = query.Where(s => s.StaffId == userId);
 
-            foreach (var s in shifts) s.Revenue = shiftRevenues.GetValueOrDefault(s.ShiftId, 0);
+            // TỐI ƯU: Sử dụng Select để MySQL tính toán doanh thu (Revenue) ngay trong câu lệnh SQL
+            var shifts = await query.OrderByDescending(s => s.StartTime)
+                .Take(20)
+                .Select(s => new TblWorkShift {
+                    ShiftId = s.ShiftId,
+                    StaffId = s.StaffId,
+                    StartTime = s.StartTime,
+                    EndTime = s.EndTime,
+                    Status = s.Status,
+                    Staff = new TblUser {
+                        FullName = s.Staff.FullName
+                    },
+                    // Tính doanh thu trực tiếp bằng Subquery (MySQL xử lý cực nhanh)
+                    Revenue = _context.TblOrders
+                        .Where(o => o.ShiftId == s.ShiftId && o.ShipStatus == "Đã giao")
+                        .Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0))
+                })
+                .ToListAsync();
 
-            ViewBag.SelectedLogDate = filterDate.ToString("yyyy-MM-dd");
             return PartialView("_TabHistory", shifts);
+        }
+
+        // ACTION: ADMIN KẾT THÚC CA HỘ NHÂN VIÊN
+        [HttpPost]
+        public async Task<IActionResult> AdminEndShift(int id)
+        {
+            if (User.GetRole() != "AD") return Forbid();
+
+            var shift = await _context.TblWorkShifts.FirstOrDefaultAsync(s => s.ShiftId == id);
+            if (shift != null && shift.Status == "ACTIVE")
+            {
+                shift.Status = "ENDED";
+                shift.EndTime = TimeHelper.NowVni();
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Đã kết thúc ca làm việc của nhân viên!" });
+            }
+            return Json(new { success = false, message = "Không tìm thấy ca làm việc hoặc ca đã kết thúc." });
         }
 
         // 4. ACTION: LẤY DỮ LIỆU TAB HOẠT ĐỘNG (AD)

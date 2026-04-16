@@ -33,8 +33,10 @@ namespace Delivery_System.Controllers
             ViewBag.ActiveStaffCount = await _context.TblWorkShifts.AsNoTracking()
                 .CountAsync(s => s.Status == "ACTIVE");
 
-            var userList = await _context.TblUsers.AsNoTracking()
+            // Lấy danh sách user kèm theo ca làm việc đang hoạt động (nếu có)
+            var userList = await _context.TblUsers
                 .Include(u => u.Station)
+                .Include(u => u.TblWorkShifts.Where(s => s.Status == "ACTIVE"))
                 .OrderBy(u => u.RoleId)
                 .ToListAsync();
 
@@ -43,7 +45,7 @@ namespace Delivery_System.Controllers
                 .ToListAsync();
 
             ViewBag.StationList = stationList;
-
+            // ... (rest of Index logic remains the same)
             ViewBag.Announcements = await _context.TblAnnouncements.AsNoTracking()
                 .Include(a => a.CreatedByNavigation)
                 .OrderByDescending(a => a.CreatedAt)
@@ -72,6 +74,25 @@ namespace Delivery_System.Controllers
             ViewBag.ChartData = chartData;
 
             return View(userList);
+        }
+
+        // Action mới: Admin kết thúc ca từ danh sách nhân viên
+        [HttpPost]
+        public async Task<IActionResult> AdminEndShift(string userId)
+        {
+            if (!IsAdmin()) return Forbid();
+
+            var activeShift = await _context.TblWorkShifts
+                .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
+
+            if (activeShift != null)
+            {
+                activeShift.Status = "ENDED";
+                activeShift.EndTime = TimeHelper.NowVni();
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"Đã kết thúc ca làm việc của nhân viên {userId}!";
+            }
+            return RedirectToAction("Index");
         }
 
         [HttpPost]

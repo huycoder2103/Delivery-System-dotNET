@@ -46,7 +46,7 @@ builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<Delivery_System.Filters.SessionAuthorizeFilter>();
 })
-.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<OrderValidator>());
+.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Delivery_System.Validators.OrderValidator>());
 
 // Đăng ký kết nối Database MySQL với DbContext Pooling để tối ưu hóa hiệu suất
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";

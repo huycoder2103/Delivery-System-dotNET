@@ -22,7 +22,7 @@ body {
 }
 
 .admin-wrapper {
-    max-width: 1300px;
+    max-width: 1500px;
     margin: 0 auto;
     padding: 20px;
 }
@@ -237,7 +237,7 @@ tr:hover { background: #f8fafc; }
 .action-group {
     display: flex;
     gap: 8px;
-    justify-content: center;
+    justify-content: left;
     flex-wrap: wrap;
 }
 

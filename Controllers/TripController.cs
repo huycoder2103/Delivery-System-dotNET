@@ -101,6 +101,10 @@ namespace Delivery_System.Controllers
             var userId = User.GetUserId();
             var role = User.GetRole();
 
+            // TỐI ƯU: Lấy trạm từ Cookie
+            var userStationName = User.GetStationName();
+            ViewBag.UserStationName = userStationName;
+
             var activeShift = await _context.TblWorkShifts
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
@@ -117,34 +121,82 @@ namespace Delivery_System.Controllers
             var userId = User.GetUserId();
             var role = User.GetRole();
 
+            // TỐI ƯU: Lấy trạm từ Cookie
+            var userStationName = User.GetStationName();
+
+            // Ràng buộc trạm đi: Nếu là NV thì trạm đi PHẢI là trạm của họ
+            if (role != "AD")
+            {
+                if (!string.IsNullOrEmpty(userStationName)) trip.Departure = userStationName;
+                else
+                {
+                    ModelState.AddModelError("", "Tài khoản của bạn chưa được gán trạm làm việc. Vui lòng liên hệ Admin.");
+                }
+            }
+
             // Lấy ShiftId đang hoạt động của nhân viên
             var activeShift = await _context.TblWorkShifts
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
 
+            // Tự động tạo mã chuyến xe
+            try {
+                var lastTrip = await _context.TblTrips.AsNoTracking()
+                    .Where(t => t.TripId.StartsWith("TRP-"))
+                    .OrderByDescending(t => t.TripId)
+                    .FirstOrDefaultAsync();
+                int nextIdNum = 1;
+                if (lastTrip != null && int.TryParse(lastTrip.TripId.Replace("TRP-", ""), out int lastId)) 
+                    nextIdNum = lastId + 1;
+                trip.TripId = "TRP-" + nextIdNum.ToString("D6");
+            } catch {
+                trip.TripId = "TRP-" + DateTime.Now.Ticks.ToString().Substring(10);
+            }
+
+            ModelState.Remove("TripId");
+            ModelState.Remove("TripType");
+            ModelState.Remove("Truck");
+
             if (role != "AD" && activeShift == null)
             {
-                TempData["ErrorMessage"] = "Bạn chưa bắt đầu ca làm việc! Vui lòng bắt đầu ca tại trang chủ trước khi tạo chuyến.";
+                TempData["ErrorMessage"] = "Bạn chưa bắt đầu ca làm việc!";
+                ViewBag.HasActiveShift = false;
                 ViewBag.StationList = await GetCachedStationsAsync();
                 ViewBag.TruckList = await GetCachedTrucksAsync();
+                ViewBag.UserStationName = userStationName;
                 return View(trip);
             }
 
-            var lastTrip = await _context.TblTrips.AsNoTracking().Where(t => t.TripId.StartsWith("TRP-")).OrderByDescending(t => t.TripId).FirstOrDefaultAsync();
-            int nextIdNum = 1;
-            if (lastTrip != null && int.TryParse(lastTrip.TripId.Replace("TRP-", ""), out int lastId)) nextIdNum = lastId + 1;
+            if (!ModelState.IsValid)
+            {
+                ViewBag.HasActiveShift = (role == "AD" || activeShift != null);
+                ViewBag.StationList = await GetCachedStationsAsync();
+                ViewBag.TruckList = await GetCachedTrucksAsync();
+                ViewBag.UserStationName = userStationName;
+                return View(trip);
+            }
 
-            trip.TripId = "TRP-" + nextIdNum.ToString("D6");
-            trip.StaffCreated = userId;
-            trip.CreatedAt = TimeHelper.NowVni();
-            trip.Status = "Đang đi";
-            trip.TripType = "depart";
-            trip.ShiftId = activeShift?.ShiftId; // Gán ShiftId nếu có
+            try {
+                trip.StaffCreated = userId;
+                trip.CreatedAt = TimeHelper.NowVni();
+                trip.Status = "Đang đi";
+                trip.TripType = "depart";
+                trip.ShiftId = activeShift?.ShiftId;
 
-            _context.TblTrips.Add(trip);
-            await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Tạo chuyến xe mới thành công!";
-            return RedirectToAction("List");
+                _context.TblTrips.Add(trip);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Tạo chuyến xe mới thành công!";
+                return RedirectToAction("List");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Lỗi lưu Database: " + ex.Message);
+                ViewBag.HasActiveShift = (role == "AD" || activeShift != null);
+                ViewBag.StationList = await GetCachedStationsAsync();
+                ViewBag.TruckList = await GetCachedTrucksAsync();
+                ViewBag.UserStationName = userStationName;
+                return View(trip);
+            }
         }
 
         [HttpGet]
@@ -183,8 +235,23 @@ namespace Delivery_System.Controllers
         public async Task<IActionResult> Arrive(string id)
         {
             var userId = User.GetUserId();
+            var role = User.GetRole();
+            
             var trip = await _context.TblTrips.FindAsync(id);
-            if (trip != null)
+            if (trip == null) return NotFound();
+
+            // TỐI ƯU: Lấy trạm từ Cookie
+            if (role != "AD")
+            {
+                var userStationName = User.GetStationName();
+                if (string.IsNullOrEmpty(userStationName) || trip.Destination != userStationName)
+                {
+                    TempData["ErrorMessage"] = "Bạn không có quyền xác nhận chuyến xe này. Chỉ nhân viên tại trạm đích (" + trip.Destination + ") mới được thực hiện.";
+                    return RedirectToAction("ArrivalList");
+                }
+            }
+
+            if (trip.Status != "Đã đến")
             {
                 trip.Status = "Đã đến";
                 

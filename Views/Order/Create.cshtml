@@ -31,16 +31,21 @@
             <div class="form-row form-row-mt-20">
                 <div class="form-group">
                     <label>Trạm Gửi <span class="required-star">*</span></label>
-                    <select asp-for="SendStation" id="sendStation" required>
+                    <select asp-for="SendStation" id="sendStation" required disabled="@(!User.IsInRole("AD"))">
                         <option value="">-- Chọn Trạm Gửi --</option>
                         @if (stationList != null)
                         {
                             foreach (var s in stationList)
                             {
-                                <option value="@s.StationName">@s.StationName (@s.StationId)</option>
+                                bool isUserStation = (s.StationName == ViewBag.UserStationName);
+                                <option value="@s.StationName" selected="@(isUserStation)">@s.StationName (@s.StationId)</option>
                             }
                         }
                     </select>
+                    @if (!User.IsInRole("AD"))
+                    {
+                        <input type="hidden" asp-for="SendStation" value="@ViewBag.UserStationName" />
+                    }
                     <span asp-validation-for="SendStation" class="text-danger"></span>
                 </div>
                 <div class="form-group">
@@ -51,6 +56,7 @@
                         {
                             foreach (var s in stationList)
                             {
+                                if (!User.IsInRole("AD") && s.StationName == ViewBag.UserStationName) continue;
                                 <option value="@s.StationName">@s.StationName (@s.StationId)</option>
                             }
                         }
@@ -122,7 +128,7 @@
             <div class="modal-icon-large">⏰</div>
             <h2 class="modal-title-bold">Chưa Vào Ca Làm Việc!</h2>
             <p class="modal-text-muted">Bạn cần phải bắt đầu ca làm việc trước khi có thể nhập hàng mới vào hệ thống.</p>
-            <form asp-controller="Shift" asp-action="StartShift" method="POST">
+            <form asp-controller="Home" asp-action="StartShift" method="POST">
                 <button type="submit" class="btn-full-modern">
                     🚀 Bắt Đầu Ca Ngay
                 </button>

@@ -20,6 +20,16 @@
     <!-- Nạp SweetAlert2 ở đầu để các trang con dùng được ngay -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
+    <style>
+        /* Đảm bảo thông báo Toast hiện lên trên cùng và không bị Navbar che */
+        .swal2-container {
+            z-index: 99999 !important;
+        }
+        .swal2-toast {
+            margin-top: 70px !important; /* Đẩy xuống dưới Navbar */
+        }
+    </style>
+    
     @RenderSection("Styles", required: false)
 </head>
 <body>
@@ -128,6 +138,39 @@
         menuContainer.addEventListener('mouseleave', () => {
             const currentActive = document.querySelector('.nav-links li a.active');
             if (currentActive) moveIndicator(currentActive);
+        });
+
+        // Cấu hình SweetAlert2 Toast toàn cục
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-start', // Đổi sang góc trên bên trái
+            showConfirmButton: false,
+            timer: 4000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        // Kiểm tra thông báo từ TempData gửi từ Backend
+        document.addEventListener('DOMContentLoaded', function() {
+            var successMsg = '@TempData["SuccessMessage"]';
+            var errorMsg = '@TempData["ErrorMessage"]';
+
+            if (successMsg && successMsg !== '') {
+                Toast.fire({
+                    icon: 'success',
+                    title: successMsg
+                });
+            }
+
+            if (errorMsg && errorMsg !== '') {
+                Toast.fire({
+                    icon: 'error',
+                    title: errorMsg
+                });
+            }
         });
 
         function toggleUserDropdown(event) {

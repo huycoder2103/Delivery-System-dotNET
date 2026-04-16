@@ -4,32 +4,7 @@
 }
 
 <main class="rp-card">
-    <div class="rp-card-title"><h2>📜 Nhật Ký Hoạt Động Gần Nhất</h2></div>
-
-    <div class="rp-card" style="background: #f8fafc; border: 1px dashed #cbd5e1; margin-bottom: 20px; padding: 20px;">
-        <form onsubmit="loadTabContent('history', event)" class="rp-filter-bar">
-            @if (role == "AD") {
-                <div class="rp-filter-group">
-                    <label class="rp-filter-label">Theo Trạm</label>
-                    <select name="stationId" class="rp-filter-input">
-                        <option value="">-- Tất cả các trạm --</option>
-                        @foreach (var s in ViewBag.StationList) {
-                            <option value="@s.StationId">@s.StationName</option>
-                        }
-                    </select>
-                </div>
-                <div class="rp-filter-group">
-                    <label class="rp-filter-label">Nhân Viên (Tên/ID)</label>
-                    <input type="text" name="searchStaff" class="rp-filter-input" placeholder="Nhập tên/ID..." />
-                </div>
-            }
-            <div class="rp-filter-group">
-                <label class="rp-filter-label">Ngày</label>
-                <input type="date" name="logDate" class="rp-filter-input" value="@ViewBag.SelectedLogDate" />
-            </div>
-            <button type="submit" class="rp-btn rp-btn-primary">🔍 Lọc dữ liệu</button>
-        </form>
-    </div>
+    <div class="rp-card-title"><h2>📜 Nhật Ký 20 Hoạt Động Gần Nhất</h2></div>
 
     <div class="rp-table-wrap">
         <table class="rp-table">
@@ -44,15 +19,35 @@
                         <tr>
                             <td>
                                 <div class="rp-avatar-wrap">
-                                    <div class="rp-avatar">@item.Staff.FullName.Substring(0,1).ToUpper()</div>
+                                    <div class="rp-avatar" style="background: #6366f1;">@item.Staff.FullName.Substring(0,1).ToUpper()</div>
                                     <div><div class="rp-staff-name">@item.Staff.FullName</div><div class="rp-staff-id">ID: @item.StaffId</div></div>
                                 </div>
                             </td>
                             <td>@item.StartTime.ToString("dd/MM HH:mm")</td>
                             <td>@(item.EndTime?.ToString("dd/MM HH:mm") ?? "—")</td>
                             <td><span class="rp-text-revenue">@item.Revenue.ToString("N0") K</span></td>
-                            <td><span class="rp-badge @(item.Status == "ACTIVE" ? "rp-badge-active" : "rp-badge-ended")">@(item.Status == "ACTIVE" ? "Đang trực" : "Đã nghỉ")</span></td>
-                            <td class="rp-text-center"><button type="button" onclick="openShiftDetails(@item.ShiftId)" class="rp-btn-s rp-btn-s-blue">👁️ Chi tiết</button></td>
+                            <td>
+                                @if (item.Status == "ACTIVE")
+                                {
+                                    <span class="rp-badge rp-badge-active">Đang trực</span>
+                                }
+                                else
+                                {
+                                    <span class="rp-badge rp-badge-ended">Đã nghỉ</span>
+                                }
+                            </td>
+                            <td class="rp-text-center">
+                                <div style="display: flex; gap: 5px; justify-content: center;">
+                                    <button type="button" onclick="openShiftDetails(@item.ShiftId)" class="rp-btn-s rp-btn-s-blue">👁️ Chi tiết</button>
+                                    
+                                    @if (role == "AD" && item.Status == "ACTIVE")
+                                    {
+                                        <button type="button" onclick="adminEndShift(@item.ShiftId, '@item.Staff.FullName')" class="rp-btn-s" style="background: #ef4444; color: white; border: none;">
+                                            🛑 Kết thúc ca hộ
+                                        </button>
+                                    }
+                                </div>
+                            </td>
                         </tr>
                     }
                 } else { <tr><td colspan="6" class="rp-text-center p-4">Không tìm thấy nhật ký làm việc.</td></tr> }
@@ -60,3 +55,31 @@
         </table>
     </div>
 </main>
+
+<script>
+    function adminEndShift(shiftId, staffName) {
+        Swal.fire({
+            title: 'Xác nhận kết thúc ca?',
+            text: "Bạn đang thực hiện kết thúc ca làm việc cho nhân viên: " + staffName,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Đúng, kết thúc ngay!',
+            cancelButtonText: 'Hủy bỏ'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.post('/Report/AdminEndShift', { id: shiftId }, function (res) {
+                    if (res.success) {
+                        Swal.fire('Thành công!', res.message, 'success').then(() => {
+                            // Tải lại tab Nhật ký
+                            loadTabContent('history');
+                        });
+                    } else {
+                        Swal.fire('Lỗi!', res.message, 'error');
+                    }
+                });
+            }
+        })
+    }
+</script>

@@ -23,19 +23,6 @@
     </div>
 
     <div class="body">
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <div class="msg-success">
-                ✅ @TempData["SuccessMessage"]
-            </div>
-        }
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <div class="msg-error">
-                ❌ @TempData["ErrorMessage"]
-            </div>
-        }
-
         <div class="info">
             Các đơn hàng <strong>Chưa Chuyển</strong> có trạm gửi là
             <strong>"@trip?.Departure"</strong> và trạm nhận là <strong>"@trip?.Destination"</strong> — sẵn sàng gán lên chuyến này.

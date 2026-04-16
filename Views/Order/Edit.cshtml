@@ -38,7 +38,7 @@
             <div class="form-row form-row-mt-20">
                 <div class="form-group">
                     <label>Trạm Gửi <span class="required-star">*</span></label>
-                    <select asp-for="SendStation" id="sendStation" required>
+                    <select asp-for="SendStation" id="sendStation" required disabled="@(!User.IsInRole("AD"))">
                         <option value="">-- Chọn Trạm Gửi --</option>
                         @if (stationList != null)
                         {
@@ -46,7 +46,12 @@
                             {
                                 <option value="@s.StationName">@s.StationName (@s.StationId)</option>
                             }
-                        }                    </select>
+                        }
+                    </select>
+                    @if (!User.IsInRole("AD"))
+                    {
+                        <input type="hidden" asp-for="SendStation" value="@Model.SendStation" />
+                    }
                 </div>
                 <div class="form-group">
                     <label>Trạm Nhận <span class="required-star">*</span></label>
@@ -56,9 +61,11 @@
                         {
                             foreach (var s in stationList)
                             {
+                                if (!User.IsInRole("AD") && s.StationName == ViewBag.UserStationName) continue;
                                 <option value="@s.StationName">@s.StationName (@s.StationId)</option>
                             }
-                        }                    </select>
+                        }
+                    </select>
                 </div>
             </div>
         </div>

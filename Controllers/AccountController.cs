@@ -40,15 +40,25 @@ namespace Delivery_System.Controllers
 
             if (user != null)
             {
+                // Lấy tên trạm một cách an toàn
+                string stationName = "";
+                if (user.StationId.HasValue)
+                {
+                    var station = await _context.TblStations.AsNoTracking()
+                        .FirstOrDefaultAsync(s => s.StationId == user.StationId);
+                    stationName = station?.StationName ?? "";
+                }
+
                 // 1. Tạo danh sách Claims (Thông tin người dùng sẽ lưu trong Cookie)
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.NameIdentifier, user.UserId),
+                    new Claim(ClaimTypes.NameIdentifier, user.UserId ?? ""),
                     new Claim(ClaimTypes.Name, user.FullName ?? "Người dùng"),
                     new Claim(ClaimTypes.Role, user.RoleId ?? ""),
-                    new Claim("Username", user.Username),
+                    new Claim("Username", user.Username ?? ""),
                     new Claim("Email", user.Email ?? ""),
-                    new Claim("StationID", user.StationId?.ToString() ?? "")
+                    new Claim("StationID", user.StationId?.ToString() ?? ""),
+                    new Claim("StationName", stationName) // Lưu tên trạm vào Cookie
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

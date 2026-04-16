@@ -47,15 +47,6 @@
             </div>
         </section>
 
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <div class="alert-box alert-error">⚠️ @TempData["ErrorMessage"]</div>
-        }
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <div class="alert-box alert-success">✅ @TempData["SuccessMessage"]</div>
-        }
-
         <div class="tabs-container">
             <button id="btnTabStaff" class="btn-tab active" onclick="showTab('staff')">👥 Quản Lý Nhân Viên</button>
             <button id="btnTabStation" class="btn-tab" onclick="showTab('station')">🏢 Quản Lý Trạm</button>
@@ -71,9 +62,21 @@
                 </div>
             </div>
 
-            <div class="search-container">
-                <i>🔍</i>
-                <input type="text" id="staffSearch" placeholder="Tìm kiếm tên hoặc số điện thoại..." oninput="filterStaff(this.value)">
+            <div class="search-container" style="display: flex; gap: 10px; align-items: center;">
+                <div style="flex: 1; position: relative;">
+                    <i style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%);">🔍</i>
+                    <input type="text" id="staffSearch" placeholder="Tìm kiếm tên hoặc số điện thoại..." oninput="filterStaff()" style="padding-left: 35px; width: 100%;">
+                </div>
+                <select id="stationFilter" onchange="filterStaff()" class="form-control-modern" style="width: 200px; margin-bottom: 0;">
+                    <option value="">-- Tất cả các trạm --</option>
+                    @if (ViewBag.StationList != null)
+                    {
+                        foreach (var s in ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>)
+                        {
+                            <option value="@s.StationId">@s.StationName (@s.StationId)</option>
+                        }
+                    }
+                </select>
             </div>
 
             <div class="table-responsive">
@@ -86,13 +89,15 @@
                             <th>SĐT</th>
                             <th>Quyền Hạn</th>
                             <th>Trạng Thái</th>
+                            <th>Ca Làm</th>
                             <th class="text-center">Thao Tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var user in Model)
                         {
-                            <tr class="staff-row" data-name="@user.FullName.ToLower()" data-phone="@user.Phone">
+                            bool isInShift = user.TblWorkShifts.Any(s => s.Status == "ACTIVE");
+                            <tr class="staff-row" data-name="@user.FullName.ToLower()" data-phone="@user.Phone" data-station="@user.StationId">
                                 <td><strong class="text-primary">@user.UserId</strong></td>
                                 <td>
                                     <div class="font-bold">@user.FullName</div>
@@ -123,13 +128,32 @@
                                     </span>
                                 </td>
                                 <td>
+                                    @if (isInShift)
+                                    {
+                                        <span class="badge" style="background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0;">● Trong ca</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca;">● Ngoài ca</span>
+                                    }
+                                </td>
+                                <td>
                                     <div class="action-group">
+                                        
+
                                         <button class="btn-s btn-s-blue" onclick="showChangePassModal('@user.UserId', '@user.FullName')">Đổi MK</button>
                                     
                                         <button class="btn-s btn-s-cyan"
                                                 onclick="showDetailsModal('@user.UserId', '@user.Username', '@user.FullName', '@(user.RoleId == "AD" ? "Admin" : "Nhân Viên")', '@user.Phone', '@user.Email', '@user.Status', '@user.CreatedAt?.ToString("dd/MM/yyyy HH:mm")', '@(user.StationId)')">
                                             Chi tiết
                                         </button>
+                                        @if (isInShift)
+                                        {
+                                            <form asp-action="AdminEndShift" method="POST" class="display-inline" onsubmit="return confirm('Bạn có chắc chắn muốn kết thúc ca hộ nhân viên này?')">
+                                                <input type="hidden" name="userId" value="@user.UserId">
+                                                <button type="submit" class="btn-s btn-s-red">Kết ca</button>
+                                            </form>
+                                        }
 
                                         @if (user.RoleId != "AD")
                                         {
@@ -419,6 +443,27 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // --- GHI NHỚ TAB ĐANG MỞ ---
+        let currentAdminTab = sessionStorage.getItem('activeAdminTab') || 'staff';
+
+        window.onload = function() {
+            showTab(currentAdminTab);
+        };
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.btn-tab').forEach(b => b.classList.remove('active'));
+
+            if (tabName === 'staff') {
+                document.getElementById('tabStaff').style.display = 'block';
+                document.getElementById('btnTabStaff').classList.add('active');
+            } else {
+                document.getElementById('tabStation').style.display = 'block';
+                document.getElementById('btnTabStation').classList.add('active');
+            }
+            sessionStorage.setItem('activeAdminTab', tabName);
+        }
+
         // --- SIGNALR REAL-TIME ---
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("/deliveryHub")
@@ -427,8 +472,6 @@
 
         connection.on("UpdateOrderList", function () {
             console.log("Admin nhận thông báo cập nhật dữ liệu...");
-            // Tải lại trang Admin để cập nhật con số doanh thu và biểu đồ
-            // Để chuyên nghiệp hơn, ta có thể dùng AJAX, nhưng reload trang là cách an toàn nhất để cập nhật toàn bộ KPI
             location.reload(); 
         });
 
@@ -488,19 +531,6 @@
             if (p1 !== p2) { document.getElementById('cpPassErr').style.display = 'block'; return false; } return true;
         }
 
-        function showTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-            document.querySelectorAll('.btn-tab').forEach(b => b.classList.remove('active'));
-
-            if (tabName === 'staff') {
-                document.getElementById('tabStaff').style.display = 'block';
-                document.getElementById('btnTabStaff').classList.add('active');
-            } else {
-                document.getElementById('tabStation').style.display = 'block';
-                document.getElementById('btnTabStation').classList.add('active');
-            }
-        }
-
         function showStationModal(id = 0, name = '', addr = '', phone = '') {
             document.getElementById('stationId').value = id;
             document.getElementById('stationName').value = name;
@@ -522,7 +552,11 @@
             }).then((result) => { if (result.isConfirmed) document.getElementById('deleteStationForm-' + id).submit(); });
         }
 
+        // --- QUẢN LÝ NHÂN SỰ TẠI TRẠM ---
+        let hasStaffChanges = false;
+
         async function showStaffStationModal(stationId, stationName) {
+            hasStaffChanges = false; // Reset trạng thái khi mở modal mới
             document.getElementById('currentStationId').value = stationId;
             document.getElementById('staffStationModalTitle').textContent = '👥 Nhân Sự Tại: ' + stationName;
             
@@ -532,7 +566,10 @@
 
         function hideStaffStationModal() {
             document.getElementById('staffStationModal').style.display = 'none';
-            location.reload();
+            // Chỉ reload nếu có thay đổi để tránh lãng phí tài nguyên
+            if (hasStaffChanges) {
+                location.reload();
+            }
         }
 
         async function refreshStaffLists(stationId) {
@@ -576,7 +613,10 @@
 
             const response = await fetch('/Admin/AddStaffToStation', { method: 'POST', body: formData });
             const data = await response.json();
-            if (data.success) await refreshStaffLists(stationId);
+            if (data.success) {
+                hasStaffChanges = true; // Đánh dấu là đã có thay đổi
+                await refreshStaffLists(stationId);
+            }
             else alert(data.message);
         }
 
@@ -587,7 +627,10 @@
 
             const response = await fetch('/Admin/RemoveStaffFromStation', { method: 'POST', body: formData });
             const data = await response.json();
-            if (data.success) await refreshStaffLists(stationId);
+            if (data.success) {
+                hasStaffChanges = true; // Đánh dấu là đã có thay đổi
+                await refreshStaffLists(stationId);
+            }
             else alert(data.message);
         }
 
@@ -625,12 +668,30 @@
             }
         }
 
-        function filterStaff(kw) {
-            const k = kw.toLowerCase(); document.querySelectorAll('.staff-row').forEach(r => {
-                const n = r.getAttribute('data-name'); const p = r.getAttribute('data-phone');
-                r.style.display = (n.includes(k) || p.includes(k)) ? '' : 'none';
+        function filterStaff() {
+            const kw = document.getElementById('staffSearch').value.toLowerCase();
+            const stationId = document.getElementById('stationFilter').value;
+            
+            document.querySelectorAll('.staff-row').forEach(r => {
+                const name = r.getAttribute('data-name') || '';
+                const phone = r.getAttribute('data-phone') || '';
+                const station = r.getAttribute('data-station') || '';
+                
+                const matchesSearch = name.includes(kw) || phone.includes(kw);
+                const matchesStation = stationId === "" || station === stationId;
+                
+                r.style.display = (matchesSearch && matchesStation) ? '' : 'none';
             });
         }
-        window.onclick = (e) => { if (e.target.className === 'modal') { hideAddModal(); hideChangePassModal(); hideDetailsModal(); } };
+        window.onclick = (e) => { 
+            if (e.target.className === 'modal') { 
+                hideAddModal(); 
+                hideChangePassModal(); 
+                hideDetailsModal(); 
+                hideStationModal();
+                hideStaffStationModal();
+                hideAssignStationModal();
+            } 
+        };
     </script>
 }

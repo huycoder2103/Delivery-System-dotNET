@@ -18,6 +18,9 @@ namespace Delivery_System.Helpers
             var sid = user.FindFirst("StationID")?.Value;
             return int.TryParse(sid, out int id) ? id : null;
         }
+
+        public static string GetStationName(this ClaimsPrincipal user) =>
+            user.FindFirst("StationName")?.Value ?? "";
         
         public static string GetUsername(this ClaimsPrincipal user) =>
             user.FindFirst("Username")?.Value ?? "";

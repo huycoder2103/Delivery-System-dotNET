@@ -19,6 +19,8 @@
             </div>
         </div>
 
+        <div asp-validation-summary="All" class="text-danger mb-20"></div>
+
         <div class="modern-card">
             <!-- Dòng 1: Xe và Trạm -->
             <div class="form-row">
@@ -39,15 +41,21 @@
 
                 <div class="form-col">
                     <label>Trạm Xuất Phát <span class="required-star">*</span></label>
-                    <select asp-for="Departure" id="departure" required>
+                    <select asp-for="Departure" id="departure" required disabled="@(!User.IsInRole("AD"))">
                         <option value="">-- Chọn Trạm Đi --</option>
                         @if (stationList != null)
                         {
                             foreach (var s in stationList)
                             {
-                                <option value="@s.StationName">@s.StationName (@s.StationId)</option>
+                                bool isUserStation = (s.StationName == ViewBag.UserStationName);
+                                <option value="@s.StationName" selected="@(isUserStation)">@s.StationName (@s.StationId)</option>
                             }
-                        }                    </select>
+                        }
+                    </select>
+                    @if (!User.IsInRole("AD"))
+                    {
+                        <input type="hidden" asp-for="Departure" value="@ViewBag.UserStationName" />
+                    }
                 </div>
 
                 <div class="form-col">
@@ -58,6 +66,7 @@
                         {
                             foreach (var s in stationList)
                             {
+                                if (!User.IsInRole("AD") && s.StationName == ViewBag.UserStationName) continue;
                                 <option value="@s.StationName">@s.StationName (@s.StationId)</option>
                             }
                         }                    </select>
@@ -128,7 +137,7 @@
             <h2 class="shift-modal-title">Chưa Vào Ca Làm Việc!</h2>
             <p class="shift-modal-desc">Bạn cần phải bắt đầu ca làm việc trước khi có thể khởi tạo chuyến xe mới.</p>
             
-            <form asp-controller="Shift" asp-action="Start" method="POST">
+            <form asp-controller="Home" asp-action="StartShift" method="POST">
                 <button type="submit" class="btn-modern-save btn-start-shift">
                     🚀 BẮT ĐẦU CA NGAY
                 </button>

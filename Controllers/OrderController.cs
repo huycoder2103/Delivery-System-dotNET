@@ -118,11 +118,25 @@ namespace Delivery_System.Controllers
             
             var order = await _context.TblOrders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == id);
             if (order == null) return NotFound();
-            if (role != "AD" && order.StaffInput != userId) return RedirectToAction("List");
             
-            var matchingTrips = await _context.VwTripLists.AsNoTracking().Where(t => t.Departure == order.SendStation && t.Destination == order.ReceiveStation && t.Status == "Đang đi").ToListAsync();
-            ViewBag.OrderForShip = order;
-            return View(matchingTrips);
+            // Cho phép Admin hoặc nhân viên tại trạm gửi được điều phối đơn hàng
+            if (role != "AD")
+            {
+                var user = await _context.TblUsers.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId);
+                var userStation = (await _context.TblStations.AsNoTracking().FirstOrDefaultAsync(s => s.StationId == user.StationId))?.StationName;
+                if (order.SendStation != userStation)
+                {
+                    TempData["ErrorMessage"] = "Bạn không có quyền điều phối đơn hàng của trạm khác!";
+                    return RedirectToAction("List");
+                }
+            }
+            
+            var matchingTrips = await _context.VwTripLists.AsNoTracking()
+                .Where(t => t.Departure == order.SendStation && t.Destination == order.ReceiveStation && t.Status == "Đang đi")
+                .ToListAsync();
+
+            ViewBag.AvailableTrips = matchingTrips;
+            return View(order);
         }
 
         [HttpPost]
@@ -229,6 +243,11 @@ namespace Delivery_System.Controllers
             var order = await _context.TblOrders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == id);
             if (order == null || (role != "AD" && order.StaffInput != userId)) return RedirectToAction("List");
             
+            // Lấy trạm của nhân viên để khóa trạm gửi
+            var user = await _context.TblUsers.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId);
+            int? sId = user?.StationId;
+            ViewBag.UserStationName = (await _context.TblStations.AsNoTracking().FirstOrDefaultAsync(s => s.StationId == sId))?.StationName;
+
             ViewBag.StationList = await GetCachedStationsAsync();
             return View(order);
         }
@@ -236,25 +255,39 @@ namespace Delivery_System.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(TblOrder order)
         {
+            var userId = User.GetUserId();
+            var role = User.GetRole();
+
+            // Nếu là nhân viên, cưỡng bức trạm gửi về trạm của họ (đề phòng can thiệp trình duyệt)
+            if (role != "AD")
+            {
+                var user = await _context.TblUsers.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId);
+                int? sId = user?.StationId;
+                var userStation = (await _context.TblStations.AsNoTracking().FirstOrDefaultAsync(s => s.StationId == sId))?.StationName;
+                if (!string.IsNullOrEmpty(userStation)) order.SendStation = userStation;
+            }
+
             if (!ModelState.IsValid)
             {
                 ViewBag.StationList = await GetCachedStationsAsync();
                 return View(order);
             }
             
-            var userId = User.GetUserId();
-            var role = User.GetRole();
-            
             var existing = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == order.OrderId);
             if (existing != null && (role == "AD" || existing.StaffInput == userId)) {
-                existing.ItemName = order.ItemName; existing.SendStation = order.SendStation; existing.ReceiveStation = order.ReceiveStation;
-                existing.SenderName = string.IsNullOrWhiteSpace(order.SenderName) ? "None" : order.SenderName;
+                existing.ItemName = order.ItemName; 
+                existing.SendStation = order.SendStation; 
+                existing.ReceiveStation = order.ReceiveStation;
+                existing.SenderName = string.IsNullOrWhiteSpace(order.SenderName) ? "" : order.SenderName;
                 existing.SenderPhone = order.SenderPhone;
-                existing.ReceiverName = string.IsNullOrWhiteSpace(order.ReceiverName) ? "None" : order.ReceiverName;
-                existing.ReceiverPhone = order.ReceiverPhone; existing.Amount = order.Amount; existing.Tr = order.Tr; existing.Ct = order.Ct; existing.Note = order.Note;
+                existing.ReceiverName = string.IsNullOrWhiteSpace(order.ReceiverName) ? "" : order.ReceiverName;
+                existing.ReceiverPhone = order.ReceiverPhone; 
+                existing.Amount = order.Amount; 
+                existing.Tr = order.Tr ?? 0; 
+                existing.Ct = order.Ct ?? 0; 
+                existing.Note = order.Note;
                 await _context.SaveChangesAsync();
 
-                // Gửi thông báo Real-time
                 await _hubContext.Clients.All.SendAsync("UpdateOrderList");
             }
             return RedirectToAction("List");
@@ -280,6 +313,9 @@ namespace Delivery_System.Controllers
             var userId = User.GetUserId();
             var role = User.GetRole();
 
+            // TỐI ƯU: Lấy trạm từ Cookie, không gọi DB
+            ViewBag.UserStationName = User.GetStationName();
+
             var activeShift = await _context.TblWorkShifts
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
@@ -296,7 +332,16 @@ namespace Delivery_System.Controllers
             var role = User.GetRole();
             var vniTime = TimeHelper.NowVni();
 
-            // 1. Tự động tạo mã đơn hàng trước khi kiểm tra hợp lệ
+            // TỐI ƯU: Lấy trạm từ Cookie
+            var userStationName = User.GetStationName();
+
+            // Ràng buộc trạm gửi: Nếu là NV thì trạm gửi PHẢI là trạm của họ
+            if (role != "AD" && !string.IsNullOrEmpty(userStationName))
+            {
+                order.SendStation = userStationName;
+            }
+
+            // (Phần logic tạo mã giữ nguyên...)
             try {
                 var lastOrder = await _context.TblOrders.AsNoTracking().IgnoreQueryFilters()
                     .Where(o => o.OrderId.StartsWith("ORD-"))
@@ -312,16 +357,12 @@ namespace Delivery_System.Controllers
                 order.OrderId = "ORD-" + DateTime.Now.Ticks.ToString().Substring(10);
             }
 
-            // Xóa lỗi validate của OrderId vì chúng ta đã tự tạo ở trên
             ModelState.Remove("OrderId");
-
-            // Đảm bảo giá trị decimal không bị null
             order.Tr ??= 0;
             order.Ct ??= 0;
             if (string.IsNullOrWhiteSpace(order.SenderName)) order.SenderName = "";
             if (string.IsNullOrWhiteSpace(order.ReceiverName)) order.ReceiverName = "";
 
-            // Lấy ShiftId đang hoạt động của nhân viên
             var activeShift = await _context.TblWorkShifts
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
@@ -330,6 +371,7 @@ namespace Delivery_System.Controllers
             {
                 ViewBag.HasActiveShift = (role == "AD" || activeShift != null);
                 ViewBag.StationList = await GetCachedStationsAsync();
+                ViewBag.UserStationName = userStationName;
                 return View(order);
             }
 
