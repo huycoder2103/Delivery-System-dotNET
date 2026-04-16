@@ -28,11 +28,10 @@ namespace Delivery_System.Controllers
             // Lấy thống kê sơ bộ cho ca làm việc (Nếu có)
             if (currentShift != null)
             {
-                // Lấy danh sách đơn hàng đã chuyển của nhân viên này để tính toán (TR + CT)
-                // Tính toán trực tiếp tại database để tối ưu
+                // Chỉ lấy thống kê phát sinh trong Ca làm việc này
                 var stats = await _context.TblOrders
                     .AsNoTracking()
-                    .Where(o => o.StaffInput == userId && o.ShipStatus == "Đã giao")
+                    .Where(o => o.ShiftId == currentShift.ShiftId && o.ShipStatus == "Đã giao")
                     .GroupBy(o => 1)
                     .Select(g => new { 
                         Count = g.Count(), 

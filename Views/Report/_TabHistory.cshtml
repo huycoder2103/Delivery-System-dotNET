@@ -1,0 +1,62 @@
+@model IEnumerable<Delivery_System.Models.TblWorkShift>
+@{
+    var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+}
+
+<main class="rp-card">
+    <div class="rp-card-title"><h2>📜 Nhật Ký Hoạt Động Gần Nhất</h2></div>
+
+    <div class="rp-card" style="background: #f8fafc; border: 1px dashed #cbd5e1; margin-bottom: 20px; padding: 20px;">
+        <form onsubmit="loadTabContent('history', event)" class="rp-filter-bar">
+            @if (role == "AD") {
+                <div class="rp-filter-group">
+                    <label class="rp-filter-label">Theo Trạm</label>
+                    <select name="stationId" class="rp-filter-input">
+                        <option value="">-- Tất cả các trạm --</option>
+                        @foreach (var s in ViewBag.StationList) {
+                            <option value="@s.StationId">@s.StationName</option>
+                        }
+                    </select>
+                </div>
+                <div class="rp-filter-group">
+                    <label class="rp-filter-label">Nhân Viên (Tên/ID)</label>
+                    <input type="text" name="searchStaff" class="rp-filter-input" placeholder="Nhập tên/ID..." />
+                </div>
+            }
+            <div class="rp-filter-group">
+                <label class="rp-filter-label">Ngày</label>
+                <input type="date" name="logDate" class="rp-filter-input" value="@ViewBag.SelectedLogDate" />
+            </div>
+            <button type="submit" class="rp-btn rp-btn-primary">🔍 Lọc dữ liệu</button>
+        </form>
+    </div>
+
+    <div class="rp-table-wrap">
+        <table class="rp-table">
+            <thead>
+                <tr>
+                    <th>Nhân Viên</th><th>Bắt Đầu</th><th>Kết Thúc</th><th>Doanh Thu</th><th>Trạng Thái</th><th class="rp-text-center">Thao Tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any()) {
+                    foreach (var item in Model) {
+                        <tr>
+                            <td>
+                                <div class="rp-avatar-wrap">
+                                    <div class="rp-avatar">@item.Staff.FullName.Substring(0,1).ToUpper()</div>
+                                    <div><div class="rp-staff-name">@item.Staff.FullName</div><div class="rp-staff-id">ID: @item.StaffId</div></div>
+                                </div>
+                            </td>
+                            <td>@item.StartTime.ToString("dd/MM HH:mm")</td>
+                            <td>@(item.EndTime?.ToString("dd/MM HH:mm") ?? "—")</td>
+                            <td><span class="rp-text-revenue">@item.Revenue.ToString("N0") K</span></td>
+                            <td><span class="rp-badge @(item.Status == "ACTIVE" ? "rp-badge-active" : "rp-badge-ended")">@(item.Status == "ACTIVE" ? "Đang trực" : "Đã nghỉ")</span></td>
+                            <td class="rp-text-center"><button type="button" onclick="openShiftDetails(@item.ShiftId)" class="rp-btn-s rp-btn-s-blue">👁️ Chi tiết</button></td>
+                        </tr>
+                    }
+                } else { <tr><td colspan="6" class="rp-text-center p-4">Không tìm thấy nhật ký làm việc.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</main>

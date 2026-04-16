@@ -1,0 +1,34 @@
+<div class="rp-card">
+    <h4 class="rp-summary-title">📈 Tổng Kết Doanh Thu Toàn Hệ Thống</h4>
+    <div class="rp-goods-grid" style="margin-bottom: 30px; grid-template-columns: repeat(4, 1fr); max-width: 100%;">
+        <div class="rp-goods-card" style="padding: 20px 15px;">
+            <h3>@ViewBag.RevenueDateVal.ToString("N0") K</h3>
+            <p>Doanh thu ngày lọc</p>
+            <span class="rp-btn-access" style="background: #3498db;">Ngày chọn</span>
+        </div>
+        <div class="rp-goods-card" style="padding: 20px 15px;">
+            <h3>@ViewBag.RevenueWeekly.ToString("N0") K</h3>
+            <p>Doanh thu 7 ngày qua</p>
+            <span class="rp-btn-access" style="background: #2ecc71;">Tuần này</span>
+        </div>
+        <div class="rp-goods-card" style="padding: 20px 15px;">
+            <h3>@ViewBag.RevenueMonthly.ToString("N0") K</h3>
+            <p>Doanh thu tháng @DateTime.Now.Month</p>
+            <span class="rp-btn-access" style="background: #f1c40f;">Tháng này</span>
+        </div>
+        <div class="rp-goods-card" style="padding: 20px 15px;">
+            <h3>@ViewBag.RevenueTotalSystem.ToString("N0") K</h3>
+            <p>Tổng doanh thu toàn bộ</p>
+            <span class="rp-btn-access" style="background: #e74c3c;">Tất cả</span>
+        </div>
+    </div>
+
+    <h5 class="rp-card-title rp-text-center">🚀 Biểu Đồ Tăng Trưởng (7 Ngày)</h5>
+    <div class="rp-chart-box">
+        <!-- Lưu dữ liệu vào data attributes để JS bên ngoài đọc -->
+        <canvas id="realRevenueChart" 
+                data-labels='@Html.Raw(Json.Serialize(ViewBag.ChartLabels))'
+                data-values='@Html.Raw(Json.Serialize(ViewBag.ChartData))'>
+        </canvas>
+    </div>
+</div>

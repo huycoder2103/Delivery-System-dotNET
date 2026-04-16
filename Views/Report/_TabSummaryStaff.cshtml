@@ -1,0 +1,28 @@
+<div class="rp-card">
+    <h4 class="rp-summary-title">📈 Bảng Tổng Kết Hiệu Suất Cá Nhân</h4>
+    
+    @if (ViewBag.CurrentShift != null) {
+        <div class="rp-alert-info">
+            <div>
+                <h5>🟢 Đang trong ca làm việc hoạt động</h5>
+                <p>Bắt đầu lúc: <strong>@ViewBag.CurrentShift.StartTime.ToString("HH:mm - dd/MM/yyyy")</strong></p>
+            </div>
+            <form asp-controller="Home" asp-action="EndShift" method="POST">
+                <button type="submit" class="rp-btn rp-btn-danger" onclick="return confirm('Kết thúc ca làm việc?')">Kết Thúc Ca</button>
+            </form>
+        </div>
+    }
+
+    <div class="rp-goods-grid">
+        <div class="rp-goods-card">
+            <h3>@ViewBag.OrdersDateVal</h3>
+            <p>Đơn đã giao trong ngày lọc</p>
+            <span class="rp-btn-access rp-bg-blue">Đơn trong ngày</span>
+        </div>
+        <div class="rp-goods-card">
+            <h3>@ViewBag.RevenueDateVal.ToString("N0") K</h3>
+            <p>Doanh thu trong ngày lọc</p>
+            <span class="rp-btn-access rp-bg-yellow">Cước trong ngày</span>
+        </div>
+    </div>
+</div>
