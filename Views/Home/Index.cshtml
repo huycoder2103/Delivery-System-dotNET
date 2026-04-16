@@ -32,13 +32,13 @@
         <div class="shift-actions">
             @if (currentShift == null)
             {
-                <form asp-controller="Shift" asp-action="Start" method="POST">
+                <form asp-controller="Home" asp-action="StartShift" method="POST">
                     <button type="submit" class="btn-shift btn-start">🚀 BẮT ĐẦU CA</button>
                 </form>
             }
             else
             {
-                <form asp-controller="Shift" asp-action="End" method="POST" id="endShiftForm">
+                <form asp-controller="Home" asp-action="EndShift" method="POST" id="endShiftForm">
                     <button type="button" class="btn-shift btn-end" onclick="confirmEndShift()">🛑 KẾT THÚC CA</button>
                 </form>
             }

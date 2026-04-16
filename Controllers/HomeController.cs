@@ -51,5 +51,50 @@ namespace Delivery_System.Controllers
         {
             return View();
         }
+
+        // 2. BẮT ĐẦU CA LÀM VIỆC
+        [HttpPost]
+        public async Task<IActionResult> StartShift()
+        {
+            var userId = User.GetUserId();
+            if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
+
+            var activeShift = await _context.TblWorkShifts
+                .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
+
+            if (activeShift == null)
+            {
+                var newShift = new TblWorkShift
+                {
+                    StaffId = userId,
+                    StartTime = TimeHelper.NowVni(),
+                    Status = "ACTIVE"
+                };
+                _context.TblWorkShifts.Add(newShift);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Bắt đầu ca làm việc thành công!";
+            }
+            return RedirectToAction("Index");
+        }
+
+        // 3. KẾT THÚC CA LÀM VIỆC
+        [HttpPost]
+        public async Task<IActionResult> EndShift()
+        {
+            var userId = User.GetUserId();
+            if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
+
+            var activeShift = await _context.TblWorkShifts
+                .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
+
+            if (activeShift != null)
+            {
+                activeShift.Status = "ENDED";
+                activeShift.EndTime = TimeHelper.NowVni();
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Đã kết thúc ca làm việc!";
+            }
+            return RedirectToAction("Index");
+        }
     }
 }

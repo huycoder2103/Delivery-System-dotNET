@@ -60,7 +60,18 @@ namespace Delivery_System.Controllers
             }
             else
             {
-                // Dữ liệu cá nhân nhân viên: Tính toán tại Database
+                // DỮ LIỆU CÁ NHÂN NHÂN VIÊN
+                
+                // 1. Doanh thu theo ngày đã chọn (mặc định hôm nay)
+                ViewBag.RevenueDateVal = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.StaffInput == userId && o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow && o.ShipStatus == "Đã giao")
+                    .SumAsync(o => (o.Tr ?? 0) + (o.Ct ?? 0));
+
+                ViewBag.OrdersDateVal = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.StaffInput == userId && o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow && o.ShipStatus == "Đã giao")
+                    .CountAsync();
+
+                // 2. Tổng doanh thu tích lũy từ trước đến nay
                 var stats = await _context.TblOrders.AsNoTracking()
                     .Where(o => o.StaffInput == userId && o.ShipStatus == "Đã giao")
                     .GroupBy(o => 1)
@@ -76,25 +87,88 @@ namespace Delivery_System.Controllers
                 ViewBag.CurrentShift = await _context.TblWorkShifts.AsNoTracking().FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
             }
 
-            // --- LỊCH SỬ CA LÀM VIỆC ---
+            // --- LỊCH SỬ CA LÀM VIỆC (CHO TAB NHẬT KÝ) ---
             string staffToFetch = (role == "AD" && !string.IsNullOrEmpty(targetStaffId)) ? targetStaffId : userId;
             ViewBag.SelectedStaffId = staffToFetch;
 
-            ViewBag.ShiftHistory = await _context.TblWorkShifts.AsNoTracking()
-                .Where(s => s.StaffId == staffToFetch)
-                .OrderByDescending(s => s.StartTime)
-                .Take(20)
-                .ToListAsync();
-
-            if (viewShiftId.HasValue)
+            var shiftQuery = _context.TblWorkShifts.Include(s => s.Staff).AsQueryable();
+            if (role != "AD") 
             {
-                ViewBag.ViewShiftId = viewShiftId.Value;
-                ViewBag.ShiftOrders = await _context.TblOrders.AsNoTracking()
-                    .Where(o => o.ShiftId == viewShiftId.Value)
-                    .ToListAsync();
+                shiftQuery = shiftQuery.Where(s => s.StaffId == userId);
+            }
+            else if (!string.IsNullOrEmpty(targetStaffId))
+            {
+                shiftQuery = shiftQuery.Where(s => s.StaffId == targetStaffId);
             }
 
+            var shifts = await shiftQuery.OrderByDescending(s => s.StartTime).Take(50).ToListAsync();
+
+            // Tính toán doanh thu cho từng ca giống bên ShiftController
+            var shiftIds = shifts.Select(s => s.ShiftId).ToList();
+            var shiftRevenues = await _context.TblOrders.AsNoTracking()
+                .Where(o => o.ShiftId.HasValue && shiftIds.Contains(o.ShiftId.Value) && o.ShipStatus == "Đã giao")
+                .GroupBy(o => o.ShiftId)
+                .Select(g => new { ShiftId = g.Key, Total = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)) })
+                .ToDictionaryAsync(x => x.ShiftId, x => x.Total);
+
+            foreach (var s in shifts)
+            {
+                s.Revenue = shiftRevenues.ContainsKey(s.ShiftId) ? shiftRevenues[s.ShiftId] : 0;
+            }
+
+            ViewBag.ShiftHistory = shifts;
+
             return View();
+        }
+
+        // --- CHI TIẾT HOẠT ĐỘNG TRONG CA ---
+        public async Task<IActionResult> Details(int id)
+        {
+            var userId = User.GetUserId();
+            var role = User.GetRole();
+
+            var shift = await _context.TblWorkShifts
+                .Include(s => s.Staff)
+                .FirstOrDefaultAsync(s => s.ShiftId == id);
+
+            if (shift == null) return NotFound();
+
+            if (role != "AD" && shift.StaffId != userId) return Forbid();
+
+            var addedOrders = await _context.TblOrders.AsNoTracking()
+                .Where(o => o.ShiftId == id && o.StaffInput == shift.StaffId)
+                .ToListAsync();
+            
+            ViewBag.AddedOrders = addedOrders;
+            ViewBag.TotalRevenue = addedOrders
+                .Where(o => o.ShipStatus == "Đã giao")
+                .Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0));
+
+            ViewBag.ReceivedOrders = await _context.TblOrders.AsNoTracking()
+                .Where(o => o.StaffReceive == shift.StaffId && o.ShipStatus == "Đã giao" 
+                            && o.CreatedAt >= shift.StartTime && (shift.EndTime == null || o.CreatedAt <= shift.EndTime))
+                .ToListAsync();
+
+            ViewBag.CreatedTrips = await _context.TblTrips.AsNoTracking().Include(t => t.Truck).Where(t => t.ShiftId == id).ToListAsync();
+
+            return PartialView("_ShiftDetails", shift);
+        }
+
+        // --- ADMIN KẾT THÚC HỘ CA LÀM VIỆC ---
+        [HttpPost]
+        public async Task<IActionResult> ForceEnd(int shiftId)
+        {
+            if (User.GetRole() != "AD") return Forbid();
+
+            var shift = await _context.TblWorkShifts.FindAsync(shiftId);
+            if (shift != null && shift.Status == "ACTIVE")
+            {
+                shift.Status = "ENDED";
+                shift.EndTime = TimeHelper.NowVni();
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Đã kết thúc ca làm việc của nhân viên!";
+            }
+            return RedirectToAction("Index");
         }
     }
 }

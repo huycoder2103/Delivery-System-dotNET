@@ -5,8 +5,18 @@ using System.IO.Compression;
 using FluentValidation.AspNetCore;
 using Delivery_System.Hubs;
 using Delivery_System.Validators;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Cấu hình Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 // 1. TỐI ƯU NETWORK: Thêm dịch vụ nén phản hồi (Response Compression)
 builder.Services.AddResponseCompression(options =>
@@ -67,12 +77,15 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
+// Sử dụng Middleware xử lý lỗi tập trung ngay đầu Pipeline
+app.UseMiddleware<Delivery_System.Middlewares.ExceptionMiddleware>();
+
 // 1. TỐI ƯU NETWORK: Sử dụng nén phản hồi
 app.UseResponseCompression();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    // app.UseExceptionHandler("/Home/Error"); // Có thể tắt cái này vì đã có Middleware trên
     app.UseHsts();
 }
 
