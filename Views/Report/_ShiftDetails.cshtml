@@ -6,108 +6,66 @@
     var createdTrips = (ViewBag.CreatedTrips as IEnumerable<Delivery_System.Models.TblTrip>)?.ToList() ?? new List<Delivery_System.Models.TblTrip>();
 }
 
-<style>
-    .detail-card-link {
-        color: #1a73e8; font-weight: 700; text-decoration: none; padding: 2px 8px;
-        background: #e8f0fe; border-radius: 6px; transition: all 0.2s; display: inline-block;
-    }
-    .detail-card-link:hover { background: #1a73e8; color: white; transform: translateY(-1px); }
-    
-    .modal-header-custom {
-        border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px;
-    }
-
-    .tab-nav-modern {
-        display: flex; gap: 8px; margin-bottom: 20px; background: #f1f5f9;
-        padding: 6px; border-radius: 14px;
-    }
-    .tab-btn-modern {
-        flex: 1; padding: 10px; border-radius: 10px; cursor: pointer;
-        font-weight: 700; color: #64748b; text-align: center; transition: all 0.2s;
-        border: none; background: transparent; font-size: 0.85rem;
-    }
-    .tab-btn-modern.active {
-        background: white; color: #1a73e8; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-    .count-badge {
-        background: #e2e8f0; color: #475569; padding: 2px 8px;
-        border-radius: 50px; font-size: 0.75rem; margin-left: 4px;
-    }
-    .tab-btn-modern.active .count-badge {
-        background: #1a73e8; color: white;
-    }
-
-    .table-modern { width: 100%; border-collapse: collapse; }
-    .table-modern th {
-        text-align: left; padding: 12px; background: #f8fafc; color: #475569;
-        font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .table-modern td { padding: 12px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-size: 0.9rem; }
-    .empty-state { text-align: center; padding: 40px; color: #94a3b8; font-style: italic; }
-</style>
-
-<div class="modal-header-custom">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h3 class="m-0" style="color: #1e293b;">Ca làm việc <span style="color: #1a73e8;">#@Model.ShiftId</span></h3>
-            <div class="mt-1 text-muted small">
-                👤 <strong>@Model.Staff.FullName</strong> | 📅 @Model.StartTime.ToString("dd/MM/yyyy") | ⏱️ @Model.StartTime.ToString("HH:mm") - @(Model.EndTime?.ToString("HH:mm") ?? "Đang trực")
-            </div>
+<div class="rp-modal-header rp-d-flex rp-justify-between rp-align-center">
+    <div>
+        <h3 class="rp-modal-title">Ca làm việc <span class="rp-text-highlight">#@Model.ShiftId</span></h3>
+        <div class="rp-modal-meta">
+            👤 <strong>@Model.Staff.FullName</strong> | 📅 @Model.StartTime.ToString("dd/MM/yyyy") | ⏱️ @Model.StartTime.ToString("HH:mm") - @(Model.EndTime?.ToString("HH:mm") ?? "Đang trực")
         </div>
-        <div class="text-end">
-            <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 800;">Doanh thu</div>
-            <div style="font-size: 1.6rem; font-weight: 900; color: #059669;">@ViewBag.TotalRevenue.ToString("N0") K</div>
-        </div>
+    </div>
+    <div style="text-align: right;">
+        <div class="rp-stat-label-mini">Doanh thu</div>
+        <div class="rp-stat-value-large">@ViewBag.TotalRevenue.ToString("N0") K</div>
     </div>
 </div>
 
 <!-- ĐIỀU HƯỚNG TAB GỌN GÀNG -->
-<div class="tab-nav-modern">
-    <button class="tab-btn-modern active" onclick="showModalInnerTab('added', this)">
-        📦 Đơn đã nhập <span class="count-badge">@addedOrders.Count</span>
+<div class="rp-modal-tab-nav">
+    <button class="rp-modal-tab-btn active" onclick="showModalInnerTab('added', this)">
+        📦 Đơn đã nhập <span class="rp-count-badge">@addedOrders.Count</span>
     </button>
-    <button class="tab-btn-modern" onclick="showModalInnerTab('received', this)">
-        ✅ Đơn đã giao <span class="count-badge">@receivedOrders.Count</span>
+    <button class="rp-modal-tab-btn" onclick="showModalInnerTab('received', this)">
+        ✅ Đơn đã giao <span class="rp-count-badge">@receivedOrders.Count</span>
     </button>
-    <button class="tab-btn-modern" onclick="showModalInnerTab('trips', this)">
-        🚛 Chuyến xe <span class="count-badge">@createdTrips.Count</span>
+    <button class="rp-modal-tab-btn" onclick="showModalInnerTab('trips', this)">
+        🚛 Chuyến xe <span class="rp-count-badge">@createdTrips.Count</span>
     </button>
 </div>
 
 <!-- NỘI DUNG CÁC TAB -->
-<div class="tab-scroll-area" style="max-height: 450px; overflow-y: auto;">
+<div style="flex: 1; overflow-y: auto;">
     
-    <div id="modal-tab-added" class="modal-inner-tab">
+    <div id="modal-tab-added" class="rp-modal-inner-tab active">
         @if (addedOrders.Any()) {
-            <table class="table-modern">
+            <table class="rp-table-modern">
                 <thead>
                     <tr><th>Mã Đơn</th><th>Tên Hàng</th><th>Trạm Nhận</th><th>Cước</th><th>Trạng Thái</th></tr>
                 </thead>
                 <tbody>
                     @foreach (var o in addedOrders) {
                         <tr>
-                            <td><a href="@Url.Action("List", "Order", new { searchPhone = o.OrderId })" class="detail-card-link">@o.OrderId</a></td>
-                            <td class="font-bold">@o.ItemName</td>
+                            <td><a href="@Url.Action("List", "Order", new { searchPhone = o.OrderId })" class="rp-detail-link">@o.OrderId</a></td>
+                            <td class="rp-font-bold">@o.ItemName</td>
                             <td>@o.ReceiveStation</td>
-                            <td class="font-bold text-primary">@(((o.Tr ?? 0) + (o.Ct ?? 0)).ToString("N0"))K</td>
-                            <td><span class="badge @(o.ShipStatus == "Đã giao" ? "bg-success" : "bg-warning")">@o.ShipStatus</span></td>
+                            <td class="rp-font-bold rp-text-primary">@(((o.Tr ?? 0) + (o.Ct ?? 0)).ToString("N0"))K</td>
+                            <td><span class="rp-badge-success @(o.ShipStatus == "Đã giao" ? "rp-badge-success" : "rp-badge-warning")">@o.ShipStatus</span></td>
                         </tr>
                     }
                 </tbody>
             </table>
-        } else { <div class="empty-state">Chưa có đơn hàng nào được nhập.</div> }
+        } else { <div class="rp-empty-state">Chưa có đơn hàng nào được nhập.</div> }
     </div>
 
-    <div id="modal-tab-received" class="modal-inner-tab" style="display:none;">
+    <div id="modal-tab-received" class="rp-modal-inner-tab">
         @if (receivedOrders.Any()) {
-            <table class="table-modern">
+            <table class="rp-table-modern">
                 <thead>
                     <tr><th>Mã Đơn</th><th>Tên Hàng</th><th>Người Nhận</th><th>Thời Gian Giao</th></tr>
                 </thead>
                 <tbody>
                     @foreach (var o in receivedOrders) {
                         <tr>
-                            <td><a href="@Url.Action("List", "Order", new { searchPhone = o.OrderId })" class="detail-card-link">@o.OrderId</a></td>
+                            <td><a href="@Url.Action("List", "Order", new { searchPhone = o.OrderId })" class="rp-detail-link">@o.OrderId</a></td>
                             <td>@o.ItemName</td>
                             <td>@o.ReceiverName</td>
                             <td>@o.CreatedAt?.ToString("HH:mm dd/MM")</td>
@@ -115,26 +73,26 @@
                     }
                 </tbody>
             </table>
-        } else { <div class="empty-state">Chưa thực hiện giao đơn nào.</div> }
+        } else { <div class="rp-empty-state">Chưa thực hiện giao đơn nào.</div> }
     </div>
 
-    <div id="modal-tab-trips" class="modal-inner-tab" style="display:none;">
+    <div id="modal-tab-trips" class="rp-modal-inner-tab">
         @if (createdTrips.Any()) {
-            <table class="table-modern">
+            <table class="rp-table-modern">
                 <thead>
                     <tr><th>Mã Chuyến</th><th>Biển Số Xe</th><th>Đích Đến</th><th>Trạng Thái</th></tr>
                 </thead>
                 <tbody>
                     @foreach (var t in createdTrips) {
                         <tr>
-                            <td><a href="@Url.Action("List", "Trip", new { tripId = t.TripId })" class="detail-card-link">@t.TripId</a></td>
+                            <td><a href="@Url.Action("List", "Trip", new { searchTruck = t.TripId })" class="rp-detail-link">@t.TripId</a></td>
                             <td><strong>@t.Truck?.LicensePlate</strong></td>
                             <td>@t.Destination</td>
-                            <td><span class="badge bg-info">@t.Status</span></td>
+                            <td><span class="rp-badge-info">@t.Status</span></td>
                         </tr>
                     }
                 </tbody>
             </table>
-        } else { <div class="empty-state">Chưa tạo chuyến xe nào.</div> }
+        } else { <div class="rp-empty-state">Chưa tạo chuyến xe nào.</div> }
     </div>
 </div>

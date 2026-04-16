@@ -7,159 +7,81 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/report.css?v=@DateTime.Now.Ticks">
-    <link rel="stylesheet" href="~/css/goods.css?v=@DateTime.Now.Ticks">
-    <link rel="stylesheet" href="~/css/shift.css?v=@DateTime.Now.Ticks">
-    <style>
-        .report-tab-pane { display: none; }
-        .report-tab-pane.active { display: block; }
-        
-        /* POPUP MODAL STYLES - REFINED */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.6); /* Đậm hơn chút cho tương phản */
-            backdrop-filter: blur(8px); /* Tăng độ mờ nền */
-            z-index: 10000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .modal-content {
-            background: white;
-            width: 100%;
-            max-width: 950px;
-            max-height: 85vh;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.2);
-            animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @@keyframes modalSlideUp {
-            from { opacity: 0; transform: translateY(30px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .modal-body-content {
-            padding: 35px;
-            overflow-y: auto;
-            flex: 1;
-            scrollbar-width: thin;
-            scrollbar-color: #cbd5e1 transparent;
-        }
-        .modal-footer {
-            padding: 20px 35px;
-            background: #f8fafc;
-            border-top: 1px solid #f1f5f9;
-            display: flex;
-            justify-content: flex-end;
-        }
-        .btn-close-modal {
-            background: #1e293b;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 12px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-close-modal:hover { background: #0f172a; transform: translateY(-1px); }
-
-        /* AVATAR & LIST STYLES */
-        .avatar-circle-small {
-            width: 35px; height: 35px; background: #1a73e8; color: white;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 0.9rem; margin-right: 10px;
-        }
-        .staff-avatar-wrapper { display: flex; align-items: center; }
-        .staff-name-text { font-weight: 600; color: #2c3e50; font-size: 0.9rem; }
-        .staff-id-text-mini { font-size: 0.75rem; color: #7f8c8d; }
-        
-        .shift-table-integrated { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
-        .shift-table-integrated tr { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s; }
-        .shift-table-integrated tr:hover { transform: scale(1.005); background: #f8faff; }
-        .shift-table-integrated td, .shift-table-integrated th { padding: 12px 15px; vertical-align: middle; }
-    </style>
 }
 
-<div class="container-custom">
+<div class="rp-container">
     
-    <div class="modern-page-header report-header-gradient">
+        <div class="modern-page-header">
         <div>
-            <h3>📊 @(role == "AD" ? "BÁO CÁO & THỐNG KÊ" : "KẾT QUẢ LÀM VIỆC CÁ NHÂN")</h3>
-            <div class="report-header-subtext">@(role == "AD" ? "Theo dõi doanh thu và hiệu suất ca làm việc toàn hệ thống" : "Theo dõi hiệu suất và lịch sử ca làm việc của bạn")</div>
+                <h3 class="modern-page-header h3">📊 @(role == "AD" ? "BÁO CÁO & THỐNG KÊ" : "KẾT QUẢ LÀM VIỆC CÁ NHÂN")</h3>
+            <div class="moderm-header-subtext">@(role == "AD" ? "Theo dõi doanh thu và hiệu suất ca làm việc toàn hệ thống" : "Theo dõi hiệu suất và lịch sử ca làm việc của bạn")</div>
         </div>
-        <a asp-controller="Home" asp-action="Index" class="btn-modern btn-back-home">
+        <a asp-controller="Home" asp-action="Index" class="rp-btn rp-btn-home">
             ← Trang Chủ
         </a>
     </div>
 
-    <div class="d-flex gap-3 mb-4" id="reportTabs">
-        <button class="report-tab-btn active" onclick="switchReportTab('summary', this)">📋 Tổng Quan</button>
-        <button class="report-tab-btn" onclick="switchReportTab('history', this)">📜 Nhật Ký Làm Việc</button>
+    <div class="rp-tabs" id="reportTabs">
+        <button class="rp-tab-btn active" onclick="switchReportTab('summary', this)">📋 Tổng Quan</button>
+        <button class="rp-tab-btn" onclick="switchReportTab('history', this)">📜 Nhật Ký Làm Việc</button>
     </div>
 
     <!-- ========================== TAB 1: TỔNG QUAN ========================== -->
-    <div id="tab-summary" class="report-tab-pane active">
+    <div id="tab-summary" class="rp-tab-pane active">
         <!-- BỘ LỌC NGÀY CHUNG -->
-        <div class="modern-card mb-4">
-            <form asp-action="Index" method="GET" class="filter-form-container">
-                <div class="filter-group-date">
-                    <label class="stat-label filter-label">Chọn ngày xem dữ liệu</label>
-                    <input type="date" name="reportDate" class="form-control filter-input-modern" value="@reportDate">
+        <div class="rp-card">
+            <form asp-action="Index" method="GET" class="rp-filter-bar">
+                <div class="rp-filter-group">
+                    <label class="rp-filter-label">Chọn ngày xem dữ liệu</label>
+                    <input type="date" name="reportDate" class="rp-filter-input" value="@reportDate">
                 </div>
-                <button type="submit" class="btn-modern btn-primary-modern btn-update-report">🔍 CẬP NHẬT DỮ LIỆU</button>
-                <div class="date-badge-wrapper">
-                    <span class="badge badge-info date-badge-modern">📅 Đang xem: <strong>@DateTime.Parse(reportDate).ToString("dd/MM/yyyy")</strong></span>
+                <button type="submit" class="rp-btn rp-btn-primary">🔍 CẬP NHẬT DỮ LIỆU</button>
+                <div class="rp-date-badge-wrapper">
+                    <span class="rp-date-badge">📅 Đang xem: <strong>@DateTime.Parse(reportDate).ToString("dd/MM/yyyy")</strong></span>
                 </div>
             </form>
         </div>
 
         @if (role == "AD")
         {
-            <div class="card report-card p-4 mb-4">
-                <h5 class="fw-bold mb-4 chart-title">🚀 Tăng Trưởng Doanh Thu Toàn Hệ Thống (7 Ngày)</h5>
-                <div class="chart-box">
+            <div class="rp-card">
+                <h5 class="rp-card-title rp-text-center">🚀 Tăng Trưởng Doanh Thu Toàn Hệ Thống (7 Ngày)</h5>
+                <div class="rp-chart-box">
                     <canvas id="realRevenueChart"></canvas>
                 </div>
             </div>
         }
         else
         {
-            <div class="modern-card p-4">
-                <h4 class="fw-bold mb-4 text-center text-uppercase" style="letter-spacing: 1px; color: #2c3e50;">📈 Bảng Tổng Kết Hiệu Suất</h4>
+            <div class="rp-card">
+                <h4 class="rp-summary-title">📈 Bảng Tổng Kết Hiệu Suất</h4>
                 
                 @if (ViewBag.CurrentShift != null)
                 {
-                    <div class="alert alert-info d-flex justify-content-between align-items-center active-shift-alert mb-4">
+                    <div class="rp-alert-info">
                         <div>
                             <h5 class="mb-1">🟢 Bạn đang trong ca làm việc hoạt động</h5>
                             <p class="mb-0 small">Bắt đầu lúc: <strong>@ViewBag.CurrentShift.StartTime.ToString("HH:mm - dd/MM/yyyy")</strong></p>
                         </div>
                         <form asp-controller="Shift" asp-action="End" method="POST">
-                            <button type="submit" class="btn-modern btn-end-shift-modern" onclick="return confirm('Bạn muốn kết thúc ca làm việc này?')">Kết Thúc Ca</button>
+                            <button type="submit" class="rp-btn rp-btn-danger" onclick="return confirm('Bạn muốn kết thúc ca làm việc này?')">Kết Thúc Ca</button>
                         </form>
                     </div>
                 }
 
-                <div class="goods-grid" style="max-width: 800px; grid-template-columns: repeat(2, 1fr);">
-                    <div class="goods-card">
-                        <div class="card-icon">📦</div>
+                <div class="rp-goods-grid">
+                    <div class="rp-goods-card">
+                        <div class="rp-card-icon">📦</div>
                         <h3>@ViewBag.OrdersDateVal</h3>
                         <p>Đơn hàng đã giao thành công trong ngày @DateTime.Parse(reportDate).ToString("dd/MM")</p>
-                        <span class="btn-access" style="background: #3498db;">Đơn trong ngày</span>
+                        <span class="rp-btn-access rp-bg-blue">Đơn trong ngày</span>
                     </div>
 
-                    <div class="goods-card">
-                        <div class="card-icon">💰</div>
+                    <div class="rp-goods-card">
+                        <div class="rp-card-icon">💰</div>
                         <h3>@ViewBag.RevenueDateVal.ToString("N0") K</h3>
-                        <p>Tổng doanh thu (TR + CT) bạn đã thu về trong ngày @DateTime.Parse(reportDate).ToString("dd/MM")</p>
-                        <span class="btn-access" style="background: #f1c40f;">Cước trong ngày</span>
+                        <p>Tổng doanh thu trong ngày @DateTime.Parse(reportDate).ToString("dd/MM")</p>
+                        <span class="rp-btn-access rp-bg-yellow">Cước trong ngày</span>
                     </div>
                 </div>
             </div>
@@ -167,14 +89,14 @@
     </div>
 
     <!-- ========================== TAB 2: NHẬT KÝ LÀM VIỆC ========================== -->
-    <div id="tab-history" class="report-tab-pane">
-        <main class="content-card">
-            <div class="section-title">
+    <div id="tab-history" class="rp-tab-pane">
+        <main class="rp-card">
+            <div class="rp-card-title">
                 <h2>📜 Lịch Sử Hoạt Động gần nhất</h2>
             </div>
 
-            <div class="table-responsive">
-                <table class="shift-table-integrated">
+            <div class="rp-table-wrap">
+                <table class="rp-table">
                     <thead>
                         <tr>
                             <th>Nhân Viên</th>
@@ -182,7 +104,7 @@
                             <th>Giờ Kết Thúc</th>
                             <th>Doanh Thu (K)</th>
                             <th>Trạng Thái</th>
-                            <th class="table-header-center">Thao Tác</th>
+                            <th class="rp-text-center">Thao Tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -190,35 +112,35 @@
                         {
                             foreach (var item in shiftHistory)
                             {
-                                <tr class="shift-row">
+                                <tr>
                                     <td>
-                                        <div class="staff-avatar-wrapper">
-                                            <div class="avatar-circle-small">
+                                        <div class="rp-avatar-wrap">
+                                            <div class="rp-avatar">
                                                 @item.Staff.FullName.Substring(0,1).ToUpper()
                                             </div>
                                             <div>
-                                                <div class="staff-name-text">@item.Staff.FullName</div>
-                                                <div class="staff-id-text-mini">ID: @item.StaffId</div>
+                                                <div class="rp-staff-name">@item.Staff.FullName</div>
+                                                <div class="rp-staff-id">ID: @item.StaffId</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td>@item.StartTime.ToString("dd/MM HH:mm")</td>
                                     <td>@(item.EndTime?.ToString("dd/MM HH:mm") ?? "—")</td>
-                                    <td><span class="text-revenue">@item.Revenue.ToString("N0")</span></td>
+                                    <td><span class="rp-text-revenue">@item.Revenue.ToString("N0")</span></td>
                                     <td>
-                                        <span class="badge @(item.Status == "ACTIVE" ? "badge-active" : "badge-ended")">
+                                        <span class="rp-badge @(item.Status == "ACTIVE" ? "rp-badge-active" : "rp-badge-ended")">
                                             @(item.Status == "ACTIVE" ? "Đang trực" : "Đã nghỉ")
                                         </span>
                                     </td>
-                                    <td class="text-center">
-                                        <button type="button" onclick="openShiftDetails(@item.ShiftId)" class="btn-s btn-s-blue">👁️ Chi tiết</button>
+                                    <td class="rp-text-center">
+                                        <button type="button" onclick="openShiftDetails(@item.ShiftId)" class="rp-btn-s rp-btn-s-blue">👁️ Chi tiết</button>
                                     </td>
                                 </tr>
                             }
                         }
                         else
                         {
-                            <tr><td colspan="6" class="text-center p-4">Chưa có lịch sử ca làm việc</td></tr>
+                            <tr><td colspan="6" class="rp-text-center p-4">Chưa có lịch sử ca làm việc</td></tr>
                         }
                     </tbody>
                 </table>
@@ -228,11 +150,11 @@
 </div>
 
 <!-- MODAL CHI TIẾT CA TRỰC -->
-<div id="shiftDetailsModal" class="modal" style="z-index: 9999;">
-    <div class="modal-content">
-        <div id="shiftModalBody" class="modal-body-content"></div>
-        <div class="modal-footer">
-            <button type="button" onclick="closeShiftDetails()" class="btn-close-modal">ĐÓNG</button>
+<div id="shiftDetailsModal" class="rp-modal">
+    <div class="rp-modal-content">
+        <div id="shiftModalBody" class="rp-modal-body"></div>
+        <div class="rp-modal-footer">
+            <button type="button" onclick="closeShiftDetails()" class="rp-btn-close-modal">ĐÓNG</button>
         </div>
     </div>
 </div>
@@ -241,8 +163,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         function switchReportTab(tabId, btn) {
-            document.querySelectorAll('.report-tab-pane').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.report-tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.rp-tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.rp-tab-btn').forEach(b => b.classList.remove('active'));
             
             document.getElementById('tab-' + tabId).classList.add('active');
             btn.classList.add('active');
@@ -252,13 +174,13 @@
             const modal = document.getElementById('shiftDetailsModal');
             const body = document.getElementById('shiftModalBody');
             modal.style.display = 'flex';
-            body.innerHTML = '<div class="p-4 text-center">Đang tải...</div>';
+            body.innerHTML = '<div class="rp-text-center p-4">Đang tải...</div>';
 
             try {
                 const response = await fetch(`/Report/Details/${id}`);
                 body.innerHTML = await response.text();
             } catch (error) {
-                body.innerHTML = '<div class="p-4 text-center text-danger">Lỗi tải dữ liệu</div>';
+                body.innerHTML = '<div class="rp-text-center p-4 text-danger">Lỗi tải dữ liệu</div>';
             }
         }
 
@@ -269,14 +191,14 @@
         // Hàm chuyển Tab bên trong Modal Chi tiết ca làm việc
         function showModalInnerTab(tabName, btn) {
             // Ẩn tất cả các vùng nội dung Tab trong modal
-            document.querySelectorAll('.modal-inner-tab').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.rp-modal-inner-tab').forEach(t => t.classList.remove('active'));
             // Gỡ bỏ trạng thái active của tất cả các nút tab trong modal
-            document.querySelectorAll('.tab-btn-modern').forEach(l => l.classList.remove('active'));
+            document.querySelectorAll('.rp-modal-tab-btn').forEach(l => l.classList.remove('active'));
             
             // Hiển thị vùng nội dung được chọn
             const targetTab = document.getElementById('modal-tab-' + tabName);
             if (targetTab) {
-                targetTab.style.display = 'block';
+                targetTab.classList.add('active');
             }
             // Thêm trạng thái active cho nút vừa bấm
             btn.classList.add('active');
