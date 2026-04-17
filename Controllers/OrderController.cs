@@ -36,7 +36,7 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> List(string? sendStationFilter, string? receiveStationFilter, string? searchPhone, string? dateFilter, string statusFilter = "all", int page = 1)
         {
-            const int pageSize = 20;
+            const int pageSize = 10;
             if (page < 1) page = 1;
 
             ViewBag.StationList = await GetCachedStationsAsync();

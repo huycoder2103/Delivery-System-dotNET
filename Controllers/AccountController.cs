@@ -36,18 +36,14 @@ namespace Delivery_System.Controllers
 
             string hashedPassword = HashSha256(password);
             var user = await _context.TblUsers
+                .Include(u => u.Station)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Username == username && u.Password == hashedPassword && u.Status == true);
 
             if (user != null)
             {
-                // Lấy tên trạm một cách an toàn
-                string stationName = "";
-                if (user.StationId.HasValue)
-                {
-                    var station = await _context.TblStations.AsNoTracking()
-                        .FirstOrDefaultAsync(s => s.StationId == user.StationId);
-                    stationName = station?.StationName ?? "";
-                }
+                // Lấy tên trạm từ navigation property đã được Include
+                string stationName = user.Station?.StationName ?? "";
 
                 // 1. Tạo danh sách Claims (Thông tin người dùng sẽ lưu trong Cookie)
                 var claims = new List<Claim>

@@ -44,7 +44,7 @@ namespace Delivery_System.Controllers
         [HttpGet]
         public async Task<IActionResult> List(string? departureFilter, string? destinationFilter, string? searchTruck, int page = 1)
         {
-            const int pageSize = 20; if (page < 1) page = 1;
+            const int pageSize = 10; if (page < 1) page = 1;
 
             ViewBag.StationList = await GetCachedStationsAsync();
             var query = _context.VwTripLists.AsNoTracking();
@@ -72,7 +72,7 @@ namespace Delivery_System.Controllers
         {
             var userId = User.GetUserId();
             if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
-            const int pageSize = 20; if (page < 1) page = 1;
+            const int pageSize = 10; if (page < 1) page = 1;
 
             ViewBag.StationList = await GetCachedStationsAsync();
             var query = _context.VwTripLists.AsNoTracking();
