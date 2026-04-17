@@ -1,97 +1,52 @@
 @model Delivery_System.Models.TblUser
 
 @{
-    var addedOrders = (ViewBag.AddedOrders as IEnumerable<Delivery_System.Models.TblOrder>)?.ToList() ?? new List<Delivery_System.Models.TblOrder>();
-    var receivedOrders = (ViewBag.ReceivedOrders as IEnumerable<Delivery_System.Models.TblOrder>)?.ToList() ?? new List<Delivery_System.Models.TblOrder>();
-    var createdTrips = (ViewBag.CreatedTrips as IEnumerable<Delivery_System.Models.TblTrip>)?.ToList() ?? new List<Delivery_System.Models.TblTrip>();
-    var logDateStr = ViewBag.LogDate as string;
-    DateTime logDate = DateTime.Parse(logDateStr);
+    var shifts = (ViewBag.StaffShifts as IEnumerable<Delivery_System.Models.TblWorkShift>)?.ToList() ?? new List<Delivery_System.Models.TblWorkShift>();
+    var logDateLabel = ViewBag.LogDateLabel as string;
 }
 
 <div class="rp-modal-header rp-d-flex rp-justify-between rp-align-center">
     <div>
-        <h3 class="rp-modal-title">Hoạt động ngày <span class="rp-text-highlight">@logDate.ToString("dd/MM/yyyy")</span></h3>
+        <h3 class="rp-modal-title">Danh sách ca làm việc: <span class="rp-text-highlight">@logDateLabel</span></h3>
         <div class="rp-modal-meta">
             👤 <strong>@Model.FullName</strong> | 🆔 @Model.UserId | 🚉 @(Model.Station?.StationName ?? "N/A")
         </div>
     </div>
     <div style="text-align: right;">
-        <div class="rp-stat-label-mini">Tổng doanh thu ngày</div>
-        <div class="rp-stat-value-large">@ViewBag.TotalRevenue.ToString("N0") K</div>
+        <div class="rp-stat-label-mini">Tổng số ca</div>
+        <div class="rp-stat-value-large">@shifts.Count</div>
     </div>
 </div>
 
-<div class="rp-modal-tab-nav">
-    <button class="rp-modal-tab-btn active" onclick="showModalInnerTab('added', this)">
-        📦 Đơn đã nhập <span class="rp-count-badge">@addedOrders.Count</span>
-    </button>
-    <button class="rp-modal-tab-btn" onclick="showModalInnerTab('received', this)">
-        ✅ Đơn đã giao <span class="rp-count-badge">@receivedOrders.Count</span>
-    </button>
-    <button class="rp-modal-tab-btn" onclick="showModalInnerTab('trips', this)">
-        🚛 Chuyến xe <span class="rp-count-badge">@createdTrips.Count</span>
-    </button>
-</div>
-
-<div style="flex: 1; overflow-y: auto;">
-    <div id="modal-tab-added" class="rp-modal-inner-tab active">
-        @if (addedOrders.Any()) {
-            <table class="rp-table-modern">
-                <thead>
-                    <tr><th>Mã Đơn</th><th>Tên Hàng</th><th>Trạm Nhận</th><th>Cước</th><th>Trạng Thái</th></tr>
-                </thead>
-                <tbody>
-                    @foreach (var o in addedOrders) {
-                        <tr>
-                            <td><a href="@Url.Action("List", "Order", new { searchPhone = o.OrderId })" class="rp-detail-link">@o.OrderId</a></td>
-                            <td class="rp-font-bold">@o.ItemName</td>
-                            <td>@o.ReceiveStation</td>
-                            <td class="rp-font-bold rp-text-primary">@(((o.Tr ?? 0) + (o.Ct ?? 0)).ToString("N0"))K</td>
-                            <td><span class="rp-badge-success @(o.ShipStatus == "Đã giao" ? "rp-badge-success" : "rp-badge-warning")">@o.ShipStatus</span></td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        } else { <div class="rp-empty-state">Không có đơn hàng nào được nhập trong ngày này.</div> }
-    </div>
-
-    <div id="modal-tab-received" class="rp-modal-inner-tab">
-        @if (receivedOrders.Any()) {
-            <table class="rp-table-modern">
-                <thead>
-                    <tr><th>Mã Đơn</th><th>Tên Hàng</th><th>Người Nhận</th><th>Thời Gian Giao</th></tr>
-                </thead>
-                <tbody>
-                    @foreach (var o in receivedOrders) {
-                        <tr>
-                            <td><a href="@Url.Action("List", "Order", new { searchPhone = o.OrderId })" class="rp-detail-link">@o.OrderId</a></td>
-                            <td>@o.ItemName</td>
-                            <td>@o.ReceiverName</td>
-                            <td>@o.CreatedAt?.ToString("HH:mm dd/MM")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        } else { <div class="rp-empty-state">Không có đơn hàng nào được giao trong ngày này.</div> }
-    </div>
-
-    <div id="modal-tab-trips" class="rp-modal-inner-tab">
-        @if (createdTrips.Any()) {
-            <table class="rp-table-modern">
-                <thead>
-                    <tr><th>Mã Chuyến</th><th>Biển Số Xe</th><th>Đích Đến</th><th>Trạng Thái</th></tr>
-                </thead>
-                <tbody>
-                    @foreach (var t in createdTrips) {
-                        <tr>
-                            <td><a href="@Url.Action("List", "Trip", new { searchTruck = t.TripId })" class="rp-detail-link">@t.TripId</a></td>
-                            <td><strong>@t.Truck?.LicensePlate</strong></td>
-                            <td>@t.Destination</td>
-                            <td><span class="rp-badge-info">@t.Status</span></td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        } else { <div class="rp-empty-state">Không có chuyến xe nào được tạo trong ngày này.</div> }
-    </div>
+<div style="flex: 1; overflow-y: auto; padding: 20px;">
+    @if (shifts.Any()) {
+        <table class="rp-table-modern">
+            <thead>
+                <tr>
+                    <th>Bắt Đầu</th>
+                    <th>Kết Thúc</th>
+                    <th class="rp-text-right">Doanh Thu</th>
+                    <th class="rp-text-center">Thao Tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in shifts) {
+                    <tr>
+                        <td><strong>@s.StartTime.ToString("HH:mm dd/MM/yyyy")</strong></td>
+                        <td>@(s.EndTime?.ToString("HH:mm dd/MM/yyyy") ?? "Đang làm...")</td>
+                        <td class="rp-text-right rp-font-bold rp-text-primary">@s.Revenue.ToString("N0") K</td>
+                        <td class="rp-text-center">
+                            <button type="button" class="rp-btn-s rp-btn-s-blue" onclick="openShiftDetails(@s.ShiftId)">
+                                📋 Chi tiết ca
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    } else {
+        <div class="rp-empty-state">
+            <p>Nhân viên này không có ca làm việc nào trong khoảng thời gian đã chọn.</p>
+        </div>
+    }
 </div>

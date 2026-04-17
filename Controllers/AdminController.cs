@@ -28,9 +28,9 @@ namespace Delivery_System.Controllers
 
             // TỐI ƯU: Lấy doanh thu hôm nay và doanh thu 7 ngày trong 1 lần GroupBy
             var weeklyDataRaw = await _context.TblOrders.AsNoTracking()
-                .Where(o => o.CreatedAt >= sevenDaysAgo && o.CreatedAt < tomorrow && o.ShipStatus == "Đã giao" && (o.IsDeleted == false || o.IsDeleted == null))
+                .Where(o => o.CreatedAt >= sevenDaysAgo && o.CreatedAt < tomorrow && (o.IsDeleted == false || o.IsDeleted == null))
                 .GroupBy(o => o.CreatedAt!.Value.Date)
-                .Select(g => new { Day = g.Key, Total = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)) })
+                .Select(g => new { Day = g.Key, Total = g.Sum(o => (o.Amount ?? 0)) })
                 .ToListAsync();
 
             ViewBag.RevenueToday = weeklyDataRaw.FirstOrDefault(x => x.Day == today)?.Total ?? 0;

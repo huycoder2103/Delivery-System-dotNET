@@ -20,7 +20,6 @@
     <!-- NÚT CHUYỂN TAB -->
     <div class="rp-tabs" id="reportTabs">
         <button class="rp-tab-btn" data-tab="summary" onclick="switchTab('summary')">📋 Tổng Quan</button>
-        <button class="rp-tab-btn" data-tab="history" onclick="switchTab('history')">📜 Nhật Ký Làm Việc</button>
         @if (role == "AD") {
             <button class="rp-tab-btn" data-tab="activity" onclick="switchTab('activity')">📦 Lịch sử Hoạt Động</button>
         }
@@ -49,13 +48,12 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         let currentActiveTab = sessionStorage.getItem('activeReportTab') || 'summary';
-        let selectedReportDate = '@defaultDate'; // Khởi tạo với ngày mặc định từ server
+        let selectedReportDate = '@defaultDate';
 
         window.onload = function() {
             switchTab(currentActiveTab);
         };
 
-        // Chuyển Tab (chỉ thay đổi UI và gọi Load)
         function switchTab(tabId) {
             document.querySelectorAll('.rp-tab-btn').forEach(b => {
                 b.classList.toggle('active', b.dataset.tab === tabId);
@@ -64,58 +62,55 @@
             loadTabContent(tabId);
         }
 
-        // Tải nội dung Tab qua AJAX
         async function loadTabContent(tabId, event = null) {
-            if (event) event.preventDefault(); // Ngăn submit form reload trang
+            if (event) event.preventDefault();
 
             const container = document.getElementById('tabContentContainer');
-            // Nếu không phải submit form thì hiện loading
-            if (!event) container.innerHTML = '<div class="rp-text-center p-5"><p>Đang tải...</p></div>';
+            if (!event) container.innerHTML = '<div class="rp-text-center p-5"><p>Đang chuẩn bị dữ liệu...</p></div>';
+
+            if (tabId === 'activity' && !event) {
+                await new Promise(r => setTimeout(r, 500));
+            }
 
             let url = '';
             let params = '';
 
             if (event) {
-                // Nếu submit form lọc, lấy dữ liệu từ form
+                // Khi submit form (lọc)
                 const formData = new FormData(event.target);
                 params = new URLSearchParams(formData).toString();
                 
-                // Cập nhật lại ngày đã chọn toàn cục để dùng khi chuyển tab
+                // Lưu lại ngày để dùng khi chuyển tab (nếu có)
                 if (formData.has('reportDate')) selectedReportDate = formData.get('reportDate');
-                if (formData.has('logDate')) selectedReportDate = formData.get('logDate');
+                if (formData.has('fromDate')) selectedReportDate = formData.get('fromDate');
             } else {
-                // Sử dụng ngày đã chọn (hoặc mặc định)
+                // Khi vừa vào trang hoặc chuyển tab
                 if (tabId === 'summary') params = `reportDate=${selectedReportDate}`;
-                else params = `logDate=${selectedReportDate}`;
+                // Tab activity mặc định tải 20 ca mới nhất nên không cần params ngày ban đầu
             }
 
             switch(tabId) {
                 case 'summary': url = `/Report/GetSummary?${params}`; break;
-                case 'history': url = `/Report/GetHistory?${params}`; break;
                 case 'activity': url = `/Report/GetActivity?${params}`; break;
             }
 
             try {
                 const response = await fetch(url);
+                if (!response.ok) throw new Error("Network response was not ok");
                 const html = await response.text();
                 container.innerHTML = html;
                 
-                // Khởi tạo lại biểu đồ nếu là tab summary
-                if (tabId === 'summary') {
-                    initChart();
-                }
+                if (tabId === 'summary') initChart();
             } catch (err) {
-                container.innerHTML = '<div class="alert alert-danger">Lỗi tải dữ liệu. Vui lòng thử lại.</div>';
+                container.innerHTML = '<div class="alert alert-danger">Lỗi tải dữ liệu. Vui lòng tải lại trang.</div>';
             }
         }
 
         function initChart() {
             const ctx = document.getElementById('realRevenueChart');
             if (!ctx) return;
-
-            const labels = JSON.parse(ctx.getAttribute('data-labels'));
-            const values = JSON.parse(ctx.getAttribute('data-values'));
-
+            const labels = JSON.parse(ctx.getAttribute('data-labels') || '[]');
+            const values = JSON.parse(ctx.getAttribute('data-values') || '[]');
             new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -130,29 +125,16 @@
                         borderWidth: 3
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false
-                }
+                options: { responsive: true, maintainAspectRatio: false }
             });
         }
 
-        // --- CÁC HÀM POPUP ---
         async function openShiftDetails(id) {
             const modal = document.getElementById('shiftDetailsModal');
             const body = document.getElementById('shiftModalBody');
             modal.style.display = 'flex';
             body.innerHTML = '<p class="text-center p-4">Đang tải...</p>';
             const resp = await fetch(`/Report/Details/${id}`);
-            body.innerHTML = await resp.text();
-        }
-
-        async function openDailyDetails(staffId, date) {
-            const modal = document.getElementById('shiftDetailsModal');
-            const body = document.getElementById('shiftModalBody');
-            modal.style.display = 'flex';
-            body.innerHTML = '<p class="text-center p-4">Đang tải...</p>';
-            const resp = await fetch(`/Report/DailyDetails?staffId=${staffId}&date=${date}`);
             body.innerHTML = await resp.text();
         }
 
@@ -163,7 +145,8 @@
         function showModalInnerTab(tabName, btn) {
             document.querySelectorAll('.rp-modal-inner-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.rp-modal-tab-btn').forEach(l => l.classList.remove('active'));
-            document.getElementById('modal-tab-' + tabName).classList.add('active');
+            const target = document.getElementById('modal-tab-' + tabName);
+            if (target) target.classList.add('active');
             btn.classList.add('active');
         }
     </script>

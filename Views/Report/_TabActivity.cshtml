@@ -1,7 +1,9 @@
-@model IEnumerable<Delivery_System.Models.TblUser>
+@model IEnumerable<Delivery_System.Models.TblWorkShift>
 
 <main class="rp-card">
-    <div class="rp-card-title"><h2>📦 Lịch Sử Hoạt Động Nhân Viên Theo Ngày</h2></div>
+    <div class="rp-card-title">
+        <h2>📦 @(ViewBag.IsSearchResult == true ? "Kết Quả Tìm Kiếm Ca Làm Việc" : "20 Ca Làm Việc Mới Nhất Hệ Thống")</h2>
+    </div>
 
     <div class="rp-card" style="background: #f0f9ff; border: 1px dashed #7dd3fc; margin-bottom: 20px; padding: 20px;">
         <form onsubmit="loadTabContent('activity', event)" class="rp-filter-bar">
@@ -16,11 +18,15 @@
             </div>
             <div class="rp-filter-group">
                 <label class="rp-filter-label">Tìm Nhân Viên (Tên/ID)</label>
-                <input type="text" name="searchStaff" class="rp-filter-input" placeholder="Nhập tên/ID..." value="@ViewBag.SearchStaff" />
+                <input type="text" name="searchStaff" class="rp-filter-input" placeholder="Nhập tên hoặc mã NV..." value="@ViewBag.SearchStaff" />
             </div>
             <div class="rp-filter-group">
-                <label class="rp-filter-label">Ngày Hoạt Động</label>
-                <input type="date" name="logDate" class="rp-filter-input" value="@ViewBag.LogDate" />
+                <label class="rp-filter-label">Từ Ngày</label>
+                <input type="date" name="fromDate" class="rp-filter-input" value="@ViewBag.FromDate" />
+            </div>
+            <div class="rp-filter-group">
+                <label class="rp-filter-label">Đến Ngày</label>
+                <input type="date" name="toDate" class="rp-filter-input" value="@ViewBag.ToDate" />
             </div>
             <button type="submit" class="rp-btn rp-btn-primary">🔍 TRUY VẤN</button>
         </form>
@@ -28,28 +34,41 @@
 
     <div class="rp-table-wrap">
         <table class="rp-table">
-            <thead><tr><th>Nhân Viên</th><th>Trạm Trực</th><th>Mã NV</th><th class="rp-text-center">Thao Tác</th></tr></thead>
+            <thead>
+                <tr>
+                    <th>Mã Ca</th>
+                    <th>Nhân Viên</th>
+                    <th>Trạm Trực</th>
+                    <th>Bắt Đầu</th>
+                    <th>Kết Thúc</th>
+                    <th class="rp-text-right">Doanh Thu</th>
+                    <th class="rp-text-center">Thao Tác</th>
+                </tr>
+            </thead>
             <tbody>
                 @if (Model != null && Model.Any()) {
                     foreach (var s in Model) {
                         <tr>
+                            <td><code>#@s.ShiftId</code></td>
                             <td>
                                 <div class="rp-avatar-wrap">
-                                    <div class="rp-avatar" style="background: #0ea5e9;">@s.FullName.Substring(0,1).ToUpper()</div>
-                                    <div class="rp-staff-name" style="cursor: pointer; color: #1a73e8; text-decoration: underline;" 
-                                         onclick="openDailyDetails('@s.UserId', '@ViewBag.LogDate')">@s.FullName</div>
+                                    <div class="rp-avatar" style="background: #0ea5e9;">@s.Staff.FullName.Substring(0,1).ToUpper()</div>
+                                    <div class="rp-staff-name" onclick="openShiftDetails(@s.ShiftId)" style="cursor: pointer; color: #1a73e8; text-decoration: underline;">@s.Staff.FullName</div>
                                 </div>
                             </td>
-                            <td>@(s.Station?.StationName ?? "N/A")</td><td><code>@s.UserId</code></td>
+                            <td>@(s.Staff?.Station?.StationName ?? "N/A")</td>
+                            <td>@s.StartTime.ToString("HH:mm dd/MM")</td>
+                            <td>@(s.EndTime?.ToString("HH:mm dd/MM") ?? "Đang làm...")</td>
+                            <td class="rp-text-right rp-font-bold rp-text-primary">@s.Revenue.ToString("N0") K</td>
                             <td class="rp-text-center">
-                                <button type="button" class="rp-btn-s rp-btn-s-blue" onclick="openDailyDetails('@s.UserId', '@ViewBag.LogDate')">
-                                    📋 Xem hoạt động
+                                <button type="button" class="rp-btn-s rp-btn-s-blue" onclick="openShiftDetails(@s.ShiftId)">
+                                    📋 Chi tiết
                                 </button>
                             </td>
                         </tr>
                     }
                 } else {
-                    <tr><td colspan="4" class="rp-text-center p-4">Không tìm thấy nhân viên nào có hoạt động trong ngày được chọn.</td></tr>
+                    <tr><td colspan="7" class="rp-text-center p-4">Không có dữ liệu ca làm việc nào phù hợp.</td></tr>
                 }
             </tbody>
         </table>

@@ -21,14 +21,13 @@
         <div asp-validation-summary="All" class="text-danger mb-20"></div>
 
         <div class="modern-card">
-            <div class="section-title">✨ Thông tin hàng hóa</div>
-            <div class="form-group">
-                <label>Tên Hàng Gửi <span class="required-star">*</span></label>
-                <input asp-for="ItemName" type="text" required placeholder="Nhập tên hàng hóa...">
-                <span asp-validation-for="ItemName" class="text-danger"></span>
-            </div>
-
-            <div class="form-row form-row-mt-20">
+            <!-- Hàng 1: Tên hàng và Trạm -->
+            <div class="form-row">
+                <div class="form-group" style="flex: 2;">
+                    <label>Tên Hàng Gửi <span class="required-star">*</span></label>
+                    <input asp-for="ItemName" type="text" required placeholder="Nhập tên hàng hóa...">
+                    <span asp-validation-for="ItemName" class="text-danger"></span>
+                </div>
                 <div class="form-group">
                     <label>Trạm Gửi <span class="required-star">*</span></label>
                     <select asp-for="SendStation" id="sendStation" required disabled="@(!User.IsInRole("AD"))">
@@ -64,53 +63,47 @@
                     <span asp-validation-for="ReceiveStation" class="text-danger"></span>
                 </div>
             </div>
-        </div>
 
-        <div class="modern-card">
-            <div class="section-title">👤 Thông tin khách hàng</div>
+            <!-- Hàng 2: Người gửi -->
             <div class="form-row">
                 <div class="form-group">
                     <label>Người Gửi</label>
-                    <input asp-for="SenderName" type="text" placeholder="Tên khách hàng gửi...">
+                    <input asp-for="SenderName" type="text" placeholder="Tên khách gửi...">
                 </div>
                 <div class="form-group">
-                    <label>Số Điện Thoại Gửi <span class="required-star">*</span></label>
-                    <input asp-for="SenderPhone" id="senderPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Nhập SĐT người gửi...">
+                    <label>SĐT Gửi <span class="required-star">*</span></label>
+                    <input asp-for="SenderPhone" id="senderPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Số điện thoại người gửi...">
                     <span asp-validation-for="SenderPhone" class="text-danger"></span>
                 </div>
             </div>
 
+            <!-- Hàng 3: Người nhận -->
             <div class="form-row">
                 <div class="form-group">
                     <label>Người Nhận</label>
-                    <input asp-for="ReceiverName" type="text" placeholder="Tên khách hàng nhận...">
+                    <input asp-for="ReceiverName" type="text" placeholder="Tên khách nhận...">
                 </div>
                 <div class="form-group">
-                    <label>Số Điện Thoại Nhận <span class="required-star">*</span></label>
-                    <input asp-for="ReceiverPhone" id="receiverPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Nhập SĐT người nhận...">
+                    <label>SĐT Nhận <span class="required-star">*</span></label>
+                    <input asp-for="ReceiverPhone" id="receiverPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Số điện thoại người nhận...">
                     <span asp-validation-for="ReceiverPhone" class="text-danger"></span>
                 </div>
             </div>
-        </div>
 
-        <div class="modern-card">
-            <div class="section-title">💰 Thanh toán & Ghi chú</div>
+            <!-- Hàng 4: Thanh toán & Ghi chú -->
             <div class="form-row">
-                <div class="form-group">
-                    <label>Đã Thanh Toán (Tr) - Đơn vị K</label>
+                <div class="form-group" style="flex: 0.5;">
+                    <label>Đã trả (K)</label>
                     <input asp-for="Tr" id="trField" type="number" step="any" placeholder="0">
-                    <span asp-validation-for="Tr" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label>Chưa Thanh Toán (Ct) - Đơn vị K</label>
+                <div class="form-group" style="flex: 0.5;">
+                    <label>Chưa trả (K)</label>
                     <input asp-for="Ct" id="ctField" type="number" step="any" placeholder="0">
-                    <span asp-validation-for="Ct" class="text-danger"></span>
                 </div>
-            </div>
-
-            <div class="form-group">
-                <label>Ghi Chú Đơn Hàng</label>
-                <textarea asp-for="Note" rows="3" placeholder="Nhập các lưu ý đặc biệt về hàng hóa..."></textarea>
+                <div class="form-group" style="flex: 2;">
+                    <label>Ghi Chú Đơn Hàng</label>
+                    <input asp-for="Note" type="text" placeholder="Ghi chú nhanh cho đơn hàng này...">
+                </div>
             </div>
         </div>
     </form>

@@ -282,9 +282,9 @@ namespace Delivery_System.Controllers
                 existing.SenderPhone = order.SenderPhone;
                 existing.ReceiverName = string.IsNullOrWhiteSpace(order.ReceiverName) ? "" : order.ReceiverName;
                 existing.ReceiverPhone = order.ReceiverPhone; 
-                existing.Amount = order.Amount; 
                 existing.Tr = order.Tr ?? 0; 
                 existing.Ct = order.Ct ?? 0; 
+                existing.Amount = existing.Tr + existing.Ct; // Tự động cập nhật tổng tiền
                 existing.Note = order.Note;
                 await _context.SaveChangesAsync();
 
@@ -382,6 +382,9 @@ namespace Delivery_System.Controllers
                 ViewBag.StationList = await GetCachedStationsAsync();
                 return View(order);
             }
+
+            // Tính toán tổng tiền (Amount) từ Tr và Ct trước khi lưu
+            order.Amount = (order.Tr ?? 0) + (order.Ct ?? 0);
 
             try {
                 order.StaffInput = userId;
