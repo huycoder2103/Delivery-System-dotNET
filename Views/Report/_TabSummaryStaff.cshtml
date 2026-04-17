@@ -1,11 +1,11 @@
 <div class="rp-card">
-    <div class="rp-filter-bar" style="margin-bottom: 25px; background: #f8fafc; padding: 20px; border-radius: 16px;">
-        <form onsubmit="loadTabContent('summary', event)" class="rp-d-flex rp-align-center" style="gap: 15px;">
+    <div class="rp-filter-bar rp-filter-bar-header">
+        <form onsubmit="loadTabContent('summary', event)" class="rp-d-flex rp-align-center rp-gap-1">
             <div class="rp-filter-group">
                 <label class="rp-filter-label">Xem kết quả ngày:</label>
                 <input type="date" name="reportDate" value="@ViewBag.SelectedDate" class="rp-filter-input" onchange="this.form.requestSubmit()">
             </div>
-            <button type="submit" class="rp-btn rp-btn-primary" style="margin-top: auto;">🔍 Cập nhật</button>
+            <button type="submit" class="rp-btn rp-btn-primary">🔍 Cập nhật</button>
         </form>
     </div>
 

@@ -13,7 +13,7 @@
             👤 <strong>@Model.Staff.FullName</strong> | 📅 @Model.StartTime.ToString("dd/MM/yyyy") | ⏱️ @Model.StartTime.ToString("HH:mm") - @(Model.EndTime?.ToString("HH:mm") ?? "Đang trực")
         </div>
     </div>
-    <div style="text-align: right;">
+    <div class="rp-modal-header-right">
         <div class="rp-stat-label-mini">Doanh thu</div>
         <div class="rp-stat-value-large">@ViewBag.TotalRevenue.ToString("N0") K</div>
     </div>
@@ -33,7 +33,7 @@
 </div>
 
 <!-- NỘI DUNG CÁC TAB -->
-<div style="flex: 1; overflow-y: auto;">
+<div class="rp-modal-body-scroll">
     
     <div id="modal-tab-added" class="rp-modal-inner-tab active">
         @if (addedOrders.Any()) {

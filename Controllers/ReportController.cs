@@ -100,14 +100,20 @@ namespace Delivery_System.Controllers
             }
         }
 
-        // 4. ACTION: LẤY DỮ LIỆU TAB HOẠT ĐỘNG (AD)
+        // 4. ACTION: LẤY DỮ LIỆU TAB HOẠT ĐỘNG
         public async Task<IActionResult> GetActivity(string? fromDate, string? toDate, int? stationId, string? searchStaff)
         {
-            if (User.GetRole() != "AD") return Forbid();
+            var userId = User.GetUserId();
+            var role = User.GetRole();
             ViewBag.StationList = await _context.TblStations.AsNoTracking().Where(s => s.IsActive == true).ToListAsync();
 
             var query = _context.TblWorkShifts.AsNoTracking().Include(s => s.Staff).ThenInclude(u => u.Station).AsQueryable();
             
+            // NẾU LÀ NHÂN VIÊN: Chỉ được xem ca của chính mình
+            if (role != "AD") {
+                query = query.Where(s => s.StaffId == userId);
+            }
+
             bool isSearch = !string.IsNullOrEmpty(fromDate) || !string.IsNullOrEmpty(toDate) || stationId.HasValue || !string.IsNullOrEmpty(searchStaff);
             ViewBag.IsSearchResult = isSearch;
 
@@ -119,8 +125,12 @@ namespace Delivery_System.Controllers
                 DateTime end = DateTime.Parse(toDate).Date.AddDays(1);
                 query = query.Where(s => s.StartTime < end);
             }
-            if (stationId.HasValue) query = query.Where(s => s.Staff.StationId == stationId.Value);
-            if (!string.IsNullOrEmpty(searchStaff)) query = query.Where(s => s.StaffId.Contains(searchStaff) || s.Staff.FullName.Contains(searchStaff));
+
+            // CHỈ ADMIN MỚI ĐƯỢC LỌC THEO TRẠM HOẶC NHÂN VIÊN KHÁC
+            if (role == "AD") {
+                if (stationId.HasValue) query = query.Where(s => s.Staff.StationId == stationId.Value);
+                if (!string.IsNullOrEmpty(searchStaff)) query = query.Where(s => s.StaffId.Contains(searchStaff) || s.Staff.FullName.Contains(searchStaff));
+            }
 
             var shifts = await query.OrderByDescending(s => s.StartTime).Take(isSearch ? 100 : 20).ToListAsync();
             var shiftIds = shifts.Select(s => s.ShiftId).ToList();

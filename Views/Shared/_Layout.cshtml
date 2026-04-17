@@ -55,6 +55,29 @@
             </div>
 
             <div class="nav-user-zone" id="userZone">
+                <!-- NÚT 3 GẠCH (QUICK MENU) -->
+                <div class="nav-quick-zone">
+                    <div class="quick-trigger" onclick="toggleQuickMenu(event)">
+                        ☰
+                    </div>
+                    <div class="quick-dropdown" id="quickDropdown">
+                        <div class="quick-group-label">Vận hành nhanh</div>
+                        <a asp-controller="Order" asp-action="Create" class="quick-item">
+                            <span class="quick-icon">➕</span> Nhập Đơn Hàng
+                        </a>
+                        <a asp-controller="Order" asp-action="List" class="quick-item">
+                            <span class="quick-icon">📦</span> Danh Sách Đơn
+                        </a>
+                        <div class="quick-group-label">Điều phối xe</div>
+                        <a asp-controller="Trip" asp-action="List" class="quick-item">
+                            <span class="quick-icon">🚛</span> Chuyến Xe Đi
+                        </a>
+                        <a asp-controller="Trip" asp-action="ArrivalList" class="quick-item">
+                            <span class="quick-icon">🏁</span> Chuyến Xe Đến
+                        </a>
+                    </div>
+                </div>
+
                 <div class="user-trigger" onclick="toggleUserDropdown(event)">
                     <div class="user-avatar-small">@initial</div>
                     <span class="user-trigger-name">@fullName</span>
@@ -175,14 +198,30 @@
 
         function toggleUserDropdown(event) {
             event.stopPropagation();
+            document.getElementById('quickDropdown').classList.remove('show'); // Đóng menu kia
             document.getElementById('userDropdown').classList.toggle('show');
         }
 
+        function toggleQuickMenu(event) {
+            event.stopPropagation();
+            document.getElementById('userDropdown').classList.remove('show'); // Đóng menu kia
+            document.getElementById('quickDropdown').classList.toggle('show');
+        }
+
         window.onclick = function(event) {
-            const dropdown = document.getElementById('userDropdown');
-            if (dropdown && dropdown.classList.contains('show')) {
+            // Đóng User Dropdown
+            const userDropdown = document.getElementById('userDropdown');
+            if (userDropdown && userDropdown.classList.contains('show')) {
                 if (!document.getElementById('userZone').contains(event.target)) {
-                    dropdown.classList.remove('show');
+                    userDropdown.classList.remove('show');
+                }
+            }
+
+            // Đóng Quick Menu
+            const quickDropdown = document.getElementById('quickDropdown');
+            if (quickDropdown && quickDropdown.classList.contains('show')) {
+                if (!document.querySelector('.nav-quick-zone').contains(event.target)) {
+                    quickDropdown.classList.remove('show');
                 }
             }
         }

@@ -1,35 +1,34 @@
 <div class="rp-card">
-    <div class="rp-filter-bar" style="margin-bottom: 25px; background: #f8fafc; padding: 20px; border-radius: 16px;">
-        <form onsubmit="loadTabContent('summary', event)" class="rp-d-flex rp-align-center" style="gap: 15px;">
+    <div class="rp-filter-bar rp-filter-bar-header">
+        <form onsubmit="loadTabContent('summary', event)" class="rp-d-flex rp-align-center rp-gap-1">
             <div class="rp-filter-group">
-                <label class="rp-filter-label">Xem báo cáo ngày:</label>
                 <input type="date" name="reportDate" value="@ViewBag.SelectedDate" class="rp-filter-input" onchange="this.form.requestSubmit()">
             </div>
-            <button type="submit" class="rp-btn rp-btn-primary" style="margin-top: auto;">🔍 Cập nhật</button>
+            <button type="submit" class="rp-btn rp-btn-primary">🔍 Cập nhật</button>
         </form>
     </div>
 
     <h4 class="rp-summary-title">📈 Tổng Kết Doanh Thu Toàn Hệ Thống</h4>
-    <div class="rp-goods-grid" style="margin-bottom: 30px; grid-template-columns: repeat(4, 1fr); max-width: 100%;">
-        <div class="rp-goods-card" style="padding: 20px 15px;">
+    <div class="rp-goods-grid rp-goods-grid-4">
+        <div class="rp-goods-card rp-goods-card-compact">
             <h3>@ViewBag.RevenueDateVal.ToString("N0") K</h3>
             <p>Doanh thu ngày lọc</p>
-            <span class="rp-btn-access" style="background: #3498db;">Ngày chọn</span>
+            <span class="rp-btn-access rp-bg-blue-alt">Ngày chọn</span>
         </div>
-        <div class="rp-goods-card" style="padding: 20px 15px;">
+        <div class="rp-goods-card rp-goods-card-compact">
             <h3>@ViewBag.RevenueWeekly.ToString("N0") K</h3>
             <p>Doanh thu 7 ngày qua</p>
-            <span class="rp-btn-access" style="background: #2ecc71;">Tuần này</span>
+            <span class="rp-btn-access rp-bg-green-alt">Tuần này</span>
         </div>
-        <div class="rp-goods-card" style="padding: 20px 15px;">
+        <div class="rp-goods-card rp-goods-card-compact">
             <h3>@ViewBag.RevenueMonthly.ToString("N0") K</h3>
             <p>Doanh thu tháng @DateTime.Now.Month</p>
-            <span class="rp-btn-access" style="background: #f1c40f;">Tháng này</span>
+            <span class="rp-btn-access rp-bg-yellow-alt">Tháng này</span>
         </div>
-        <div class="rp-goods-card" style="padding: 20px 15px;">
+        <div class="rp-goods-card rp-goods-card-compact">
             <h3>@ViewBag.RevenueTotalSystem.ToString("N0") K</h3>
             <p>Tổng doanh thu toàn bộ</p>
-            <span class="rp-btn-access" style="background: #e74c3c;">Tất cả</span>
+            <span class="rp-btn-access rp-bg-red-alt">Tất cả</span>
         </div>
     </div>
 

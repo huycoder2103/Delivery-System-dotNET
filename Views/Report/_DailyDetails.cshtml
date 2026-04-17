@@ -12,13 +12,13 @@
             👤 <strong>@Model.FullName</strong> | 🆔 @Model.UserId | 🚉 @(Model.Station?.StationName ?? "N/A")
         </div>
     </div>
-    <div style="text-align: right;">
+    <div class="rp-modal-header-right">
         <div class="rp-stat-label-mini">Tổng số ca</div>
         <div class="rp-stat-value-large">@shifts.Count</div>
     </div>
 </div>
 
-<div style="flex: 1; overflow-y: auto; padding: 20px;">
+<div class="rp-modal-scroll-area">
     @if (shifts.Any()) {
         <table class="rp-table-modern">
             <thead>
