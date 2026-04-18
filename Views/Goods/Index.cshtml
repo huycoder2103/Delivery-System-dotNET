@@ -3,51 +3,50 @@
 }
 
 @section Styles {
-    @* <link rel="stylesheet" href="~/css/home.css"> *@ 
-    <link rel="stylesheet" href="~/css/goods.css">
+    <link rel="stylesheet" href="~/css/goods.css?v=@DateTime.Now.Ticks">
 }
 
-<div class="goods-container">
-    @* <div class="page-header">
+<div class="goods-inner-wrapper">
+    <div class="goods-page-header">
         <h2>BỘ PHẬN HÀNG HÓA</h2>
         <p>Quản lý đơn hàng, điều phối vận chuyển và lộ trình</p>
-    </div> *@
+    </div>
 
-    <div class="goods-grid">
+    <div class="goods-menu-grid">
         <!-- 1. Tạo Đơn Hàng -->
-        <a asp-controller="Order" asp-action="Create" class="goods-card" style="text-decoration:none; color:inherit;">
-            <div class="card-icon">✍️</div>
+        <a asp-controller="Order" asp-action="Create" class="goods-menu-card">
+            <div class="goods-card-icon">✍️</div>
             <h3>Nhập Hàng Gửi</h3>
             <p>Tạo mới đơn hàng khi khách đến gửi hàng tại trạm.</p>
-            <button type="button" class="btn-access">Nhập hàng</button>
+            <button type="button" class="goods-btn-access">Nhập hàng</button>
         </a>
 
         <!-- 2. Danh Sách Đơn Hàng -->
-        <a asp-controller="Order" asp-action="List" class="goods-card" style="text-decoration:none; color:inherit;">
-            <div class="card-icon">📋</div>
+        <a asp-controller="Order" asp-action="List" class="goods-menu-card">
+            <div class="goods-card-icon">📋</div>
             <h3>Danh Sách Đơn</h3>
             <p>Xem, sửa, xóa và quản lý trạng thái các đơn hàng hiện có.</p>
-            <button type="button" class="btn-access">Xem danh sách</button>
+            <button type="button" class="goods-btn-access">Xem danh sách</button>
         </a>
 
         <!-- 3. Chuyến Xe Đi -->
-        <a asp-controller="Trip" asp-action="List" class="goods-card" style="text-decoration:none; color:inherit;">
-            <div class="card-icon">🚛</div>
+        <a asp-controller="Trip" asp-action="List" class="goods-menu-card">
+            <div class="goods-card-icon">🚛</div>
             <h3>Chuyến Xe Đi</h3>
             <p>Quản lý các chuyến xe xuất phát từ trạm hiện tại.</p>
-            <button type="button" class="btn-access">Xem chuyến xe</button>
+            <button type="button" class="goods-btn-access">Xem chuyến xe</button>
         </a>
 
         <!-- 4. Chuyến Xe Đến -->
-        <a asp-controller="Trip" asp-action="ArrivalList" class="goods-card" style="text-decoration:none; color:inherit;">
-            <div class="card-icon">🏁</div>
+        <a asp-controller="Trip" asp-action="ArrivalList" class="goods-menu-card">
+            <div class="goods-card-icon">🏁</div>
             <h3>Chuyến Xe Đến</h3>
             <p>Theo dõi và xác nhận các chuyến xe đang về trạm.</p>
-            <button type="button" class="btn-access">Xem chuyến xe</button>
+            <button type="button" class="goods-btn-access">Xem chuyến xe</button>
         </a>
     </div>
 
-    <div class="back-btn-container" style="text-align: center; margin-top: 30px;">
-        <a asp-controller="Home" asp-action="Index" class="btn-home" style="text-decoration:none; display:inline-block;">⬅ Quay lại Trang Chủ</a>
+    <div class="goods-back-btn-container">
+        <a asp-controller="Home" asp-action="Index" class="goods-btn-home">⬅ Quay lại Trang Chủ</a>
     </div>
 </div>
