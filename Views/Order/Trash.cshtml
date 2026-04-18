@@ -43,7 +43,7 @@
                             <td>@o.ReceiverName</td>
                             <td>@o.SendStation</td>
                             <td>@o.ReceiveStation</td>
-                            <td style="font-size:0.75rem; color:#888;">@o.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@o.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
                             <td class="od-col-act">
                                 <div style="display:flex; gap:5px; justify-content:center;">
                                     <form asp-action="Restore" asp-route-id="@o.OrderId" method="POST">
