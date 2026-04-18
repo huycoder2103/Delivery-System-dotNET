@@ -28,7 +28,7 @@
     z-index: 900;
     background: linear-gradient(135deg, var(--tr-primary), var(--tr-primary-dark));
     color: #fff;
-    padding: 20px 30px;
+    padding: 10px 30px;
     border-radius: 15px;
     margin-bottom: 20px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);

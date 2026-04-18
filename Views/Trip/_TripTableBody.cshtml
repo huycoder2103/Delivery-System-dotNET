@@ -5,10 +5,14 @@
 {
     var stationList = ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>;
     var stationDict = stationList?.ToDictionary(s => s.StationName, s => s.StationId.ToString());
+    var currentPage = (int)(ViewBag.CurrentPage ?? 1);
+    var pageSize = 10;
+    var index = (currentPage - 1) * pageSize + 1;
 
     foreach (var t in Model)
     {
         <tr>
+            <td>@index</td>
             <td><span class="tr-id-text">@t.TripId</span></td>
             <td class="tr-col-route">
                 <div class="tr-route-box">
@@ -64,6 +68,7 @@
                 </div>
             </td>
         </tr>
+        index++;
     }
 }
 else

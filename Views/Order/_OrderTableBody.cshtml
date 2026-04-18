@@ -10,13 +10,17 @@
 {
     var stationList = ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>;
     var stationDict = stationList?.ToDictionary(s => s.StationName, s => s.StationId.ToString());
+    var currentPage = (int)(ViewBag.CurrentPage ?? 1);
+    var pageSize = 10;
+    var index = (currentPage - 1) * pageSize + 1;
 
     foreach (var o in Model)
     {
         bool isShipped = !string.IsNullOrEmpty(o.TripId);
         bool canEdit = (currentUserRole == "AD" || o.StaffInput == currentUserID);
         <tr>
-            <td><span class="od-font-bold" style="color: var(--od-primary); font-size: 13px;">@o.OrderId</span></td>
+            <td>@index</td>
+            <td><span class="od-font-bold">@o.OrderId</span></td>
             <td class="od-col-item">@o.ItemName</td>
             <td>
                 <div class="od-route-box">
@@ -93,6 +97,7 @@
                 </div>
             </td>
         </tr>
+        index++;
     }
 }
 else
