@@ -9,35 +9,35 @@
     foreach (var t in Model)
     {
         <tr>
-            <td><span class="trip-id-text">@t.TripId</span></td>
-            <td class="col-route">
-                <div class="route-container">
+            <td><span class="tr-id-text">@t.TripId</span></td>
+            <td class="tr-col-route">
+                <div class="tr-route-box">
                     @{
                         var depID = (stationDict != null && t.Departure != null && stationDict.ContainsKey(t.Departure) ? stationDict[t.Departure] : t.Departure);
                         var destID = (stationDict != null && t.Destination != null && stationDict.ContainsKey(t.Destination) ? stationDict[t.Destination] : t.Destination);
                     }
-                    <span class="station-send" onclick="showStationInfo('@t.Departure', '@depID')">@depID</span>
-                    <span class="route-arrow">➔</span>
-                    <span class="station-receive"onclick="showStationInfo('@t.Destination', '@destID')">@destID</span>
+                    <span class="tr-station-send" onclick="showStationInfo('@t.Departure', '@depID')">@depID</span>
+                    <span class="tr-route-arrow">➔</span>
+                    <span class="tr-station-receive" onclick="showStationInfo('@t.Destination', '@destID')">@destID</span>
                 </div>
             </td>
-            <td class="col-plate-bold">@t.LicensePlate</td>
+            <td class="tr-col-plate-bold">@t.LicensePlate</td>
             <td>@t.DepartureTime</td>
             <td>@t.DriverName</td>
             <td>
                 @if (t.Status == "Đang đi")
                 {
-                    <span class="badge-status-m badge-going">🚛 Đang đi</span>
+                    <span class="tr-badge tr-badge-going">🚛 Đang đi</span>
                 }
                 else
                 {
-                    <span class="badge-status-m badge-arrived">🏁 Đã cập bến</span>
+                    <span class="tr-badge tr-badge-arrived">🏁 Đã cập bến</span>
                 }
             </td>
-            <td class="col-staff">@t.StaffCreated</td>
+            <td class="tr-col-staff">@t.StaffCreated</td>
             <td>@t.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
-            <td class="col-actions-min">
-                <div class="action-btns-grid">
+            <td class="tr-col-act">
+                <div class="tr-action-grid">
                     @{
                         var orderCounts = ViewBag.OrderCounts as Dictionary<string, int>;
                         int count = (orderCounts != null && orderCounts.ContainsKey(t.TripId)) ? orderCounts[t.TripId] : 0;
@@ -46,7 +46,7 @@
                     @* Nút xác nhận đến (Dùng SweetAlert2) *@
                     @if (ViewBag.IsArrivalPage == true && t.Status == "Đang đi")
                     {
-                        <button type="button" class="btn-action-trip btn-status-arrived"
+                        <button type="button" class="tr-btn-s tr-btn-s-arrived"
                                 onclick="confirmArrive('@t.TripId')">🏁 Đã đến</button>
                         
                         <form id="arriveForm-@t.TripId" asp-action="Arrive" method="POST" class="hidden-form">
@@ -56,9 +56,9 @@
 
                     @if (t.Status == "Đang đi" && ViewBag.IsArrivalPage != true)
                     {
-                        <a asp-action="AssignGoods" asp-route-id="@t.TripId" class="btn-action-trip btn-status-assign">📦 Thêm hàng</a>
+                        <a asp-action="AssignGoods" asp-route-id="@t.TripId" class="tr-btn-s tr-btn-s-assign">📦 Thêm hàng</a>
                     }
-                    <a asp-action="ViewGoods" asp-route-id="@t.TripId" class="btn-action-trip btn-status-view">
+                    <a asp-action="ViewGoods" asp-route-id="@t.TripId" class="tr-btn-s tr-btn-s-view">
                         📋 Xem hàng (@count)
                     </a>
                 </div>
@@ -69,6 +69,6 @@
 else
 {
     <tr>
-        <td colspan="10" class="no-trip-found">📭 Không tìm thấy chuyến xe nào phù hợp!</td>
+        <td colspan="10" class="tr-no-data">📭 Không tìm thấy chuyến xe nào phù hợp!</td>
     </tr>
 }

@@ -41,25 +41,25 @@
                     <div class="od-cust-phone">@o.ReceiverPhone</div>
                 </div>
             </td>
-            <td style="font-size: 12px; color: var(--od-text-muted);">@o.StaffInput</td>
+            <td class="od-staff">@o.StaffInput</td>
             
             <td class="od-col-paid">
                 @if (o.Tr.HasValue && o.Tr != 0)
                 {
                     <span class="od-badge od-badge-delivered">@(o.Tr.Value.ToString("N0"))k</span>
                 }
-                else { <span style="color: #ccc;">—</span> }
+                else { <span>—</span> }
             </td>
             <td class="od-col-paid">
                 @if (o.Ct.HasValue && o.Ct != 0)
                 {
                     <span class="od-badge od-badge-pending" style="background: #fce8e6; color: #d93025;">@(o.Ct.Value.ToString("N0"))k</span>
                 }
-                else { <span style="color: #ccc;">—</span> }
+                else { <span>—</span> }
             </td>
             
-            <td style="max-width: 150px; font-size: 0.8rem; color: #666; font-style: italic;">@o.Note</td>
-            <td style="font-size: 0.75rem; color: #888;">
+            <td>@o.Note</td>
+            <td>
                 @o.CreatedAt?.ToString("dd/MM/yyyy HH:mm")
             </td>
             <td class="od-col-act">

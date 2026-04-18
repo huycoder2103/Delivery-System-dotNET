@@ -7,26 +7,26 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/create_trip.css?v=@DateTime.Now.Ticks" />
+    <link rel="stylesheet" href="~/css/list_trip.css?v=@DateTime.Now.Ticks" />
 }
 
-<div class="trip-container-modern @(ViewBag.HasActiveShift == false ? "content-blurred" : "")">
+<div class="tr-container-small @(ViewBag.HasActiveShift == false ? "tr-content-blurred" : "")">
     <form id="tripForm" asp-action="Create" method="POST" onsubmit="return validateTripStations()">
-        <div class="modern-page-header">
+        <div class="tr-page-header">
             <div>
                 <h2>🚛 THÊM CHUYẾN XE MỚI</h2>
-                <div class="trip-create-meta">Khởi tạo lộ trình vận chuyển hàng hóa</div>
+                <div class="tr-header-meta">Khởi tạo lộ trình vận chuyển hàng hóa</div>
             </div>
         </div>
 
-        <div asp-validation-summary="All" class="text-danger mb-20"></div>
+        <div asp-validation-summary="All" class="alert alert-danger mb-4"></div>
 
-        <div class="modern-card">
+        <div class="tr-card">
             <!-- Dòng 1: Xe và Trạm -->
-            <div class="form-row">
-                <div class="form-col">
-                    <label>Biển Số Xe <span class="required-star">*</span></label>
-                    <select asp-for="TruckId" required>
+            <div class="tr-form-row">
+                <div class="tr-form-group">
+                    <label class="form-label">Biển Số Xe <span class="tr-required">*</span></label>
+                    <select asp-for="TruckId" class="form-select tr-form-control" required>
                         <option value="">-- Chọn Xe Vận Chuyển --</option>
                         @if (truckList != null)
                         {
@@ -39,9 +39,9 @@
                     </select>
                 </div>
 
-                <div class="form-col">
-                    <label>Trạm Xuất Phát <span class="required-star">*</span></label>
-                    <select asp-for="Departure" id="departure" required disabled="@(!User.IsInRole("AD"))">
+                <div class="tr-form-group">
+                    <label class="form-label">Trạm Xuất Phát <span class="tr-required">*</span></label>
+                    <select asp-for="Departure" id="departure" class="form-select tr-form-control" required disabled="@(!User.IsInRole("AD"))">
                         <option value="">-- Chọn Trạm Đi --</option>
                         @if (stationList != null)
                         {
@@ -58,9 +58,9 @@
                     }
                 </div>
 
-                <div class="form-col">
-                    <label>Trạm Đích <span class="required-star">*</span></label>
-                    <select asp-for="Destination" id="destination" required>
+                <div class="tr-form-group">
+                    <label class="form-label">Trạm Đích <span class="tr-required">*</span></label>
+                    <select asp-for="Destination" id="destination" class="form-select tr-form-control" required>
                         <option value="">-- Chọn Trạm Đến --</option>
                         @if (stationList != null)
                         {
@@ -74,77 +74,77 @@
             </div>
 
             <!-- Dòng 2: Đồng hồ bên trái, Tên lái/phụ bên phải xếp chồng -->
-            <div class="form-row trip-form-row-top">
+            <div class="tr-form-row tr-form-row-top">
                 <!-- Cột trái: Đồng hồ -->
-                <div class="form-col time-picker-col">
-                    <label>Giờ Xuất Phát <span class="required-star">*</span></label>
+                <div class="tr-form-group tr-time-picker-col">
+                    <label class="form-label">Giờ Xuất Phát <span class="tr-required">*</span></label>
                     <input type="hidden" asp-for="DepartureTime" id="finalDepartureTime" required>
                     
-                    <div class="modern-time-picker">
-                        <div class="time-unit-box">
-                            <button type="button" class="arrow-btn" onclick="adjustTime('hourInp', 1)">▲</button>
-                            <input type="number" id="hourInp" class="time-input-modern" min="1" max="12" value="08" oninput="validateInput(this, 1, 12)">
-                            <button type="button" class="arrow-btn" onclick="adjustTime('hourInp', -1)">▼</button>
+                    <div class="tr-time-picker">
+                        <div class="tr-time-unit">
+                            <button type="button" class="tr-arrow-btn" onclick="adjustTime('hourInp', 1)">▲</button>
+                            <input type="number" id="hourInp" class="tr-time-input" min="1" max="12" value="08" oninput="validateInput(this, 1, 12)">
+                            <button type="button" class="tr-arrow-btn" onclick="adjustTime('hourInp', -1)">▼</button>
                         </div>
 
-                        <div class="time-separator-modern">:</div>
+                        <div class="tr-time-separator">:</div>
 
-                        <div class="time-unit-box">
-                            <button type="button" class="arrow-btn" onclick="adjustTime('minuteInp', 1)">▲</button>
-                            <input type="number" id="minuteInp" class="time-input-modern" min="0" max="59" value="00" oninput="validateInput(this, 0, 59)">
-                            <button type="button" class="arrow-btn" onclick="adjustTime('minuteInp', -1)">▼</button>
+                        <div class="tr-time-unit">
+                            <button type="button" class="tr-arrow-btn" onclick="adjustTime('minuteInp', 1)">▲</button>
+                            <input type="number" id="minuteInp" class="tr-time-input" min="0" max="59" value="00" oninput="validateInput(this, 0, 59)">
+                            <button type="button" class="tr-arrow-btn" onclick="adjustTime('minuteInp', -1)">▼</button>
                         </div>
 
-                        <div class="ampm-switch">
-                            <button type="button" class="btn-ampm-modern active" id="btnAM" onclick="setAMPM('AM')">AM</button>
-                            <button type="button" class="btn-ampm-modern" id="btnPM" onclick="setAMPM('PM')">PM</button>
+                        <div class="tr-ampm-switch">
+                            <button type="button" class="tr-btn-ampm active" id="btnAM" onclick="setAMPM('AM')">AM</button>
+                            <button type="button" class="tr-btn-ampm" id="btnPM" onclick="setAMPM('PM')">PM</button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Cột phải: Tài xế (trên) và Phụ xe (dưới) -->
-                <div class="form-col driver-info-col">
-                    <div class="input-group-vertical">
-                        <label>Tài Xế Phụ Trách</label>
-                        <input asp-for="DriverName" type="text" placeholder="Họ tên tài xế..." class="full-width-input">
+                <div class="tr-form-group tr-driver-info-col">
+                    <div class="tr-input-group-vertical mb-3">
+                        <label class="form-label">Tài Xế Phụ Trách</label>
+                        <input asp-for="DriverName" type="text" placeholder="Họ tên tài xế..." class="form-control tr-form-control tr-full-width-input">
                     </div>
-                    <div class="input-group-vertical">
-                        <label>Nhân Viên Phụ Xe</label>
-                        <input asp-for="AssistantName" type="text" placeholder="Họ tên phụ xe..." class="full-width-input">
+                    <div class="tr-input-group-vertical">
+                        <label class="form-label">Nhân Viên Phụ Xe</label>
+                        <input asp-for="AssistantName" type="text" placeholder="Họ tên phụ xe..." class="form-control tr-form-control tr-full-width-input">
                     </div>
                 </div>
             </div>
 
             <!-- Ghi chú luôn hiển thị -->
-            <div class="form-group note-form-group">
-                <label class="note-label">Ghi Chú Chuyến Xe</label>
-                <textarea asp-for="Notes" rows="3" placeholder="Nhập các lưu ý quan trọng về chuyến xe này (nếu có)..." class="note-textarea"></textarea>
+            <div class="tr-form-group tr-note-form-group mt-3">
+                <label class="tr-note-label">Ghi Chú Chuyến Xe</label>
+                <textarea asp-for="Notes" rows="3" placeholder="Nhập các lưu ý quan trọng về chuyến xe này (nếu có)..." class="form-control tr-note-textarea"></textarea>
             </div>
         </div>
     </form>
 
-    <div class="form-actions-row">
-        <a asp-action="List" class="btn-modern-back btn-back-link">⬅ Quay lại danh sách</a>
-        <input type="submit" form="tripForm" value="💾 Lưu Chuyến Xe" class="btn-modern-save btn-save-trip" @(ViewBag.HasActiveShift == false ? "disabled" : "")>
+    <div class="tr-form-actions-row mt-4">
+        <a asp-action="List" class="tr-btn tr-btn-secondary">⬅ Quay lại danh sách</a>
+        <input type="submit" form="tripForm" value="💾 Lưu Chuyến Xe" class="tr-btn tr-btn-success tr-btn-save-trip" @(ViewBag.HasActiveShift == false ? "disabled" : "")>
     </div>
 </div>
 
 @if (ViewBag.HasActiveShift == false)
 {
-    <div id="shiftRequiredModal" class="modal shift-modal-overlay">
-        <div class="modal-content shift-modal-content">
-            <div class="shift-modal-icon">⏰</div>
-            <h2 class="shift-modal-title">Chưa Vào Ca Làm Việc!</h2>
-            <p class="shift-modal-desc">Bạn cần phải bắt đầu ca làm việc trước khi có thể khởi tạo chuyến xe mới.</p>
+    <div id="shiftRequiredModal" class="tr-modal-blur">
+        <div class="tr-modal-content">
+            <div class="tr-modal-icon">⏰</div>
+            <h2 class="tr-modal-title">Chưa Vào Ca Làm Việc!</h2>
+            <p class="tr-modal-desc">Bạn cần phải bắt đầu ca làm việc trước khi có thể khởi tạo chuyến xe mới.</p>
             
             <form asp-controller="Home" asp-action="StartShift" method="POST">
-                <button type="submit" class="btn-modern-save btn-start-shift">
+                <button type="submit" class="tr-btn-start-shift">
                     🚀 BẮT ĐẦU CA NGAY
                 </button>
             </form>
             
-            <div class="shift-modal-footer">
-                <a asp-action="List" class="link-modal-back">Quay lại danh sách</a>
+            <div class="tr-modal-footer">
+                <a asp-action="List" class="tr-link-modal-back">Quay lại danh sách</a>
             </div>
         </div>
     </div>

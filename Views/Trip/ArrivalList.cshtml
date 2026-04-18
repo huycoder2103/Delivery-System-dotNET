@@ -9,27 +9,27 @@
     <link rel="stylesheet" href="~/css/list_trip.css?v=@DateTime.Now.Ticks" />
 }
 
-<div class="arrival-list-container">
+<div class="tr-container">
     
-    <div class="modern-page-header arrival-header">
+    <div class="tr-page-header">
         <div>
-            <h3>📥 DANH SÁCH CHUYẾN XE ĐẾN</h3>
-            <div id="tripCount" class="trip-count-meta">Tổng: @(Model?.Count() ?? 0) chuyến</div>
+            <h2>📥 DANH SÁCH CHUYẾN XE ĐẾN</h2>
+            <div id="tripCount" class="tr-header-meta">Tổng: @(Model?.Count() ?? 0) chuyến</div>
         </div>
         
-        <div class="header-actions">
-            <a asp-controller="Order" asp-action="List" class="btn-modern btn-header-action">
+        <div class="tr-header-actions">
+            <a asp-controller="Order" asp-action="List" class="tr-btn tr-btn-header">
                 📦 Quản Lý Đơn Hàng
             </a>
-            <a asp-controller="Trip" asp-action="List" class="btn-modern btn-header-action">
+            <a asp-controller="Trip" asp-action="List" class="tr-btn tr-btn-header">
                 📤 Chuyến Xe Đi
             </a>
         </div>
     </div>
 
-    <div class="modern-card sticky-filter-bar">
-        <div class="filter-controls-group">
-            <select id="filterDeparture" class="filter-select">
+    <div class="tr-sticky-filter">
+        <div class="tr-filter-group">
+            <select id="filterDeparture" class="tr-filter-select">
                 <option value="">-- Từ Trạm (Đi) --</option>
                 @if (stationList != null)
                 {
@@ -39,7 +39,7 @@
                     }
                 }            </select>
 
-            <select id="filterDestination" class="filter-select">
+            <select id="filterDestination" class="tr-filter-select">
                 <option value="">-- Đến Trạm (Dừng) --</option>
                 @if (stationList != null)
                 {
@@ -50,29 +50,29 @@
                 }
             </select>
 
-            <div class="search-input-wrapper">
+            <div class="tr-search-wrapper">
                 <input type="text" id="filterTruck" placeholder="Tìm biển số, ID chuyến" 
-                       value="@ViewBag.SearchTruck" class="search-input-field">
+                       value="@ViewBag.SearchTruck" class="tr-search-input">
             </div>
 
 
-            <button onclick="resetFilters()" class="btn-modern btn-secondary-modern">🔄 Làm mới</button>
+            <button onclick="resetFilters()" class="tr-btn tr-btn-secondary">🔄 Làm mới</button>
         </div>
     </div>
 
-    <div class="modern-card trip-table-card">
-        <table class="modern-table" id="tripTable">
+    <div class="tr-card tr-card-table tr-page-wrap">
+        <table class="table table-hover" id="tripTable">
             <thead>
                 <tr>
-                    <th class="col-id">Mã Chuyến</th>
-                    <th class="col-route">Lộ trình</th>
-                    <th class="col-plate">Biển Số Xe</th>
-                    <th class="col-time">Giờ Đi</th>
-                    <th class="col-staff">Tài Xế</th>
-                    <th class="col-act">Trạng Thái</th>
-                    <th class="col-staff">NV Tạo</th>
-                    <th class="col-time">Thời Gian Tạo</th>
-                    <th class="col-act">Thao Tác</th>
+                    <th class="tr-col-id">Mã Chuyến</th>
+                    <th class="tr-col-route">Lộ trình</th>
+                    <th class="tr-col-plate">Biển Số Xe</th>
+                    <th class="tr-col-time">Giờ Đi</th>
+                    <th class="tr-col-staff">Tài Xế</th>
+                    <th class="tr-col-act">Trạng Thái</th>
+                    <th class="tr-col-staff">NV Tạo</th>
+                    <th class="tr-col-time">Thời Gian Tạo</th>
+                    <th class="tr-col-act">Thao Tác</th>
                 </tr>
             </thead>
             <tbody id="tripTableBody">
@@ -82,28 +82,28 @@
     </div>
 
     <!-- Pagination Controls -->
-    <div class="pagination-flex">
+    <div class="tr-pagination">
         @if (ViewBag.TotalPages > 1)
         {
             var currentPage = (int)ViewBag.CurrentPage;
             var totalPages = (int)ViewBag.TotalPages;
 
-            <button class="btn-modern btn-secondary-modern" onclick="changePage(@(currentPage - 1))" @(currentPage == 1 ? "disabled" : "")>
+            <button class="tr-btn tr-btn-secondary" onclick="changePage(@(currentPage - 1))" @(currentPage == 1 ? "disabled" : "")>
                 « Trang trước
             </button>
             
-            <div class="page-info-text">
+            <div class="tr-page-info px-3">
                 Trang @currentPage / @totalPages
             </div>
 
-            <button class="btn-modern btn-secondary-modern" onclick="changePage(@(currentPage + 1))" @(currentPage == totalPages ? "disabled" : "")>
+            <button class="tr-btn tr-btn-secondary" onclick="changePage(@(currentPage + 1))" @(currentPage == totalPages ? "disabled" : "")>
                 Trang sau »
             </button>
         }
     </div>
 
-    <div class="footer-actions-row">
-        <a asp-controller="Home" asp-action="Index" class="btn-back btn-footer-back">⬅ Quay lại Trang Chủ</a>
+    <div class="tr-footer-actions mt-4">
+        <a asp-controller="Home" asp-action="Index" class="tr-btn tr-btn-secondary">⬅ Quay lại Trang Chủ</a>
     </div>
 </div>
 

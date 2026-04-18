@@ -1,0 +1,639 @@
+2026-04-19 00:01:04.706 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/List - null null
+2026-04-19 00:01:04.719 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:01:04.721 +07:00 [INF] Route matched with {action = "List", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] List(System.String, System.String, System.String, System.String, System.String, Int32) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-19 00:01:04.943 +07:00 [INF] Executed DbCommand (108ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+2026-04-19 00:01:05.167 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID` AS `OrderId`, `t`.`senderName` AS `SenderName`, `t`.`senderPhone` AS `SenderPhone`, `t`.`receiverName` AS `ReceiverName`, `t`.`receiverPhone` AS `ReceiverPhone`, `t`.`sendStation` AS `SendStation`, `t`.`receiveStation` AS `ReceiveStation`, `t`.`itemName` AS `ItemName`, `t`.`amount` AS `Amount`, `t`.`tr` AS `Tr`, `t`.`ct` AS `Ct`, `t`.`note` AS `Note`, `t`.`staffInput` AS `StaffInput`, `t`.`shipStatus` AS `ShipStatus`, `t`.`tripID` AS `TripId`, `t`.`createdAt` AS `CreatedAt`
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+ORDER BY `t`.`createdAt` DESC
+LIMIT @__p_1 OFFSET @__p_0
+2026-04-19 00:01:05.388 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`shipStatus` AS `Status`, `t0`.`HasTripId` AS `HasTrip`, COUNT(*) AS `Count`
+FROM (
+    SELECT `t`.`shipStatus`, `t`.`tripID` IS NOT NULL AND (`t`.`tripID` <> '') AS `HasTripId`
+    FROM `tblOrders` AS `t`
+    WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+) AS `t0`
+GROUP BY `t0`.`shipStatus`, `t0`.`HasTripId`
+2026-04-19 00:01:05.391 +07:00 [INF] Executing ViewResult, running view List.
+2026-04-19 00:01:05.394 +07:00 [INF] Executed ViewResult - view List executed in 2.516ms.
+2026-04-19 00:01:05.396 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.List (Delivery-System) in 671.0935ms
+2026-04-19 00:01:05.398 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:01:05.401 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:01:05.403 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:01:05.405 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/List - 200 null text/html; charset=utf-8 699.4594ms
+2026-04-19 00:01:05.408 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-19 00:01:05.413 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=kmLvk-R5K7Zx8iZY7fXnzA - 101 null null 103854.0437ms
+2026-04-19 00:01:05.433 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - null null
+2026-04-19 00:01:05.434 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121536653937481 - null null
+2026-04-19 00:01:05.438 +07:00 [INF] Sending file. Request path: '/css/main-bundle.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\main-bundle.css'
+2026-04-19 00:01:05.442 +07:00 [INF] Sending file. Request path: '/css/list_order.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\list_order.css'
+2026-04-19 00:01:05.444 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - 200 null text/css 10.8018ms
+2026-04-19 00:01:05.446 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121536653937481 - 200 null text/css 11.9806ms
+2026-04-19 00:01:05.563 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-19 00:01:05.567 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-19 00:01:05.569 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-19 00:01:05.570 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 7.7931ms
+2026-04-19 00:01:05.639 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=nCtS-P2UWDPYr5FF2GWHdw - null null
+2026-04-19 00:01:05.641 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/favicon.ico - null null
+2026-04-19 00:01:05.644 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-19 00:01:05.648 +07:00 [INF] Sending file. Request path: '/favicon.ico'. Physical path: 'E:\C#\Delivery-System\wwwroot\favicon.ico'
+2026-04-19 00:01:05.651 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/favicon.ico - 200 5430 image/x-icon 10.3897ms
+2026-04-19 00:01:13.474 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=pending&page=1 - null null
+2026-04-19 00:01:13.479 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:01:13.482 +07:00 [INF] Route matched with {action = "List", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] List(System.String, System.String, System.String, System.String, System.String, Int32) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-19 00:01:13.710 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (`t`.`tripID` IS NULL OR (`t`.`tripID` = ''))
+2026-04-19 00:01:13.942 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID` AS `OrderId`, `t`.`senderName` AS `SenderName`, `t`.`senderPhone` AS `SenderPhone`, `t`.`receiverName` AS `ReceiverName`, `t`.`receiverPhone` AS `ReceiverPhone`, `t`.`sendStation` AS `SendStation`, `t`.`receiveStation` AS `ReceiveStation`, `t`.`itemName` AS `ItemName`, `t`.`amount` AS `Amount`, `t`.`tr` AS `Tr`, `t`.`ct` AS `Ct`, `t`.`note` AS `Note`, `t`.`staffInput` AS `StaffInput`, `t`.`shipStatus` AS `ShipStatus`, `t`.`tripID` AS `TripId`, `t`.`createdAt` AS `CreatedAt`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (`t`.`tripID` IS NULL OR (`t`.`tripID` = ''))
+ORDER BY `t`.`createdAt` DESC
+LIMIT @__p_1 OFFSET @__p_0
+2026-04-19 00:01:14.162 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`shipStatus` AS `Status`, `t0`.`HasTripId` AS `HasTrip`, COUNT(*) AS `Count`
+FROM (
+    SELECT `t`.`shipStatus`, `t`.`tripID` IS NOT NULL AND (`t`.`tripID` <> '') AS `HasTripId`
+    FROM `tblOrders` AS `t`
+    WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+) AS `t0`
+GROUP BY `t0`.`shipStatus`, `t0`.`HasTripId`
+2026-04-19 00:01:14.166 +07:00 [INF] Executing ViewResult, running view List.
+2026-04-19 00:01:14.168 +07:00 [INF] Executed ViewResult - view List executed in 2.4415ms.
+2026-04-19 00:01:14.170 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.List (Delivery-System) in 685.491ms
+2026-04-19 00:01:14.172 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:01:14.174 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:01:14.176 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:01:14.178 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=pending&page=1 - 200 null text/html; charset=utf-8 704.2513ms
+2026-04-19 00:01:14.182 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-19 00:01:14.184 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=nCtS-P2UWDPYr5FF2GWHdw - 101 null null 8544.9652ms
+2026-04-19 00:01:14.204 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121536741682677 - null null
+2026-04-19 00:01:14.209 +07:00 [INF] Sending file. Request path: '/css/list_order.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\list_order.css'
+2026-04-19 00:01:14.212 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121536741682677 - 200 null text/css 8.0662ms
+2026-04-19 00:01:14.238 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-19 00:01:14.243 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-19 00:01:14.245 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-19 00:01:14.248 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 9.0356ms
+2026-04-19 00:01:14.309 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=t5KefbzFiyMrS4paD_y9aA - null null
+2026-04-19 00:01:14.313 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-19 00:01:16.277 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - null null
+2026-04-19 00:01:16.283 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:01:16.285 +07:00 [INF] Route matched with {action = "List", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] List(System.String, System.String, System.String, System.String, System.String, Int32) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-19 00:01:16.504 +07:00 [INF] Executed DbCommand (108ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+2026-04-19 00:01:16.725 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID` AS `OrderId`, `t`.`senderName` AS `SenderName`, `t`.`senderPhone` AS `SenderPhone`, `t`.`receiverName` AS `ReceiverName`, `t`.`receiverPhone` AS `ReceiverPhone`, `t`.`sendStation` AS `SendStation`, `t`.`receiveStation` AS `ReceiveStation`, `t`.`itemName` AS `ItemName`, `t`.`amount` AS `Amount`, `t`.`tr` AS `Tr`, `t`.`ct` AS `Ct`, `t`.`note` AS `Note`, `t`.`staffInput` AS `StaffInput`, `t`.`shipStatus` AS `ShipStatus`, `t`.`tripID` AS `TripId`, `t`.`createdAt` AS `CreatedAt`
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+ORDER BY `t`.`createdAt` DESC
+LIMIT @__p_1 OFFSET @__p_0
+2026-04-19 00:01:16.945 +07:00 [INF] Executed DbCommand (108ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`shipStatus` AS `Status`, `t0`.`HasTripId` AS `HasTrip`, COUNT(*) AS `Count`
+FROM (
+    SELECT `t`.`shipStatus`, `t`.`tripID` IS NOT NULL AND (`t`.`tripID` <> '') AS `HasTripId`
+    FROM `tblOrders` AS `t`
+    WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+) AS `t0`
+GROUP BY `t0`.`shipStatus`, `t0`.`HasTripId`
+2026-04-19 00:01:16.948 +07:00 [INF] Executing ViewResult, running view List.
+2026-04-19 00:01:16.951 +07:00 [INF] Executed ViewResult - view List executed in 2.2105ms.
+2026-04-19 00:01:16.952 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.List (Delivery-System) in 665.2558ms
+2026-04-19 00:01:16.954 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:01:16.957 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:01:16.958 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:01:16.960 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - 200 null text/html; charset=utf-8 683.2122ms
+2026-04-19 00:01:16.964 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-19 00:01:16.966 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=t5KefbzFiyMrS4paD_y9aA - 101 null null 2656.3848ms
+2026-04-19 00:01:16.985 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121536769506414 - null null
+2026-04-19 00:01:16.989 +07:00 [INF] Sending file. Request path: '/css/list_order.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\list_order.css'
+2026-04-19 00:01:16.992 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121536769506414 - 200 null text/css 6.5061ms
+2026-04-19 00:01:17.013 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-19 00:01:17.018 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-19 00:01:17.019 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-19 00:01:17.021 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 7.5451ms
+2026-04-19 00:01:17.076 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=ASRYkhylFOgqxx9DLGu9Sw - null null
+2026-04-19 00:01:17.080 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-19 00:01:18.677 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=pending&page=1 - null null
+2026-04-19 00:01:18.682 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:01:18.684 +07:00 [INF] Route matched with {action = "List", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] List(System.String, System.String, System.String, System.String, System.String, Int32) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-19 00:01:18.905 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (`t`.`tripID` IS NULL OR (`t`.`tripID` = ''))
+2026-04-19 00:01:19.125 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID` AS `OrderId`, `t`.`senderName` AS `SenderName`, `t`.`senderPhone` AS `SenderPhone`, `t`.`receiverName` AS `ReceiverName`, `t`.`receiverPhone` AS `ReceiverPhone`, `t`.`sendStation` AS `SendStation`, `t`.`receiveStation` AS `ReceiveStation`, `t`.`itemName` AS `ItemName`, `t`.`amount` AS `Amount`, `t`.`tr` AS `Tr`, `t`.`ct` AS `Ct`, `t`.`note` AS `Note`, `t`.`staffInput` AS `StaffInput`, `t`.`shipStatus` AS `ShipStatus`, `t`.`tripID` AS `TripId`, `t`.`createdAt` AS `CreatedAt`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (`t`.`tripID` IS NULL OR (`t`.`tripID` = ''))
+ORDER BY `t`.`createdAt` DESC
+LIMIT @__p_1 OFFSET @__p_0
+2026-04-19 00:01:19.345 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`shipStatus` AS `Status`, `t0`.`HasTripId` AS `HasTrip`, COUNT(*) AS `Count`
+FROM (
+    SELECT `t`.`shipStatus`, `t`.`tripID` IS NOT NULL AND (`t`.`tripID` <> '') AS `HasTripId`
+    FROM `tblOrders` AS `t`
+    WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+) AS `t0`
+GROUP BY `t0`.`shipStatus`, `t0`.`HasTripId`
+2026-04-19 00:01:19.349 +07:00 [INF] Executing ViewResult, running view List.
+2026-04-19 00:01:19.351 +07:00 [INF] Executed ViewResult - view List executed in 2.1761ms.
+2026-04-19 00:01:19.352 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.List (Delivery-System) in 666.4262ms
+2026-04-19 00:01:19.354 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:01:19.356 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:01:19.358 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:01:19.360 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=pending&page=1 - 200 null text/html; charset=utf-8 683.3939ms
+2026-04-19 00:01:19.364 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-19 00:01:19.367 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=ASRYkhylFOgqxx9DLGu9Sw - 101 null null 2290.3797ms
+2026-04-19 00:01:19.384 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121536793507328 - null null
+2026-04-19 00:01:19.388 +07:00 [INF] Sending file. Request path: '/css/list_order.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\list_order.css'
+2026-04-19 00:01:19.391 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121536793507328 - 200 null text/css 6.5325ms
+2026-04-19 00:01:19.413 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-19 00:01:19.417 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-19 00:01:19.419 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-19 00:01:19.420 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 7.4724ms
+2026-04-19 00:01:19.477 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=UDEdR2DYppX9uekMh96WWw - null null
+2026-04-19 00:01:19.481 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-19 00:01:22.372 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=shipped&page=1 - null null
+2026-04-19 00:01:22.378 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:01:22.380 +07:00 [INF] Route matched with {action = "List", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] List(System.String, System.String, System.String, System.String, System.String, Int32) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-19 00:01:22.606 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`tripID` IS NOT NULL AND (`t`.`tripID` <> '')) AND ((`t`.`shipStatus` <> 'Đã giao') OR `t`.`shipStatus` IS NULL))
+2026-04-19 00:01:22.837 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID` AS `OrderId`, `t`.`senderName` AS `SenderName`, `t`.`senderPhone` AS `SenderPhone`, `t`.`receiverName` AS `ReceiverName`, `t`.`receiverPhone` AS `ReceiverPhone`, `t`.`sendStation` AS `SendStation`, `t`.`receiveStation` AS `ReceiveStation`, `t`.`itemName` AS `ItemName`, `t`.`amount` AS `Amount`, `t`.`tr` AS `Tr`, `t`.`ct` AS `Ct`, `t`.`note` AS `Note`, `t`.`staffInput` AS `StaffInput`, `t`.`shipStatus` AS `ShipStatus`, `t`.`tripID` AS `TripId`, `t`.`createdAt` AS `CreatedAt`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND ((`t`.`tripID` IS NOT NULL AND (`t`.`tripID` <> '')) AND ((`t`.`shipStatus` <> 'Đã giao') OR `t`.`shipStatus` IS NULL))
+ORDER BY `t`.`createdAt` DESC
+LIMIT @__p_1 OFFSET @__p_0
+2026-04-19 00:01:23.057 +07:00 [INF] Executed DbCommand (107ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`shipStatus` AS `Status`, `t0`.`HasTripId` AS `HasTrip`, COUNT(*) AS `Count`
+FROM (
+    SELECT `t`.`shipStatus`, `t`.`tripID` IS NOT NULL AND (`t`.`tripID` <> '') AS `HasTripId`
+    FROM `tblOrders` AS `t`
+    WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+) AS `t0`
+GROUP BY `t0`.`shipStatus`, `t0`.`HasTripId`
+2026-04-19 00:01:23.060 +07:00 [INF] Executing ViewResult, running view List.
+2026-04-19 00:01:23.062 +07:00 [INF] Executed ViewResult - view List executed in 2.329ms.
+2026-04-19 00:01:23.064 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.List (Delivery-System) in 681.9784ms
+2026-04-19 00:01:23.066 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:01:23.068 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:01:23.070 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:01:23.071 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=shipped&page=1 - 200 null text/html; charset=utf-8 699.8351ms
+2026-04-19 00:01:23.075 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-19 00:01:23.078 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=UDEdR2DYppX9uekMh96WWw - 101 null null 3600.5878ms
+2026-04-19 00:01:23.096 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121536830623173 - null null
+2026-04-19 00:01:23.101 +07:00 [INF] Sending file. Request path: '/css/list_order.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\list_order.css'
+2026-04-19 00:01:23.103 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121536830623173 - 200 null text/css 6.3181ms
+2026-04-19 00:01:23.125 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-19 00:01:23.129 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-19 00:01:23.131 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-19 00:01:23.133 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 7.8311ms
+2026-04-19 00:01:23.186 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=jjouvHyEYsFihvbwpIlwzw - null null
+2026-04-19 00:01:23.190 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-19 00:01:25.389 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=pending&page=1 - null null
+2026-04-19 00:01:25.395 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:01:25.397 +07:00 [INF] Route matched with {action = "List", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] List(System.String, System.String, System.String, System.String, System.String, Int32) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-19 00:01:25.616 +07:00 [INF] Executed DbCommand (108ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (`t`.`tripID` IS NULL OR (`t`.`tripID` = ''))
+2026-04-19 00:01:25.837 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID` AS `OrderId`, `t`.`senderName` AS `SenderName`, `t`.`senderPhone` AS `SenderPhone`, `t`.`receiverName` AS `ReceiverName`, `t`.`receiverPhone` AS `ReceiverPhone`, `t`.`sendStation` AS `SendStation`, `t`.`receiveStation` AS `ReceiveStation`, `t`.`itemName` AS `ItemName`, `t`.`amount` AS `Amount`, `t`.`tr` AS `Tr`, `t`.`ct` AS `Ct`, `t`.`note` AS `Note`, `t`.`staffInput` AS `StaffInput`, `t`.`shipStatus` AS `ShipStatus`, `t`.`tripID` AS `TripId`, `t`.`createdAt` AS `CreatedAt`
+FROM `tblOrders` AS `t`
+WHERE ((`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)) AND (`t`.`tripID` IS NULL OR (`t`.`tripID` = ''))
+ORDER BY `t`.`createdAt` DESC
+LIMIT @__p_1 OFFSET @__p_0
+2026-04-19 00:01:26.057 +07:00 [INF] Executed DbCommand (108ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`shipStatus` AS `Status`, `t0`.`HasTripId` AS `HasTrip`, COUNT(*) AS `Count`
+FROM (
+    SELECT `t`.`shipStatus`, `t`.`tripID` IS NOT NULL AND (`t`.`tripID` <> '') AS `HasTripId`
+    FROM `tblOrders` AS `t`
+    WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+) AS `t0`
+GROUP BY `t0`.`shipStatus`, `t0`.`HasTripId`
+2026-04-19 00:01:26.060 +07:00 [INF] Executing ViewResult, running view List.
+2026-04-19 00:01:26.062 +07:00 [INF] Executed ViewResult - view List executed in 2.2873ms.
+2026-04-19 00:01:26.064 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.List (Delivery-System) in 664.8792ms
+2026-04-19 00:01:26.065 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:01:26.067 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:01:26.069 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:01:26.071 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=pending&page=1 - 200 null text/html; charset=utf-8 681.4786ms
+2026-04-19 00:01:26.075 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-19 00:01:26.077 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=jjouvHyEYsFihvbwpIlwzw - 101 null null 2891.2587ms
+2026-04-19 00:01:26.095 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121536860621371 - null null
+2026-04-19 00:01:26.099 +07:00 [INF] Sending file. Request path: '/css/list_order.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\list_order.css'
+2026-04-19 00:01:26.102 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121536860621371 - 200 null text/css 6.4743ms
+2026-04-19 00:01:26.124 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-19 00:01:26.128 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-19 00:01:26.130 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-19 00:01:26.131 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 7.6185ms
+2026-04-19 00:01:26.186 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=9XPAT0Rznl24lV4XWnbSNg - null null
+2026-04-19 00:01:26.190 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-19 00:01:26.655 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - null null
+2026-04-19 00:01:26.660 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:01:26.662 +07:00 [INF] Route matched with {action = "List", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] List(System.String, System.String, System.String, System.String, System.String, Int32) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-19 00:01:26.881 +07:00 [INF] Executed DbCommand (108ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+2026-04-19 00:01:27.101 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID` AS `OrderId`, `t`.`senderName` AS `SenderName`, `t`.`senderPhone` AS `SenderPhone`, `t`.`receiverName` AS `ReceiverName`, `t`.`receiverPhone` AS `ReceiverPhone`, `t`.`sendStation` AS `SendStation`, `t`.`receiveStation` AS `ReceiveStation`, `t`.`itemName` AS `ItemName`, `t`.`amount` AS `Amount`, `t`.`tr` AS `Tr`, `t`.`ct` AS `Ct`, `t`.`note` AS `Note`, `t`.`staffInput` AS `StaffInput`, `t`.`shipStatus` AS `ShipStatus`, `t`.`tripID` AS `TripId`, `t`.`createdAt` AS `CreatedAt`
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+ORDER BY `t`.`createdAt` DESC
+LIMIT @__p_1 OFFSET @__p_0
+2026-04-19 00:01:27.321 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`shipStatus` AS `Status`, `t0`.`HasTripId` AS `HasTrip`, COUNT(*) AS `Count`
+FROM (
+    SELECT `t`.`shipStatus`, `t`.`tripID` IS NOT NULL AND (`t`.`tripID` <> '') AS `HasTripId`
+    FROM `tblOrders` AS `t`
+    WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+) AS `t0`
+GROUP BY `t0`.`shipStatus`, `t0`.`HasTripId`
+2026-04-19 00:01:27.325 +07:00 [INF] Executing ViewResult, running view List.
+2026-04-19 00:01:27.327 +07:00 [INF] Executed ViewResult - view List executed in 2.2076ms.
+2026-04-19 00:01:27.329 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.List (Delivery-System) in 665.3671ms
+2026-04-19 00:01:27.331 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:01:27.333 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:01:27.335 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:01:27.336 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - 200 null text/html; charset=utf-8 681.678ms
+2026-04-19 00:01:27.340 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-19 00:01:27.343 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=9XPAT0Rznl24lV4XWnbSNg - 101 null null 1156.998ms
+2026-04-19 00:01:27.361 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121536873272190 - null null
+2026-04-19 00:01:27.365 +07:00 [INF] Sending file. Request path: '/css/list_order.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\list_order.css'
+2026-04-19 00:01:27.368 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121536873272190 - 200 null text/css 7.1199ms
+2026-04-19 00:01:27.390 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-19 00:01:27.395 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-19 00:01:27.397 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-19 00:01:27.398 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 8.5807ms
+2026-04-19 00:01:27.455 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=R1fNdoTXWXxUWt_ZQVqzTw - null null
+2026-04-19 00:01:27.459 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-19 00:02:23.459 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - null null
+2026-04-19 00:02:23.465 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:02:23.467 +07:00 [INF] Route matched with {action = "List", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] List(System.String, System.String, System.String, System.String, System.String, Int32) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-19 00:02:23.700 +07:00 [INF] Executed DbCommand (120ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+2026-04-19 00:02:23.920 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID` AS `OrderId`, `t`.`senderName` AS `SenderName`, `t`.`senderPhone` AS `SenderPhone`, `t`.`receiverName` AS `ReceiverName`, `t`.`receiverPhone` AS `ReceiverPhone`, `t`.`sendStation` AS `SendStation`, `t`.`receiveStation` AS `ReceiveStation`, `t`.`itemName` AS `ItemName`, `t`.`amount` AS `Amount`, `t`.`tr` AS `Tr`, `t`.`ct` AS `Ct`, `t`.`note` AS `Note`, `t`.`staffInput` AS `StaffInput`, `t`.`shipStatus` AS `ShipStatus`, `t`.`tripID` AS `TripId`, `t`.`createdAt` AS `CreatedAt`
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+ORDER BY `t`.`createdAt` DESC
+LIMIT @__p_1 OFFSET @__p_0
+2026-04-19 00:02:24.140 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`shipStatus` AS `Status`, `t0`.`HasTripId` AS `HasTrip`, COUNT(*) AS `Count`
+FROM (
+    SELECT `t`.`shipStatus`, `t`.`tripID` IS NOT NULL AND (`t`.`tripID` <> '') AS `HasTripId`
+    FROM `tblOrders` AS `t`
+    WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+) AS `t0`
+GROUP BY `t0`.`shipStatus`, `t0`.`HasTripId`
+2026-04-19 00:02:24.144 +07:00 [INF] Executing ViewResult, running view List.
+2026-04-19 00:02:24.146 +07:00 [INF] Executed ViewResult - view List executed in 2.6437ms.
+2026-04-19 00:02:24.148 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.List (Delivery-System) in 677.9755ms
+2026-04-19 00:02:24.150 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:02:24.152 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:02:24.154 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:02:24.156 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - 200 null text/html; charset=utf-8 696.5069ms
+2026-04-19 00:02:24.160 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-19 00:02:24.162 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=R1fNdoTXWXxUWt_ZQVqzTw - 101 null null 56706.9297ms
+2026-04-19 00:02:24.187 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - null null
+2026-04-19 00:02:24.187 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121537441460917 - null null
+2026-04-19 00:02:24.191 +07:00 [INF] Sending file. Request path: '/css/main-bundle.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\main-bundle.css'
+2026-04-19 00:02:24.195 +07:00 [INF] Sending file. Request path: '/css/list_order.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\list_order.css'
+2026-04-19 00:02:24.198 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - 200 null text/css 11.0557ms
+2026-04-19 00:02:24.199 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121537441460917 - 200 null text/css 12.2891ms
+2026-04-19 00:02:24.320 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-19 00:02:24.324 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-19 00:02:24.326 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-19 00:02:24.327 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 7.2648ms
+2026-04-19 00:02:24.390 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=4rEN-Um7Y5jeZnZP6aVqAA - null null
+2026-04-19 00:02:24.391 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/favicon.ico - null null
+2026-04-19 00:02:24.396 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-19 00:02:24.400 +07:00 [INF] Sending file. Request path: '/favicon.ico'. Physical path: 'E:\C#\Delivery-System\wwwroot\favicon.ico'
+2026-04-19 00:02:24.403 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/favicon.ico - 200 5430 image/x-icon 11.5093ms
+2026-04-19 00:03:45.200 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - null null
+2026-04-19 00:03:45.209 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:03:45.211 +07:00 [INF] Route matched with {action = "List", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] List(System.String, System.String, System.String, System.String, System.String, Int32) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-19 00:03:45.430 +07:00 [INF] Executed DbCommand (108ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+2026-04-19 00:03:45.650 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID` AS `OrderId`, `t`.`senderName` AS `SenderName`, `t`.`senderPhone` AS `SenderPhone`, `t`.`receiverName` AS `ReceiverName`, `t`.`receiverPhone` AS `ReceiverPhone`, `t`.`sendStation` AS `SendStation`, `t`.`receiveStation` AS `ReceiveStation`, `t`.`itemName` AS `ItemName`, `t`.`amount` AS `Amount`, `t`.`tr` AS `Tr`, `t`.`ct` AS `Ct`, `t`.`note` AS `Note`, `t`.`staffInput` AS `StaffInput`, `t`.`shipStatus` AS `ShipStatus`, `t`.`tripID` AS `TripId`, `t`.`createdAt` AS `CreatedAt`
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+ORDER BY `t`.`createdAt` DESC
+LIMIT @__p_1 OFFSET @__p_0
+2026-04-19 00:03:45.871 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`shipStatus` AS `Status`, `t0`.`HasTripId` AS `HasTrip`, COUNT(*) AS `Count`
+FROM (
+    SELECT `t`.`shipStatus`, `t`.`tripID` IS NOT NULL AND (`t`.`tripID` <> '') AS `HasTripId`
+    FROM `tblOrders` AS `t`
+    WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+) AS `t0`
+GROUP BY `t0`.`shipStatus`, `t0`.`HasTripId`
+2026-04-19 00:03:45.874 +07:00 [INF] Executing ViewResult, running view List.
+2026-04-19 00:03:45.876 +07:00 [INF] Executed ViewResult - view List executed in 2.6198ms.
+2026-04-19 00:03:45.878 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.List (Delivery-System) in 664.2305ms
+2026-04-19 00:03:45.879 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:03:45.882 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:03:45.884 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:03:45.885 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - 200 null text/html; charset=utf-8 685.2687ms
+2026-04-19 00:03:45.890 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-19 00:03:45.892 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=4rEN-Um7Y5jeZnZP6aVqAA - 101 null null 81501.6212ms
+2026-04-19 00:03:45.915 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - null null
+2026-04-19 00:03:45.915 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121538258763733 - null null
+2026-04-19 00:03:45.919 +07:00 [INF] Sending file. Request path: '/css/main-bundle.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\main-bundle.css'
+2026-04-19 00:03:45.923 +07:00 [INF] Sending file. Request path: '/css/list_order.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\list_order.css'
+2026-04-19 00:03:45.924 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - 200 null text/css 9.73ms
+2026-04-19 00:03:45.926 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121538258763733 - 200 null text/css 11.3669ms
+2026-04-19 00:03:46.053 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-19 00:03:46.057 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-19 00:03:46.059 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-19 00:03:46.061 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 7.3177ms
+2026-04-19 00:03:46.122 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=QrKaQmiTyyzeKuivtVVPbA - null null
+2026-04-19 00:03:46.123 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/favicon.ico - null null
+2026-04-19 00:03:46.127 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-19 00:03:46.130 +07:00 [INF] Sending file. Request path: '/favicon.ico'. Physical path: 'E:\C#\Delivery-System\wwwroot\favicon.ico'
+2026-04-19 00:03:46.133 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/favicon.ico - 200 5430 image/x-icon 10.0111ms
+2026-04-19 00:04:19.731 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - null null
+2026-04-19 00:04:19.736 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:04:19.737 +07:00 [INF] Route matched with {action = "List", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] List(System.String, System.String, System.String, System.String, System.String, Int32) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-19 00:04:19.958 +07:00 [INF] Executed DbCommand (108ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+2026-04-19 00:04:20.178 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID` AS `OrderId`, `t`.`senderName` AS `SenderName`, `t`.`senderPhone` AS `SenderPhone`, `t`.`receiverName` AS `ReceiverName`, `t`.`receiverPhone` AS `ReceiverPhone`, `t`.`sendStation` AS `SendStation`, `t`.`receiveStation` AS `ReceiveStation`, `t`.`itemName` AS `ItemName`, `t`.`amount` AS `Amount`, `t`.`tr` AS `Tr`, `t`.`ct` AS `Ct`, `t`.`note` AS `Note`, `t`.`staffInput` AS `StaffInput`, `t`.`shipStatus` AS `ShipStatus`, `t`.`tripID` AS `TripId`, `t`.`createdAt` AS `CreatedAt`
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+ORDER BY `t`.`createdAt` DESC
+LIMIT @__p_1 OFFSET @__p_0
+2026-04-19 00:04:20.397 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`shipStatus` AS `Status`, `t0`.`HasTripId` AS `HasTrip`, COUNT(*) AS `Count`
+FROM (
+    SELECT `t`.`shipStatus`, `t`.`tripID` IS NOT NULL AND (`t`.`tripID` <> '') AS `HasTripId`
+    FROM `tblOrders` AS `t`
+    WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+) AS `t0`
+GROUP BY `t0`.`shipStatus`, `t0`.`HasTripId`
+2026-04-19 00:04:20.400 +07:00 [INF] Executing ViewResult, running view List.
+2026-04-19 00:04:20.403 +07:00 [INF] Executed ViewResult - view List executed in 2.1296ms.
+2026-04-19 00:04:20.404 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.List (Delivery-System) in 664.9587ms
+2026-04-19 00:04:20.406 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:04:20.408 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:04:20.410 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:04:20.412 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - 200 null text/html; charset=utf-8 681.3146ms
+2026-04-19 00:04:20.416 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-19 00:04:20.418 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=QrKaQmiTyyzeKuivtVVPbA - 101 null null 34296.1679ms
+2026-04-19 00:04:20.440 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - null null
+2026-04-19 00:04:20.440 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121538604026023 - null null
+2026-04-19 00:04:20.445 +07:00 [INF] Sending file. Request path: '/css/main-bundle.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\main-bundle.css'
+2026-04-19 00:04:20.449 +07:00 [INF] Sending file. Request path: '/css/list_order.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\list_order.css'
+2026-04-19 00:04:20.451 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - 200 null text/css 10.999ms
+2026-04-19 00:04:20.453 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121538604026023 - 200 null text/css 12.6093ms
+2026-04-19 00:04:20.567 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-19 00:04:20.570 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-19 00:04:20.572 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-19 00:04:20.574 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 6.684ms
+2026-04-19 00:04:20.640 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=2fDNs3l-U2JFezBu-ZyxzQ - null null
+2026-04-19 00:04:20.640 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/favicon.ico - null null
+2026-04-19 00:04:20.644 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-19 00:04:20.647 +07:00 [INF] Sending file. Request path: '/favicon.ico'. Physical path: 'E:\C#\Delivery-System\wwwroot\favicon.ico'
+2026-04-19 00:04:20.650 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/favicon.ico - 200 5430 image/x-icon 9.8945ms
+2026-04-19 00:05:31.072 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - null null
+2026-04-19 00:05:31.079 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:05:31.081 +07:00 [INF] Route matched with {action = "List", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] List(System.String, System.String, System.String, System.String, System.String, Int32) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-19 00:05:31.301 +07:00 [INF] Executed DbCommand (107ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+2026-04-19 00:05:31.522 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID` AS `OrderId`, `t`.`senderName` AS `SenderName`, `t`.`senderPhone` AS `SenderPhone`, `t`.`receiverName` AS `ReceiverName`, `t`.`receiverPhone` AS `ReceiverPhone`, `t`.`sendStation` AS `SendStation`, `t`.`receiveStation` AS `ReceiveStation`, `t`.`itemName` AS `ItemName`, `t`.`amount` AS `Amount`, `t`.`tr` AS `Tr`, `t`.`ct` AS `Ct`, `t`.`note` AS `Note`, `t`.`staffInput` AS `StaffInput`, `t`.`shipStatus` AS `ShipStatus`, `t`.`tripID` AS `TripId`, `t`.`createdAt` AS `CreatedAt`
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+ORDER BY `t`.`createdAt` DESC
+LIMIT @__p_1 OFFSET @__p_0
+2026-04-19 00:05:31.741 +07:00 [INF] Executed DbCommand (108ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`shipStatus` AS `Status`, `t0`.`HasTripId` AS `HasTrip`, COUNT(*) AS `Count`
+FROM (
+    SELECT `t`.`shipStatus`, `t`.`tripID` IS NOT NULL AND (`t`.`tripID` <> '') AS `HasTripId`
+    FROM `tblOrders` AS `t`
+    WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+) AS `t0`
+GROUP BY `t0`.`shipStatus`, `t0`.`HasTripId`
+2026-04-19 00:05:31.744 +07:00 [INF] Executing ViewResult, running view List.
+2026-04-19 00:05:31.746 +07:00 [INF] Executed ViewResult - view List executed in 2.2691ms.
+2026-04-19 00:05:31.748 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.List (Delivery-System) in 665.2059ms
+2026-04-19 00:05:31.750 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:05:31.752 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:05:31.754 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:05:31.755 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - 200 null text/html; charset=utf-8 683.5868ms
+2026-04-19 00:05:31.760 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-19 00:05:31.762 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=2fDNs3l-U2JFezBu-ZyxzQ - 101 null null 71121.6382ms
+2026-04-19 00:05:31.783 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - null null
+2026-04-19 00:05:31.783 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121539317465192 - null null
+2026-04-19 00:05:31.788 +07:00 [INF] Sending file. Request path: '/css/main-bundle.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\main-bundle.css'
+2026-04-19 00:05:31.792 +07:00 [INF] Sending file. Request path: '/css/list_order.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\list_order.css'
+2026-04-19 00:05:31.793 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - 200 null text/css 10.3088ms
+2026-04-19 00:05:31.795 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121539317465192 - 200 null text/css 12.1668ms
+2026-04-19 00:05:31.911 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-19 00:05:31.915 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-19 00:05:31.916 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-19 00:05:31.918 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 6.8525ms
+2026-04-19 00:05:31.979 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=KALOFeRrBWg609uc0JQPZQ - null null
+2026-04-19 00:05:31.980 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/favicon.ico - null null
+2026-04-19 00:05:31.984 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-19 00:05:31.987 +07:00 [INF] Sending file. Request path: '/favicon.ico'. Physical path: 'E:\C#\Delivery-System\wwwroot\favicon.ico'
+2026-04-19 00:05:31.990 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/favicon.ico - 200 5430 image/x-icon 9.4344ms
+2026-04-19 00:06:39.057 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - null null
+2026-04-19 00:06:39.063 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:06:39.064 +07:00 [INF] Route matched with {action = "List", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] List(System.String, System.String, System.String, System.String, System.String, Int32) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-19 00:06:39.287 +07:00 [INF] Executed DbCommand (108ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+2026-04-19 00:06:39.507 +07:00 [INF] Executed DbCommand (108ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID` AS `OrderId`, `t`.`senderName` AS `SenderName`, `t`.`senderPhone` AS `SenderPhone`, `t`.`receiverName` AS `ReceiverName`, `t`.`receiverPhone` AS `ReceiverPhone`, `t`.`sendStation` AS `SendStation`, `t`.`receiveStation` AS `ReceiveStation`, `t`.`itemName` AS `ItemName`, `t`.`amount` AS `Amount`, `t`.`tr` AS `Tr`, `t`.`ct` AS `Ct`, `t`.`note` AS `Note`, `t`.`staffInput` AS `StaffInput`, `t`.`shipStatus` AS `ShipStatus`, `t`.`tripID` AS `TripId`, `t`.`createdAt` AS `CreatedAt`
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+ORDER BY `t`.`createdAt` DESC
+LIMIT @__p_1 OFFSET @__p_0
+2026-04-19 00:06:39.727 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`shipStatus` AS `Status`, `t0`.`HasTripId` AS `HasTrip`, COUNT(*) AS `Count`
+FROM (
+    SELECT `t`.`shipStatus`, `t`.`tripID` IS NOT NULL AND (`t`.`tripID` <> '') AS `HasTripId`
+    FROM `tblOrders` AS `t`
+    WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+) AS `t0`
+GROUP BY `t0`.`shipStatus`, `t0`.`HasTripId`
+2026-04-19 00:06:39.731 +07:00 [INF] Executing ViewResult, running view List.
+2026-04-19 00:06:39.733 +07:00 [INF] Executed ViewResult - view List executed in 2.6978ms.
+2026-04-19 00:06:39.735 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.List (Delivery-System) in 667.7648ms
+2026-04-19 00:06:39.737 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:06:39.739 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:06:39.741 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:06:39.742 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - 200 null text/html; charset=utf-8 685.4511ms
+2026-04-19 00:06:39.747 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-19 00:06:39.749 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=KALOFeRrBWg609uc0JQPZQ - 101 null null 67769.5975ms
+2026-04-19 00:06:39.770 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121539997331178 - null null
+2026-04-19 00:06:39.770 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - null null
+2026-04-19 00:06:39.775 +07:00 [INF] Sending file. Request path: '/css/list_order.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\list_order.css'
+2026-04-19 00:06:39.779 +07:00 [INF] Sending file. Request path: '/css/main-bundle.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\main-bundle.css'
+2026-04-19 00:06:39.781 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121539997331178 - 200 null text/css 11.0249ms
+2026-04-19 00:06:39.783 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - 200 null text/css 12.5002ms
+2026-04-19 00:06:39.905 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-19 00:06:39.910 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-19 00:06:39.912 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-19 00:06:39.913 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 8.1142ms
+2026-04-19 00:06:39.975 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=kSSwxebuQ8RDXiO5Zr1Slw - null null
+2026-04-19 00:06:39.976 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/favicon.ico - null null
+2026-04-19 00:06:39.980 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-19 00:06:39.984 +07:00 [INF] Sending file. Request path: '/favicon.ico'. Physical path: 'E:\C#\Delivery-System\wwwroot\favicon.ico'
+2026-04-19 00:06:39.987 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/favicon.ico - 200 5430 image/x-icon 10.1647ms
+2026-04-19 00:07:13.123 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - null null
+2026-04-19 00:07:13.129 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:07:13.130 +07:00 [INF] Route matched with {action = "List", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] List(System.String, System.String, System.String, System.String, System.String, Int32) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-19 00:07:13.353 +07:00 [INF] Executed DbCommand (108ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+2026-04-19 00:07:13.575 +07:00 [INF] Executed DbCommand (110ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID` AS `OrderId`, `t`.`senderName` AS `SenderName`, `t`.`senderPhone` AS `SenderPhone`, `t`.`receiverName` AS `ReceiverName`, `t`.`receiverPhone` AS `ReceiverPhone`, `t`.`sendStation` AS `SendStation`, `t`.`receiveStation` AS `ReceiveStation`, `t`.`itemName` AS `ItemName`, `t`.`amount` AS `Amount`, `t`.`tr` AS `Tr`, `t`.`ct` AS `Ct`, `t`.`note` AS `Note`, `t`.`staffInput` AS `StaffInput`, `t`.`shipStatus` AS `ShipStatus`, `t`.`tripID` AS `TripId`, `t`.`createdAt` AS `CreatedAt`
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+ORDER BY `t`.`createdAt` DESC
+LIMIT @__p_1 OFFSET @__p_0
+2026-04-19 00:07:13.798 +07:00 [INF] Executed DbCommand (110ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`shipStatus` AS `Status`, `t0`.`HasTripId` AS `HasTrip`, COUNT(*) AS `Count`
+FROM (
+    SELECT `t`.`shipStatus`, `t`.`tripID` IS NOT NULL AND (`t`.`tripID` <> '') AS `HasTripId`
+    FROM `tblOrders` AS `t`
+    WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+) AS `t0`
+GROUP BY `t0`.`shipStatus`, `t0`.`HasTripId`
+2026-04-19 00:07:13.802 +07:00 [INF] Executing ViewResult, running view List.
+2026-04-19 00:07:13.804 +07:00 [INF] Executed ViewResult - view List executed in 2.1815ms.
+2026-04-19 00:07:13.805 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.List (Delivery-System) in 672.2706ms
+2026-04-19 00:07:13.807 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:07:13.809 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:07:13.811 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:07:13.813 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - 200 null text/html; charset=utf-8 689.4483ms
+2026-04-19 00:07:13.817 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-19 00:07:13.820 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=kSSwxebuQ8RDXiO5Zr1Slw - 101 null null 33844.3906ms
+2026-04-19 00:07:13.843 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - null null
+2026-04-19 00:07:13.843 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121540338038524 - null null
+2026-04-19 00:07:13.847 +07:00 [INF] Sending file. Request path: '/css/main-bundle.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\main-bundle.css'
+2026-04-19 00:07:13.851 +07:00 [INF] Sending file. Request path: '/css/list_order.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\list_order.css'
+2026-04-19 00:07:13.853 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - 200 null text/css 10.6654ms
+2026-04-19 00:07:13.855 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121540338038524 - 200 null text/css 12.3325ms
+2026-04-19 00:07:13.960 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-19 00:07:13.964 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-19 00:07:13.965 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-19 00:07:13.967 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 7.6309ms
+2026-04-19 00:07:14.037 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=Cm1SkN-jYVmoG2_mi6GZWQ - null null
+2026-04-19 00:07:14.038 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/favicon.ico - null null
+2026-04-19 00:07:14.041 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-19 00:07:14.044 +07:00 [INF] Sending file. Request path: '/favicon.ico'. Physical path: 'E:\C#\Delivery-System\wwwroot\favicon.ico'
+2026-04-19 00:07:14.047 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/favicon.ico - 200 5430 image/x-icon 8.8186ms
+2026-04-19 00:07:45.166 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - null null
+2026-04-19 00:07:45.174 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:07:45.176 +07:00 [INF] Route matched with {action = "List", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] List(System.String, System.String, System.String, System.String, System.String, Int32) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-19 00:07:45.398 +07:00 [INF] Executed DbCommand (108ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+2026-04-19 00:07:45.620 +07:00 [INF] Executed DbCommand (110ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID` AS `OrderId`, `t`.`senderName` AS `SenderName`, `t`.`senderPhone` AS `SenderPhone`, `t`.`receiverName` AS `ReceiverName`, `t`.`receiverPhone` AS `ReceiverPhone`, `t`.`sendStation` AS `SendStation`, `t`.`receiveStation` AS `ReceiveStation`, `t`.`itemName` AS `ItemName`, `t`.`amount` AS `Amount`, `t`.`tr` AS `Tr`, `t`.`ct` AS `Ct`, `t`.`note` AS `Note`, `t`.`staffInput` AS `StaffInput`, `t`.`shipStatus` AS `ShipStatus`, `t`.`tripID` AS `TripId`, `t`.`createdAt` AS `CreatedAt`
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+ORDER BY `t`.`createdAt` DESC
+LIMIT @__p_1 OFFSET @__p_0
+2026-04-19 00:07:45.838 +07:00 [INF] Executed DbCommand (108ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`shipStatus` AS `Status`, `t0`.`HasTripId` AS `HasTrip`, COUNT(*) AS `Count`
+FROM (
+    SELECT `t`.`shipStatus`, `t`.`tripID` IS NOT NULL AND (`t`.`tripID` <> '') AS `HasTripId`
+    FROM `tblOrders` AS `t`
+    WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+) AS `t0`
+GROUP BY `t0`.`shipStatus`, `t0`.`HasTripId`
+2026-04-19 00:07:45.842 +07:00 [INF] Executing ViewResult, running view List.
+2026-04-19 00:07:45.844 +07:00 [INF] Executed ViewResult - view List executed in 2.343ms.
+2026-04-19 00:07:45.846 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.List (Delivery-System) in 666.3998ms
+2026-04-19 00:07:45.847 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:07:45.850 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:07:45.852 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:07:45.854 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - 200 null text/html; charset=utf-8 687.6068ms
+2026-04-19 00:07:45.857 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-19 00:07:45.860 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=Cm1SkN-jYVmoG2_mi6GZWQ - 101 null null 31823.0005ms
+2026-04-19 00:07:45.878 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - null null
+2026-04-19 00:07:45.879 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121540658439922 - null null
+2026-04-19 00:07:45.883 +07:00 [INF] Sending file. Request path: '/css/main-bundle.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\main-bundle.css'
+2026-04-19 00:07:45.886 +07:00 [INF] Sending file. Request path: '/css/list_order.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\list_order.css'
+2026-04-19 00:07:45.888 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - 200 null text/css 9.4394ms
+2026-04-19 00:07:45.890 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121540658439922 - 200 null text/css 10.6546ms
+2026-04-19 00:07:45.991 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-19 00:07:45.996 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-19 00:07:45.998 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-19 00:07:46.000 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 8.638ms
+2026-04-19 00:07:46.060 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/favicon.ico - null null
+2026-04-19 00:07:46.062 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=NCc3z4h-Z4RIyXaMZpcC8g - null null
+2026-04-19 00:07:46.065 +07:00 [INF] Sending file. Request path: '/favicon.ico'. Physical path: 'E:\C#\Delivery-System\wwwroot\favicon.ico'
+2026-04-19 00:07:46.068 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-19 00:07:46.069 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/favicon.ico - 200 5430 image/x-icon 9.0255ms
+2026-04-19 00:08:21.318 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - null null
+2026-04-19 00:08:21.324 +07:00 [INF] Executing endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:08:21.326 +07:00 [INF] Route matched with {action = "List", controller = "Order"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] List(System.String, System.String, System.String, System.String, System.String, Int32) on controller Delivery_System.Controllers.OrderController (Delivery-System).
+2026-04-19 00:08:21.551 +07:00 [INF] Executed DbCommand (108ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+2026-04-19 00:08:21.771 +07:00 [INF] Executed DbCommand (109ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`orderID` AS `OrderId`, `t`.`senderName` AS `SenderName`, `t`.`senderPhone` AS `SenderPhone`, `t`.`receiverName` AS `ReceiverName`, `t`.`receiverPhone` AS `ReceiverPhone`, `t`.`sendStation` AS `SendStation`, `t`.`receiveStation` AS `ReceiveStation`, `t`.`itemName` AS `ItemName`, `t`.`amount` AS `Amount`, `t`.`tr` AS `Tr`, `t`.`ct` AS `Ct`, `t`.`note` AS `Note`, `t`.`staffInput` AS `StaffInput`, `t`.`shipStatus` AS `ShipStatus`, `t`.`tripID` AS `TripId`, `t`.`createdAt` AS `CreatedAt`
+FROM `tblOrders` AS `t`
+WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+ORDER BY `t`.`createdAt` DESC
+LIMIT @__p_1 OFFSET @__p_0
+2026-04-19 00:08:21.991 +07:00 [INF] Executed DbCommand (108ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `t0`.`shipStatus` AS `Status`, `t0`.`HasTripId` AS `HasTrip`, COUNT(*) AS `Count`
+FROM (
+    SELECT `t`.`shipStatus`, `t`.`tripID` IS NOT NULL AND (`t`.`tripID` <> '') AS `HasTripId`
+    FROM `tblOrders` AS `t`
+    WHERE (`t`.`isDeleted` IS NULL) OR NOT (`t`.`isDeleted`)
+) AS `t0`
+GROUP BY `t0`.`shipStatus`, `t0`.`HasTripId`
+2026-04-19 00:08:21.995 +07:00 [INF] Executing ViewResult, running view List.
+2026-04-19 00:08:21.998 +07:00 [INF] Executed ViewResult - view List executed in 2.8112ms.
+2026-04-19 00:08:22.000 +07:00 [INF] Executed action Delivery_System.Controllers.OrderController.List (Delivery-System) in 670.5948ms
+2026-04-19 00:08:22.002 +07:00 [INF] Executed endpoint 'Delivery_System.Controllers.OrderController.List (Delivery-System)'
+2026-04-19 00:08:22.005 +07:00 [WRN] Unable to configure Browser Link script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:08:22.007 +07:00 [WRN] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: '["br"]'. Consider disabling response compression.
+2026-04-19 00:08:22.010 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/Order/List?sendStationFilter=&receiveStationFilter=&searchPhone=&dateFilter=&statusFilter=all&page=1 - 200 null text/html; charset=utf-8 691.4129ms
+2026-04-19 00:08:22.013 +07:00 [INF] Executed endpoint '/deliveryHub'
+2026-04-19 00:08:22.018 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/deliveryHub?id=NCc3z4h-Z4RIyXaMZpcC8g - 101 null null 35956.1102ms
+2026-04-19 00:08:22.040 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - null null
+2026-04-19 00:08:22.040 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121541019980087 - null null
+2026-04-19 00:08:22.045 +07:00 [INF] Sending file. Request path: '/css/main-bundle.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\main-bundle.css'
+2026-04-19 00:08:22.049 +07:00 [INF] Sending file. Request path: '/css/list_order.css'. Physical path: 'E:\C#\Delivery-System\wwwroot\css\list_order.css'
+2026-04-19 00:08:22.052 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/main-bundle.css - 200 null text/css 12.2107ms
+2026-04-19 00:08:22.054 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/css/list_order.css?v=639121541019980087 - 200 null text/css 13.9684ms
+2026-04-19 00:08:22.154 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-04-19 00:08:22.158 +07:00 [INF] Executing endpoint '/deliveryHub/negotiate'
+2026-04-19 00:08:22.160 +07:00 [INF] Executed endpoint '/deliveryHub/negotiate'
+2026-04-19 00:08:22.162 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5122/deliveryHub/negotiate?negotiateVersion=1 - 200 null application/json 8.0121ms
+2026-04-19 00:08:22.226 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/deliveryHub?id=3vHtZcJ6EgEKhM_8KLK4Uw - null null
+2026-04-19 00:08:22.226 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5122/favicon.ico - null null
+2026-04-19 00:08:22.231 +07:00 [INF] Executing endpoint '/deliveryHub'
+2026-04-19 00:08:22.234 +07:00 [INF] Sending file. Request path: '/favicon.ico'. Physical path: 'E:\C#\Delivery-System\wwwroot\favicon.ico'
+2026-04-19 00:08:22.236 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5122/favicon.ico - 200 5430 image/x-icon 9.9655ms

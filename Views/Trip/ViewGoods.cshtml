@@ -7,15 +7,16 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/view_goods.css?v=@DateTime.Now.Ticks">
-    }
+    <link rel="stylesheet" href="~/css/list_trip.css?v=@DateTime.Now.Ticks">
+}
 
-    <div class="page-wrap">
-        <div class="hdr">
+<div class="tr-container">
+    <div class="tr-page-wrap">
+        <div class="tr-hdr">
             <h3>📋 DANH SÁCH HÀNG TRÊN CHUYẾN XE</h3>
             @if (trip != null)
             {
-                <div class="meta">
+                <div class="tr-header-meta">
                     <span class="badge">Chuyến: @trip.TripId</span>
                     <span class="badge">Lộ trình: @trip.RouteInfo</span>
                     <span class="badge">Biển số: @trip.LicensePlate</span>
@@ -24,10 +25,10 @@
             }
         </div>
 
-        <div class="body">
+        <div class="tr-body">
             @if (Model != null && Model.Any())
             {
-                <table>
+                <table class="table table-hover">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -58,7 +59,7 @@
                                 <td>
                                     @if (o.ShipStatus == "Đang chuyển")
                                     {
-                                        <strong class="order-id-link" onclick="confirmRemove('@o.OrderId', '@trip?.TripId')" title="Bấm để gỡ hàng xuống xe">
+                                        <strong class="tr-id-link" onclick="confirmRemove('@o.OrderId', '@trip?.TripId')" title="Bấm để gỡ hàng xuống xe">
                                             @o.OrderId
                                         </strong>
                                         <form id="removeForm-@o.OrderId" asp-controller="Order" asp-action="RemoveFromTrip" method="POST" class="hidden-form">
@@ -68,64 +69,65 @@
                                     }
                                     else
                                     {
-                                        <strong class="text-blue-600">@o.OrderId</strong>
+                                        <strong class="text-primary">@o.OrderId</strong>
                                     }
                                 </td>
-                                <td class="col-item-name">@o.ItemName</td>
-                                <td class="col-name-std">@o.SenderName <br><hr />@o.SenderPhone</td>
-                                <td class="col-name-std">@o.ReceiverName <br><hr />@o.ReceiverPhone</td>
+                                <td>@o.ItemName</td>
+                                <td class="tr-col-name-std">@o.SenderName <br><small class="text-muted">@o.SenderPhone</small></td>
+                                <td class="tr-col-name-std">@o.ReceiverName <br><small class="text-muted">@o.ReceiverPhone</small></td>
                                 <td>
-                                    <span class="station-container">
-                                        <span class="station-send" onclick="showStationInfo('@o.SendStation', '@(sendStationId?.ToString() ?? "??")')">@(sendStationId?.ToString() ?? "??")</span>
-                                        <span class="station-arrow"> ➔ </span>
-                                        <span class="station-receive" onclick="showStationInfo('@o.ReceiveStation', '@(receiveStationId?.ToString() ?? "??")')">@(receiveStationId?.ToString() ?? "??")</span>
+                                    <span class="tr-station-container">
+                                        <span class="tr-station-send" onclick="showStationInfo('@o.SendStation', '@(sendStationId?.ToString() ?? "??")')">@(sendStationId?.ToString() ?? "??")</span>
+                                        <span class="tr-route-arrow"> ➔ </span>
+                                        <span class="tr-station-receive" onclick="showStationInfo('@o.ReceiveStation', '@(receiveStationId?.ToString() ?? "??")')">@(receiveStationId?.ToString() ?? "??")</span>
                                     </span>
                                 </td>
-                                <td><span class="price-tr">@(o.Tr?.ToString("N0") ?? "0")</span></td>
-                                <td><span class="price-ct">@(o.Ct?.ToString("N0") ?? "0")</span></td>
+                                <td><span class="tr-price-tr">@(o.Tr?.ToString("N0") ?? "0")</span></td>
+                                <td><span class="tr-price-ct">@(o.Ct?.ToString("N0") ?? "0")</span></td>
                             </tr>
                         }
                     </tbody>
                     <tfoot>
-                        <tr class="table-summary-row">
-                            <td colspan="6" class="summary-label">Tổng cộng:</td>
-                            <td class="summary-value value-total-tr">@totalTr.ToString("N0")</td>
-                            <td class="summary-value value-total-ct">@totalCt.ToString("N0")</td>
+                        <tr class="tr-summary-row">
+                            <td colspan="6" class="tr-summary-label">Tổng cộng:</td>
+                            <td class="tr-summary-value tr-value-total-tr">@totalTr.ToString("N0")</td>
+                            <td class="tr-summary-value tr-value-total-ct">@totalCt.ToString("N0")</td>
                         </tr>
                     </tfoot>
                 </table>
             }
             else
             {
-                <div class="no-data no-data-msg">
-                    <div class="no-data-icon">📭</div>
+                <div class="tr-no-data py-5">
+                    <div class="tr-no-data-icon">📭</div>
                     <p>Hiện chưa có đơn hàng nào trên chuyến xe này.</p>
                 </div>
             }
 
-            <div class="back-link-container">
-                <a asp-controller="Trip" asp-action="List" class="btn-back">⬅ Quay lại DS Chuyến Xe</a>
+            <div class="mt-4">
+                <a asp-controller="Trip" asp-action="List" class="tr-btn tr-btn-secondary">⬅ Quay lại DS Chuyến Xe</a>
             </div>
         </div>
     </div>
+</div>
 
-    @section Scripts {
-        <script>
-            function confirmRemove(orderId, tripId) {
+@section Scripts {
+    <script>
+        function confirmRemove(orderId, tripId) {
             Swal.fire({
-            title: 'Bỏ hàng xuống xe?',
-            text: `Bạn có chắc chắn muốn gỡ đơn hàng ${orderId} khỏi chuyến xe này?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Đúng, gỡ ngay!',
-            cancelButtonText: 'Hủy'
+                title: 'Bỏ hàng xuống xe?',
+                text: `Bạn có chắc chắn muốn gỡ đơn hàng ${orderId} khỏi chuyến xe này?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Đúng, gỡ ngay!',
+                cancelButtonText: 'Hủy'
             }).then((result) => {
-            if (result.isConfirmed) {
-            document.getElementById('removeForm-' + orderId).submit();
-            }
+                if (result.isConfirmed) {
+                    document.getElementById('removeForm-' + orderId).submit();
+                }
             })
-            }
-        </script>
-    }
+        }
+    </script>
+}
