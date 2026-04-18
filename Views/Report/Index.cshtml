@@ -17,9 +17,9 @@
 
     <!-- VÙNG CHỨA NỘI DUNG TAB (LOAD QUA AJAX) -->
     <div id="tabContentContainer" class="rp-tab-pane active">
-        <div class="rp-text-center p-5">
-            <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-2">Đang tải dữ liệu báo cáo...</p>
+        <div class="rp-loading-box rp-p-5">
+            <div class="rp-spinner"></div>
+            <p class="rp-mt-2">Đang tải dữ liệu báo cáo...</p>
         </div>
     </div>
 </div>
@@ -56,27 +56,18 @@
             if (event) event.preventDefault();
 
             const container = document.getElementById('tabContentContainer');
-            if (!event) container.innerHTML = '<div class="rp-text-center p-5"><p>Đang chuẩn bị dữ liệu...</p></div>';
-
-            if (tabId === 'activity' && !event) {
-                await new Promise(r => setTimeout(r, 500));
-            }
+            if (!event) container.innerHTML = '<div class="rp-loading-box rp-p-5"><div class="rp-spinner"></div><p>Đang tải...</p></div>';
 
             let url = '';
             let params = '';
 
             if (event) {
-                // Khi submit form (lọc)
                 const formData = new FormData(event.target);
                 params = new URLSearchParams(formData).toString();
-                
-                // Lưu lại ngày để dùng khi chuyển tab (nếu có)
                 if (formData.has('reportDate')) selectedReportDate = formData.get('reportDate');
                 if (formData.has('fromDate')) selectedReportDate = formData.get('fromDate');
             } else {
-                // Khi vừa vào trang hoặc chuyển tab
                 if (tabId === 'summary') params = `reportDate=${selectedReportDate}`;
-                // Tab activity mặc định tải 20 ca mới nhất nên không cần params ngày ban đầu
             }
 
             switch(tabId) {
@@ -92,7 +83,7 @@
                 
                 if (tabId === 'summary') initChart();
             } catch (err) {
-                container.innerHTML = '<div class="alert alert-danger">Lỗi tải dữ liệu. Vui lòng tải lại trang.</div>';
+                container.innerHTML = '<div class="rp-alert-danger rp-text-center">Lỗi tải dữ liệu. Vui lòng tải lại trang.</div>';
             }
         }
 
@@ -123,7 +114,7 @@
             const modal = document.getElementById('shiftDetailsModal');
             const body = document.getElementById('shiftModalBody');
             modal.style.display = 'flex';
-            body.innerHTML = '<p class="text-center p-4">Đang tải...</p>';
+            body.innerHTML = '<div class="rp-loading-box"><div class="rp-spinner"></div><p>Đang tải...</p></div>';
             const resp = await fetch(`/Report/Details/${id}`);
             body.innerHTML = await resp.text();
         }
@@ -138,6 +129,13 @@
             const target = document.getElementById('modal-tab-' + tabName);
             if (target) target.classList.add('active');
             btn.classList.add('active');
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('shiftDetailsModal');
+            if (event.target == modal) {
+                closeShiftDetails();
+            }
         }
     </script>
 }

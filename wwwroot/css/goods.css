@@ -14,7 +14,7 @@
 }
 
 /* --- Header phong cách hiện đại --- */
-.goods-page-header {
+/*.goods-page-header {
     text-align: center;
     margin-bottom: 40px;
     background: linear-gradient(135deg, var(--goods-primary), var(--goods-primary-dark));
@@ -22,7 +22,7 @@
     padding: 50px 20px;
     border-radius: 20px;
     box-shadow: 0 10px 25px rgba(52, 152, 219, 0.2);
-}
+}*/
 
     .goods-page-header h2 {
         font-size: 2.2rem;
