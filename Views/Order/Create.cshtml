@@ -6,31 +6,31 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/create_order.css?v=@DateTime.Now.Ticks" />
+    <link rel="stylesheet" href="~/css/list_order.css?v=@DateTime.Now.Ticks" />
 }
 
-<div class="order-container-modern @(ViewBag.HasActiveShift == false ? "content-blurred" : "")">
+<div class="od-container od-container-small @(ViewBag.HasActiveShift == false ? "od-content-blurred" : "")">
     <form id="orderForm" asp-action="Create" method="POST" onsubmit="return validateForm()">
-        <div class="modern-page-header">
+        <div class="od-page-header">
             <div>
                 <h2>📦 NHẬP ĐƠN HÀNG MỚI</h2>
-                <div class="modern-page-header-desc">Điền đầy đủ thông tin đơn hàng bên dưới</div>
+                <div class="od-header-meta">Điền đầy đủ thông tin đơn hàng bên dưới</div>
             </div>
         </div>
 
-        <div asp-validation-summary="All" class="text-danger mb-20"></div>
+        <div asp-validation-summary="All" class="od-text-danger od-mb-20"></div>
 
-        <div class="modern-card">
+        <div class="od-card">
             <!-- Hàng 1: Tên hàng và Trạm -->
-            <div class="form-row">
-                <div class="form-group" style="flex: 2;">
-                    <label>Tên Hàng Gửi <span class="required-star">*</span></label>
-                    <input asp-for="ItemName" type="text" required placeholder="Nhập tên hàng hóa...">
-                    <span asp-validation-for="ItemName" class="text-danger"></span>
+            <div class="od-form-row">
+                <div class="od-form-group" style="flex: 2;">
+                    <label>Tên Hàng Gửi <span class="od-required">*</span></label>
+                    <input asp-for="ItemName" type="text" class="od-form-control" required placeholder="Nhập tên hàng hóa...">
+                    <span asp-validation-for="ItemName" class="od-text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label>Trạm Gửi <span class="required-star">*</span></label>
-                    <select asp-for="SendStation" id="sendStation" required disabled="@(!User.IsInRole("AD"))">
+                <div class="od-form-group">
+                    <label>Trạm Gửi <span class="od-required">*</span></label>
+                    <select asp-for="SendStation" id="sendStation" class="od-form-control" required disabled="@(!User.IsInRole("AD"))">
                         <option value="">-- Chọn Trạm Gửi --</option>
                         @if (stationList != null)
                         {
@@ -45,11 +45,11 @@
                     {
                         <input type="hidden" asp-for="SendStation" value="@ViewBag.UserStationName" />
                     }
-                    <span asp-validation-for="SendStation" class="text-danger"></span>
+                    <span asp-validation-for="SendStation" class="od-text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label>Trạm Nhận <span class="required-star">*</span></label>
-                    <select asp-for="ReceiveStation" id="receiveStation" required>
+                <div class="od-form-group">
+                    <label>Trạm Nhận <span class="od-required">*</span></label>
+                    <select asp-for="ReceiveStation" id="receiveStation" class="od-form-control" required>
                         <option value="">-- Chọn Trạm Nhận --</option>
                         @if (stationList != null)
                         {
@@ -60,74 +60,74 @@
                             }
                         }
                     </select>
-                    <span asp-validation-for="ReceiveStation" class="text-danger"></span>
+                    <span asp-validation-for="ReceiveStation" class="od-text-danger"></span>
                 </div>
             </div>
 
             <!-- Hàng 2: Người gửi -->
-            <div class="form-row">
-                <div class="form-group">
+            <div class="od-form-row">
+                <div class="od-form-group">
                     <label>Người Gửi</label>
-                    <input asp-for="SenderName" type="text" placeholder="Tên khách gửi...">
+                    <input asp-for="SenderName" type="text" class="od-form-control" placeholder="Tên khách gửi...">
                 </div>
-                <div class="form-group">
-                    <label>SĐT Gửi <span class="required-star">*</span></label>
-                    <input asp-for="SenderPhone" id="senderPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Số điện thoại người gửi...">
-                    <span asp-validation-for="SenderPhone" class="text-danger"></span>
+                <div class="od-form-group">
+                    <label>SĐT Gửi <span class="od-required">*</span></label>
+                    <input asp-for="SenderPhone" id="senderPhone" class="od-form-control" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Số điện thoại người gửi...">
+                    <span asp-validation-for="SenderPhone" class="od-text-danger"></span>
                 </div>
             </div>
 
             <!-- Hàng 3: Người nhận -->
-            <div class="form-row">
-                <div class="form-group">
+            <div class="od-form-row">
+                <div class="od-form-group">
                     <label>Người Nhận</label>
-                    <input asp-for="ReceiverName" type="text" placeholder="Tên khách nhận...">
+                    <input asp-for="ReceiverName" type="text" class="od-form-control" placeholder="Tên khách nhận...">
                 </div>
-                <div class="form-group">
-                    <label>SĐT Nhận <span class="required-star">*</span></label>
-                    <input asp-for="ReceiverPhone" id="receiverPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Số điện thoại người nhận...">
-                    <span asp-validation-for="ReceiverPhone" class="text-danger"></span>
+                <div class="od-form-group">
+                    <label>SĐT Nhận <span class="od-required">*</span></label>
+                    <input asp-for="ReceiverPhone" id="receiverPhone" class="od-form-control" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Số điện thoại người nhận...">
+                    <span asp-validation-for="ReceiverPhone" class="od-text-danger"></span>
                 </div>
             </div>
 
             <!-- Hàng 4: Thanh toán & Ghi chú -->
-            <div class="form-row">
-                <div class="form-group" style="flex: 0.5;">
+            <div class="od-form-row">
+                <div class="od-form-group" style="flex: 0.5;">
                     <label>Đã trả (K)</label>
-                    <input asp-for="Tr" id="trField" type="number" step="any" placeholder="0">
+                    <input asp-for="Tr" id="trField" type="number" class="od-form-control" step="any" placeholder="0">
                 </div>
-                <div class="form-group" style="flex: 0.5;">
+                <div class="od-form-group" style="flex: 0.5;">
                     <label>Chưa trả (K)</label>
-                    <input asp-for="Ct" id="ctField" type="number" step="any" placeholder="0">
+                    <input asp-for="Ct" id="ctField" type="number" class="od-form-control" step="any" placeholder="0">
                 </div>
-                <div class="form-group" style="flex: 2;">
+                <div class="od-form-group" style="flex: 2;">
                     <label>Ghi Chú Đơn Hàng</label>
-                    <input asp-for="Note" type="text" placeholder="Ghi chú nhanh cho đơn hàng này...">
+                    <input asp-for="Note" type="text" class="od-form-control" placeholder="Ghi chú nhanh cho đơn hàng này...">
                 </div>
             </div>
         </div>
     </form>
 
-    <div class="footer-actions-between">
-        <a asp-action="List" class="btn-modern-back no-decoration">⬅ Quay lại danh sách</a>
-        <input type="submit" form="orderForm" value="💾 Lưu Đơn Hàng" class="btn-modern-save btn-footer-save" @(ViewBag.HasActiveShift == false ? "disabled" : "")>
+    <div class="od-form-row od-mt-20" style="justify-content: space-between; align-items: center;">
+        <a asp-action="List" class="od-btn od-btn-secondary" style="background: #5f6368;">⬅ Quay lại danh sách</a>
+        <input type="submit" form="orderForm" value="💾 Lưu Đơn Hàng" class="od-btn od-btn-success" style="padding: 12px 40px; min-width: 200px;" @(ViewBag.HasActiveShift == false ? "disabled" : "")>
     </div>
 </div>
 
 @if (ViewBag.HasActiveShift == false)
 {
-    <div id="shiftRequiredModal" class="modal-backdrop-blur">
-        <div class="modal-content-rounded">
-            <div class="modal-icon-large">⏰</div>
-            <h2 class="modal-title-bold">Chưa Vào Ca Làm Việc!</h2>
-            <p class="modal-text-muted">Bạn cần phải bắt đầu ca làm việc trước khi có thể nhập hàng mới vào hệ thống.</p>
+    <div id="shiftRequiredModal" class="od-modal-blur">
+        <div class="od-modal-content">
+            <div style="font-size: 4rem; margin-bottom: 20px;">⏰</div>
+            <h2 style="color: #1e293b; margin-bottom: 15px; font-weight: 800;">Chưa Vào Ca Làm Việc!</h2>
+            <p style="color: #64748b; margin-bottom: 30px; line-height: 1.6;">Bạn cần phải bắt đầu ca làm việc trước khi có thể nhập hàng mới vào hệ thống.</p>
             <form asp-controller="Home" asp-action="StartShift" method="POST">
-                <button type="submit" class="btn-full-modern">
+                <button type="submit" class="od-btn od-btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem; background: linear-gradient(135deg, #6366f1, #4f46e5);">
                     🚀 Bắt Đầu Ca Ngay
                 </button>
             </form>
-            <div>
-                <a asp-action="List" class="back-link-muted">Quay lại danh sách</a>
+            <div class="od-mt-20">
+                <a asp-action="List" style="color: #94a3b8; text-decoration: none; font-weight: 600;">Quay lại danh sách</a>
             </div>
         </div>
     </div>

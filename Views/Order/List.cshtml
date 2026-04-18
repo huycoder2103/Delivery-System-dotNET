@@ -8,46 +8,46 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/list_order.css" />
+    <link rel="stylesheet" href="~/css/list_order.css?v=@DateTime.Now.Ticks" />
 }
 
-<div class="order-list-container">
+<div class="od-container">
     
-    <div class="modern-page-header">
+    <div class="od-page-header">
         <div>
             <h3>📦 Quản Lý Đơn Hàng</h3>
-            <div id="orderCount" class="modern-page-header-meta">Tổng: @(Model?.Count() ?? 0) đơn</div>
+            <div id="orderCount" class="od-header-meta">Tổng: @(Model?.Count() ?? 0) đơn</div>
         </div>
         
-        <div class="header-actions">
-            <a asp-controller="Trip" asp-action="List" class="btn-modern btn-header-action">
+        <div class="od-header-actions">
+            <a asp-controller="Trip" asp-action="List" class="od-btn od-btn-header">
                 📤 Chuyến Xe Đi
             </a>
-            <a asp-controller="Trip" asp-action="ArrivalList" class="btn-modern btn-header-action">
+            <a asp-controller="Trip" asp-action="ArrivalList" class="od-btn od-btn-header">
                 📥 Chuyến Xe Đến
             </a>
         </div>
     </div>
 
-    <div class="modern-card sticky-filter-bar">
+    <div class="od-card od-sticky-filter">
         
-        <div class="status-tab-group">
-            <button class="btn-status-tab @(ViewBag.CurrentStatus == "all" ? "active" : "")" onclick="changeStatus('all')">
+        <div class="od-status-tabs">
+            <button class="od-tab-btn @(ViewBag.CurrentStatus == "all" ? "active" : "")" onclick="changeStatus('all')">
                 🌐 Tất cả (@ViewBag.CountAll)
             </button>
-            <button class="btn-status-tab @(ViewBag.CurrentStatus == "pending" ? "active" : "")" onclick="changeStatus('pending')">
+            <button class="od-tab-btn @(ViewBag.CurrentStatus == "pending" ? "active" : "")" onclick="changeStatus('pending')">
                 📥 Chờ giao (@ViewBag.CountPending)
             </button>
-            <button class="btn-status-tab @(ViewBag.CurrentStatus == "shipped" ? "active" : "")" onclick="changeStatus('shipped')">
+            <button class="od-tab-btn @(ViewBag.CurrentStatus == "shipped" ? "active" : "")" onclick="changeStatus('shipped')">
                 🚛 Đang chuyển (@ViewBag.CountShipped)
             </button>
-            <button class="btn-status-tab @(ViewBag.CurrentStatus == "delivered" ? "active" : "")" onclick="changeStatus('delivered')">
+            <button class="od-tab-btn @(ViewBag.CurrentStatus == "delivered" ? "active" : "")" onclick="changeStatus('delivered')">
                 ✅ Đã giao (@ViewBag.CountDelivered)
             </button>
         </div>
 
-        <div class="filter-controls-group">
-            <select id="filterSendStation" class="filter-input">
+        <div class="od-filter-group">
+            <select id="filterSendStation" class="od-filter-input">
                 <option value="">-- Từ Trạm (Gửi) --</option>
                 @if (stationList != null)
                 {
@@ -55,9 +55,10 @@
                     {
                         <option value="@s.StationName" selected="@(s.StationName == ViewBag.SendStationFilter ? "selected" : null)">@s.StationName (@s.StationId)</option>
                     }
-                }            </select>
+                }
+            </select>
 
-            <select id="filterReceiveStation" class="filter-input">
+            <select id="filterReceiveStation" class="od-filter-input">
                 <option value="">-- Đến Trạm (Nhận) --</option>
                 @if (stationList != null)
                 {
@@ -68,33 +69,33 @@
                 }
             </select>
 
-            <input type="date" id="filterDate" class="filter-input" value="@ViewBag.DateFilter">
+            <input type="date" id="filterDate" class="od-filter-input" value="@ViewBag.DateFilter">
             
-            <div class="search-input-wrapper">
+            <div class="od-search-wrapper">
                 <input type="text" id="filterSearchPhone" placeholder="Tìm SĐT hoặc Mã đơn..." 
-                       value="@ViewBag.SearchPhone" class="search-input">
+                       value="@ViewBag.SearchPhone" class="od-search-input">
             </div>
 
-            <a asp-action="Create" class="btn-modern btn-success-modern btn-link-modern" >➕ Nhập Hàng</a>
-            <button onclick="resetFilters()" class="btn-modern btn-secondary-modern">🔄 Làm mới</button>
+            <a asp-action="Create" class="od-btn od-btn-success">➕ Nhập Hàng</a>
+            <button onclick="resetFilters()" class="od-btn od-btn-secondary">🔄 Làm mới</button>
         </div>
     </div>
 
-    <div class="modern-card order-table-card">
-        <table class="modern-table" id="orderTable">
+    <div class="od-card od-card-table">
+        <table class="od-table" id="orderTable">
             <thead>
                 <tr>
-                    <th class="col-id">Mã Đơn</th>
-                    <th class="col-item-name">Tên Hàng</th>
-                    <th class="col-route">Lộ trình</th>
-                    <th class="col-customer">Người Gửi</th>
-                    <th class="col-customer">Người Nhận</th>
-                    <th class="col-staff">NV Nhập</th>
-                    <th class="col-paid">TR</th>
-                    <th class ="col-paid">CT</th>
-                    <th class="col-note">Ghi chú</th>
-                    <th class="col-time">Giờ Tạo</th>
-                    <th class="col-act">Thao tác</th>
+                    <th class="od-col-id">Mã Đơn</th>
+                    <th class="od-col-item">Tên Hàng</th>
+                    <th class="od-col-route">Lộ trình</th>
+                    <th class="od-col-customer">Người Gửi</th>
+                    <th class="od-col-customer">Người Nhận</th>
+                    <th class="od-col-staff">NV Nhập</th>
+                    <th class="od-col-paid">TR</th>
+                    <th class="od-col-paid">CT</th>
+                    <th class="od-col-note">Ghi chú</th>
+                    <th class="od-col-time">Giờ Tạo</th>
+                    <th class="od-col-act">Thao tác</th>
                 </tr>
             </thead>
             <tbody id="orderTableBody">
@@ -104,21 +105,21 @@
     </div>
 
     <!-- Pagination Controls -->
-    <div class="pagination-container">
+    <div class="od-pagination">
         @if (ViewBag.TotalPages > 1)
         {
             var currentPage = (int)ViewBag.CurrentPage;
             var totalPages = (int)ViewBag.TotalPages;
 
-            <button class="btn-modern btn-secondary-modern" onclick="changePage(@(currentPage - 1))" @(currentPage == 1 ? "disabled" : "")>
+            <button class="od-btn od-btn-secondary" onclick="changePage(@(currentPage - 1))" @(currentPage == 1 ? "disabled" : "")>
                 « Trang trước
             </button>
             
-            <div class="current-page">
+            <div class="od-page-info">
                 Trang @currentPage / @totalPages
             </div>
 
-            <button class="btn-modern btn-secondary-modern" onclick="changePage(@(currentPage + 1))" @(currentPage == totalPages ? "disabled" : "")>
+            <button class="od-btn od-btn-secondary" onclick="changePage(@(currentPage + 1))" @(currentPage == totalPages ? "disabled" : "")>
                 Trang sau »
             </button>
         }
@@ -128,15 +129,12 @@
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
     <script>
-        // --- SIGNALR REAL-TIME ---
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("/deliveryHub")
             .withAutomaticReconnect()
             .build();
 
         connection.on("UpdateOrderList", function () {
-            console.log("Nhận thông báo cập nhật đơn hàng...");
-            // Cập nhật bảng bằng AJAX
             const sendStation = document.getElementById('filterSendStation').value;
             const receiveStation = document.getElementById('filterReceiveStation').value;
             const date = document.getElementById('filterDate').value;
@@ -164,12 +162,10 @@
 
         connection.start().catch(err => console.error(err.toString()));
 
-        // --- EXISTING LOGIC ---
         let searchTimeout;
         let currentStatus = '@(ViewBag.CurrentStatus ?? "all")';
         let currentPage = @(ViewBag.CurrentPage ?? 1);
 
-        // Add event listeners for filters
         document.getElementById('filterSendStation').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
         document.getElementById('filterReceiveStation').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
         document.getElementById('filterDate').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
@@ -220,13 +216,7 @@
                 denyButtonText: '📄 In Phơi Giao (A5)',
                 cancelButtonText: 'Đóng',
                 confirmButtonColor: '#1a73e8',
-                denyButtonColor: '#e91e63',
-                customClass: {
-                    actions: 'my-actions',
-                    cancelButton: 'order-1 right-gap',
-                    confirmButton: 'order-2',
-                    denyButton: 'order-3',
-                },
+                denyButtonColor: '#e91e63'
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.open('/Order/PrintReceipt/' + orderId + '?type=receipt', '_blank');
@@ -241,9 +231,7 @@
             const receiveStation = document.getElementById('filterReceiveStation').value;
             const date = document.getElementById('filterDate').value;
             const phone = document.getElementById('filterSearchPhone').value;
-
             const url = `@Url.Action("List", "Order")?sendStationFilter=${encodeURIComponent(sendStation)}&receiveStationFilter=${encodeURIComponent(receiveStation)}&searchPhone=${encodeURIComponent(phone)}&dateFilter=${encodeURIComponent(date)}&statusFilter=${currentStatus}&page=${currentPage}`;
-            
             window.location.href = url;
         }
 

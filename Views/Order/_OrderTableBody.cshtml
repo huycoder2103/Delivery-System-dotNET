@@ -16,95 +16,79 @@
         bool isShipped = !string.IsNullOrEmpty(o.TripId);
         bool canEdit = (currentUserRole == "AD" || o.StaffInput == currentUserID);
         <tr>
-            <td><span class="text-order-id">@o.OrderId</span></td>
-            <td class="col-item-name">@o.ItemName</td>
-            <td class="col-route">
-                <div class="route-container">
+            <td><span class="od-font-bold" style="color: var(--od-primary); font-size: 13px;">@o.OrderId</span></td>
+            <td class="od-col-item">@o.ItemName</td>
+            <td>
+                <div class="od-route-box">
                     @{
                         var sendID = (stationDict != null && o.SendStation != null && stationDict.ContainsKey(o.SendStation) ? stationDict[o.SendStation] : o.SendStation);
                         var receiveID = (stationDict != null && o.ReceiveStation != null && stationDict.ContainsKey(o.ReceiveStation) ? stationDict[o.ReceiveStation] : o.ReceiveStation);
                     }
-                    <span class="station-send" onclick="showStationInfo('@o.SendStation', '@sendID')">@sendID</span>
-                    <span class="route-arrow">➔</span>
-                    <span class="station-receive"  onclick="showStationInfo('@o.ReceiveStation', '@receiveID')">@receiveID</span>
+                    <span class="od-station-send" onclick="showStationInfo('@o.SendStation', '@sendID')">@sendID</span>
+                    <span class="od-route-arrow">➔</span>
+                    <span class="od-station-receive" onclick="showStationInfo('@o.ReceiveStation', '@receiveID')">@receiveID</span>
                 </div>
             </td>
-            <td class="col-customer">
-                <div class="customer-info-box">
-                    <div class="customer-name">@o.SenderName</div>
-                    <div class="customer-phone">@o.SenderPhone</div>
-                </div>
-            </td>
-            <td class="col-customer">
-                <div class="customer-info-box">
-                    <div class="customer-name">@o.ReceiverName</div>
-                    <div class="customer-phone">@o.ReceiverPhone</div>
-                </div>
-            </td>
-            <td class="staff-input-badge">@o.StaffInput</td>
-            
             <td>
+                <div class="od-cust-info">
+                    <div class="od-cust-name">@o.SenderName</div>
+                    <div class="od-cust-phone">@o.SenderPhone</div>
+                </div>
+            </td>
+            <td>
+                <div class="od-cust-info">
+                    <div class="od-cust-name">@o.ReceiverName</div>
+                    <div class="od-cust-phone">@o.ReceiverPhone</div>
+                </div>
+            </td>
+            <td style="font-size: 12px; color: var(--od-text-muted);">@o.StaffInput</td>
+            
+            <td class="od-col-paid">
                 @if (o.Tr.HasValue && o.Tr != 0)
                 {
-                    <span class="badge badge-success">@(o.Tr.Value.ToString("N0"))k</span>
+                    <span class="od-badge od-badge-delivered">@(o.Tr.Value.ToString("N0"))k</span>
                 }
-                else { <span class="empty-dash">—</span> }
+                else { <span style="color: #ccc;">—</span> }
             </td>
-            <td>
+            <td class="od-col-paid">
                 @if (o.Ct.HasValue && o.Ct != 0)
                 {
-                    <span class="badge badge-danger">@(o.Ct.Value.ToString("N0"))k</span>
+                    <span class="od-badge od-badge-pending" style="background: #fce8e6; color: #d93025;">@(o.Ct.Value.ToString("N0"))k</span>
                 }
-                else { <span class="empty-dash">—</span> }
+                else { <span style="color: #ccc;">—</span> }
             </td>
             
-            <td class="note-cell">@o.Note</td>
-            <td class="time-cell">
+            <td style="max-width: 150px; font-size: 0.8rem; color: #666; font-style: italic;">@o.Note</td>
+            <td style="font-size: 0.75rem; color: #888;">
                 @o.CreatedAt?.ToString("dd/MM/yyyy HH:mm")
             </td>
-            @* <td>
-                @if (o.ShipStatus == "Đã giao")
-                {
-                    <span class="badge badge-success status-badge-fixed" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0;">Đã giao</span>
-                }
-                else if (!isShipped)
-                {
-                    <span class="badge badge-warning status-badge-fixed">Chờ giao</span>
-                }
-                else
-                {
-                    <span class="badge badge-info status-badge-fixed">Đang chuyển</span>
-                }
-            </td> *@
-            <td class="col-act">
-                <div class="action-btns-grid">
-                    @* Hàng 1: Nút Chuyển (Chỉ hiện khi chưa chuyển) hoặc Xem Chuyến (Nếu đã chuyển) *@
+            <td class="od-col-act">
+                <div class="od-action-grid">
                     @if (!isShipped)
                     {
                         if (currentUserRole == "AD" || o.StaffInput == currentUserID)
                         {
-                            <a asp-action="Ship" asp-route-id="@o.OrderId" class="btn-action-text btn-s-ship btn-full-width">🚚 Chuyển</a>
+                            <a asp-action="Ship" asp-route-id="@o.OrderId" class="od-btn od-btn-s od-btn-s-ship od-btn-full">🚚 Chuyển</a>
                         }
                         else
                         {
-                            <button type="button" class="btn-action-text btn-disabled btn-full-width" title="Bạn không có quyền chuyển đơn này">Chuyển</button>
+                            <button type="button" class="od-btn od-btn-s od-btn-full" style="opacity:0.5; cursor:not-allowed;" title="Bạn không có quyền chuyển đơn này">Chuyển</button>
                         }
                     }
                     else
                     {
-                        <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="btn-action-text btn-s-view-trip btn-full-width">🚛 Xem Xe</a>
+                        <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="od-btn od-btn-s od-btn-full" style="background: #e0f2f1; color: #00796b;">🚛 Xem Xe</a>
                     }
 
-                    @* Hàng 2: Nút In và Nút Sửa/Xóa *@
-                    <button type="button" onclick="showPrintOptions('@o.OrderId')" class="btn-action-text btn-s-print">In</button>
+                    <button type="button" onclick="showPrintOptions('@o.OrderId')" class="od-btn od-btn-s od-btn-s-print">In</button>
 
                     @if (canEdit && !isShipped)
                     {
-                        <a asp-action="Edit" asp-route-id="@o.OrderId" class="btn-action-text btn-s-edit">Sửa</a>
+                        <a asp-action="Edit" asp-route-id="@o.OrderId" class="od-btn od-btn-s od-btn-s-edit">Sửa</a>
                     }
                     else
                     {
-                        <button type="button" class="btn-action-text btn-disabled" title="Hàng đã lên xe hoặc không có quyền">Khóa</button>
+                        <button type="button" class="od-btn od-btn-s" style="opacity:0.5; cursor:not-allowed;" title="Hàng đã lên xe hoặc không có quyền">Khóa</button>
                     }
                 </div>
             </td>
@@ -114,6 +98,6 @@
 else
 {
     <tr>
-        <td colspan="12" class="no-data-msg">📭 Không tìm thấy đơn hàng nào phù hợp!</td>
+        <td colspan="12" style="padding: 50px; color: #999; text-align: center;">📭 Không tìm thấy đơn hàng nào phù hợp!</td>
     </tr>
 }

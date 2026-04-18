@@ -8,17 +8,17 @@
     <link rel="stylesheet" href="~/css/list_order.css?v=@DateTime.Now.Ticks">
 }
 
-<div class="trash-container">
-    <div class="modern-page-header">
+<div class="od-container od-container-trash">
+    <div class="od-page-header od-page-header-trash">
         <div>
             <h3>🗑️ Thùng Rác Đơn Hàng</h3>
-            <div class="trash-subtitle">Danh sách đơn hàng đã bị xóa tạm thời</div>
+            <div class="od-header-meta">Danh sách đơn hàng đã bị xóa tạm thời</div>
         </div>
-        <a asp-action="List" class="btn-back">📦 Quay lại Danh Sách</a>
+        <a asp-action="List" class="od-btn od-btn-header">📦 Quay lại Danh Sách</a>
     </div>
 
-    <div class="modern-card trip-table-card">
-        <table class="modern-table">
+    <div class="od-card od-card-table">
+        <table class="od-table">
             <thead>
                 <tr>
                     <th>Mã Đơn</th>
@@ -37,21 +37,21 @@
                     foreach (var o in Model)
                     {
                         <tr>
-                            <td><span class="text-order-id">@o.OrderId</span></td>
-                            <td class="col-item-name">@o.ItemName</td>
-                            <td class="col-customer">@o.SenderName</td>
-                            <td class="col-customer">@o.ReceiverName</td>
-                            <td class="col-staff">@o.SendStation</td>
-                            <td class="col-staff">@o.ReceiveStation</td>
-                            <td class="time-cell">@o.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
-                            <td class="col-act">
-                                <div class="action-flex-gap">
+                            <td><span class="od-font-bold" style="color: var(--od-danger);">@o.OrderId</span></td>
+                            <td class="od-col-item">@o.ItemName</td>
+                            <td>@o.SenderName</td>
+                            <td>@o.ReceiverName</td>
+                            <td>@o.SendStation</td>
+                            <td>@o.ReceiveStation</td>
+                            <td style="font-size:0.75rem; color:#888;">@o.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="od-col-act">
+                                <div style="display:flex; gap:5px; justify-content:center;">
                                     <form asp-action="Restore" asp-route-id="@o.OrderId" method="POST">
-                                        <button type="submit" class="btn-action-text btn-s-edit" title="Khôi phục">🔄</button>
+                                        <button type="submit" class="od-btn-s od-btn-s-restore" title="Khôi phục">🔄</button>
                                     </form>
-                                    <button type="button" class="btn-action-text btn-s-delete" onclick="confirmHardDelete('@o.OrderId')" title="Xóa vĩnh viễn">🗑️</button>
+                                    <button type="button" class="od-btn-s od-btn-s-delete" onclick="confirmHardDelete('@o.OrderId')" title="Xóa vĩnh viễn">🗑️</button>
                                     
-                                    <form id="hardDeleteForm-@o.OrderId" asp-action="HardDelete" method="POST" class="hidden-form">
+                                    <form id="hardDeleteForm-@o.OrderId" asp-action="HardDelete" method="POST" style="display:none;">
                                         <input type="hidden" name="id" value="@o.OrderId" />
                                     </form>
                                 </div>
@@ -62,7 +62,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="8" class="no-trash-msg">Thùng rác trống rỗng.</td>
+                        <td colspan="8" class="od-empty-state">Thùng rác trống rỗng.</td>
                     </tr>
                 }
             </tbody>

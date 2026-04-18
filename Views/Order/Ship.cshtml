@@ -1,159 +1,85 @@
 @model Delivery_System.Models.TblOrder
 
 @{
-    ViewData["Title"] = "Điều Phối Đơn Hàng";
-    var availableTrips = ViewBag.AvailableTrips as IEnumerable<Delivery_System.Models.VwTripList>;
+    ViewData["Title"] = "Điều phối đơn hàng";
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/assign_goods.css?v=@DateTime.Now.Ticks">
-    <style>
-        .order-info-banner {
-            background: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            margin-bottom: 25px;
-            border-left: 5px solid #1a73e8;
-        }
-        .order-info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 15px;
-        }
-        .info-item {
-            display: flex;
-            flex-direction: column;
-        }
-        .info-label {
-            font-size: 0.8rem;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .info-value {
-            font-weight: 700;
-            color: #1e293b;
-            font-size: 1.05rem;
-        }
-        .route-arrow {
-            color: #1a73e8;
-            margin: 0 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/list_order.css?v=@DateTime.Now.Ticks" />
 }
 
-<div class="page-wrap">
-    <div class="hdr">
-        <h3>🚚 ĐIỀU PHỐI ĐƠN HÀNG LÊN XE</h3>
-        <div class="meta">
-            <span class="badge">Mã đơn: @Model.OrderId</span>
-            <span class="badge">Trạng thái: @Model.ShipStatus</span>
-        </div>
-    </div>
-
-    <div class="body">
-        <!-- Thông tin đơn hàng đang điều phối -->
-        <div class="order-info-banner">
-            <div style="font-weight: 700; font-size: 1.1rem; color: #1a73e8;">📦 Thông tin đơn hàng</div>
-            <div class="order-info-grid">
-                <div class="info-item">
-                    <span class="info-label">Tên hàng hóa</span>
-                    <span class="info-value">@Model.ItemName</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Lộ trình yêu cầu</span>
-                    <span class="info-value">
-                        @Model.SendStation <span class="route-arrow">➔</span> @Model.ReceiveStation
-                    </span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Người gửi</span>
-                    <span class="info-value">@Model.SenderName (@Model.SenderPhone)</span>
-                </div>
+<div class="od-container od-container-ship">
+    <div class="od-card od-card-ship" style="padding:0;">
+        <div class="od-page-header od-page-header-ship">
+            <div>
+                <h3>🚛 ĐIỀU PHỐI ĐƠN HÀNG: <span class="od-badge od-badge-info" style="background:rgba(255,255,255,0.2); border:none;">#@Model.OrderId</span></h3>
+                <div class="od-header-meta">Chọn chuyến xe phù hợp để gán đơn hàng lên xe</div>
             </div>
         </div>
 
-        <div class="info">
-            Dưới đây là danh sách các chuyến xe <strong>"Đang đi"</strong> có lộ trình khớp với đơn hàng này. 
-            Hãy chọn một chuyến xe để gán đơn hàng.
-        </div>
+        <div class="od-form-body">
+            @if (TempData["Success"] != null)
+            {
+                <div class="od-alert od-alert-success">
+                    <span>✅ @TempData["Success"]</span>
+                </div>
+            }
 
-        @if (availableTrips != null && availableTrips.Any())
-        {
-            <table>
-                <thead>
-                    <tr>
-                        <th>Mã Chuyến</th>
-                        <th>Biển Số Xe</th>
-                        <th>Lộ Trình Xe</th>
-                        <th>Tài Xế</th>
-                        <th>Giờ Khởi Hành</th>
-                        <th>Ghi Chú</th>
-                        <th class="text-center">Thao Tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var t in availableTrips)
-                    {
+            <div class="od-alert od-alert-info">
+                <div>
+                    📍 Lộ trình đơn: <strong class="od-route-info-blue">@Model.SendStation ➔ @Model.ReceiveStation</strong><br>
+                    📦 Hàng hóa: <strong>@Model.ItemName</strong>
+                </div>
+            </div>
+
+            <div class="od-card-table">
+                <table class="od-table od-table-dark-head">
+                    <thead>
                         <tr>
-                            <td><strong class="order-id-highlight">@t.TripId</strong></td>
-                            <td><span class="badge" style="background:#e0e7ff; color:#4338ca; border:1px solid #c7d2fe;">@t.LicensePlate</span></td>
-                            <td><strong>@t.Departure</strong> ➔ <strong>@t.Destination</strong></td>
-                            <td>@t.DriverName</td>
-                            <td>@t.DepartureTime</td>
-                            <td><small>@t.Notes</small></td>
-                            <td class="text-center">
-                                <form asp-action="AssignToTrip" method="POST" id="shipForm-@t.TripId">
-                                    <input type="hidden" name="orderId" value="@Model.OrderId" />
-                                    <input type="hidden" name="tripId" value="@t.TripId" />
-                                    <input type="hidden" name="source" value="ship" />
-                                    <button type="button" class="btn-assign" onclick="confirmShip('@t.TripId', '@t.LicensePlate')">
-                                        🚛 Gán Lên Xe
-                                    </button>
-                                </form>
-                            </td>
+                            <th>Mã Chuyến</th>
+                            <th>Xe (Biển số)</th>
+                            <th>Lộ trình xe</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <div class="no-data">
-                <div class="no-data-icon">🚐</div>
-                <p>Hiện không có chuyến xe nào đang chờ có lộ trình từ <strong>"@Model.SendStation"</strong> đến <strong>"@Model.ReceiveStation"</strong>.</p>
-                <p style="font-size: 0.9rem; color: #64748b;">Vui lòng tạo chuyến xe mới hoặc kiểm tra lại lộ trình đơn hàng.</p>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.AvailableTrips != null && ((IEnumerable<Delivery_System.Models.TblTrip>)ViewBag.AvailableTrips).Any())
+                        {
+                            foreach (var trip in (IEnumerable<Delivery_System.Models.TblTrip>)ViewBag.AvailableTrips)
+                            {
+                                <tr>
+                                    <td><strong>#@trip.TripId</strong></td>
+                                    <td><span class="od-badge od-badge-info">@trip.Truck?.LicensePlate</span></td>
+                                    <td><span class="od-route-info-blue">@trip.Departure ➔ @trip.Destination</span></td>
+                                    <td><span class="od-st-going">@trip.Status</span></td>
+                                    <td>
+                                        <form asp-action="AssignToTrip" method="POST">
+                                            <input type="hidden" name="orderId" value="@Model.OrderId" />
+                                            <input type="hidden" name="tripId" value="@trip.TripId" />
+                                            <button type="submit" class="od-btn-s od-btn-s-pick">Gán đơn</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="od-empty-state">
+                                    <div class="od-empty-icon">🔍</div>
+                                    <p>Không tìm thấy chuyến xe nào phù hợp với lộ trình này!<br>
+                                    <small>Hãy tạo chuyến xe mới trước khi điều phối.</small></p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-        }
 
-        <div style="margin-top: 30px;">
-            <a asp-action="List" class="btn-back">⬅ Quay lại danh sách đơn hàng</a>
+            <div style="text-align:center; margin-top:20px;">
+                <a asp-action="List" class="od-btn od-btn-secondary">⬅ Quay lại danh sách đơn</a>
+            </div>
         </div>
     </div>
 </div>
-
-<script>
-    function confirmShip(tripId, plate) {
-        Swal.fire({
-            title: 'Xác nhận gán hàng?',
-            text: `Bạn muốn gán đơn hàng này lên xe ${plate} (Chuyến: ${tripId})?`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#1a73e8',
-            cancelButtonColor: '#64748b',
-            confirmButtonText: '🚀 Gán ngay',
-            cancelButtonText: 'Hủy'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Vô hiệu hóa tất cả các nút để tránh bấm nhiều lần
-                document.querySelectorAll('.btn-assign').forEach(btn => {
-                    btn.disabled = true;
-                    btn.style.opacity = '0.5';
-                });
-                document.getElementById('shipForm-' + tripId).submit();
-            }
-        })
-    }
-</script>

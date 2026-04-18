@@ -1,158 +1,129 @@
 @model Delivery_System.Models.TblOrder
 
 @{
-    ViewData["Title"] = "Chỉnh Sửa Đơn Hàng";
+    ViewData["Title"] = "Chỉnh sửa đơn hàng";
     var stationList = ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>;
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/create_order.css?v=@DateTime.Now.Ticks" />
+    <link rel="stylesheet" href="~/css/list_order.css?v=@DateTime.Now.Ticks" />
 }
 
-<div class="order-container-modern">
-    <form id="editOrderForm" asp-action="Edit" method="POST" onsubmit="return validateEditForm()">
-        @* Các trường ẩn để giữ nguyên dữ liệu gốc *@
-        <input type="hidden" asp-for="OrderId" />
-        <input type="hidden" asp-for="StaffInput" />
-        <input type="hidden" asp-for="ReceiveDate" />
-        <input type="hidden" asp-for="CreatedAt" />
-        <input type="hidden" asp-for="IsDeleted" />
-        <input type="hidden" asp-for="TripId" />
-        <input type="hidden" asp-for="ShipStatus" />
-        <input type="hidden" asp-for="Amount" />
-
-        <div class="modern-page-header">
-            <div>
-                <h2>📝 CHỈNH SỬA ĐƠN HÀNG</h2>
-                <div class="order-id-meta">Mã đơn: <strong>@Model.OrderId</strong></div>
+<div class="od-container od-container-edit">
+    <div class="od-card" style="padding:0; overflow:hidden;">
+        <div class="od-page-header" style="position:static; border-radius:0; margin-bottom:0; padding:15px 30px;">
+            <div style="text-align:center; width:100%;">
+                <h2 style="text-decoration:underline;">Chỉnh sửa đơn hàng #@Model.OrderId</h2>
+                <div class="od-header-meta">Cập nhật thông tin hàng hóa và khách hàng</div>
             </div>
         </div>
 
-        <div class="modern-card">
-            <div class="section-title">✨ Thông tin hàng hóa</div>
-            <div class="form-group">
-                <label>Tên Hàng Gửi <span class="required-star">*</span></label>
-                <input asp-for="ItemName" type="text" required placeholder="Nhập tên hàng hóa...">
+        <div class="od-toolbar">
+            <div class="od-toolbar-label">📝 Thông tin chi tiết</div>
+            <button type="submit" form="editForm" class="od-btn od-btn-success" style="padding:8px 25px;">LƯU THAY ĐỔI</button>
+        </div>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="od-alert od-alert-danger" style="margin: 15px 20px;">
+                <span>@TempData["Error"]</span>
+            </div>
+        }
+
+        <form id="editForm" asp-action="Edit" method="POST" class="od-form-body">
+            <input type="hidden" asp-for="OrderId" />
+            <input type="hidden" asp-for="CreatedAt" />
+            <input type="hidden" asp-for="StaffInput" />
+            <input type="hidden" asp-for="TripId" />
+
+            <div class="od-section-label">📦 Thông tin hàng hóa</div>
+            <div class="od-form-row">
+                <div class="od-form-group" style="flex: 2;">
+                    <label>Tên Hàng Gửi <span class="od-required">*</span></label>
+                    <input asp-for="ItemName" type="text" class="od-form-control" required>
+                </div>
             </div>
 
-            <div class="form-row form-row-mt-20">
-                <div class="form-group">
-                    <label>Trạm Gửi <span class="required-star">*</span></label>
-                    <select asp-for="SendStation" id="sendStation" required disabled="@(!User.IsInRole("AD"))">
-                        <option value="">-- Chọn Trạm Gửi --</option>
-                        @if (stationList != null)
+            <div class="od-form-row-2">
+                <div class="od-form-group">
+                    <label>Trạm Gửi <span class="od-required">*</span></label>
+                    <select asp-for="SendStation" class="od-form-control" required disabled="@(!User.IsInRole("AD"))">
+                        @foreach (var s in stationList)
                         {
-                            foreach (var s in stationList)
-                            {
-                                <option value="@s.StationName">@s.StationName (@s.StationId)</option>
-                            }
+                            <option value="@s.StationName">@s.StationName (@s.StationId)</option>
                         }
                     </select>
                     @if (!User.IsInRole("AD"))
                     {
-                        <input type="hidden" asp-for="SendStation" value="@Model.SendStation" />
+                        <input type="hidden" asp-for="SendStation" />
                     }
                 </div>
-                <div class="form-group">
-                    <label>Trạm Nhận <span class="required-star">*</span></label>
-                    <select asp-for="ReceiveStation" id="receiveStation" required>
-                        <option value="">-- Chọn Trạm Nhận --</option>
-                        @if (stationList != null)
+                <div class="od-form-group">
+                    <label>Trạm Nhận <span class="od-required">*</span></label>
+                    <select asp-for="ReceiveStation" class="od-form-control" required>
+                        @foreach (var s in stationList)
                         {
-                            foreach (var s in stationList)
-                            {
-                                if (!User.IsInRole("AD") && s.StationName == ViewBag.UserStationName) continue;
-                                <option value="@s.StationName">@s.StationName (@s.StationId)</option>
-                            }
+                            <option value="@s.StationName">@s.StationName (@s.StationId)</option>
                         }
                     </select>
                 </div>
             </div>
+
+            <hr class="od-divider">
+            <div class="od-section-label">👤 Thông tin khách hàng</div>
+
+            <div class="od-form-row-2">
+                <div class="od-form-group">
+                    <label>Người Gửi</label>
+                    <input asp-for="SenderName" type="text" class="od-form-control">
+                </div>
+                <div class="od-form-group">
+                    <label>SĐT Gửi <span class="od-required">*</span></label>
+                    <input asp-for="SenderPhone" type="text" class="od-form-control" required>
+                </div>
+            </div>
+
+            <div class="od-form-row-2">
+                <div class="od-form-group">
+                    <label>Người Nhận</label>
+                    <input asp-for="ReceiverName" type="text" class="od-form-control">
+                </div>
+                <div class="od-form-group">
+                    <label>SĐT Nhận <span class="od-required">*</span></label>
+                    <input asp-for="ReceiverPhone" type="text" class="od-form-control" required>
+                </div>
+            </div>
+
+            <hr class="od-divider">
+            <div class="od-section-label">💰 Thanh toán & Ghi chú</div>
+
+            <div class="od-form-row-3">
+                <div class="od-form-group">
+                    <label>Đã trả (TR)</label>
+                    <input asp-for="Tr" type="number" class="od-form-control">
+                </div>
+                <div class="od-form-group">
+                    <label>Chưa trả (CT)</label>
+                    <input asp-for="Ct" type="number" class="od-form-control">
+                </div>
+                <div class="od-form-group">
+                    <label>Giờ cập nhật</label>
+                    <input type="text" value="@DateTime.Now.ToString("HH:mm dd/MM/yyyy")" class="od-form-control" readonly style="background:#eee;">
+                </div>
+            </div>
+
+            <div class="od-form-group">
+                <label>Ghi chú</label>
+                <textarea asp-for="Note" class="od-form-control od-textarea"></textarea>
+            </div>
+        </form>
+
+        <div style="padding:0 20px 20px; display:flex; gap:10px;">
+            <a asp-action="List" class="od-btn od-btn-secondary" style="padding:9px 25px;">HỦY BỎ</a>
         </div>
+    </div>
 
-        <div class="modern-card">
-            <div class="section-title">👤 Thông tin khách hàng</div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Người Gửi (Mặc định: None)</label>
-                    <input asp-for="SenderName" type="text" placeholder="Tên khách hàng gửi...">
-                </div>
-                <div class="form-group">
-                    <label>Số Điện Thoại Gửi <span class="required-star">*</span></label>
-                    <input asp-for="SenderPhone" id="senderPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Nhập SĐT người gửi...">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Người Nhận (Mặc định: None)</label>
-                    <input asp-for="ReceiverName" type="text" placeholder="Tên khách hàng nhận...">
-                </div>
-                <div class="form-group">
-                    <label>Số Điện Thoại Nhận <span class="required-star">*</span></label>
-                    <input asp-for="ReceiverPhone" id="receiverPhone" type="text" required maxlength="11" minlength="10" pattern="\d{10,11}" placeholder="Nhập SĐT người nhận...">
-                </div>
-            </div>
-        </div>
-
-        <div class="modern-card">
-            <div class="section-title">💰 Thanh toán & Ghi chú</div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Đã Thanh Toán (Tr) - Đơn vị K</label>
-                    <input asp-for="Tr" id="trField" type="number" placeholder="0">
-                </div>
-                <div class="form-group">
-                    <label>Chưa Thanh Toán (Ct) - Đơn vị K</label>
-                    <input asp-for="Ct" id="ctField" type="number" placeholder="0">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Ghi Chú Đơn Hàng</label>
-                <textarea asp-for="Note" rows="3" placeholder="Nhập các lưu ý đặc biệt về hàng hóa..."></textarea>
-            </div>
-        </div>
-    </form>
-
-    <div class="footer-actions-between">
-        <a asp-action="List" class="btn-modern-back no-decoration">⬅ Quay lại danh sách</a>
-        <input type="submit" form="editOrderForm" value="💾 Lưu Thay Đổi" class="btn-modern-save btn-footer-save">
+    <div style="text-align:center; margin-top:15px;">
+        <a asp-action="List" style="text-decoration:none; color:#666; font-size:14px;">⬅ Quay lại danh sách đơn hàng</a>
     </div>
 </div>
-
-<script>
-    function validateEditForm() {
-        var tr = document.getElementById("trField").value.trim();
-        var ct = document.getElementById("ctField").value.trim();
-        var sPhone = document.getElementById("senderPhone").value.trim();
-        var rPhone = document.getElementById("receiverPhone").value.trim();
-        var send = document.getElementById("sendStation").value;
-        var receive = document.getElementById("receiveStation").value;
-
-        if (send === receive && send !== "") {
-            Swal.fire({ icon: 'error', title: 'Trùng trạm', text: 'Trạm gửi và trạm nhận không được trùng nhau!' });
-            return false;
-        }
-
-        var phoneRegex = /^\d{10,11}$/;
-        if (!phoneRegex.test(sPhone) || !phoneRegex.test(rPhone)) {
-            Swal.fire({ icon: 'warning', title: 'SĐT không hợp lệ', text: 'Số điện thoại phải là chữ số và có độ dài từ 10 đến 11 ký tự!' });
-            return false;
-        }
-
-        if (tr === "" && ct === "") {
-            Swal.fire({ icon: 'info', title: 'Thanh toán', text: 'Bạn phải nhập thông tin tiền thanh toán (Tr) hoặc chưa thanh toán (Ct)!' });
-            return false;
-        }
-
-        // Ngăn chặn bấm nút nhiều lần
-        const submitBtn = document.querySelector('input[type="submit"][form="editOrderForm"]');
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.value = "⌛ Đang lưu...";
-        }
-
-        return true;
-    }
-</script>
