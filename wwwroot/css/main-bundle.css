@@ -7,7 +7,9 @@
 body {
     background-color: #f0f2f5;
     margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
     display: block;
     min-height: 100vh;
     padding-top: 95px !important; /* Đẩy main xuống dưới Navbar */

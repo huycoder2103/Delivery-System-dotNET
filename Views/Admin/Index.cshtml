@@ -62,21 +62,23 @@
             </div>
         </div>
 
-        <div class="admin-search-container" style="display: flex; gap: 10px; align-items: center;">
-            <div style="flex: 1; position: relative;">
+        <div class="admin-search-container">
+            <div class="admin-search-box">
                 <i>🔍</i>
-                <input type="text" id="staffSearch" placeholder="Tìm kiếm tên hoặc số điện thoại..." oninput="filterStaff()" style="padding-left: 35px; width: 100%;">
+                <input type="text" id="staffSearch" placeholder="Tìm kiếm tên hoặc số điện thoại..." oninput="filterStaff()">
             </div>
-            <select id="stationFilter" onchange="filterStaff()" class="admin-form-control" style="width: 200px; margin-bottom: 0;">
-                <option value="">-- Tất cả các trạm --</option>
-                @if (ViewBag.StationList != null)
-                {
-                    foreach (var s in ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>)
+            <div class="admin-filter-box">
+                <select id="stationFilter" onchange="filterStaff()" class="admin-form-control">
+                    <option value="">-- Tất cả các trạm --</option>
+                    @if (ViewBag.StationList != null)
                     {
-                        <option value="@s.StationId">@s.StationName (@s.StationId)</option>
+                        foreach (var s in ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>)
+                        {
+                            <option value="@s.StationId">@s.StationName (@s.StationId)</option>
+                        }
                     }
-                }
-            </select>
+                </select>
+            </div>
         </div>
 
         <div class="admin-table-responsive">
@@ -97,7 +99,11 @@
                     @foreach (var user in Model)
                     {
                         bool isInShift = user.TblWorkShifts.Any(s => s.Status == "ACTIVE");
-                        <tr class="admin-staff-row" data-name="@user.FullName.ToLower()" data-phone="@user.Phone" data-station="@user.StationId">
+                        <tr class="admin-staff-row" 
+                            data-id="@user.UserId.ToLower()" 
+                            data-name="@user.FullName.ToLower()" 
+                            data-phone="@user.Phone" 
+                            data-station="@user.StationId">
                             <td><strong class="admin-text-primary">@user.UserId</strong></td>
                             <td>
                                 <div class="admin-font-bold">@user.FullName</div>
@@ -178,6 +184,13 @@
             </div>
         </div>
 
+        <div class="admin-search-container">
+            <div class="admin-search-box">
+                <i>🔍</i>
+                <input type="text" id="stationSearch" placeholder="Tìm kiếm mã trạm hoặc tên trạm..." oninput="filterStation()">
+            </div>
+        </div>
+
         <div class="admin-table-responsive">
             <table class="admin-table">
                 <thead>
@@ -195,7 +208,7 @@
                     {
                         foreach (var s in stationList)
                         {
-                            <tr>
+                            <tr class="admin-station-row" data-id="@s.StationId" data-name="@s.StationName.ToLower()">
                                 <td><strong class="admin-text-primary">@s.StationId</strong></td>
                                 <td><div class="admin-font-bold">@s.StationName</div></td>
                                 <td>@s.Address</td>
@@ -668,12 +681,25 @@
             const kw = document.getElementById('staffSearch').value.toLowerCase();
             const stationId = document.getElementById('stationFilter').value;
             document.querySelectorAll('.admin-staff-row').forEach(r => {
+                const id = r.getAttribute('data-id') || '';
                 const name = r.getAttribute('data-name') || '';
                 const phone = r.getAttribute('data-phone') || '';
                 const station = r.getAttribute('data-station') || '';
-                const matchesSearch = name.includes(kw) || phone.includes(kw);
+                
+                const matchesSearch = id.includes(kw) || name.includes(kw) || phone.includes(kw);
                 const matchesStation = stationId === "" || station === stationId;
+                
                 r.style.display = (matchesSearch && matchesStation) ? '' : 'none';
+            });
+        }
+
+        function filterStation() {
+            const kw = document.getElementById('stationSearch').value.toLowerCase();
+            document.querySelectorAll('.admin-station-row').forEach(r => {
+                const id = r.getAttribute('data-id') || '';
+                const name = r.getAttribute('data-name') || '';
+                const matches = id.includes(kw) || name.includes(kw);
+                r.style.display = matches ? '' : 'none';
             });
         }
 

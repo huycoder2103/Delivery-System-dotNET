@@ -269,45 +269,48 @@
 /* --- Status Tabs & Filters --- */
 .od-status-tabs {
     display: flex;
-    gap: 4px;
+    gap: 8px;
     margin-bottom: 0;
-    background: #f8f9fa;
-    border-radius: 14px;
-    border: 1px solid #eee;
+    flex-wrap: nowrap;
+    padding-right: 15px;
+    border-right: 1px solid #e2e8f0; /* Đường phân cách giữa 2 nhóm */
 }
 
 .od-tab-btn {
+    padding: 8px 16px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
     border-radius: 10px;
-    border: none;
-    background: transparent;
-    color: var(--od-text-muted);
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: #64748b;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 16px;
     white-space: nowrap;
-    font-size: 0.88rem;
 }
 
-    .od-tab-btn:hover:not(.active) {
-        background: rgba(0,0,0,0.04);
-        color: var(--od-text-main);
+    .od-tab-btn:hover {
+        background: #f8fafc;
+        border-color: #cbd5e0;
+        color: #1a73e8;
     }
 
     .od-tab-btn.active {
-        background: #cadcf6;
-        color: var(--od-primary);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        background: var(--od-primary);
+        color: #ffffff;
+        border-color: var(--od-primary);
+        box-shadow: 0 4px 10px rgba(26, 115, 232, 0.2);
     }
 
 .od-filter-group {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: nowrap;
     align-items: center;
+    flex: 1;
 }
 
 .od-filter-input {
