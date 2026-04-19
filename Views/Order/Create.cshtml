@@ -6,7 +6,7 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/list_order.css?v=@DateTime.Now.Ticks" />
+    <link rel="stylesheet" href="~/css/list_order.css" asp-append-version="true" />
 }
 
 <div class="od-container od-container-small @(ViewBag.HasActiveShift == false ? "od-content-blurred" : "")">
@@ -23,7 +23,7 @@
         <div class="od-card">
             <!-- Hàng 1: Tên hàng và Trạm -->
             <div class="od-form-row">
-                <div class="od-form-group" style="flex: 2;">
+                <div class="od-form-group od-form-flex-2">
                     <label>Tên Hàng Gửi <span class="od-required">*</span></label>
                     <input asp-for="ItemName" type="text" class="od-form-control" required placeholder="Nhập tên hàng hóa...">
                     <span asp-validation-for="ItemName" class="od-text-danger"></span>
@@ -92,15 +92,19 @@
 
             <!-- Hàng 4: Thanh toán & Ghi chú -->
             <div class="od-form-row">
-                <div class="od-form-group" style="flex: 0.5;">
+                <div class="od-form-group od-form-flex-05">
                     <label>Đã trả (K)</label>
-                    <input asp-for="Tr" id="trField" type="number" class="od-form-control" step="any" placeholder="0">
+                    <input asp-for="Tr" id="trField" type="number" class="od-form-control" step="any" placeholder="0" oninput="calculateTotal()">
                 </div>
-                <div class="od-form-group" style="flex: 0.5;">
+                <div class="od-form-group od-form-flex-05">
                     <label>Chưa trả (K)</label>
-                    <input asp-for="Ct" id="ctField" type="number" class="od-form-control" step="any" placeholder="0">
+                    <input asp-for="Ct" id="ctField" type="number" class="od-form-control" step="any" placeholder="0" oninput="calculateTotal()">
                 </div>
-                <div class="od-form-group" style="flex: 2;">
+                <div class="od-form-group od-form-flex-05">
+                    <label>Tổng cộng (K)</label>
+                    <input asp-for="Amount" id="totalAmount" type="number" class="od-form-control od-total-amount-display" readonly placeholder="0">
+                </div>
+                <div class="od-form-group od-form-flex-15">
                     <label>Ghi Chú Đơn Hàng</label>
                     <input asp-for="Note" type="text" class="od-form-control" placeholder="Ghi chú nhanh cho đơn hàng này...">
                 </div>
@@ -108,9 +112,9 @@
         </div>
     </form>
 
-    <div class="od-form-row od-mt-20" style="justify-content: space-between; align-items: center;">
-        <a asp-action="List" class="od-btn od-btn-secondary" style="background: #5f6368;">⬅ Quay lại danh sách</a>
-        <input type="submit" form="orderForm" value="💾 Lưu Đơn Hàng" class="od-btn od-btn-success" style="padding: 12px 40px; min-width: 200px;" @(ViewBag.HasActiveShift == false ? "disabled" : "")>
+    <div class="od-form-row od-mt-20 od-justify-between od-align-center">
+        <a asp-action="List" class="od-btn od-btn-secondary od-bg-dark">⬅ Quay lại danh sách</a>
+        <input type="submit" form="orderForm" value="💾 Lưu Đơn Hàng" class="od-btn od-btn-success od-btn-submit-create" @(ViewBag.HasActiveShift == false ? "disabled" : "")>
     </div>
 </div>
 
@@ -118,22 +122,28 @@
 {
     <div id="shiftRequiredModal" class="od-modal-blur">
         <div class="od-modal-content">
-            <div style="font-size: 4rem; margin-bottom: 20px;">⏰</div>
-            <h2 style="color: #1e293b; margin-bottom: 15px; font-weight: 800;">Chưa Vào Ca Làm Việc!</h2>
-            <p style="color: #64748b; margin-bottom: 30px; line-height: 1.6;">Bạn cần phải bắt đầu ca làm việc trước khi có thể nhập hàng mới vào hệ thống.</p>
+            <div class="od-modal-icon-large">⏰</div>
+            <h2 class="od-modal-title">Chưa Vào Ca Làm Việc!</h2>
+            <p class="od-modal-text">Bạn cần phải bắt đầu ca làm việc trước khi có thể nhập hàng mới vào hệ thống.</p>
             <form asp-controller="Home" asp-action="StartShift" method="POST">
-                <button type="submit" class="od-btn od-btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem; background: linear-gradient(135deg, #6366f1, #4f46e5);">
+                <button type="submit" class="od-btn od-btn-primary od-btn-start-shift">
                     🚀 Bắt Đầu Ca Ngay
                 </button>
             </form>
             <div class="od-mt-20">
-                <a asp-action="List" style="color: #94a3b8; text-decoration: none; font-weight: 600;">Quay lại danh sách</a>
+                <a asp-action="List" class="od-link-muted">Quay lại danh sách</a>
             </div>
         </div>
     </div>
 }
 
 <script>
+    function calculateTotal() {
+        var tr = parseFloat(document.getElementById("trField").value) || 0;
+        var ct = parseFloat(document.getElementById("ctField").value) || 0;
+        document.getElementById("totalAmount").value = tr + ct;
+    }
+
     function validateForm() {
         var sPhone = document.getElementById("senderPhone").value.trim();
         var rPhone = document.getElementById("receiverPhone").value.trim();

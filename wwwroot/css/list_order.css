@@ -134,7 +134,7 @@
 /* --- Sticky Filter Bar --- */
 .od-sticky-filter {
     position: sticky;
-    top: 155px;
+    top: 135px;
     z-index: 800;
     background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: blur(12px);
@@ -142,6 +142,8 @@
     border-top: none;
     margin-top: -20px;
     border-radius: 0 0 16px 16px !important;
+    border-bottom: 2px solid var(--od-primary);
+    border-left: 2px solid var(--od-primary);
     padding: 8px 16px !important;
     display: flex;
     align-items: center;

@@ -20,16 +20,6 @@
     <!-- Nạp SweetAlert2 ở đầu để các trang con dùng được ngay -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-    <style>
-        /* Đảm bảo thông báo Toast hiện lên trên cùng và không bị Navbar che */
-        .swal2-container {
-            z-index: 99999 !important;
-        }
-        .swal2-toast {
-            margin-top: 70px !important; /* Đẩy xuống dưới Navbar */
-        }
-    </style>
-    
     @RenderSection("Styles", required: false)
 </head>
 <body>

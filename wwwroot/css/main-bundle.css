@@ -30,6 +30,14 @@ body {
 .cursor-pointer { cursor: pointer !important; }
 .hidden-form { display: none !important; }
 
+/* SweetAlert Toast Customization */
+.swal2-container {
+    z-index: 99999 !important;
+}
+.swal2-toast {
+    margin-top: 90px !important; /* Đẩy xuống dưới Navbar */
+}
+
 /* ==========================================================================
    NAVBAR (Glassmorphism Style)
    ========================================================================== */

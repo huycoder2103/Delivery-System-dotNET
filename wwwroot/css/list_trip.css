@@ -100,7 +100,7 @@
 
 /* --- 2. List Section --- */
 .tr-sticky-filter {
-    position: sticky; top: 155px; z-index: 800; background: rgba(255, 255, 255, 0.98) !important;
+    position: sticky; top: 135px; z-index: 800; background: rgba(255, 255, 255, 0.98) !important;
     backdrop-filter: blur(10px); border-bottom: 2px solid var(--tr-primary); border-left: 2px solid var(--tr-primary);
     margin-top: -20px; border-radius: 0 0 15px 15px !important; padding: 15px 20px !important;
 }
