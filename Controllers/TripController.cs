@@ -255,6 +255,9 @@ namespace Delivery_System.Controllers
             {
                 trip.Status = "Đã đến";
                 
+                // Ghi nhận MÃ NHÂN VIÊN (ID) và thời gian đến vào Notes
+                trip.Notes = $"[ARRIVED] {userId} | {TimeHelper.NowVni():dd/MM HH:mm}";
+
                 // Lấy tất cả đơn hàng trên chuyến xe này (bỏ qua filter để chắc chắn cập nhật hết)
                 var orders = await _context.TblOrders
                     .IgnoreQueryFilters()
@@ -263,9 +266,8 @@ namespace Delivery_System.Controllers
 
                 foreach (var o in orders)
                 {
-                    o.ShipStatus = "Đã giao";
-                    o.StaffReceive = userId; // Người xác nhận xe đến là người nhận hàng tại kho
-                    o.ReceiveDate = TimeHelper.NowVni().ToString("dd/MM/yyyy HH:mm");
+                    o.ShipStatus = "Đã đến";
+                    // Không điền StaffReceive ở đây nữa, chỉ điền khi thực sự giao cho khách
                 }
                 
                 await _context.SaveChangesAsync();

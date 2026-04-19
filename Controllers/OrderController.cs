@@ -42,9 +42,22 @@ namespace Delivery_System.Controllers
             ViewBag.StationList = await GetCachedStationsAsync();
             var query = _context.TblOrders.AsNoTracking();
 
-            if (statusFilter == "pending") query = query.Where(o => string.IsNullOrEmpty(o.TripId));
-            else if (statusFilter == "shipped") query = query.Where(o => !string.IsNullOrEmpty(o.TripId) && o.ShipStatus != "Đã giao");
-            else if (statusFilter == "delivered") query = query.Where(o => o.ShipStatus == "Đã giao");
+            // Logic lọc dữ liệu theo 5 trạng thái
+            if (statusFilter == "waiting") 
+                query = query.Where(o => string.IsNullOrEmpty(o.TripId) && o.ShipStatus != "Đã giao");
+            else if (statusFilter == "shipping") 
+                query = query.Where(o => o.ShipStatus == "Đang chuyển");
+            else if (statusFilter == "arrived") 
+            {
+                // Tối ưu: Lấy danh sách TripId của các chuyến đã đến
+                var arrivedTripIds = await _context.TblTrips.AsNoTracking()
+                    .Where(t => t.Status == "Đã đến")
+                    .Select(t => t.TripId)
+                    .ToListAsync();
+                query = query.Where(o => arrivedTripIds.Contains(o.TripId ?? "") && o.ShipStatus != "Đã giao");
+            }
+            else if (statusFilter == "delivered") 
+                query = query.Where(o => o.ShipStatus == "Đã giao");
 
             if (!string.IsNullOrEmpty(sendStationFilter)) query = query.Where(o => o.SendStation == sendStationFilter);
             if (!string.IsNullOrEmpty(receiveStationFilter)) query = query.Where(o => o.ReceiveStation == receiveStationFilter);
@@ -59,7 +72,7 @@ namespace Delivery_System.Controllers
             int totalRecords = await query.CountAsync();
             int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
             
-            // 2. TỐI ƯU: Sử dụng Projection để chỉ lấy các trường cần thiết hiển thị lên View
+            // Projection lấy các trường cần thiết
             var list = await query.OrderByDescending(o => o.CreatedAt)
                 .Skip((page - 1) * pageSize).Take(pageSize)
                 .Select(o => new TblOrder {
@@ -82,21 +95,17 @@ namespace Delivery_System.Controllers
                 })
                 .ToListAsync();
             
-            // 3. TỐI ƯU: Đơn giản hóa GroupBy để MySQL xử lý tốt hơn
-            var counts = await _context.TblOrders
-                .AsNoTracking()
-                .GroupBy(o => new { o.ShipStatus, HasTripId = !string.IsNullOrEmpty(o.TripId) })
-                .Select(g => new { 
-                    Status = g.Key.ShipStatus, 
-                    HasTrip = g.Key.HasTripId, 
-                    Count = g.Count() 
-                })
+            // Tính toán số lượng cho Badge/Select Filter một cách chính xác
+            var countsRaw = await _context.TblOrders.AsNoTracking()
+                .GroupBy(o => new { o.ShipStatus, HasTrip = !string.IsNullOrEmpty(o.TripId) })
+                .Select(g => new { g.Key.ShipStatus, g.Key.HasTrip, Count = g.Count() })
                 .ToListAsync();
 
-            ViewBag.CountPending = counts.Where(c => !c.HasTrip && c.Status != "Đã giao").Sum(c => c.Count);
-            ViewBag.CountShipped = counts.Where(c => c.HasTrip && c.Status != "Đã giao").Sum(c => c.Count);
-            ViewBag.CountDelivered = counts.Where(c => c.Status == "Đã giao").Sum(c => c.Count);
-            ViewBag.CountAll     = ViewBag.CountPending + ViewBag.CountShipped + ViewBag.CountDelivered;
+            ViewBag.CountWaiting = countsRaw.Where(c => !c.HasTrip && c.ShipStatus != "Đã giao").Sum(c => c.Count);
+            ViewBag.CountShipping = countsRaw.Where(c => c.ShipStatus == "Đang chuyển").Sum(c => c.Count);
+            ViewBag.CountArrived = countsRaw.Where(c => c.ShipStatus == "Đã đến").Sum(c => c.Count);
+            ViewBag.CountDelivered = countsRaw.Where(c => c.ShipStatus == "Đã giao").Sum(c => c.Count);
+            ViewBag.CountAll = countsRaw.Sum(c => c.Count);
             
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
@@ -161,6 +170,8 @@ namespace Delivery_System.Controllers
                 return (source == "ship") ? RedirectToAction("List") : RedirectToAction("List", "Trip");
             }
 
+            var userStationName = User.GetStationName();
+
             var strategy = _context.Database.CreateExecutionStrategy();
             await strategy.ExecuteAsync(async () => {
                 using var transaction = await _context.Database.BeginTransactionAsync();
@@ -169,12 +180,14 @@ namespace Delivery_System.Controllers
                     int successCount = 0;
                     foreach (var order in orders)
                     {
+                        // Kiểm tra khớp trạm của đơn hàng và chuyến xe
                         if (order.SendStation != trip.Departure || order.ReceiveStation != trip.Destination)
                         {
-                            continue; // Bỏ qua đơn hàng không khớp trạm
+                            continue; 
                         }
 
-                        if (role == "AD" || order.StaffInput == userId) {
+                        // QUYỀN: Admin hoặc nhân viên thuộc trạm gửi của đơn hàng đó
+                        if (role == "AD" || order.SendStation == userStationName) {
                             order.TripId = tripId;
                             order.ShipStatus = "Đang chuyển";
                             successCount++;
@@ -243,6 +256,13 @@ namespace Delivery_System.Controllers
             var order = await _context.TblOrders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == id);
             if (order == null || (role != "AD" && order.StaffInput != userId)) return RedirectToAction("List");
             
+            // RÀNG BUỘC: Chỉ cho phép sửa khi chưa lên xe (Chờ xe)
+            if (!string.IsNullOrEmpty(order.TripId))
+            {
+                TempData["ErrorMessage"] = "Đơn hàng đã được gán vào chuyến xe, không thể chỉnh sửa thông tin!";
+                return RedirectToAction("List");
+            }
+
             // Lấy trạm của nhân viên để khóa trạm gửi
             var user = await _context.TblUsers.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId);
             int? sId = user?.StationId;
@@ -275,6 +295,12 @@ namespace Delivery_System.Controllers
             
             var existing = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == order.OrderId);
             if (existing != null && (role == "AD" || existing.StaffInput == userId)) {
+                // Bảo vệ: Nếu hàng đã lên xe thì không được lưu thay đổi
+                if (!string.IsNullOrEmpty(existing.TripId)) {
+                    TempData["ErrorMessage"] = "Đơn hàng đã lên xe, không thể thay đổi thông tin!";
+                    return RedirectToAction("List");
+                }
+
                 existing.ItemName = order.ItemName; 
                 existing.SendStation = order.SendStation; 
                 existing.ReceiveStation = order.ReceiveStation;
@@ -284,7 +310,7 @@ namespace Delivery_System.Controllers
                 existing.ReceiverPhone = order.ReceiverPhone; 
                 existing.Tr = order.Tr ?? 0; 
                 existing.Ct = order.Ct ?? 0; 
-                existing.Amount = existing.Tr + existing.Ct; // Tự động cập nhật tổng tiền
+                existing.Amount = existing.Tr + existing.Ct; 
                 existing.Note = order.Note;
                 await _context.SaveChangesAsync();
 
@@ -301,8 +327,15 @@ namespace Delivery_System.Controllers
             
             var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == id);
             if (order != null && (role == "AD" || order.StaffInput == userId)) {
+                // RÀNG BUỘC: Không cho xóa đơn hàng đã lên xe
+                if (!string.IsNullOrEmpty(order.TripId)) {
+                    TempData["ErrorMessage"] = "Đơn hàng đã lên xe, không thể xóa!";
+                    return RedirectToAction("List");
+                }
+
                 order.IsDeleted = true;
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Đã xóa đơn hàng " + id;
             }
             return RedirectToAction("List");
         }
@@ -445,6 +478,27 @@ namespace Delivery_System.Controllers
             }
             
             return View(order);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Deliver(string id)
+        {
+            var userId = User.GetUserId();
+            var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == id);
+            if (order == null) return Json(new { success = false, message = "Không tìm thấy đơn hàng." });
+
+            order.ShipStatus = "Đã giao";
+            order.StaffReceive = userId; // Ghi nhận nhân viên thực hiện giao hàng cho khách
+            order.ReceiveDate = TimeHelper.NowVni().ToString("dd/MM/yyyy HH:mm");
+            
+            await _context.SaveChangesAsync();
+
+            return Json(new { 
+                success = true, 
+                message = $"Đơn hàng {id} đã được giao thành công!",
+                tripId = order.TripId 
+            });
         }
     }
 }

@@ -70,9 +70,24 @@
 }
 
 .od-page-header-ship {
-    border-radius: 6px 6px 0 0;
-    padding: 15px 20px;
-    position: static;
+    background: linear-gradient(135deg, #1a73e8, #0d47a1);
+    color: white !important;
+    padding: 25px 30px !important;
+    border-radius: 20px 20px 0 0 !important;
+}
+
+.od-ship-id-highlight {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #ffffff;
+    margin: 8px 0;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.od-route-info-blue {
+    color: #1a73e8;
+    font-weight: 700;
 }
 
 .od-page-header h2, .od-page-header h3 {

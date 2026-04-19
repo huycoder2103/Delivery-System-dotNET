@@ -38,8 +38,27 @@
                     <span class="tr-badge tr-badge-arrived">🏁 Đã cập bến</span>
                 }
             </td>
-            <td class="tr-col-staff">@t.StaffCreated</td>
-            <td>@t.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+            @* HIỂN THỊ MÃ NHÂN VIÊN TẠO *@
+            <td class="tr-col-staff"><strong>@t.StaffCreated</strong></td>
+            <td>@t.CreatedAt?.ToString("dd/MM HH:mm")</td>
+
+            @if (ViewBag.IsArrivalPage == true)
+            {
+                <td>
+                    @if (t.Notes != null && t.Notes.StartsWith("[ARRIVED]"))
+                    {
+                        var parts = t.Notes.Replace("[ARRIVED] ", "").Split('|');
+                        @* HIỂN THỊ MÃ NHÂN VIÊN TIẾP NHẬN *@
+                        <div class="tr-id-text">@parts[0].Trim()</div>
+                        <div>@(parts.Length > 1 ? parts[1].Trim() : "")</div>
+                    }
+                    else
+                    {
+                        <span class="text-muted">—</span>
+                    }
+                </td>
+            }
+
             <td class="tr-col-act">
                 <div class="tr-action-grid">
                     @{
@@ -74,6 +93,6 @@
 else
 {
     <tr>
-        <td colspan="10" class="tr-no-data">📭 Không tìm thấy chuyến xe nào phù hợp!</td>
+        <td colspan="11" class="tr-no-data">📭 Không tìm thấy chuyến xe nào phù hợp!</td>
     </tr>
 }

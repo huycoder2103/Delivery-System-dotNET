@@ -7,17 +7,24 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/list_trip.css?v=@DateTime.Now.Ticks">
+    <link rel="stylesheet" href="~/css/list_trip.css" asp-append-version="true">
 }
 
 <div class="tr-container">
+    @Html.AntiForgeryToken()
     <div class="tr-page-wrap">
         <div class="tr-hdr">
             <h3>📋 DANH SÁCH HÀNG TRÊN CHUYẾN XE</h3>
             @if (trip != null)
             {
                 <div class="tr-header-meta">
-                    <span class="badge">Chuyến: @trip.TripId</span>
+                    <span class="badge">
+                        Chuyến: 
+                        <a href="@Url.Action("List", "Trip", new { searchTruck = trip.TripId })" 
+                           class="tr-header-link" title="Xem chi tiết chuyến xe này trong danh sách">
+                            @trip.TripId
+                        </a>
+                    </span>
                     <span class="badge">Lộ trình: @trip.RouteInfo</span>
                     <span class="badge">Biển số: @trip.LicensePlate</span>
                     <span class="badge">Tổng đơn: @(Model?.Count() ?? 0) đơn</span>
@@ -37,6 +44,8 @@
                             <th>Người Gửi</th>
                             <th>Người Nhận</th>
                             <th>Trạm</th>
+                            <th>Trạng Thái</th>
+                            <th>NV Giao</th>
                             <th>TR</th>
                             <th>CT</th>
                         </tr>
@@ -69,7 +78,10 @@
                                     }
                                     else
                                     {
-                                        <strong class="text-primary">@o.OrderId</strong>
+                                        <a href="@Url.Action("List", "Order", new { statusFilter = "arrived", searchPhone = o.OrderId })" 
+                                           class="tr-id-delivery-link" title="Đi tới trang giao hàng">
+                                            @o.OrderId
+                                        </a>
                                     }
                                 </td>
                                 <td>@o.ItemName</td>
@@ -82,6 +94,31 @@
                                         <span class="tr-station-receive" onclick="showStationInfo('@o.ReceiveStation', '@(receiveStationId?.ToString() ?? "??")')">@(receiveStationId?.ToString() ?? "??")</span>
                                     </span>
                                 </td>
+                                <td>
+                                    @if (o.ShipStatus == "Đã giao")
+                                    {
+                                        <span class="tr-badge tr-badge-arrived" style="background:#e6f4ea; color:#1e8e3e; border:none;">✅ Đã giao</span>
+                                    }
+                                    else if (o.ShipStatus == "Đã đến")
+                                    {
+                                        <span class="tr-badge" style="background:#e8f0fe; color:#1a73e8; border:none;">📥 Đã đến</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="tr-badge tr-badge-going">🚛 @o.ShipStatus</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(o.StaffReceive))
+                                    {
+                                        <div class="tr-font-bold" style="color: #475569;">@o.StaffReceive</div>
+                                        <div style="font-size: 0.7rem; color: #64748b;">@o.ReceiveDate</div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
                                 <td><span class="tr-price-tr">@(o.Tr?.ToString("N0") ?? "0")</span></td>
                                 <td><span class="tr-price-ct">@(o.Ct?.ToString("N0") ?? "0")</span></td>
                             </tr>
@@ -89,9 +126,10 @@
                     </tbody>
                     <tfoot>
                         <tr class="tr-summary-row">
-                            <td colspan="6" class="tr-summary-label">Tổng cộng:</td>
-                            <td class="tr-summary-value tr-value-total-tr">@totalTr.ToString("N0")</td>
-                            <td class="tr-summary-value tr-value-total-ct">@totalCt.ToString("N0")</td>
+                            <td colspan="8" class="tr-summary-label">Tổng cộng (TR + CT):</td>
+                            <td colspan="2" class="tr-summary-value tr-value-total-all" style="color: #1a73e8; font-weight: 800; font-size: 20px; text-align: center;">
+                                @((totalTr + totalCt).ToString("N0"))
+                            </td>
                         </tr>
                     </tfoot>
                 </table>
@@ -128,6 +166,44 @@
                     document.getElementById('removeForm-' + orderId).submit();
                 }
             })
+        }
+
+        function deliverOrder(orderId) {
+            Swal.fire({
+                title: 'Xác nhận giao hàng?',
+                text: `Đơn hàng ${orderId} đã được khách đến lấy và thanh toán đầy đủ?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '✅ Xác nhận đã giao',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const token = $('input[name="__RequestVerificationToken"]').val();
+                    $.ajax({
+                        url: '@Url.Action("Deliver", "Order")',
+                        type: 'POST',
+                        data: { 
+                            id: orderId,
+                            __RequestVerificationToken: token
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire('Thành công!', res.message, 'success').then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('Lỗi', res.message, 'error');
+                            }
+                        },
+                        error: function (xhr) {
+                            console.error(xhr.responseText);
+                            Swal.fire('Lỗi', 'Không thể kết nối đến máy chủ hoặc lỗi xác thực.', 'error');
+                        }
+                    });
+                }
+            });
         }
     </script>
 }

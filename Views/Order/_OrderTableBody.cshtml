@@ -3,6 +3,7 @@
 @{
     var currentUserRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
     var currentUserID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var currentUserStation = Delivery_System.Helpers.UserExtensions.GetStationName(User);
 }
 
 
@@ -18,6 +19,7 @@
     {
         bool isShipped = !string.IsNullOrEmpty(o.TripId);
         bool canEdit = (currentUserRole == "AD" || o.StaffInput == currentUserID);
+        bool canShip = (currentUserRole == "AD" || o.SendStation == currentUserStation);
         <tr>
             <td>@index</td>
             <td><span class="od-font-bold">@o.OrderId</span></td>
@@ -68,15 +70,24 @@
             </td>
             <td class="od-col-act">
                 <div class="od-action-grid">
-                    @if (!isShipped)
+                    @if (o.ShipStatus == "Đã giao")
                     {
-                        if (currentUserRole == "AD" || o.StaffInput == currentUserID)
+                        <span class="od-btn od-btn-s od-badge-delivered" style="cursor: default; opacity: 0.9;">✅ Đã giao</span>
+                    }
+                    else if (o.ShipStatus == "Đã đến")
+                    {
+                        <button type="button" onclick="deliverOrderDirect('@o.OrderId')" class="od-btn od-btn-s od-btn-s-pick">✅ Giao</button>
+                        <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="od-btn od-btn-s" style="background: #e0f2f1; color: #00796b;">🚛 Xem Xe</a>
+                    }
+                    else if (!isShipped)
+                    {
+                        if (canShip)
                         {
                             <a asp-action="Ship" asp-route-id="@o.OrderId" class="od-btn od-btn-s od-btn-s-ship od-btn-full">🚚 Chuyển</a>
                         }
                         else
                         {
-                            <button type="button" class="od-btn od-btn-s od-btn-full" style="opacity:0.5; cursor:not-allowed;" title="Bạn không có quyền chuyển đơn này">Chuyển</button>
+                            <button type="button" class="od-btn od-btn-s od-btn-full" style="opacity:0.5; cursor:not-allowed;" title="Bạn không có quyền chuyển đơn này (Phải thuộc trạm @o.SendStation)">Chuyển</button>
                         }
                     }
                     else
@@ -86,13 +97,13 @@
 
                     <button type="button" onclick="showPrintOptions('@o.OrderId')" class="od-btn od-btn-s od-btn-s-print">In</button>
 
-                    @if (canEdit && !isShipped)
+                    @if (canEdit && string.IsNullOrEmpty(o.TripId))
                     {
                         <a asp-action="Edit" asp-route-id="@o.OrderId" class="od-btn od-btn-s od-btn-s-edit">Sửa</a>
                     }
                     else
                     {
-                        <button type="button" class="od-btn od-btn-s" style="opacity:0.5; cursor:not-allowed;" title="Hàng đã lên xe hoặc không có quyền">Khóa</button>
+                        <button type="button" class="od-btn od-btn-s" style="opacity:0.5; cursor:not-allowed;" title="Hàng đã lên xe hoặc đã hoàn thành, không thể sửa">Khóa</button>
                     }
                 </div>
             </td>

@@ -12,6 +12,7 @@
 }
 
 <div class="od-container">
+    @Html.AntiForgeryToken()
     
     <div class="od-page-header">
         <div>
@@ -30,22 +31,14 @@
     </div>
 
     <div class="od-card od-sticky-filter">
-        
-        <div class="od-status-tabs">
-            <button class="od-tab-btn @(ViewBag.CurrentStatus == "all" ? "active" : "")" onclick="changeStatus('all')">
-                🌐 Tất cả (@ViewBag.CountAll)
-            </button>
-            <button class="od-tab-btn @(ViewBag.CurrentStatus == "pending" ? "active" : "")" onclick="changeStatus('pending')">
-                📥 Chờ giao (@ViewBag.CountPending)
-            </button>
-            <button class="od-tab-btn @(ViewBag.CurrentStatus == "shipped" ? "active" : "")" onclick="changeStatus('shipped')">
-                🚛 Đang chuyển (@ViewBag.CountShipped)
-            </button>
-            <button class="od-tab-btn @(ViewBag.CurrentStatus == "delivered" ? "active" : "")" onclick="changeStatus('delivered')">
-                ✅ Đã giao (@ViewBag.CountDelivered)
-            </button>
-        </div>
         <div class="od-filter-group">
+            <select id="statusFilter" class="od-filter-input od-select-status" onchange="changeStatus(this.value)">
+                <option value="all" selected="@(ViewBag.CurrentStatus == "all" ? "selected" : null)">🌐 Tất cả đơn (@ViewBag.CountAll)</option>
+                <option value="waiting" selected="@(ViewBag.CurrentStatus == "waiting" ? "selected" : null)">⏳ Chờ xe (@ViewBag.CountWaiting)</option>
+                <option value="shipping" selected="@(ViewBag.CurrentStatus == "shipping" ? "selected" : null)">🚛 Đang chuyển (@ViewBag.CountShipping)</option>
+                <option value="arrived" selected="@(ViewBag.CurrentStatus == "arrived" ? "selected" : null)">📥 Chờ giao (@ViewBag.CountArrived)</option>
+                <option value="delivered" selected="@(ViewBag.CurrentStatus == "delivered" ? "selected" : null)">✅ Đã giao (@ViewBag.CountDelivered)</option>
+            </select>
             <select id="filterSendStation" class="od-filter-input od-select-station">
                 <option value="">Trạm Gửi</option>
                 @if (stationList != null)
@@ -237,6 +230,54 @@
 
         function resetFilters() {
             window.location.href = '@Url.Action("List", "Order")';
+        }
+
+        function deliverOrderDirect(orderId) {
+            Swal.fire({
+                title: 'Xác nhận giao hàng?',
+                text: `Đơn hàng ${orderId} đã được khách đến nhận?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '✅ Đúng, đã giao!',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const token = $('input[name="__RequestVerificationToken"]').val();
+                    $.ajax({
+                        url: '@Url.Action("Deliver", "Order")',
+                        type: 'POST',
+                        data: { 
+                            id: orderId,
+                            __RequestVerificationToken: token
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire({
+                                    title: 'Thành công!',
+                                    text: res.message,
+                                    icon: 'success',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    if (res.tripId) {
+                                        window.location.href = '@Url.Action("ViewGoods", "Trip")/' + res.tripId;
+                                    } else {
+                                        location.reload(); 
+                                    }
+                                });
+                            } else {
+                                Swal.fire('Lỗi', res.message, 'error');
+                            }
+                        },
+                        error: function (xhr) {
+                            console.error(xhr.responseText);
+                            Swal.fire('Lỗi', 'Không thể kết nối đến máy chủ hoặc lỗi xác thực.', 'error');
+                        }
+                    });
+                }
+            });
         }
     </script>
 }
