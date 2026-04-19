@@ -141,16 +141,22 @@
 
         function confirmArrive(tripId) {
             Swal.fire({
-                title: 'Xác nhận xe đến?',
-                text: "Chuyến xe " + tripId + " đã cập bến an toàn?",
+                title: 'Xác nhận xe đã đến?',
+                text: "Hệ thống sẽ ghi nhận bạn là người tiếp nhận chuyến xe này!",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#1a73e8',
-                cancelButtonColor: '#d33',
-                confirmButtonText: '🏁 Đúng, đã đến!',
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '🏁 Đúng, xe đã đến',
                 cancelButtonText: 'Hủy'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // KHÓA NÚT BẤM ĐỂ TRÁNH BẤM NHIỀU LẦN
+                    const btn = event.target.closest('button');
+                    if(btn) {
+                        btn.disabled = true;
+                        btn.innerHTML = "⌛ Đang xử lý...";
+                    }
                     document.getElementById('arriveForm-' + tripId).submit();
                 }
             })

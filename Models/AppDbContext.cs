@@ -120,7 +120,8 @@ public partial class AppDbContext : DbContext
 
             entity.HasIndex(e => e.ShiftId, "idx_orders_shiftID");
 
-            entity.HasIndex(e => e.ShipStatus, "idx_orders_shipStatus");
+            // TỐI ƯU: Index hỗn hợp giúp lọc cực nhanh các đơn chưa xóa theo trạng thái
+            entity.HasIndex(e => new { e.IsDeleted, e.ShipStatus }, "idx_orders_status_deleted");
 
             entity.HasIndex(e => e.StaffInput, "staffInput");
 
@@ -130,6 +131,9 @@ public partial class AppDbContext : DbContext
             entity.HasIndex(e => e.ReceiveStation, "idx_orders_receiveStation");
             entity.HasIndex(e => e.SenderPhone, "idx_orders_senderPhone");
             entity.HasIndex(e => e.ReceiverPhone, "idx_orders_receiverPhone");
+
+            entity.HasIndex(e => e.TripId, "idx_orders_tripID");
+            entity.HasIndex(e => e.IsDeleted, "idx_orders_isDeleted");
 
             entity.Property(e => e.OrderId)
                 .HasMaxLength(20)
@@ -273,6 +277,8 @@ public partial class AppDbContext : DbContext
             entity.HasKey(e => e.TripId).HasName("PRIMARY");
 
             entity.ToTable("tblTrips");
+
+            entity.HasIndex(e => e.Status, "idx_trips_status");
 
             entity.HasIndex(e => e.TripType, "idx_trips_tripType");
 

@@ -485,8 +485,17 @@ namespace Delivery_System.Controllers
         public async Task<IActionResult> Deliver(string id)
         {
             var userId = User.GetUserId();
+            var role = User.GetRole();
+            var userStation = User.GetStationName();
+
             var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == id);
             if (order == null) return Json(new { success = false, message = "Không tìm thấy đơn hàng." });
+
+            // RÀNG BUỘC: Chỉ Admin hoặc nhân viên tại trạm đích mới được giao hàng
+            if (role != "AD" && order.ReceiveStation != userStation)
+            {
+                return Json(new { success = false, message = $"Bạn không có quyền giao đơn hàng này. Đơn hàng này thuộc trạm đích: {order.ReceiveStation}" });
+            }
 
             order.ShipStatus = "Đã giao";
             order.StaffReceive = userId; // Ghi nhận nhân viên thực hiện giao hàng cho khách

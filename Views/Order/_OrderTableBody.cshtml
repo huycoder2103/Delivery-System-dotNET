@@ -20,6 +20,7 @@
         bool isShipped = !string.IsNullOrEmpty(o.TripId);
         bool canEdit = (currentUserRole == "AD" || o.StaffInput == currentUserID);
         bool canShip = (currentUserRole == "AD" || o.SendStation == currentUserStation);
+        bool canDeliver = (currentUserRole == "AD" || o.ReceiveStation == currentUserStation);
         <tr>
             <td class="od-col-stt">@index</td>
             <td><span class="od-font-bold">@o.OrderId</span></td>
@@ -77,7 +78,11 @@
                     }
                     else if (o.ShipStatus == "Đã đến")
                     {
-                        <button type="button" onclick="deliverOrderDirect('@o.OrderId')" class="od-btn od-btn-s od-btn-s-pick">✅ Giao</button>
+                        if (canDeliver) {
+                            <button type="button" onclick="deliverOrderDirect('@o.OrderId')" class="od-btn od-btn-s od-btn-s-pick">✅ Giao</button>
+                        } else {
+                            <button type="button" class="od-btn od-btn-s od-btn-disabled" title="Chỉ nhân viên tại trạm @o.ReceiveStation mới được giao đơn này">✅ Giao</button>
+                        }
                         <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="od-btn od-btn-s od-btn-view-trip">🚛 Xem Xe</a>
                     }
                     else if (!isShipped)
