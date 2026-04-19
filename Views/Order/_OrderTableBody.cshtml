@@ -21,7 +21,7 @@
         bool canEdit = (currentUserRole == "AD" || o.StaffInput == currentUserID);
         bool canShip = (currentUserRole == "AD" || o.SendStation == currentUserStation);
         <tr>
-            <td>@index</td>
+            <td class="od-col-stt">@index</td>
             <td><span class="od-font-bold">@o.OrderId</span></td>
             <td class="od-col-item">@o.ItemName</td>
             <td>
@@ -47,37 +47,38 @@
                     <div class="od-cust-phone">@o.ReceiverPhone</div>
                 </div>
             </td>
-            <td class="od-staff">@o.StaffInput</td>
+            <td class="od-staff od-staff-id-text">@o.StaffInput</td>
             
             <td class="od-col-paid">
                 @if (o.Tr.HasValue && o.Tr != 0)
                 {
-                    <span class="od-badge od-badge-delivered">@(o.Tr.Value.ToString("N0"))k</span>
+                    <span class="od-badge od-badge-success">@(o.Tr.Value.ToString("N0"))k</span>
                 }
                 else { <span>—</span> }
             </td>
             <td class="od-col-paid">
                 @if (o.Ct.HasValue && o.Ct != 0)
                 {
-                    <span class="od-badge od-badge-pending" style="background: #fce8e6; color: #d93025;">@(o.Ct.Value.ToString("N0"))k</span>
+                    <span class="od-badge od-badge-pending-red">@(o.Ct.Value.ToString("N0"))k</span>
                 }
                 else { <span>—</span> }
             </td>
             
             <td>@o.Note</td>
             <td>
-                @o.CreatedAt?.ToString("dd/MM/yyyy HH:mm")
+                @o.CreatedAt?.ToString("dd/MM HH:mm")
             </td>
             <td class="od-col-act">
                 <div class="od-action-grid">
                     @if (o.ShipStatus == "Đã giao")
                     {
-                        <span class="od-btn od-btn-s od-badge-delivered" style="cursor: default; opacity: 0.9;">✅ Đã giao</span>
+                        <span class="od-btn od-btn-s od-badge-delivered od-delivery-status-box">Đã giao</span>
+                        <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="od-btn od-btn-s od-btn-view-trip">🚛 Xem Xe</a>
                     }
                     else if (o.ShipStatus == "Đã đến")
                     {
                         <button type="button" onclick="deliverOrderDirect('@o.OrderId')" class="od-btn od-btn-s od-btn-s-pick">✅ Giao</button>
-                        <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="od-btn od-btn-s" style="background: #e0f2f1; color: #00796b;">🚛 Xem Xe</a>
+                        <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="od-btn od-btn-s od-btn-view-trip">🚛 Xem Xe</a>
                     }
                     else if (!isShipped)
                     {
@@ -87,12 +88,12 @@
                         }
                         else
                         {
-                            <button type="button" class="od-btn od-btn-s od-btn-full" style="opacity:0.5; cursor:not-allowed;" title="Bạn không có quyền chuyển đơn này (Phải thuộc trạm @o.SendStation)">Chuyển</button>
+                            <button type="button" class="od-btn od-btn-s od-btn-full od-btn-disabled" title="Bạn không có quyền chuyển đơn này (Phải thuộc trạm @o.SendStation)">Chuyển</button>
                         }
                     }
                     else
                     {
-                        <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="od-btn od-btn-s od-btn-full" style="background: #e0f2f1; color: #00796b;">🚛 Xem Xe</a>
+                        <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="od-btn od-btn-s od-btn-full od-btn-view-trip">🚛 Xem Xe</a>
                     }
 
                     <button type="button" onclick="showPrintOptions('@o.OrderId')" class="od-btn od-btn-s od-btn-s-print">In</button>
@@ -103,7 +104,7 @@
                     }
                     else
                     {
-                        <button type="button" class="od-btn od-btn-s" style="opacity:0.5; cursor:not-allowed;" title="Hàng đã lên xe hoặc đã hoàn thành, không thể sửa">Khóa</button>
+                        <button type="button" class="od-btn od-btn-s od-btn-disabled" title="Hàng đã lên xe hoặc đã hoàn thành, không thể sửa">Khóa</button>
                     }
                 </div>
             </td>
@@ -114,6 +115,6 @@
 else
 {
     <tr>
-        <td colspan="12" style="padding: 50px; color: #999; text-align: center;">📭 Không tìm thấy đơn hàng nào phù hợp!</td>
+        <td colspan="12" class="od-table-empty-state">📭 Không tìm thấy đơn hàng nào phù hợp!</td>
     </tr>
 }

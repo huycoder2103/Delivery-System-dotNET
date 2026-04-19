@@ -97,11 +97,11 @@
                                 <td>
                                     @if (o.ShipStatus == "Đã giao")
                                     {
-                                        <span class="tr-badge tr-badge-arrived" style="background:#e6f4ea; color:#1e8e3e; border:none;">✅ Đã giao</span>
+                                        <span class="tr-badge tr-badge-delivered">✅ Đã giao</span>
                                     }
                                     else if (o.ShipStatus == "Đã đến")
                                     {
-                                        <span class="tr-badge" style="background:#e8f0fe; color:#1a73e8; border:none;">📥 Đã đến</span>
+                                        <span class="tr-badge tr-badge-arrived-new">📥 Đã đến</span>
                                     }
                                     else
                                     {
@@ -111,8 +111,8 @@
                                 <td>
                                     @if (!string.IsNullOrEmpty(o.StaffReceive))
                                     {
-                                        <div class="tr-font-bold" style="color: #475569;">@o.StaffReceive</div>
-                                        <div style="font-size: 0.7rem; color: #64748b;">@o.ReceiveDate</div>
+                                        <div class="tr-staff-id-small">@o.StaffReceive</div>
+                                        <div class="tr-time-small">@o.ReceiveDate</div>
                                     }
                                     else
                                     {
@@ -120,14 +120,14 @@
                                     }
                                 </td>
                                 <td><span class="tr-price-tr">@(o.Tr?.ToString("N0") ?? "0")</span></td>
-                                <td><span class="tr-price-ct">@(o.Ct?.ToString("N0") ?? "0")</span></td>
+                               <td><span class="tr-price-ct">@(o.Ct?.ToString("N0") ?? "0")</span></td>
                             </tr>
                         }
                     </tbody>
                     <tfoot>
                         <tr class="tr-summary-row">
                             <td colspan="8" class="tr-summary-label">Tổng cộng (TR + CT):</td>
-                            <td colspan="2" class="tr-summary-value tr-value-total-all" style="color: #1a73e8; font-weight: 800; font-size: 20px; text-align: center;">
+                            <td colspan="2" class="tr-summary-value tr-value-total-highlight">
                                 @((totalTr + totalCt).ToString("N0"))
                             </td>
                         </tr>

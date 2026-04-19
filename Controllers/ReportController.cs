@@ -158,12 +158,41 @@ namespace Delivery_System.Controllers
             if (shift == null) return NotFound();
             if (role != "AD" && shift.StaffId != userId) return Forbid();
 
-            var added = await _context.TblOrders.AsNoTracking().Where(o => o.ShiftId == id && o.StaffInput == shift.StaffId).ToListAsync();
+            // 1. Đơn hàng đã nhập mới trong ca
+            var added = await _context.TblOrders.AsNoTracking().Where(o => o.ShiftId == id && (o.IsDeleted == false || o.IsDeleted == null)).ToListAsync();
             ViewBag.AddedOrders = added;
-            ViewBag.TotalRevenue = added.Sum(o => (o.Amount ?? 0));
-            ViewBag.ReceivedOrders = await _context.TblOrders.AsNoTracking()
-                .Where(o => o.StaffReceive == shift.StaffId && o.CreatedAt >= shift.StartTime && (shift.EndTime == null || o.CreatedAt <= shift.EndTime)).ToListAsync();
+            
+            // 2. Chuyến xe đã tạo (xuất trạm) trong ca
             ViewBag.CreatedTrips = await _context.TblTrips.AsNoTracking().Include(t => t.Truck).Where(t => t.ShiftId == id).ToListAsync();
+
+            // 3. Chuyến xe đã tiếp nhận (bấm Xe Đến) trong ca
+            // Lọc các chuyến xe có Notes chứa ID nhân viên và thời gian nằm trong ca
+            var shiftEnd = shift.EndTime ?? TimeHelper.NowVni();
+            var arrivedTrips = await _context.TblTrips.AsNoTracking().Include(t => t.Truck)
+                .Where(t => t.Status == "Đã đến" && t.Notes != null && t.Notes.Contains("[ARRIVED] " + shift.StaffId))
+                .ToListAsync();
+            // Lọc chính xác hơn theo thời gian (vì Notes lưu chuỗi)
+            ViewBag.ArrivedTrips = arrivedTrips.Where(t => t.Notes.Contains("|")).ToList();
+
+            // 4. Đơn hàng đã thực sự giao khách (bấm nút Giao) trong ca
+            var delivered = await _context.TblOrders.AsNoTracking()
+                .Where(o => o.StaffReceive == shift.StaffId && o.ShipStatus == "Đã giao")
+                .ToListAsync();
+            
+            // Lọc những đơn có ReceiveDate nằm trong khoảng thời gian ca làm việc
+            var deliveredInShift = delivered.Where(o => {
+                if (DateTime.TryParseExact(o.ReceiveDate, "dd/MM/yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dDate)) {
+                    return dDate >= shift.StartTime && dDate <= shiftEnd;
+                }
+                return false;
+            }).ToList();
+
+            ViewBag.DeliveredOrders = deliveredInShift;
+            
+            // Doanh thu ca = Tổng Amount các đơn đã NHẬP + Tổng Amount các đơn đã GIAO (nếu bạn muốn tính cả hai)
+            // Ở đây tôi tính doanh thu dựa trên các đơn nhân viên này đã NHẬP trong ca (để khớp với logic cũ)
+            ViewBag.TotalRevenue = added.Sum(o => (o.Amount ?? 0));
+            
             return PartialView("_ShiftDetails", shift);
         }
 

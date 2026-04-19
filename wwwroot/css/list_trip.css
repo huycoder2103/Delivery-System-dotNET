@@ -240,6 +240,38 @@
     background: var(--tr-primary);
     color: white;
 }
+
+/* --- ViewGoods Detailed Styles --- */
+.tr-badge-delivered {
+    background: #e6f4ea !important;
+    color: #1e8e3e !important;
+    border: none !important;
+}
+
+.tr-badge-arrived-new {
+    background: #e8f0fe !important;
+    color: #1a73e8 !important;
+    border: none !important;
+}
+
+.tr-staff-id-small {
+    font-weight: 800;
+    color: #475569;
+    font-size: 0.85rem;
+}
+
+.tr-time-small {
+    font-size: 0.7rem;
+    color: #64748b;
+}
+
+.tr-value-total-highlight {
+    color: #1a73e8 !important;
+    font-weight: 800 !important;
+    font-size: 1.25rem !important;
+    text-align: center !important;
+}
+
 .tr-summary-row { background-color: #f8fafc; border-top: 2px solid #e2e8f0; font-weight: 600; }
 .tr-summary-label { text-align: right; color: #64748b; text-transform: uppercase; font-size: 16px; padding: 12px 20px; letter-spacing: 1px; }
 .tr-summary-value {

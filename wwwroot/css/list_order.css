@@ -432,7 +432,7 @@
 }
 
 .od-col-act {
-    width: 80px;
+    width: 110px;
 }
 
 /* Route & Customer Styling */
@@ -482,6 +482,68 @@
 .od-staff {
     font-size: 12px;
 }
+.od-badge-delivered {
+    background: #e6f4ea;
+    color: #1e8e3e;
+    border: 1px solid #34a853;
+}
+
+/* --- Table Styles --- */
+.od-table-empty-state {
+    padding: 50px;
+    color: #999;
+    text-align: center;
+}
+
+.od-col-stt { width: 30px; text-align: center; }
+
+.od-btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.od-btn-view-trip {
+    background: #e0f2f1;
+    color: #00796b;
+}
+
+.od-delivery-status-box {
+    cursor: default;
+    opacity: 0.9;
+}
+
+/* --- Pagination --- */
+.od-page-info-box {
+    padding: 0 15px;
+}
+
+/* --- Forms Helpers --- */
+.od-input-readonly-highlight {
+    background: #e9ecef !important;
+    font-weight: bold !important;
+    color: #1a73e8 !important;
+}
+
+.od-text-danger { color: #d93025 !important; }
+.od-mb-20 { margin-bottom: 20px !important; }
+.od-mt-20 { margin-top: 20px !important; }
+
+.od-flex-05 { flex: 0.5 !important; }
+.od-flex-15 { flex: 1.5 !important; }
+.od-flex-2 { flex: 2 !important; }
+
+.od-badge-pending-red {
+    background: #fce8e6;
+    color: #d93025;
+}
+
+
+
+.od-staff-id-text {
+    color: #475569;
+    font-weight: 600;
+}
+
 /* --- Forms & Validation --- */
 .od-form-body {
     padding: 20px;
