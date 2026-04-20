@@ -74,6 +74,7 @@ builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.C
     });
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<Delivery_System.Services.IOrderService, Delivery_System.Services.OrderService>();
 
 var app = builder.Build();
 

@@ -13,12 +13,14 @@ namespace Delivery_System.Controllers
         private readonly AppDbContext _context;
         private readonly IMemoryCache _cache;
         private readonly IHubContext<DeliveryHub> _hubContext;
+        private readonly Delivery_System.Services.IOrderService _orderService;
 
-        public OrderController(AppDbContext context, IMemoryCache cache, IHubContext<DeliveryHub> hubContext)
+        public OrderController(AppDbContext context, IMemoryCache cache, IHubContext<DeliveryHub> hubContext, Delivery_System.Services.IOrderService orderService)
         {
             _context = context;
             _cache = cache;
             _hubContext = hubContext;
+            _orderService = orderService;
         }
 
         private async Task<List<TblStation>> GetCachedStationsAsync()
@@ -191,51 +193,11 @@ namespace Delivery_System.Controllers
                 return (source == "ship") ? RedirectToAction("List") : RedirectToAction("List", "Trip");
             }
 
-            var trip = await _context.VwTripLists.AsNoTracking().FirstOrDefaultAsync(t => t.TripId == tripId);
-            if (trip == null)
-            {
-                TempData["ErrorMessage"] = "Chuyến xe không tồn tại!";
-                return (source == "ship") ? RedirectToAction("List") : RedirectToAction("List", "Trip");
-            }
-
             var userStationName = User.GetStationName();
+            var result = await _orderService.AssignOrdersToTripAsync(orderIds, tripId, userId, role, userStationName);
 
-            var strategy = _context.Database.CreateExecutionStrategy();
-            await strategy.ExecuteAsync(async () => {
-                using var transaction = await _context.Database.BeginTransactionAsync();
-                try {
-                    var orders = await _context.TblOrders.Where(o => orderIds.Contains(o.OrderId)).ToListAsync();
-                    int successCount = 0;
-                    foreach (var order in orders)
-                    {
-                        // Kiểm tra khớp trạm của đơn hàng và chuyến xe
-                        if (order.SendStation != trip.Departure || order.ReceiveStation != trip.Destination)
-                        {
-                            continue; 
-                        }
-
-                        // QUYỀN: Admin hoặc nhân viên thuộc trạm gửi của đơn hàng đó
-                        if (role == "AD" || order.SendStation == userStationName) {
-                            order.TripId = tripId;
-                            order.ShipStatus = "Đang chuyển";
-                            successCount++;
-                        }
-                    }
-                    await _context.SaveChangesAsync();
-                    await transaction.CommitAsync();
-                    if (successCount < orders.Count)
-                    {
-                        TempData["SuccessMessage"] = $"Đã gán thành công {successCount} đơn hàng. Một số đơn bị bỏ qua do không khớp trạm gửi/nhận.";
-                    }
-                    else
-                    {
-                        TempData["SuccessMessage"] = $"Đã gán thành công {successCount} đơn hàng vào chuyến xe {tripId}";
-                    }
-                } catch (Exception ex) {
-                    await transaction.RollbackAsync();
-                    TempData["ErrorMessage"] = "Có lỗi xảy ra: " + ex.Message;
-                }
-            });
+            if (result.SuccessCount > 0) TempData["SuccessMessage"] = result.Message;
+            else TempData["ErrorMessage"] = result.Message;
             
             return (source == "ship") ? RedirectToAction("List") : RedirectToAction("AssignGoods", "Trip", new { id = tripId });
         }
@@ -391,81 +353,42 @@ namespace Delivery_System.Controllers
         {
             var userId = User.GetUserId();
             var role = User.GetRole();
-            var vniTime = TimeHelper.NowVni();
-
-            // TỐI ƯU: Lấy trạm từ Cookie
             var userStationName = User.GetStationName();
 
-            // Ràng buộc trạm gửi: Nếu là NV thì trạm gửi PHẢI là trạm của họ
-            if (role != "AD" && !string.IsNullOrEmpty(userStationName))
-            {
-                order.SendStation = userStationName;
-            }
-
-            // (Phần logic tạo mã giữ nguyên...)
-            try {
-                var lastOrder = await _context.TblOrders.AsNoTracking().IgnoreQueryFilters()
-                    .Where(o => o.OrderId.StartsWith("ORD-"))
-                    .OrderByDescending(o => o.OrderId)
-                    .FirstOrDefaultAsync();
-
-                int nextIdNum = 1;
-                if (lastOrder != null && int.TryParse(lastOrder.OrderId.Replace("ORD-", ""), out int lastId)) 
-                    nextIdNum = lastId + 1;
-
-                order.OrderId = "ORD-" + nextIdNum.ToString("D6");
-            } catch {
-                order.OrderId = "ORD-" + DateTime.Now.Ticks.ToString().Substring(10);
-            }
-
+            // Xóa OrderId khỏi ModelState vì sẽ được sinh tự động trong Service
             ModelState.Remove("OrderId");
-            order.Tr ??= 0;
-            order.Ct ??= 0;
-            if (string.IsNullOrWhiteSpace(order.SenderName)) order.SenderName = "";
-            if (string.IsNullOrWhiteSpace(order.ReceiverName)) order.ReceiverName = "";
-
-            var activeShift = await _context.TblWorkShifts
-                .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
 
             if (!ModelState.IsValid)
             {
+                var activeShift = await _context.TblWorkShifts
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
                 ViewBag.HasActiveShift = (role == "AD" || activeShift != null);
                 ViewBag.StationList = await GetCachedStationsAsync();
                 ViewBag.UserStationName = userStationName;
                 return View(order);
             }
 
-            if (role != "AD" && activeShift == null)
+            var result = await _orderService.CreateOrderAsync(order, userId, role, userStationName);
+
+            if (result.Success)
             {
-                TempData["ErrorMessage"] = "Bạn chưa bắt đầu ca làm việc!";
-                ViewBag.HasActiveShift = false;
-                ViewBag.StationList = await GetCachedStationsAsync();
-                return View(order);
-            }
-
-            // Tính toán tổng tiền (Amount) từ Tr và Ct trước khi lưu
-            order.Amount = (order.Tr ?? 0) + (order.Ct ?? 0);
-
-            try {
-                order.StaffInput = userId;
-                order.ShipStatus = "Chưa Chuyển";
-                order.IsDeleted = false;
-                order.CreatedAt = vniTime;
-                order.ShiftId = activeShift?.ShiftId;
-
-                _context.TblOrders.Add(order);
-                await _context.SaveChangesAsync();
-
-                await _hubContext.Clients.All.SendAsync("UpdateOrderList");
-                TempData["SuccessMessage"] = "Thêm đơn hàng thành công!";
+                TempData["SuccessMessage"] = result.Message;
                 return RedirectToAction("List");
             }
-            catch (Exception ex)
+            else
             {
-                ModelState.AddModelError("", "Lỗi lưu Database: " + ex.Message);
-                ViewBag.HasActiveShift = (role == "AD" || activeShift != null);
+                if (result.Message.Contains("ca làm việc"))
+                {
+                    TempData["ErrorMessage"] = result.Message;
+                    ViewBag.HasActiveShift = false;
+                }
+                else
+                {
+                    ModelState.AddModelError("", result.Message);
+                }
                 ViewBag.StationList = await GetCachedStationsAsync();
+                ViewBag.UserStationName = userStationName;
                 return View(order);
             }
         }
