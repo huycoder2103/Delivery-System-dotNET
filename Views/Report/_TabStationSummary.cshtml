@@ -1,0 +1,77 @@
+@model IEnumerable<Delivery_System.Controllers.ReportController.StationRevenueViewModel>
+
+<main class="rp-card">
+    <div class="rp-card-title">
+        <h2>📊 Báo Cáo Doanh Thu Theo Trạm</h2>
+    </div>
+
+    <div class="rp-card rp-card-highlight">
+        <form onsubmit="loadTabContent('station-summary', event)" class="rp-filter-bar">
+            <div class="rp-filter-group">
+                <label class="rp-filter-label">Từ Ngày</label>
+                <input type="date" name="fromDate" class="rp-filter-input" value="@ViewBag.FromDate" />
+            </div>
+            <div class="rp-filter-group">
+                <label class="rp-filter-label">Đến Ngày</label>
+                <input type="date" name="toDate" class="rp-filter-input" value="@ViewBag.ToDate" />
+            </div>
+            <button type="submit" class="rp-btn rp-btn-primary">🔍 TỔNG HỢP DỮ LIỆU</button>
+        </form>
+    </div>
+
+    <div class="rp-table-wrap">
+        <table class="rp-table">
+            <thead>
+                <tr>
+                    <th class="rp-text-center">Hạng</th>
+                    <th>Tên Trạm Trung Chuyển</th>
+                    <th class="rp-text-right">(TR)</th>
+                    <th class="rp-text-right">(CT)</th>
+                    <th class="rp-text-right">TỔNG THỰC THU</th>
+                    <th style="width: 150px;">Tỷ Trọng</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int rank = 1;
+                    decimal totalSystem = Model.Sum(x => x.TotalRevenue);
+                }
+                @foreach (var s in Model)
+                {
+                    decimal percent = totalSystem > 0 ? (s.TotalRevenue / totalSystem) * 100 : 0;
+                    <tr>
+                        <td class="rp-text-center">
+                            @if (rank == 1) { <span class="rp-badge rp-badge-warning rp-rank-medal">🥇 1</span> }
+                            else if (rank == 2) { <span class="rp-badge rp-badge-info rp-rank-medal">🥈 2</span> }
+                            else if (rank == 3) { <span class="rp-badge rp-badge-success rp-rank-medal">🥉 3</span> }
+                            else { <strong>@rank</strong> }
+                        </td>
+                        <td>
+                            <div class="rp-staff-name">@s.StationName</div>
+                            <div class="rp-staff-id">Hệ thống trạm Delivery</div>
+                        </td>
+                        <td class="rp-text-right rp-font-bold">@s.TotalPrepaid.ToString("N0") K</td>
+                        <td class="rp-text-right rp-font-bold">@s.TotalCOD.ToString("N0") K</td>
+                        <td class="rp-text-right rp-font-bold rp-text-revenue">@s.TotalRevenue.ToString("N0") K</td>
+                        <td>
+                            <div class="rp-progress-container">
+                                <div class="rp-progress-bar" style="width: @(percent.ToString("0"))%;"></div>
+                            </div>
+                            <div class="rp-progress-text">@percent.ToString("0.0")%</div>
+                        </td>
+                    </tr>
+                    rank++;
+                }
+            </tbody>
+            <tfoot>
+                <tr class="rp-table-footer-summary">
+                    <td colspan="2" class="rp-text-right rp-font-bold">TỔNG TOÀN HỆ THỐNG:</td>
+                    <td class="rp-text-right rp-font-bold">@Model.Sum(x => x.TotalPrepaid).ToString("N0") K</td>
+                    <td class="rp-text-right rp-font-bold">@Model.Sum(x => x.TotalCOD).ToString("N0") K</td>
+                    <td class="rp-text-right rp-font-bold rp-text-revenue-large">@totalSystem.ToString("N0") K</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</main>

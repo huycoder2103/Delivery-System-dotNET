@@ -14,9 +14,21 @@
             👤 <strong>@Model.Staff.FullName (@Model.StaffId)</strong> | ⏱️ @Model.StartTime.ToString("HH:mm dd/MM") - @(Model.EndTime?.ToString("HH:mm dd/MM") ?? "Đang trực")
         </div>
     </div>
-    <div class="rp-modal-header-right">
-        <div class="rp-stat-label-mini">Doanh thu nhập hàng</div>
-        <div class="rp-stat-value-large">@ViewBag.TotalRevenue.ToString("N0") K</div>
+    <div class="rp-modal-header-right rp-text-right">
+        <div class="rp-d-flex rp-gap-1">
+            <div class="rp-stat-divider">
+                <div class="rp-stat-label-mini">Cước Gửi (TR)</div>
+                <div class="rp-stat-value-large rp-stat-prepaid">@ViewBag.TotalPrepaid.ToString("N0") K</div>
+            </div>
+            <div class="rp-stat-divider rp-stat-padding-left">
+                <div class="rp-stat-label-mini">Tiền COD (CT)</div>
+                <div class="rp-stat-value-large rp-stat-cod">@ViewBag.TotalCOD.ToString("N0") K</div>
+            </div>
+            <div class="rp-stat-padding-left">
+                <div class="rp-stat-label-mini">TỔNG THỰC THU</div>
+                <div class="rp-stat-value-large rp-stat-total">@ViewBag.TotalRevenue.ToString("N0") K</div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -48,7 +60,7 @@
                         <th>Mã Đơn</th>
                         <th>Tên Hàng</th>
                         <th>Đích Đến</th>
-                        <th>Tổng Tiền</th>
+                        <th class="rp-text-right">Cước Gửi (TR)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,7 +69,7 @@
                             <td><a href="@Url.Action("List", "Order", new { searchPhone = o.OrderId })" class="rp-detail-link">@o.OrderId</a></td>
                             <td class="rp-font-bold">@o.ItemName</td>
                             <td>@o.ReceiveStation</td>
-                            <td class="rp-text-primary rp-font-bold">@((o.Amount ?? 0).ToString("N0"))k</td>
+                            <td class="rp-text-right rp-font-bold rp-text-primary">@((o.Tr ?? 0).ToString("N0")) K</td>
                         </tr>
                     }
                 </tbody>
@@ -97,7 +109,7 @@
                     @foreach (var t in arrivedTrips) {
                         var parts = t.Notes?.Replace("[ARRIVED] ", "").Split('|');
                         <tr>
-                            <td><a href="@Url.Action("List", "Trip", new { searchTruck = t.TripId })" class="rp-detail-link">@t.TripId</a></td>
+                            <td><a href="@Url.Action("ArrivalList", "Trip", new { searchTruck = t.TripId })" class="rp-detail-link">@t.TripId</a></td>
                             <td><strong>@t.Truck?.LicensePlate</strong></td>
                             <td>@t.Departure</td>
                             <td class="rp-text-success">@(parts?.Length > 1 ? parts[1].Trim() : "N/A")</td>
@@ -117,7 +129,7 @@
                         <th>Mã Đơn</th>
                         <th>Tên Hàng</th>
                         <th>Người Nhận</th>
-                        <th>Giờ Giao</th>
+                        <th class="rp-text-right">Tiền COD (CT)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -126,7 +138,7 @@
                             <td><a href="@Url.Action("List", "Order", new { searchPhone = o.OrderId })" class="rp-detail-link">@o.OrderId</a></td>
                             <td class="rp-font-bold">@o.ItemName</td>
                             <td>@o.ReceiverName</td>
-                            <td class="rp-text-success rp-font-bold">@o.ReceiveDate</td>
+                            <td class="rp-text-right rp-font-bold rp-text-success">@((o.Ct ?? 0).ToString("N0")) K</td>
                         </tr>
                     }
                 </tbody>
@@ -134,3 +146,4 @@
         } else { <div class="rp-empty-state">Không có đơn hàng nào được giao cho khách.</div> }
     </div>
 </div>
+

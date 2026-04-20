@@ -252,6 +252,16 @@ namespace Delivery_System.Controllers
             var trip = await _context.TblTrips.FindAsync(id);
             if (trip == null) return NotFound();
 
+            var activeShift = await _context.TblWorkShifts
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
+
+            if (role != "AD" && activeShift == null)
+            {
+                TempData["ErrorMessage"] = "Bạn chưa bắt đầu ca làm việc! Không thể xác nhận xe cập bến.";
+                return RedirectToAction("ArrivalList");
+            }
+
             // TỐI ƯU: Lấy trạm từ Cookie
             if (role != "AD")
             {

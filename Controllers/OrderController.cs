@@ -34,13 +34,19 @@ namespace Delivery_System.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> List(string? sendStationFilter, string? receiveStationFilter, string? searchPhone, string? dateFilter, string statusFilter = "all", int page = 1)
+        public async Task<IActionResult> List(string? sendStationFilter, string? receiveStationFilter, string? searchPhone, string? searchStaff, string? dateFilter, string statusFilter = "all", int page = 1)
         {
             const int pageSize = 10;
             if (page < 1) page = 1;
 
             ViewBag.StationList = await GetCachedStationsAsync();
             var query = _context.TblOrders.AsNoTracking();
+
+            // Lọc theo mã nhân viên tạo đơn
+            if (!string.IsNullOrEmpty(searchStaff))
+            {
+                query = query.Where(o => o.StaffInput == searchStaff);
+            }
 
             // Logic lọc dữ liệu theo 5 trạng thái
             if (statusFilter == "waiting") 
@@ -110,6 +116,7 @@ namespace Delivery_System.Controllers
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
             ViewBag.SearchPhone = searchPhone;
+            ViewBag.SearchStaff = searchStaff;
             ViewBag.CurrentStatus = statusFilter;
             ViewBag.SendStationFilter = sendStationFilter;
             ViewBag.ReceiveStationFilter = receiveStationFilter;
@@ -487,6 +494,16 @@ namespace Delivery_System.Controllers
             var userId = User.GetUserId();
             var role = User.GetRole();
             var userStation = User.GetStationName();
+
+            // Kiểm tra ca làm việc
+            var activeShift = await _context.TblWorkShifts
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
+
+            if (role != "AD" && activeShift == null)
+            {
+                return Json(new { success = false, message = "Bạn chưa bắt đầu ca làm việc! Không thể thực hiện giao hàng." });
+            }
 
             var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == id);
             if (order == null) return Json(new { success = false, message = "Không tìm thấy đơn hàng." });

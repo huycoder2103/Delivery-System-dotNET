@@ -43,21 +43,39 @@ namespace Delivery_System.Controllers
             {
                 var startOfMonth = new DateTime(vniNow.Year, vniNow.Month, 1);
                 var sevenDaysAgo = vniNow.Date.AddDays(-6);
+                string dateStr = selectedDate.ToString("dd/MM/yyyy");
 
+                // 1. Tiền cước gửi thu được trong ngày (TR) - Tính theo ngày tạo
+                var prepaidDate = await _context.TblOrders.AsNoTracking()
+                    .Where(o => (o.IsDeleted == false || o.IsDeleted == null) && o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow)
+                    .SumAsync(o => o.Tr ?? 0);
+
+                // 2. Tiền COD/Cước thu khi giao trong ngày (CT) - Tính theo ngày giao (Lọc chuỗi dd/MM/yyyy)
+                var codDate = await _context.TblOrders.AsNoTracking()
+                    .Where(o => (o.IsDeleted == false || o.IsDeleted == null) && o.ShipStatus == "Đã giao" && o.ReceiveDate != null && o.ReceiveDate.StartsWith(dateStr))
+                    .SumAsync(o => o.Ct ?? 0);
+
+                // 3. Số lượng đơn nhập mới
+                var ordersCount = await _context.TblOrders.AsNoTracking()
+                    .Where(o => (o.IsDeleted == false || o.IsDeleted == null) && o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow)
+                    .CountAsync();
+
+                ViewBag.RevenueDateVal = prepaidDate + codDate; // Tổng tiền mặt THỰC THU trong ngày
+                ViewBag.TotalPrepaidAD = prepaidDate;
+                ViewBag.TotalCODAD = codDate;
+                ViewBag.OrdersDateVal = ordersCount;
+
+                // Thống kê Doanh thu (Accrual basis - Ghi nhận ngay khi tạo đơn)
                 var stats = await _context.TblOrders.AsNoTracking()
                     .Where(o => o.IsDeleted == false || o.IsDeleted == null)
                     .GroupBy(o => 1)
                     .Select(g => new {
-                        RevDate = g.Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow).Sum(o => (o.Amount ?? 0)),
-                        OrderDate = g.Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow).Count(),
-                        RevWeekly = g.Where(o => o.CreatedAt >= sevenDaysAgo).Sum(o => (o.Amount ?? 0)),
-                        RevMonthly = g.Where(o => o.CreatedAt >= startOfMonth).Sum(o => (o.Amount ?? 0)),
-                        RevTotal = g.Sum(o => (o.Amount ?? 0))
+                        RevWeekly = g.Where(o => o.CreatedAt >= sevenDaysAgo).Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)),
+                        RevMonthly = g.Where(o => o.CreatedAt >= startOfMonth).Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)),
+                        RevTotal = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0))
                     })
                     .FirstOrDefaultAsync();
 
-                ViewBag.RevenueDateVal = stats?.RevDate ?? 0m;
-                ViewBag.OrdersDateVal = stats?.OrderDate ?? 0;
                 ViewBag.RevenueWeekly = stats?.RevWeekly ?? 0m;
                 ViewBag.RevenueMonthly = stats?.RevMonthly ?? 0m;
                 ViewBag.RevenueTotalSystem = stats?.RevTotal ?? 0m;
@@ -65,7 +83,7 @@ namespace Delivery_System.Controllers
                 var weeklyData = await _context.TblOrders.AsNoTracking()
                     .Where(o => o.CreatedAt >= sevenDaysAgo && (o.IsDeleted == false || o.IsDeleted == null))
                     .GroupBy(o => o.CreatedAt!.Value.Date)
-                    .Select(g => new { Day = g.Key, Total = g.Sum(o => (o.Amount ?? 0)) })
+                    .Select(g => new { Day = g.Key, Total = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)) })
                     .ToListAsync();
 
                 var labels = new List<string>();
@@ -80,22 +98,28 @@ namespace Delivery_System.Controllers
             }
             else
             {
-                var stats = await _context.TblOrders.AsNoTracking()
-                    .Where(o => o.StaffInput == userId && (o.IsDeleted == false || o.IsDeleted == null))
-                    .GroupBy(o => 1)
-                    .Select(g => new {
-                        RevDate = g.Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow).Sum(o => (o.Amount ?? 0)),
-                        OrderDate = g.Where(o => o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow).Count(),
-                        TotalCount = g.Count(),
-                        TotalRev = g.Sum(o => (o.Amount ?? 0))
-                    })
-                    .FirstOrDefaultAsync();
+                string dateStr = selectedDate.ToString("dd/MM/yyyy");
 
-                ViewBag.RevenueDateVal = stats?.RevDate ?? 0m;
-                ViewBag.OrdersDateVal = stats?.OrderDate ?? 0;
-                ViewBag.DeliveredOrders = stats?.TotalCount ?? 0;
-                ViewBag.TotalRevenue = stats?.TotalRev ?? 0m;
+                // 1. Tiền cước thu từ đơn gửi (TR) - Theo StaffInput & CreatedAt
+                var prepaidStats = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.StaffInput == userId && (o.IsDeleted == false || o.IsDeleted == null) && o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow)
+                    .SumAsync(o => o.Tr ?? 0);
+
+                // 2. Tiền COD/Cước thu khi giao (CT) - Theo StaffReceive & ReceiveDate
+                var codStats = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.StaffReceive == userId && o.ShipStatus == "Đã giao" && (o.IsDeleted == false || o.IsDeleted == null) && o.ReceiveDate != null && o.ReceiveDate.StartsWith(dateStr))
+                    .SumAsync(o => o.Ct ?? 0);
+
+                var orderCount = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.StaffInput == userId && (o.IsDeleted == false || o.IsDeleted == null) && o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow)
+                    .CountAsync();
+
+                ViewBag.TotalPrepaid = prepaidStats;
+                ViewBag.TotalCOD = codStats;
+                ViewBag.CashHolding = prepaidStats + codStats;
+                ViewBag.OrdersDateVal = orderCount;
                 ViewBag.CurrentShift = await _context.TblWorkShifts.AsNoTracking().FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE");
+                
                 return PartialView("_TabSummaryStaff");
             }
         }
@@ -108,25 +132,15 @@ namespace Delivery_System.Controllers
             ViewBag.StationList = await _context.TblStations.AsNoTracking().Where(s => s.IsActive == true).ToListAsync();
 
             var query = _context.TblWorkShifts.AsNoTracking().Include(s => s.Staff).ThenInclude(u => u.Station).AsQueryable();
-            
-            // NẾU LÀ NHÂN VIÊN: Chỉ được xem ca của chính mình
-            if (role != "AD") {
-                query = query.Where(s => s.StaffId == userId);
-            }
+            if (role != "AD") query = query.Where(s => s.StaffId == userId);
 
             bool isSearch = !string.IsNullOrEmpty(fromDate) || !string.IsNullOrEmpty(toDate) || stationId.HasValue || !string.IsNullOrEmpty(searchStaff);
             ViewBag.IsSearchResult = isSearch;
 
-            if (!string.IsNullOrEmpty(fromDate)) {
-                DateTime start = DateTime.Parse(fromDate).Date;
-                query = query.Where(s => s.StartTime >= start);
-            }
-            if (!string.IsNullOrEmpty(toDate)) {
-                DateTime end = DateTime.Parse(toDate).Date.AddDays(1);
-                query = query.Where(s => s.StartTime < end);
-            }
+            DateTime? start = null; DateTime? end = null;
+            if (!string.IsNullOrEmpty(fromDate)) { start = DateTime.Parse(fromDate).Date; query = query.Where(s => s.StartTime >= start); }
+            if (!string.IsNullOrEmpty(toDate)) { end = DateTime.Parse(toDate).Date.AddDays(1); query = query.Where(s => s.StartTime < end); }
 
-            // CHỈ ADMIN MỚI ĐƯỢC LỌC THEO TRẠM HOẶC NHÂN VIÊN KHÁC
             if (role == "AD") {
                 if (stationId.HasValue) query = query.Where(s => s.Staff.StationId == stationId.Value);
                 if (!string.IsNullOrEmpty(searchStaff)) query = query.Where(s => s.StaffId.Contains(searchStaff) || s.Staff.FullName.Contains(searchStaff));
@@ -134,19 +148,38 @@ namespace Delivery_System.Controllers
 
             var shifts = await query.OrderByDescending(s => s.StartTime).Take(isSearch ? 100 : 20).ToListAsync();
             var shiftIds = shifts.Select(s => s.ShiftId).ToList();
+            var staffIds = shifts.Select(s => s.StaffId).Distinct().ToList();
 
-            var shiftRevenues = await _context.TblOrders.AsNoTracking()
-                .Where(o => o.ShiftId.HasValue && shiftIds.Contains(o.ShiftId.Value) && (o.IsDeleted == false || o.IsDeleted == null))
-                .GroupBy(o => o.ShiftId)
-                .Select(g => new { ShiftId = g.Key!.Value, Total = g.Sum(o => (o.Amount ?? 0)) })
-                .ToDictionaryAsync(x => x.ShiftId, x => x.Total);
+            // 1. LẤY BATCH TẤT CẢ ĐƠN HÀNG CÓ LIÊN QUAN ĐẾN NHÂN VIÊN TRONG DANH SÁCH
+            var allOrdersInPeriod = await _context.TblOrders.AsNoTracking()
+                .Where(o => (staffIds.Contains(o.StaffInput!) || staffIds.Contains(o.StaffReceive!)) && (o.IsDeleted == false || o.IsDeleted == null))
+                .Select(o => new { o.StaffInput, o.StaffReceive, o.CreatedAt, o.ReceiveDate, o.Tr, o.Ct, o.ShipStatus })
+                .ToListAsync();
 
-            foreach (var s in shifts) s.Revenue = shiftRevenues.GetValueOrDefault(s.ShiftId, 0);
+            // 2. PHÂN BỔ DỮ LIỆU TRONG BỘ NHỚ
+            foreach (var s in shifts) {
+                var sEndTime = s.EndTime ?? TimeHelper.NowVni();
+                
+                // Tiền cước gửi (TR) - Thu khi nhập đơn
+                decimal prepaid = allOrdersInPeriod
+                    .Where(o => o.StaffInput == s.StaffId && o.CreatedAt >= s.StartTime.AddMinutes(-1) && o.CreatedAt <= sEndTime.AddMinutes(1))
+                    .Sum(o => o.Tr ?? 0);
+
+                // Tiền COD (CT) - Thu khi giao đơn
+                decimal cod = allOrdersInPeriod
+                    .Where(o => o.StaffReceive == s.StaffId && o.ShipStatus == "Đã giao")
+                    .Where(o => {
+                        if (DateTime.TryParseExact(o.ReceiveDate, "dd/MM/yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dDate))
+                            return dDate >= s.StartTime.AddMinutes(-1) && dDate <= sEndTime.AddMinutes(1);
+                        return false;
+                    })
+                    .Sum(o => o.Ct ?? 0);
+
+                s.Revenue = prepaid + cod;
+            }
             
-            ViewBag.FromDate = fromDate;
-            ViewBag.ToDate = toDate;
-            ViewBag.SearchStaff = searchStaff;
-            ViewBag.SelectedStationId = stationId;
+            ViewBag.FromDate = fromDate; ViewBag.ToDate = toDate;
+            ViewBag.SearchStaff = searchStaff; ViewBag.SelectedStationId = stationId;
 
             return PartialView("_TabActivity", shifts);
         }
@@ -158,42 +191,120 @@ namespace Delivery_System.Controllers
             if (shift == null) return NotFound();
             if (role != "AD" && shift.StaffId != userId) return Forbid();
 
-            // 1. Đơn hàng đã nhập mới trong ca
-            var added = await _context.TblOrders.AsNoTracking().Where(o => o.ShiftId == id && (o.IsDeleted == false || o.IsDeleted == null)).ToListAsync();
-            ViewBag.AddedOrders = added;
+            // 1. Đơn hàng đã NHẬP MỚI trong ca (Cước gửi)
+            var addedOrders = await _context.TblOrders.AsNoTracking()
+                .Where(o => o.ShiftId == id && (o.IsDeleted == false || o.IsDeleted == null))
+                .ToListAsync();
+            ViewBag.AddedOrders = addedOrders;
+            ViewBag.TotalPrepaid = addedOrders.Sum(o => o.Tr ?? 0);
             
             // 2. Chuyến xe đã tạo (xuất trạm) trong ca
             ViewBag.CreatedTrips = await _context.TblTrips.AsNoTracking().Include(t => t.Truck).Where(t => t.ShiftId == id).ToListAsync();
 
             // 3. Chuyến xe đã tiếp nhận (bấm Xe Đến) trong ca
-            // Lọc các chuyến xe có Notes chứa ID nhân viên và thời gian nằm trong ca
-            var shiftEnd = shift.EndTime ?? TimeHelper.NowVni();
-            var arrivedTrips = await _context.TblTrips.AsNoTracking().Include(t => t.Truck)
+            var rawArrivedTrips = await _context.TblTrips.AsNoTracking().Include(t => t.Truck)
                 .Where(t => t.Status == "Đã đến" && t.Notes != null && t.Notes.Contains("[ARRIVED] " + shift.StaffId))
                 .ToListAsync();
-            // Lọc chính xác hơn theo thời gian (vì Notes lưu chuỗi)
-            ViewBag.ArrivedTrips = arrivedTrips.Where(t => t.Notes.Contains("|")).ToList();
 
-            // 4. Đơn hàng đã thực sự giao khách (bấm nút Giao) trong ca
-            var delivered = await _context.TblOrders.AsNoTracking()
-                .Where(o => o.StaffReceive == shift.StaffId && o.ShipStatus == "Đã giao")
-                .ToListAsync();
-            
-            // Lọc những đơn có ReceiveDate nằm trong khoảng thời gian ca làm việc
-            var deliveredInShift = delivered.Where(o => {
-                if (DateTime.TryParseExact(o.ReceiveDate, "dd/MM/yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dDate)) {
-                    return dDate >= shift.StartTime && dDate <= shiftEnd;
-                }
-                return false;
-            }).ToList();
+            var shiftEnd = shift.EndTime ?? TimeHelper.NowVni();
+            var arrivedInShift = new List<TblTrip>();
 
-            ViewBag.DeliveredOrders = deliveredInShift;
+            foreach (var t in rawArrivedTrips) {
+                try {
+                    // Cấu trúc: [ARRIVED] NV001 | 20/04 15:30
+                    var parts = t.Notes!.Split('|');
+                    if (parts.Length > 1) {
+                        var datePart = parts[1].Trim(); // "20/04 15:30"
+                        
+                        // Thử nghiệm Parse với nhiều định dạng khả thi
+                        string[] formats = { "dd/MM HH:mm", "d/M HH:mm", "dd/MM H:m" };
+                        if (DateTime.TryParseExact(datePart, formats, null, System.Globalization.DateTimeStyles.None, out DateTime parsedDate)) {
+                            // Gán năm của ca vào ngày đã parse
+                            var arrivalDate = new DateTime(shift.StartTime.Year, parsedDate.Month, parsedDate.Day, parsedDate.Hour, parsedDate.Minute, 0);
+                            
+                            // So sánh với biên thời gian rộng hơn (sai số 2 phút)
+                            if (arrivalDate >= shift.StartTime.AddMinutes(-2) && arrivalDate <= shiftEnd.AddMinutes(2)) {
+                                arrivedInShift.Add(t);
+                            }
+                        }
+                    }
+                } catch { /* Bỏ qua nếu dòng đó bị lỗi format */ }
+            }
+            ViewBag.ArrivedTrips = arrivedInShift;
+// 4. Đơn hàng thực tế GIAO KHÁCH trong ca (Tiền COD)
+var delivered = await _context.TblOrders.AsNoTracking()
+    .Where(o => o.StaffReceive == shift.StaffId && o.ShipStatus == "Đã giao" && (o.IsDeleted == false || o.IsDeleted == null))
+    .ToListAsync();
+
+var deliveredInShift = new List<TblOrder>();
+foreach (var o in delivered) {
+    if (DateTime.TryParseExact(o.ReceiveDate, "dd/MM/yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dDate)) {
+        // Mở rộng biên thời gian 1 phút để tránh lỗi làm tròn
+        if (dDate >= shift.StartTime.AddMinutes(-1) && dDate <= shiftEnd.AddMinutes(1)) {
+            deliveredInShift.Add(o);
+        }
+    }
+}
+ViewBag.DeliveredOrders = deliveredInShift;
+ViewBag.TotalCOD = deliveredInShift.Sum(o => o.Ct ?? 0);
             
-            // Doanh thu ca = Tổng Amount các đơn đã NHẬP + Tổng Amount các đơn đã GIAO (nếu bạn muốn tính cả hai)
-            // Ở đây tôi tính doanh thu dựa trên các đơn nhân viên này đã NHẬP trong ca (để khớp với logic cũ)
-            ViewBag.TotalRevenue = added.Sum(o => (o.Amount ?? 0));
+            // TỔNG THU CA = Cước gửi + Tiền COD
+            ViewBag.TotalRevenue = (decimal)ViewBag.TotalPrepaid + (decimal)ViewBag.TotalCOD;
             
             return PartialView("_ShiftDetails", shift);
+        }
+
+        // 6. ACTION: LẤY DỮ LIỆU DOANH THU THEO TRẠM
+        public async Task<IActionResult> GetStationSummary(string? fromDate, string? toDate)
+        {
+            if (User.GetRole() != "AD") return Forbid();
+
+            DateTime start = string.IsNullOrEmpty(fromDate) ? TimeHelper.NowVni().Date : DateTime.Parse(fromDate).Date;
+            DateTime end = string.IsNullOrEmpty(toDate) ? TimeHelper.NowVni().Date : DateTime.Parse(toDate).Date;
+            DateTime tomorrow = end.AddDays(1);
+
+            var stations = await _context.TblStations.AsNoTracking().Where(s => s.IsActive == true).ToListAsync();
+            
+            // 1. Lấy tất cả đơn hàng có khả năng liên quan trong khoảng thời gian
+            var orders = await _context.TblOrders.AsNoTracking()
+                .Where(o => (o.IsDeleted == false || o.IsDeleted == null))
+                .Where(o => (o.CreatedAt >= start && o.CreatedAt < tomorrow) || 
+                            (o.ShipStatus == "Đã giao" && o.ReceiveDate != null))
+                .Select(o => new { o.SendStation, o.ReceiveStation, o.CreatedAt, o.ReceiveDate, o.Tr, o.Ct, o.ShipStatus })
+                .ToListAsync();
+
+            var result = new List<StationRevenueViewModel>();
+
+            foreach (var s in stations)
+            {
+                // Tiền cước thu tại trạm (Prepaid TR)
+                var prepaid = orders.Where(o => o.SendStation == s.StationName && o.CreatedAt >= start && o.CreatedAt < tomorrow)
+                                    .Sum(o => o.Tr ?? 0);
+
+                // Tiền COD thu tại trạm khi khách nhận (CT)
+                var cod = orders.Where(o => o.ReceiveStation == s.StationName && o.ShipStatus == "Đã giao" &&
+                    DateTime.TryParseExact(o.ReceiveDate, "dd/MM/yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dDate) &&
+                    dDate >= start && dDate < tomorrow).Sum(o => o.Ct ?? 0);
+
+                result.Add(new StationRevenueViewModel {
+                    StationName = s.StationName,
+                    TotalPrepaid = prepaid,
+                    TotalCOD = cod,
+                    TotalRevenue = prepaid + cod
+                });
+            }
+
+            ViewBag.FromDate = start.ToString("yyyy-MM-dd");
+            ViewBag.ToDate = end.ToString("yyyy-MM-dd");
+
+            return PartialView("_TabStationSummary", result.OrderByDescending(x => x.TotalRevenue).ToList());
+        }
+
+        public class StationRevenueViewModel {
+            public string StationName { get; set; } = "";
+            public decimal TotalPrepaid { get; set; }
+            public decimal TotalCOD { get; set; }
+            public decimal TotalRevenue { get; set; }
         }
 
         [HttpPost]

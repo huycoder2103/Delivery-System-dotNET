@@ -166,7 +166,16 @@
     align-items: center; 
     border: 1px solid var(--rp-border); 
 }
-.rp-goods-card:hover { transform: translateY(-8px); box-shadow: 0 12px 25px rgba(0,0,0,0.1); border-color: #3498db; }
+.rp-goods-card-span2{
+    grid-column: span 2;
+}
+.rp-goods-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+    border-color: #3498db;
+}
+.rp-card-link { text-decoration: none !important; color: inherit !important; display: flex; flex-direction: column; }
+.rp-card-link:hover h3 { color: var(--rp-primary); }
 .rp-card-icon { font-size: 3.5rem; margin-bottom: 15px; }
 .rp-goods-card h3 { font-size: 1.8rem; color: #2c3e50; margin: 10px 0; font-weight: 700; }
 .rp-goods-card p { color: var(--rp-text-muted); font-size: 0.9rem; margin-bottom: 20px; line-height: 1.5; }
@@ -312,8 +321,8 @@
 .rp-bg-green-alt { background: #2ecc71 !important; }
 .rp-bg-yellow-alt { background: #f1c40f !important; }
 .rp-bg-red-alt { background: #e74c3c !important; }
-.rp-bg-blue { background: #3498db !important; }
-.rp-bg-yellow { background: #f1c40f !important; }
+/*.rp-bg-blue { background: #3498db !important; }
+.rp-bg-yellow { background: #f1c40f !important; }*/
 .rp-avatar-blue { background: #0ea5e9 !important; }
 
 /* Specific Layouts */
@@ -322,3 +331,24 @@
 .rp-goods-card-compact { padding: 20px 15px !important; }
 .rp-card-highlight { background: #f0f9ff !important; border: 1px dashed #7dd3fc !important; }
 .rp-link-staff { cursor: pointer; color: var(--rp-primary); text-decoration: underline; }
+
+/* --- Station Summary & Ranking Styles --- */
+.rp-rank-medal { font-size: 1.1rem; font-weight: bold; }
+.rp-progress-container { width: 100%; background: #eee; height: 8px; border-radius: 10px; overflow: hidden; }
+.rp-progress-bar { background: var(--rp-primary); height: 100%; transition: width 0.6s ease; }
+.rp-progress-text { font-size: 10px; margin-top: 4px; text-align: right; color: #666; }
+
+/* --- Summary & Footer Highlights --- */
+.rp-table-footer-summary { background: #f8faff !important; border-top: 2px solid #ddd !important; }
+.rp-text-revenue-large { font-size: 1.2rem; color: var(--rp-danger); }
+
+/* --- Modal Stats Specifics --- */
+.rp-stat-divider { border-right: 1px solid #ddd; padding-right: 15px; }
+.rp-stat-padding-left { padding-left: 5px; }
+.rp-stat-prepaid { color: #f1c40f; }
+.rp-stat-cod { color: #2ecc71; }
+.rp-stat-total { color: #e74c3c; }
+.rp-text-center {
+    width: 60px;
+}
+

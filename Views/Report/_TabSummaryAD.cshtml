@@ -10,25 +10,41 @@
 
     <h4 class="rp-summary-title">📈 Tổng Kết Doanh Thu Toàn Hệ Thống</h4>
     <div class="rp-goods-grid rp-goods-grid-4">
-        <div class="rp-goods-card rp-goods-card-compact">
+        <a href="@Url.Action("List", "Order", new { dateFilter = ViewBag.SelectedDate })" class="rp-goods-card rp-goods-card-compact rp-card-link">
             <h3>@ViewBag.RevenueDateVal.ToString("N0") K</h3>
-            <p>Doanh thu ngày lọc</p>
+            <p>Tổng tiền thu ngày lọc</p>
             <span class="rp-btn-access rp-bg-blue-alt">Ngày chọn</span>
+        </a>
+        <div class="rp-goods-card rp-goods-card-compact">
+            <h3 class="text-success">@ViewBag.TotalPrepaidAD.ToString("N0") K</h3>
+            <p>Tổng cước gửi (TR)</p>
+            <span class="rp-btn-access rp-bg-green-alt">Phí gửi</span>
         </div>
         <div class="rp-goods-card rp-goods-card-compact">
+            <h3 class="text-warning">@ViewBag.TotalCODAD.ToString("N0") K</h3>
+            <p>Tổng tiền COD (CT)</p>
+            <span class="rp-btn-access rp-bg-yellow-alt">Tiền thu hộ</span>
+        </div>
+        <a href="@Url.Action("List", "Order", new { dateFilter = ViewBag.SelectedDate })" class="rp-goods-card rp-goods-card-compact rp-card-link">
+            <h3>@ViewBag.OrdersDateVal</h3>
+            <p>Đơn hàng nhập mới</p>
+            <span class="rp-btn-access rp-bg-red-alt">Đơn mới</span>
+        </a>
+    </div>
+
+    <h5 class="rp-card-title rp-text-center mt-4">📊 Doanh Thu Tích Lũy</h5>
+    <div class="rp-goods-grid rp-goods-grid-4">
+        <div class="rp-goods-card rp-goods-card-compact">
             <h3>@ViewBag.RevenueWeekly.ToString("N0") K</h3>
-            <p>Doanh thu 7 ngày qua</p>
-            <span class="rp-btn-access rp-bg-green-alt">Tuần này</span>
+            <p>7 ngày qua (TR+CT)</p>
         </div>
         <div class="rp-goods-card rp-goods-card-compact">
             <h3>@ViewBag.RevenueMonthly.ToString("N0") K</h3>
-            <p>Doanh thu tháng @DateTime.Now.Month</p>
-            <span class="rp-btn-access rp-bg-yellow-alt">Tháng này</span>
+            <p>Tháng @DateTime.Now.Month</p>
         </div>
-        <div class="rp-goods-card rp-goods-card-compact">
-            <h3>@ViewBag.RevenueTotalSystem.ToString("N0") K</h3>
-            <p>Tổng doanh thu toàn bộ</p>
-            <span class="rp-btn-access rp-bg-red-alt">Tất cả</span>
+        <div class="rp-goods-card rp-goods-card-compact rp-goods-card-span2">
+            <h3 class="text-primary">@ViewBag.RevenueTotalSystem.ToString("N0") K</h3>
+            <p>TỔNG DOANH THU TOÀN HỆ THỐNG</p>
         </div>
     </div>
 

@@ -65,7 +65,7 @@
             
             <div class="od-search-wrapper">
                 <input type="text" id="filterSearchPhone" placeholder="Tìm..." 
-                       value="@ViewBag.SearchPhone" class="od-search-input">
+                       value="@(string.IsNullOrEmpty(ViewBag.SearchStaff) ? ViewBag.SearchPhone : ViewBag.SearchStaff)" class="od-search-input">
             </div>
 
             <a asp-action="Create" class="od-btn od-btn-success">➕ Nhập Hàng</a>

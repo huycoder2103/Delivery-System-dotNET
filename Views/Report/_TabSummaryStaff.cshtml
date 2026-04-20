@@ -23,16 +23,25 @@
     }
 
     <div class="rp-goods-grid">
-        <div class="rp-goods-card">
+        <a href="@Url.Action("List", "Order", new { searchStaff = User.GetUserId(), dateFilter = ViewBag.SelectedDate })" class="rp-goods-card rp-card-link">
             <h3>@ViewBag.OrdersDateVal</h3>
-            <p>Đơn đã giao trong ngày lọc</p>
-            <span class="rp-btn-access rp-bg-blue">Đơn trong ngày</span>
+            <p>Đơn hàng đã nhập mới</p>
+            <span class="rp-btn-access rp-bg-blue-alt">Theo dõi đơn</span>
+        </a>
+        <div class="rp-goods-card">
+            <h3>@ViewBag.TotalPrepaid.ToString("N0") K</h3>
+            <p>Cước thu từ người gửi (TR)</p>
+            <span class="rp-btn-access rp-bg-yellow-alt">Tiền cước gửi</span>
         </div>
         <div class="rp-goods-card">
-            <h3>@ViewBag.RevenueDateVal.ToString("N0") K</h3>
-            <p>Doanh thu trong ngày lọc</p>
-            <span class="rp-btn-access rp-bg-yellow">Cước trong ngày</span>
-            <h2 class="text-danger">@ViewBag.CashHolding.ToString("N0") VNĐ</h2>
+            <h3>@ViewBag.TotalCOD.ToString("N0") K</h3>
+            <p>Tiền COD thu khách (CT)</p>
+            <span class="rp-btn-access rp-bg-green-alt">Tiền thu hộ</span>
+        </div>
+        <div class="rp-goods-card rp-highlight-card">
+            <h2 class="text-danger">@ViewBag.CashHolding.ToString("N0") K</h2>
+            <p class="font-weight-bold">TỔNG TIỀN MẶT ĐANG CẦM</p>
+            <span class="rp-btn-access rp-bg-red-alt">Phải nộp cuối ca</span>
         </div>
     </div>
 </div>
