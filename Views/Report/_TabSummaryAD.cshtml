@@ -10,7 +10,7 @@
 
     <h4 class="rp-summary-title">📈 Tổng Kết Doanh Thu Toàn Hệ Thống</h4>
     <div class="rp-goods-grid rp-goods-grid-4">
-        <a href="@Url.Action("List", "Order", new { dateFilter = ViewBag.SelectedDate })" class="rp-goods-card rp-goods-card-compact rp-card-link">
+        <a href="@Url.Action("List", "Order", new { dateFilter = ViewBag.SelectedDate, isCashFlow = true })" class="rp-goods-card rp-goods-card-compact rp-card-link">
             <h3>@ViewBag.RevenueDateVal.ToString("N0") K</h3>
             <p>Tổng tiền thu ngày lọc</p>
             <span class="rp-btn-access rp-bg-blue-alt">Ngày chọn</span>

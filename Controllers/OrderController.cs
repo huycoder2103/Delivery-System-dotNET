@@ -34,7 +34,7 @@ namespace Delivery_System.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> List(string? sendStationFilter, string? receiveStationFilter, string? searchPhone, string? searchStaff, string? dateFilter, string statusFilter = "all", int page = 1)
+        public async Task<IActionResult> List(string? sendStationFilter, string? receiveStationFilter, string? searchPhone, string? searchStaff, string? dateFilter, string statusFilter = "all", int page = 1, bool isCashFlow = false)
         {
             const int pageSize = 10;
             if (page < 1) page = 1;
@@ -42,39 +42,58 @@ namespace Delivery_System.Controllers
             ViewBag.StationList = await GetCachedStationsAsync();
             var query = _context.TblOrders.AsNoTracking();
 
-            // Lọc theo mã nhân viên tạo đơn
+            // 1. LỌC THEO MÃ NHÂN VIÊN (NẾU CÓ)
             if (!string.IsNullOrEmpty(searchStaff))
             {
                 query = query.Where(o => o.StaffInput == searchStaff);
             }
 
-            // Logic lọc dữ liệu theo 5 trạng thái
-            if (statusFilter == "waiting") 
-                query = query.Where(o => string.IsNullOrEmpty(o.TripId) && o.ShipStatus != "Đã giao");
-            else if (statusFilter == "shipping") 
-                query = query.Where(o => o.ShipStatus == "Đang chuyển");
-            else if (statusFilter == "arrived") 
+            // 2. LỌC THEO DÒNG TIỀN (CASH FLOW) HOẶC NGÀY TẠO THÔNG THƯỜNG
+            if (!string.IsNullOrEmpty(dateFilter) && DateTime.TryParse(dateFilter, out DateTime dt))
             {
-                // Tối ưu: Lấy danh sách TripId của các chuyến đã đến
-                var arrivedTripIds = await _context.TblTrips.AsNoTracking()
-                    .Where(t => t.Status == "Đã đến")
-                    .Select(t => t.TripId)
-                    .ToListAsync();
-                query = query.Where(o => arrivedTripIds.Contains(o.TripId ?? "") && o.ShipStatus != "Đã giao");
+                var nextDay = dt.AddDays(1);
+                string dateStr = dt.ToString("dd/MM/yyyy");
+
+                if (isCashFlow)
+                {
+                    // Lấy đơn tạo mới (thu cước) HOẶC đơn đã giao (thu COD) trong ngày
+                    query = query.Where(o => 
+                        ((o.CreatedAt >= dt && o.CreatedAt < nextDay) && (o.Tr > 0)) || 
+                        (o.ShipStatus == "Đã giao" && o.ReceiveDate != null && o.ReceiveDate.StartsWith(dateStr) && (o.Ct > 0))
+                    );
+                }
+                else
+                {
+                    // Mặc định chỉ lọc theo ngày tạo
+                    query = query.Where(o => o.CreatedAt >= dt && o.CreatedAt < nextDay);
+                }
             }
-            else if (statusFilter == "delivered") 
-                query = query.Where(o => o.ShipStatus == "Đã giao");
+
+            // 3. LOGIC LỌC THEO TRẠNG THÁI (Chỉ áp dụng nếu không phải lọc CashFlow)
+            if (!isCashFlow)
+            {
+                if (statusFilter == "waiting") 
+                    query = query.Where(o => string.IsNullOrEmpty(o.TripId) && o.ShipStatus != "Đã giao");
+                else if (statusFilter == "shipping") 
+                    query = query.Where(o => o.ShipStatus == "Đang chuyển");
+                else if (statusFilter == "arrived") 
+                {
+                    var arrivedTripIds = await _context.TblTrips.AsNoTracking()
+                        .Where(t => t.Status == "Đã đến").Select(t => t.TripId).ToListAsync();
+                    query = query.Where(o => arrivedTripIds.Contains(o.TripId ?? "") && o.ShipStatus != "Đã giao");
+                }
+                else if (statusFilter == "delivered") 
+                    query = query.Where(o => o.ShipStatus == "Đã giao");
+            }
+            else
+            {
+                query = query.Where(o => o.IsDeleted == false || o.IsDeleted == null);
+            }
 
             if (!string.IsNullOrEmpty(sendStationFilter)) query = query.Where(o => o.SendStation == sendStationFilter);
             if (!string.IsNullOrEmpty(receiveStationFilter)) query = query.Where(o => o.ReceiveStation == receiveStationFilter);
             if (!string.IsNullOrEmpty(searchPhone)) query = query.Where(o => o.SenderPhone != null && o.OrderId != null && o.ReceiverPhone != null && (o.SenderPhone.Contains(searchPhone) || o.ReceiverPhone.Contains(searchPhone) || o.OrderId.Contains(searchPhone)));
             
-            if (!string.IsNullOrEmpty(dateFilter) && DateTime.TryParse(dateFilter, out DateTime dt))
-            {
-                var nextDay = dt.AddDays(1);
-                query = query.Where(o => o.CreatedAt >= dt && o.CreatedAt < nextDay);
-            }
-
             int totalRecords = await query.CountAsync();
             int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
             
@@ -97,7 +116,8 @@ namespace Delivery_System.Controllers
                     StaffInput = o.StaffInput,
                     ShipStatus = o.ShipStatus,
                     TripId = o.TripId,
-                    CreatedAt = o.CreatedAt
+                    CreatedAt = o.CreatedAt,
+                    ReceiveDate = o.ReceiveDate
                 })
                 .ToListAsync();
             
@@ -121,6 +141,7 @@ namespace Delivery_System.Controllers
             ViewBag.SendStationFilter = sendStationFilter;
             ViewBag.ReceiveStationFilter = receiveStationFilter;
             ViewBag.DateFilter = dateFilter;
+            ViewBag.IsCashFlow = isCashFlow;
 
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest") return PartialView("_OrderTableBody", list);
             return View(list);
