@@ -22,23 +22,11 @@ namespace Delivery_System.Controllers
         {
             if (!IsAdmin()) return RedirectToAction("Index", "Home");
 
-            var today = Delivery_System.Helpers.TimeHelper.DateVni();
-            var tomorrow = today.AddDays(1);
-            var sevenDaysAgo = today.AddDays(-6);
-
-            // TỐI ƯU: Lấy doanh thu hôm nay và doanh thu 7 ngày trong 1 lần GroupBy
-            var weeklyDataRaw = await _context.TblOrders.AsNoTracking()
-                .Where(o => o.CreatedAt >= sevenDaysAgo && o.CreatedAt < tomorrow && (o.IsDeleted == false || o.IsDeleted == null))
-                .GroupBy(o => o.CreatedAt!.Value.Date)
-                .Select(g => new { Day = g.Key, Total = g.Sum(o => (o.Amount ?? 0)) })
-                .ToListAsync();
-
-            ViewBag.RevenueToday = weeklyDataRaw.FirstOrDefault(x => x.Day == today)?.Total ?? 0;
-
+            // Chỉ lấy số lượng nhân viên đang trong ca làm việc (rất nhẹ)
             ViewBag.ActiveStaffCount = await _context.TblWorkShifts.AsNoTracking()
                 .CountAsync(s => s.Status == "ACTIVE");
 
-            // Lấy danh sách user (Thêm AsNoTracking để tăng tốc)
+            // Lấy danh sách nhân viên và trạm
             var userList = await _context.TblUsers.AsNoTracking()
                 .Include(u => u.Station)
                 .Include(u => u.TblWorkShifts.Where(s => s.Status == "ACTIVE"))
@@ -52,19 +40,8 @@ namespace Delivery_System.Controllers
             ViewBag.Announcements = await _context.TblAnnouncements.AsNoTracking()
                 .Include(a => a.CreatedByNavigation)
                 .OrderByDescending(a => a.CreatedAt)
+                .Take(10)
                 .ToListAsync();
-
-            // Chuẩn bị dữ liệu biểu đồ
-            var chartLabels = new List<string>();
-            var chartData = new List<decimal>();
-            for (int i = 6; i >= 0; i--)
-            {
-                var d = today.AddDays(-i);
-                chartLabels.Add(d.ToString("dd/MM"));
-                chartData.Add(weeklyDataRaw.FirstOrDefault(x => x.Day == d)?.Total ?? 0);
-            }
-            ViewBag.ChartLabels = chartLabels;
-            ViewBag.ChartData = chartData;
 
             return View(userList);
         }

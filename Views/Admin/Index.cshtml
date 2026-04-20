@@ -12,7 +12,9 @@
     <div class="admin-page-header">
         <div>
             <h3>🛡️ Quản Lý Hệ Thống</h3>
-            <div class="admin-page-header-meta">Chào mừng quản trị viên, đây là tình trạng vận hành hôm nay.</div>
+            <div class="admin-page-header-meta">
+                Chào mừng quản trị viên. Hiện có <strong class="admin-text-success">@ViewBag.ActiveStaffCount</strong> nhân viên đang trong ca làm việc.
+            </div>
         </div>
     
         <div class="admin-header-actions">
@@ -27,25 +29,6 @@
             </button>
         </div>
     </div>
-
-    <section class="admin-kpi-grid">
-        <div class="admin-kpi-card admin-card-revenue">
-            <div class="admin-stat-label">Doanh thu hệ thống (Ngày)</div>
-            <div class="admin-stat-value admin-text-primary">@ViewBag.RevenueToday.ToString("N0") k</div>
-            <div class="admin-stat-note">(Tổng TR + CT đơn đã giao)</div>
-        </div>
-
-        <div class="admin-kpi-card admin-card-staff-count">
-            <span class="admin-stat-label">Nhân viên trực ca</span>
-            <span class="admin-stat-value admin-text-success">@ViewBag.ActiveStaffCount</span>
-            <span class="admin-stat-note">Ca làm đang hoạt động</span>
-        </div>
-
-        <div class="admin-chart-card">
-            <h4 class="admin-chart-title">Doanh thu 7 ngày gần nhất</h4>
-            <canvas id="revenueChart" class="admin-revenue-chart"></canvas>
-        </div>
-    </section>
 
     <div class="admin-tabs-container">
         <button id="btnTabStaff" class="admin-btn-tab active" onclick="showTab('staff')">👥 Quản Lý Nhân Viên</button>
@@ -66,6 +49,13 @@
             <div class="admin-search-box">
                 <i>🔍</i>
                 <input type="text" id="staffSearch" placeholder="Tìm kiếm tên hoặc số điện thoại..." oninput="filterStaff()">
+            </div>
+            <div class="admin-filter-box">
+                <select id="shiftFilter" onchange="filterStaff()" class="admin-form-control">
+                    <option value="">-- Trạng thái ca làm --</option>
+                    <option value="in">● Đang trong ca</option>
+                    <option value="out">● Ngoài ca</option>
+                </select>
             </div>
             <div class="admin-filter-box">
                 <select id="stationFilter" onchange="filterStaff()" class="admin-form-control">
@@ -103,7 +93,8 @@
                             data-id="@user.UserId.ToLower()" 
                             data-name="@user.FullName.ToLower()" 
                             data-phone="@user.Phone" 
-                            data-station="@user.StationId">
+                            data-station="@user.StationId"
+                            data-shift="@(isInShift ? "in" : "out")">
                             <td><strong class="admin-text-primary">@user.UserId</strong></td>
                             <td>
                                 <div class="admin-font-bold">@user.FullName</div>
@@ -680,16 +671,20 @@
         function filterStaff() {
             const kw = document.getElementById('staffSearch').value.toLowerCase();
             const stationId = document.getElementById('stationFilter').value;
+            const shiftStatus = document.getElementById('shiftFilter').value; // 'in' hoặc 'out'
+
             document.querySelectorAll('.admin-staff-row').forEach(r => {
                 const id = r.getAttribute('data-id') || '';
                 const name = r.getAttribute('data-name') || '';
                 const phone = r.getAttribute('data-phone') || '';
                 const station = r.getAttribute('data-station') || '';
+                const shift = r.getAttribute('data-shift') || '';
                 
                 const matchesSearch = id.includes(kw) || name.includes(kw) || phone.includes(kw);
                 const matchesStation = stationId === "" || station === stationId;
+                const matchesShift = shiftStatus === "" || shift === shiftStatus;
                 
-                r.style.display = (matchesSearch && matchesStation) ? '' : 'none';
+                r.style.display = (matchesSearch && matchesStation && matchesShift) ? '' : 'none';
             });
         }
 
