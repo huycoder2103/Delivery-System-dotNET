@@ -57,8 +57,11 @@ namespace Delivery_System.Controllers
             var list = await query.OrderByDescending(t => t.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             
             var tripIds = list.Select(t => t.TripId).ToList();
-            var orderCounts = await _context.TblOrders.AsNoTracking().Where(o => tripIds.Contains(o.TripId ?? "")).GroupBy(o => o.TripId)
-                .Select(g => new { TripId = g.Key, Count = g.Count() }).ToDictionaryAsync(x => x.TripId!, x => x.Count);
+            var orderCounts = await _context.TblOrders.AsNoTracking()
+                .Where(o => tripIds.Contains(o.TripId ?? ""))
+                .GroupBy(o => o.TripId)
+                .Select(g => new { TripId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.TripId!, x => x.Count);
             
             ViewBag.OrderCounts = orderCounts; ViewBag.SearchTruck = searchTruck; ViewBag.IsArrivalPage = false;
             ViewBag.CurrentPage = page; ViewBag.TotalPages = totalPages; ViewBag.DepartureFilter = departureFilter; ViewBag.DestinationFilter = destinationFilter;
@@ -85,8 +88,11 @@ namespace Delivery_System.Controllers
             var list = await query.OrderByDescending(t => t.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
             var tripIds = list.Select(t => t.TripId).ToList();
-            var orderCounts = await _context.TblOrders.AsNoTracking().Where(o => tripIds.Contains(o.TripId ?? "")).GroupBy(o => o.TripId)
-                .Select(g => new { TripId = g.Key, Count = g.Count() }).ToDictionaryAsync(x => x.TripId!, x => x.Count);
+            var orderCounts = await _context.TblOrders.AsNoTracking()
+                .Where(o => tripIds.Contains(o.TripId ?? ""))
+                .GroupBy(o => o.TripId)
+                .Select(g => new { TripId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.TripId!, x => x.Count);
             
             ViewBag.OrderCounts = orderCounts; ViewBag.SearchTruck = searchTruck; ViewBag.IsArrivalPage = true;
             ViewBag.CurrentPage = page; ViewBag.TotalPages = totalPages; ViewBag.DepartureFilter = departureFilter; ViewBag.DestinationFilter = destinationFilter;
