@@ -1,0 +1,295 @@
+@model IEnumerable<Delivery_System.Models.TblOrder>
+@{
+    Layout = null;
+    var currentUserID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var trip = ViewBag.Trip as Delivery_System.Models.VwTripList;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>In Bảng Kê Chuyến Xe - @trip?.TripId</title>
+    <link rel="stylesheet" href="~/css/list_order.css?v=@DateTime.Now.Ticks" />
+    <style>
+        /* RESET CHO IN ẤN */
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            box-sizing: border-box;
+        }
+
+        @@page {
+            size: A4 portrait;
+            margin: 1cm;
+        }
+
+        /* Hiển thị trên WEB */
+        body.od-print-body {
+            background-color: #525659;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 0;
+            margin: 0;
+        }
+
+        .tr-a4-page {
+            background-color: #fff;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            color: #000;
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+
+        /* Cấu trúc nội dung */
+        .tr-hdr-top {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tr-hdr-brand { font-size: 13px; font-weight: 600; }
+        .tr-hdr-top h1 {
+            margin: 5px 0;
+            font-size: 22px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .tr-trip-id { font-size: 15px; font-weight: bold; color: #d93025; }
+
+        .tr-info-box {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+
+        .tr-info-box td {
+            padding: 5px 0;
+            font-size: 13px;
+        }
+
+        .tr-label { font-weight: bold; width: 100px; }
+        .tr-value { font-weight: bold; font-size: 14px; }
+        .tr-dotted-line { border-bottom: 1px dashed #999; height: 20px; }
+
+        .tr-main-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .tr-main-table th {
+            background-color: #eee !important;
+            border: 1px solid #000;
+            padding: 8px 4px;
+            font-size: 11px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .tr-main-table td {
+            border: 1px solid #000;
+            padding: 6px 4px;
+            font-size: 11px;
+            vertical-align: middle;
+        }
+
+        /* Định dạng độ rộng các cột thay cho inline style */
+        .col-stt { width: 30px; }
+        .col-id { width: 80px; }
+        .col-name { width: 250px; }
+        .col-tr-ct { width: 60px; }
+
+        .tr-order-id { font-weight: bold; text-align: center; }
+        .tr-delivery-info { line-height: 1.2; font-size:13px; }
+
+        /* Bảng tổng cộng */
+        .tr-summary-container { width: 100%; overflow: hidden; }
+        .tr-summary-table {
+            width: 250px;
+            float: right;
+            border: 2px solid #000;
+            border-collapse: collapse;
+        }
+
+        .tr-summary-table td {
+            padding: 8px 10px;
+            border: 1px solid #000;
+            font-size: 13px;
+        }
+
+        .tr-total-row {
+            font-weight: bold;
+            font-size: 16px; 
+        }
+
+        .tr-sig-table {
+            width: 100%;
+            margin-top: 40px;
+            text-align: center;
+            clear: both;
+        }
+
+        .tr-sig-col { width: 33.33%; }
+        .tr-sig-title {
+            font-weight: bold;
+            text-transform: uppercase;
+            padding-bottom: 60px;
+            font-size: 12px;
+        }
+        .tr-sig-sub { font-size: 11px; }
+
+        .tr-footer-print {
+            position: absolute;
+            bottom: 5mm;
+            left: 15mm;
+            font-size: 10px;
+            color: #888;
+        }
+
+        @@media print {
+            html, body {
+                background: #fff !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                display: block !important;
+            }
+
+            .tr-a4-page {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                min-height: 0 !important;
+            }
+
+            .no-print, .od-print-toolbar {
+                display: none !important;
+            }
+
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+        }
+
+        /* Utility classes */
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .fw-bold { font-weight: bold; }
+    </style>
+</head>
+<body class="od-print-body">
+    <div class="od-print-toolbar no-print">
+        <button class="od-print-btn od-print-btn-main" onclick="window.print()">🖨️ XÁC NHẬN IN BẢNG KÊ</button>
+        <button class="od-print-btn od-print-btn-close" onclick="window.close()">ĐÓNG</button>
+    </div>
+
+    <div class="tr-a4-page">
+        <div class="tr-hdr-top">
+            <div class="tr-hdr-brand">HỆ THỐNG VẬN TẢI DELIVERY</div>
+            <h1>BẢNG KÊ ĐƠN HÀNG TRÊN XE</h1>
+            <div class="tr-trip-id">Mã Chuyến: @trip?.TripId</div>
+        </div>
+
+        <table class="tr-info-box">
+            <tr>
+                <td class="tr-label">Lộ trình:</td>
+                <td class="tr-value">@trip?.RouteInfo</td>
+                <td class="tr-label">Ngày đi:</td>
+                <td class="tr-value">@trip?.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+            </tr>
+            <tr>
+                <td class="tr-label">Biển số xe:</td>
+                <td class="tr-value">@trip?.LicensePlate</td>
+                <td class="tr-label">Tổng đơn:</td>
+                <td class="tr-value">@Model.Count() đơn</td>
+            </tr>
+            <tr>
+                <td class="tr-label">Lái xe:</td>
+                <td colspan="3" class="tr-dotted-line"></td>
+            </tr>
+        </table>
+
+        <table class="tr-main-table">
+            <thead>
+                <tr>
+                    <th class="col-stt">STT</th>
+                    <th class="col-id">Mã Đơn</th>
+                    <th class="col-name">Tên Hàng Hóa</th>
+                    <th>Thông Tin Gửi/Nhận</th>
+                    <th class="col-tr-ct">TR</th>
+                    <th class="col-tr-ct">CT</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int i = 1;
+                    decimal totalTr = 0;
+                    decimal totalCt = 0;
+                }
+                @foreach (var o in Model)
+                {
+                    totalTr += o.Tr ?? 0;
+                    totalCt += o.Ct ?? 0;
+                    <tr>
+                        <td class="text-center">@(i++)</td>
+                        <td class="tr-order-id">@o.OrderId</td>
+                        <td>@o.ItemName</td>
+                        <td>
+                            <div class="tr-delivery-info">
+                                <span class="fw-bold">Gửi:</span> @o.SenderName - @o.SenderPhone<br />
+                                <span class="fw-bold">Nhận:</span> @o.ReceiverName - @o.ReceiverPhone
+                            </div>
+                        </td>
+                        <td class="text-right">@(o.Tr?.ToString("N0") ?? "0")</td>
+                        <td class="text-right">@(o.Ct?.ToString("N0") ?? "0")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="tr-summary-container">
+            <table class="tr-summary-table">
+                <tr>
+                    <td>Tổng TR:</td>
+                    <td class="text-right fw-bold">@totalTr.ToString("N0")</td>
+                </tr>
+                <tr>
+                    <td>Tổng CT:</td>
+                    <td class="text-right fw-bold">@totalCt.ToString("N0")</td>
+                </tr>
+                <tr class="tr-total-row">
+                    <td>TỔNG CỘNG:</td>
+                    <td class="text-right">@((totalTr + totalCt).ToString("N0"))</td>
+                </tr>
+            </table>
+        </div>
+
+        <table class="tr-sig-table">
+            <tr>
+                <td class="tr-sig-col">
+                    <div class="tr-sig-title">Nv in danh sách</div>
+                    <div class="tr-sig-sub">(Ký, ghi rõ họ tên)</div>
+                </td>
+                <td class="tr-sig-col">
+                    <div class="tr-sig-title">Lái xe xác nhận</div>
+                    <div class="tr-sig-sub">(Ký, ghi rõ họ tên)</div>
+                </td>
+                <td class="tr-sig-col">
+                    <div class="tr-sig-title">Nv Nhận xe</div>
+                    <div class="tr-sig-sub">(Ký tên, đóng dấu)</div>
+                </td>
+            </tr>
+        </table>
+
+        <div class="tr-footer-print">
+            In bởi: @currentUserID - Lúc: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+        </div>
+    </div>
+</body>
+</html>

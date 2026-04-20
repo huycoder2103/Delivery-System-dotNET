@@ -222,6 +222,18 @@ namespace Delivery_System.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> PrintGoodsList(string id)
+        {
+            var trip = await _context.VwTripLists.AsNoTracking().FirstOrDefaultAsync(t => t.TripId == id);
+            if (trip == null) return NotFound();
+            var ordersOnTrip = await _context.TblOrders.AsNoTracking().Where(o => o.TripId == id).ToListAsync();
+
+            ViewBag.StationList = await _context.TblStations.AsNoTracking().ToListAsync();
+            ViewBag.Trip = trip;
+            return View(ordersOnTrip);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetActiveTripsByStation(string stationName)
         {
             var trips = await _context.VwTripLists

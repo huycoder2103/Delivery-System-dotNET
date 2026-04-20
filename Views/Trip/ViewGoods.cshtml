@@ -14,10 +14,17 @@
     @Html.AntiForgeryToken()
     <div class="tr-page-wrap">
         <div class="tr-hdr">
-            <h3>📋 DANH SÁCH HÀNG TRÊN CHUYẾN XE</h3>
+            <div class="tr-hdr-btn-wrap">
+                <a href="@Url.Action("PrintGoodsList", "Trip", new { id = trip?.TripId })" target="_blank" 
+                           class="tr-btn tr-btn-print tr-btn-header">
+                    🖨️ IN DANH SÁCH HÀNG
+                </a>
+            </div>
+            <h3 class="mb-0">📋 DANH SÁCH HÀNG TRÊN CHUYẾN XE</h3>
+
             @if (trip != null)
             {
-                <div class="tr-header-meta">
+                <div class="meta">
                     <span class="badge">
                         Chuyến: 
                         <a href="@Url.Action("List", "Trip", new { searchTruck = trip.TripId })" 
@@ -78,7 +85,7 @@
                                     }
                                     else
                                     {
-                                        <a href="@Url.Action("List", "Order", new { statusFilter = "arrived", searchPhone = o.OrderId })" 
+                                        <a href="@Url.Action("List", "Order", new { statusFilter = "all", searchPhone = o.OrderId })" 
                                            class="tr-id-delivery-link" title="Đi tới trang giao hàng">
                                             @o.OrderId
                                         </a>
