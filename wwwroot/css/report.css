@@ -183,7 +183,7 @@
 
 /* Tables */
 .rp-table-wrap { border-radius: 12px; overflow-x: auto; border: 1px solid var(--rp-border); }
-.rp-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; background: transparent; min-width: 800px; }
+.rp-table { width: 99%; border-collapse: separate; border-spacing: 0 8px; background: transparent; min-width: 800px; }
 .rp-table thead th { background: #f8fafc; padding: 15px 20px; text-align: left; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--rp-text-muted); border-bottom: none; }
 .rp-table tbody tr { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s; border-radius: 10px; }
 .rp-table tbody tr:hover { transform: scale(1.005); background: #f8faff; }
@@ -348,7 +348,8 @@
 .rp-stat-prepaid { color: #f1c40f; }
 .rp-stat-cod { color: #2ecc71; }
 .rp-stat-total { color: #e74c3c; }
-.rp-text-center {
+.rp-text-rate {
     width: 60px;
+    text-align: center;
 }
 

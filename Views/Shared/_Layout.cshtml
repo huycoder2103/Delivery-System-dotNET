@@ -45,6 +45,19 @@
             </div>
 
             <div class="nav-user-zone" id="userZone">
+                <!-- TÌM KIẾM NHANH (XỔ XUỐNG) -->
+                <div class="nav-search-wrapper">
+                    <div class="search-trigger" onclick="toggleSearchDropdown(event)">
+                        🔍
+                    </div>
+                    <div class="search-dropdown" id="searchDropdown">
+                        <form asp-controller="Order" asp-action="List" method="GET" class="search-inner-form">
+                            <input type="text" name="searchPhone" placeholder="Nhập mã đơn / SĐT..." class="search-inner-input" id="quickSearchInput">
+                            <button type="submit" class="search-inner-btn">TÌM KIẾM</button>
+                        </form>
+                    </div>
+                </div>
+
                 <!-- NÚT 3 GẠCH (QUICK MENU) -->
                 <div class="nav-quick-zone">
                     <div class="quick-trigger" onclick="toggleQuickMenu(event)">
@@ -194,8 +207,20 @@
 
         function toggleQuickMenu(event) {
             event.stopPropagation();
-            document.getElementById('userDropdown').classList.remove('show'); // Đóng menu kia
+            document.getElementById('userDropdown').classList.remove('show');
+            document.getElementById('searchDropdown').classList.remove('show'); // Đóng search
             document.getElementById('quickDropdown').classList.toggle('show');
+        }
+
+        function toggleSearchDropdown(event) {
+            event.stopPropagation();
+            document.getElementById('userDropdown').classList.remove('show');
+            document.getElementById('quickDropdown').classList.remove('show');
+            const dropdown = document.getElementById('searchDropdown');
+            dropdown.classList.toggle('show');
+            if (dropdown.classList.contains('show')) {
+                setTimeout(() => document.getElementById('quickSearchInput').focus(), 100);
+            }
         }
 
         window.onclick = function(event) {
@@ -212,6 +237,14 @@
             if (quickDropdown && quickDropdown.classList.contains('show')) {
                 if (!document.querySelector('.nav-quick-zone').contains(event.target)) {
                     quickDropdown.classList.remove('show');
+                }
+            }
+
+            // Đóng Search Dropdown
+            const searchDropdown = document.getElementById('searchDropdown');
+            if (searchDropdown && searchDropdown.classList.contains('show')) {
+                if (!document.querySelector('.nav-search-wrapper').contains(event.target)) {
+                    searchDropdown.classList.remove('show');
                 }
             }
         }

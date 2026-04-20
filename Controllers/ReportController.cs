@@ -191,66 +191,66 @@ namespace Delivery_System.Controllers
             if (shift == null) return NotFound();
             if (role != "AD" && shift.StaffId != userId) return Forbid();
 
-            // 1. Đơn hàng đã NHẬP MỚI trong ca (Cước gửi)
+            var shiftStart = shift.StartTime;
+            var shiftEnd = shift.EndTime ?? TimeHelper.NowVni();
+
+            // 1. Đơn hàng đã NHẬP MỚI trong ca (Lọc theo Staff + Thời gian để bao quát cả Admin)
             var addedOrders = await _context.TblOrders.AsNoTracking()
-                .Where(o => o.ShiftId == id && (o.IsDeleted == false || o.IsDeleted == null))
+                .Where(o => o.StaffInput == shift.StaffId && (o.IsDeleted == false || o.IsDeleted == null))
+                .Where(o => o.CreatedAt >= shiftStart.AddMinutes(-1) && o.CreatedAt <= shiftEnd.AddMinutes(1))
                 .ToListAsync();
             ViewBag.AddedOrders = addedOrders;
             ViewBag.TotalPrepaid = addedOrders.Sum(o => o.Tr ?? 0);
             
             // 2. Chuyến xe đã tạo (xuất trạm) trong ca
-            ViewBag.CreatedTrips = await _context.TblTrips.AsNoTracking().Include(t => t.Truck).Where(t => t.ShiftId == id).ToListAsync();
+            ViewBag.CreatedTrips = await _context.TblTrips.AsNoTracking().Include(t => t.Truck)
+                .Where(t => t.StaffCreated == shift.StaffId)
+                .Where(t => t.CreatedAt >= shiftStart.AddMinutes(-1) && t.CreatedAt <= shiftEnd.AddMinutes(1))
+                .ToListAsync();
 
             // 3. Chuyến xe đã tiếp nhận (bấm Xe Đến) trong ca
             var rawArrivedTrips = await _context.TblTrips.AsNoTracking().Include(t => t.Truck)
                 .Where(t => t.Status == "Đã đến" && t.Notes != null && t.Notes.Contains("[ARRIVED] " + shift.StaffId))
                 .ToListAsync();
 
-            var shiftEnd = shift.EndTime ?? TimeHelper.NowVni();
             var arrivedInShift = new List<TblTrip>();
+            string[] formats = { "dd/MM HH:mm", "d/M HH:mm", "dd/MM H:m" };
 
             foreach (var t in rawArrivedTrips) {
-                try {
-                    // Cấu trúc: [ARRIVED] NV001 | 20/04 15:30
-                    var parts = t.Notes!.Split('|');
-                    if (parts.Length > 1) {
-                        var datePart = parts[1].Trim(); // "20/04 15:30"
+                var parts = t.Notes!.Split('|');
+                if (parts.Length > 1) {
+                    var datePart = parts[1].Trim();
+                    if (DateTime.TryParseExact(datePart, formats, null, System.Globalization.DateTimeStyles.None, out DateTime parsedDate)) {
+                        // LOGIC ĐOÁN NĂM THÔNG MINH:
+                        // Thử năm của StartTime
+                        var d1 = new DateTime(shiftStart.Year, parsedDate.Month, parsedDate.Day, parsedDate.Hour, parsedDate.Minute, 0);
+                        // Thử năm của EndTime (phòng trường hợp giao thừa)
+                        var d2 = new DateTime(shiftEnd.Year, parsedDate.Month, parsedDate.Day, parsedDate.Hour, parsedDate.Minute, 0);
                         
-                        // Thử nghiệm Parse với nhiều định dạng khả thi
-                        string[] formats = { "dd/MM HH:mm", "d/M HH:mm", "dd/MM H:m" };
-                        if (DateTime.TryParseExact(datePart, formats, null, System.Globalization.DateTimeStyles.None, out DateTime parsedDate)) {
-                            // Gán năm của ca vào ngày đã parse
-                            var arrivalDate = new DateTime(shift.StartTime.Year, parsedDate.Month, parsedDate.Day, parsedDate.Hour, parsedDate.Minute, 0);
-                            
-                            // So sánh với biên thời gian rộng hơn (sai số 2 phút)
-                            if (arrivalDate >= shift.StartTime.AddMinutes(-2) && arrivalDate <= shiftEnd.AddMinutes(2)) {
-                                arrivedInShift.Add(t);
-                            }
-                        }
+                        if ((d1 >= shiftStart.AddMinutes(-2) && d1 <= shiftEnd.AddMinutes(2))) arrivedInShift.Add(t);
+                        else if (d1 != d2 && (d2 >= shiftStart.AddMinutes(-2) && d2 <= shiftEnd.AddMinutes(2))) arrivedInShift.Add(t);
                     }
-                } catch { /* Bỏ qua nếu dòng đó bị lỗi format */ }
+                }
             }
             ViewBag.ArrivedTrips = arrivedInShift;
-// 4. Đơn hàng thực tế GIAO KHÁCH trong ca (Tiền COD)
-var delivered = await _context.TblOrders.AsNoTracking()
-    .Where(o => o.StaffReceive == shift.StaffId && o.ShipStatus == "Đã giao" && (o.IsDeleted == false || o.IsDeleted == null))
-    .ToListAsync();
 
-var deliveredInShift = new List<TblOrder>();
-foreach (var o in delivered) {
-    if (DateTime.TryParseExact(o.ReceiveDate, "dd/MM/yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dDate)) {
-        // Mở rộng biên thời gian 1 phút để tránh lỗi làm tròn
-        if (dDate >= shift.StartTime.AddMinutes(-1) && dDate <= shiftEnd.AddMinutes(1)) {
-            deliveredInShift.Add(o);
-        }
-    }
-}
-ViewBag.DeliveredOrders = deliveredInShift;
-ViewBag.TotalCOD = deliveredInShift.Sum(o => o.Ct ?? 0);
+            // 4. Đơn hàng thực tế GIAO KHÁCH trong ca (Tiền COD)
+            var delivered = await _context.TblOrders.AsNoTracking()
+                .Where(o => o.StaffReceive == shift.StaffId && o.ShipStatus == "Đã giao" && (o.IsDeleted == false || o.IsDeleted == null))
+                .ToListAsync();
+
+            var deliveredInShift = new List<TblOrder>();
+            foreach (var o in delivered) {
+                if (DateTime.TryParseExact(o.ReceiveDate, "dd/MM/yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dDate)) {
+                    if (dDate >= shiftStart.AddMinutes(-2) && dDate <= shiftEnd.AddMinutes(2)) {
+                        deliveredInShift.Add(o);
+                    }
+                }
+            }
+            ViewBag.DeliveredOrders = deliveredInShift;
+            ViewBag.TotalCOD = deliveredInShift.Sum(o => o.Ct ?? 0);
             
-            // TỔNG THU CA = Cước gửi + Tiền COD
             ViewBag.TotalRevenue = (decimal)ViewBag.TotalPrepaid + (decimal)ViewBag.TotalCOD;
-            
             return PartialView("_ShiftDetails", shift);
         }
 

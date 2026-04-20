@@ -26,7 +26,6 @@
     position: sticky;
     top: 70px;
     z-index: 900;
-    background: linear-gradient(135deg, var(--tr-primary), var(--tr-primary-dark));
     color: #fff;
     padding: 10px 30px;
     border-radius: 15px;
@@ -38,25 +37,59 @@
     border-bottom-right-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
 }
-.tr-page-header h2 { margin: 0; font-size: 1.4rem; font-weight: 800; text-transform: uppercase; }
-.tr-header-meta { font-size: 0.85rem; opacity: 0.8; margin-top: 4px; }
+.tr-page-header-Departure {
+    background: linear-gradient(135deg, #27ae60, #063125);
+}
+.tr-page-header-Arival {
+    background: linear-gradient(135deg, #F39C12, #873600);
+}
+
+.tr-page-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+.tr-header-meta { font-size: 1rem; margin-top: 4px; }
+
 .tr-header-actions { display: flex; gap: 10px; }
 
 .tr-card { background: #fff; border-radius: 15px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); padding: 30px; margin-bottom: 20px; }
 .tr-card-table { padding: 0; overflow-x: auto; }
 
 .tr-page-wrap { max-width: 1750px; margin: 16px auto 30px; background: #fff; border-radius: 6px; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
-.tr-hdr { background: linear-gradient(135deg, var(--tr-primary), var(--tr-primary-dark)); color: #fff; padding: 13px 20px; border-radius: 6px 6px 0 0; overflow: hidden; }
-.tr-hdr h3 { margin: 0; font-size: 1.1rem; display: inline-block; float: left; line-height: 34px; }
-.tr-hdr-btn-wrap { float: right; }
+.tr-hdr {
+    background: linear-gradient(135deg, #27ae60, #063125);
+    color: #fff;
+    padding: 13px 20px;
+    border-radius: 6px 6px 0 0;
+    overflow: hidden;
+}
+
+.tr-hdr h3 { margin: 0; font-size: 1.5rem; display: inline-block; float: left; line-height: 34px; }
+.abtn-wrap { float: right; }
 .tr-hdr .meta { display: block; clear: both; margin-top: 10px; font-size: 0.85rem; opacity: 0.9; }
-.tr-hdr .badge { background: rgba(255,255,255,0.22); padding: 4px 14px; border-radius: 10px; font-weight: 500; margin: 0; }
+.tr-hdr .badge { background: rgba(255,255,255,0.22); padding: 4px 14px; border-radius: 10px; font-weight: 500; margin: 10px; }
 .tr-body { padding: 16px 20px 22px; }
 
 .tr-btn {
     padding: 8px 18px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer;
     transition: all .25s cubic-bezier(.4,0,.2,1); font-size: .85rem;
     display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;
+}
+.tr-btn-sum {
+    padding: 8px 18px;
+    border-radius: 10px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all .25s cubic-bezier(.4,0,.2,1);
+    font-size: .85rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
 }
 .tr-btn-primary { background: var(--tr-primary); color: #fff; }
 .tr-btn-success { background: var(--tr-success); color: #fff; }
@@ -77,8 +110,37 @@
     border: none;
 }
 .tr-badge-arrived {
-    background:#e8f0fe; color:#1a73e8; border:none;
+    background: #e6f4ea;
+    color: #1e8e3e;
+    border: none;
 }
+
+            /*viewgoods specific badge*/
+.tr-hdr-view {
+    display: flex;
+    flex-wrap: wrap; /* Cho phép các phần tử xuống dòng */
+    align-items: center;
+    justify-content: space-between; /* Đẩy h3 sang trái, btn-wrap sang phải */
+    gap: 10px; /* Khoảng cách giữa các phần tử */
+}
+
+    .tr-hdr-view h3 {
+        margin: 0;
+        flex: 1; /* Chiếm không gian bên trái */
+    }
+
+.tr-hdr-btn-wrap {
+    flex: 0 0 auto; /* Giữ nguyên kích thước nút, đẩy sang phải */
+    text-align: right;
+}
+
+.tr-header-meta {
+    flex: 0 0 100%; /* Ép khối này chiếm 100% chiều rộng để nhảy xuống hàng 2 */
+    display: flex;
+    flex-wrap: wrap; /* Các badge bên trong cũng tự xuống dòng nếu màn hình nhỏ */
+}
+
+
 
 /* Generic tags scoped under container */
 .tr-page-wrap table {
@@ -117,10 +179,23 @@
 /* --- 2. List Section --- */
 .tr-sticky-filter {
     position: sticky; top: 135px; z-index: 800; background: rgba(255, 255, 255, 0.98) !important;
-    backdrop-filter: blur(10px); border-bottom: 2px solid var(--tr-primary); border-left: 2px solid var(--tr-primary);
+    backdrop-filter: blur(10px); 
     margin-top: -20px; border-radius: 0 0 15px 15px !important; padding: 15px 20px !important;
 }
-.tr-filter-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.tr-sticky-filter-Departure {
+    border-bottom: 2px solid #27ae60;
+    border-left: 2px solid #27ae60;
+}
+.tr-sticky-filter-Arival {
+    border-bottom: 2px solid #d93025;
+    border-left: 2px solid #d93025;
+}
+.tr-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
 .tr-filter-select { flex: 0.5; min-width: 120px; max-width: 220px; padding: 8px; border-radius: 8px; border: 1px solid #ddd; }
 .tr-search-wrapper { flex: 1; position: relative; }
 .tr-search-input { min-width: 120px; width: 250px; padding: 8px 40px 8px 12px; border-radius: 8px; border: 1px solid #ddd; }
@@ -197,7 +272,11 @@
 
 
 /* --- 4. Assign Goods Section --- */
-.tr-hdr-assign { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+.tr-hdr-assign {
+    display: flex;
+    flex-direction: column;
+}
+
 .tr-page-wrap.tr-assign-mode th { background: #27ae60; }
 .tr-info-box { background: #eafaf1; border: 1px solid #a9dfbf; border-left: 4px solid #27ae60; padding: 9px 14px; border-radius: 4px; margin-bottom: 14px; font-size: .85rem; color: #1a6b3a; }
 .tr-money { color: #27ae60; font-weight: 700; }

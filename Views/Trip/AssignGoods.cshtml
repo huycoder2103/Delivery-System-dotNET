@@ -12,13 +12,13 @@
 <div class="tr-container">
     <div class="tr-page-wrap tr-assign-mode">
         <div class="tr-hdr tr-hdr-assign">
-            <h3>📦 GÁN HÀNG LÊN CHUYẾN XE</h3>
+            <h3>📦 GÁN HÀNG LÊN CHUYẾN XE</h3><br>   
             @if (trip != null)
             {
                 <div class="tr-header-meta">
                     <span class="badge">Chuyến: @trip.TripId</span>
                     <span class="badge">Lộ trình: @trip.RouteInfo</span>
-                    <span class="badge">Xuất phát: @trip.Departure</span>
+                    <span class="badge">Xuất phát: @trip.DepartureTime</span>
                 </div>
             }
         </div>

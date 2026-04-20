@@ -11,10 +11,10 @@
 
 <div class="tr-container">
     
-    <div class="tr-page-header">
+    <div class="tr-page-header tr-page-header-Departure">
         <div>
             <h2>📤 DANH SÁCH CHUYẾN XE ĐI</h2>
-            <div id="tripCount" class="tr-header-meta">Tổng: @(Model?.Count() ?? 0) chuyến</div>
+            <div id="tripCount" class="tr-header-meta tr-btn-sum tr-btn-header">Tổng: @(Model?.Count() ?? 0) chuyến</div>
         </div>
         
         <div class="tr-header-actions">
@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    <div class="tr-sticky-filter">
+    <div class="tr-sticky-filter tr-sticky-filter-Departure">
         <div class="tr-filter-group">
             <select id="filterDeparture" class="tr-filter-select">
                 <option value="">-- Từ Trạm (Đi) --</option>

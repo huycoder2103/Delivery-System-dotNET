@@ -249,6 +249,90 @@ body {
     font-size: 0.8rem;
 }
 
+/* --- Quick Search in Navbar (Dropdown Style) --- */
+.nav-search-wrapper {
+    position: relative;
+    margin-right: 15px;
+}
+
+.search-trigger {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+    color: #0f172a;
+    font-size: 1.2rem;
+}
+
+.search-trigger:hover {
+    background: rgba(255, 255, 255, 0.45);
+    transform: scale(1.05);
+}
+
+.search-dropdown {
+    position: absolute;
+    top: 130%;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(25px);
+    width: 320px;
+    border-radius: 20px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+    display: none;
+    padding: 15px;
+    border: 1px solid #fff;
+    z-index: 10000;
+}
+
+.search-dropdown.show {
+    display: block;
+    animation: quickAppear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-inner-form {
+    display: flex;
+    gap: 10px;
+}
+
+.search-inner-input {
+    flex: 1;
+    background: #f1f5f9;
+    border: 2px solid transparent;
+    padding: 10px 15px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.search-inner-input:focus {
+    border-color: #1a73e8;
+    background: white;
+}
+
+.search-inner-btn {
+    background: #0f172a;
+    color: white;
+    border: none;
+    padding: 0 20px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.search-inner-btn:hover {
+    background: #1a73e8;
+}
+
 .dropdown-menu {
     position: absolute;
     top: 130%;
