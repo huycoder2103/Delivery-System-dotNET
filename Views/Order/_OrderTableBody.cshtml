@@ -123,3 +123,12 @@ else
         <td colspan="12" class="od-table-empty-state">📭 Không tìm thấy đơn hàng nào phù hợp!</td>
     </tr>
 }
+
+<!-- Hidden data for AJAX Dashboard Update -->
+<input type="hidden" id="ajaxCountAll" value="@ViewBag.CountAll" />
+<input type="hidden" id="ajaxCountWaiting" value="@ViewBag.CountWaiting" />
+<input type="hidden" id="ajaxCountShipping" value="@ViewBag.CountShipping" />
+<input type="hidden" id="ajaxCountArrived" value="@ViewBag.CountArrived" />
+<input type="hidden" id="ajaxCountDelivered" value="@ViewBag.CountDelivered" />
+<input type="hidden" id="ajaxTotalPages" value="@ViewBag.TotalPages" />
+

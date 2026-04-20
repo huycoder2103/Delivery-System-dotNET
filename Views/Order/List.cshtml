@@ -127,7 +127,21 @@
             .withAutomaticReconnect()
             .build();
 
+        let isProcessingSelf = false; // Biến kiểm soát ngăn chặn double toast
+
         connection.on("UpdateOrderList", function () {
+            // Nếu chính mình vừa thao tác xong, không cần hiện Toast SignalR
+            refreshDashboard(isProcessingSelf);
+            isProcessingSelf = false; // Reset sau khi dùng
+        });
+
+        connection.start().catch(err => console.error(err.toString()));
+
+        let searchTimeout;
+        let currentStatus = '@(ViewBag.CurrentStatus ?? "all")';
+        let currentPage = @(ViewBag.CurrentPage ?? 1);
+
+        function refreshDashboard(skipToast = false) {
             const sendStation = document.getElementById('filterSendStation').value;
             const receiveStation = document.getElementById('filterReceiveStation').value;
             const date = document.getElementById('filterDate').value;
@@ -141,23 +155,42 @@
                 headers: { "X-Requested-With": "XMLHttpRequest" },
                 success: function (data) {
                     $('#orderTableBody').html(data);
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 2000,
-                        timerProgressBar: true
-                    });
-                    Toast.fire({ icon: 'info', title: 'Danh sách đơn hàng vừa được cập nhật!' });
+                    
+                    // CẬP NHẬT CÁC CON SỐ THỐNG KÊ (Giải pháp 2)
+                    updateCounts();
+
+                    if (!skipToast) {
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true
+                        });
+                        Toast.fire({ icon: 'info', title: 'Danh sách đơn hàng vừa được cập nhật!' });
+                    }
                 }
             });
-        });
+        }
 
-        connection.start().catch(err => console.error(err.toString()));
-
-        let searchTimeout;
-        let currentStatus = '@(ViewBag.CurrentStatus ?? "all")';
-        let currentPage = @(ViewBag.CurrentPage ?? 1);
+        function updateCounts() {
+            // Lấy dữ liệu từ các input ẩn trong PartialView
+            const cAll = $('#ajaxCountAll').val();
+            const cWaiting = $('#ajaxCountWaiting').val();
+            const cShipping = $('#ajaxCountShipping').val();
+            const cArrived = $('#ajaxCountArrived').val();
+            const cDelivered = $('#ajaxCountDelivered').val();
+            
+            // Cập nhật text trong Select Status
+            $("#statusFilter option[value='all']").text(`🌐 Tất cả đơn (${cAll})`);
+            $("#statusFilter option[value='waiting']").text(`⏳ Chờ xe (${cWaiting})`);
+            $("#statusFilter option[value='shipping']").text(`🚛 Đang chuyển (${cShipping})`);
+            $("#statusFilter option[value='arrived']").text(`📥 Chờ giao (${cArrived})`);
+            $("#statusFilter option[value='delivered']").text(`✅ Đã giao (${cDelivered})`);
+            
+            // Cập nhật text tổng ở header
+            $('#orderCount').text(`Tổng: ${cAll} đơn`);
+        }
 
         document.getElementById('filterSendStation').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
         document.getElementById('filterReceiveStation').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
@@ -182,6 +215,7 @@
                 cancelButtonText: 'Hủy'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    isProcessingSelf = true;
                     document.getElementById('deleteOrderForm-' + orderId).submit();
                 }
             })
@@ -220,12 +254,16 @@
         }
 
         function triggerSearch() {
+            // CHUYỂN SANG DÙNG AJAX ĐỂ TRANG KHÔNG BỊ LOAD LẠI
+            refreshDashboard(true);
+            
+            // Cập nhật URL trình duyệt (không reload) để người dùng có thể copy link hoặc F5
             const sendStation = document.getElementById('filterSendStation').value;
             const receiveStation = document.getElementById('filterReceiveStation').value;
             const date = document.getElementById('filterDate').value;
             const phone = document.getElementById('filterSearchPhone').value;
-            const url = `@Url.Action("List", "Order")?sendStationFilter=${encodeURIComponent(sendStation)}&receiveStationFilter=${encodeURIComponent(receiveStation)}&searchPhone=${encodeURIComponent(phone)}&dateFilter=${encodeURIComponent(date)}&statusFilter=${currentStatus}&page=${currentPage}`;
-            window.location.href = url;
+            const newUrl = `@Url.Action("List", "Order")?sendStationFilter=${encodeURIComponent(sendStation)}&receiveStationFilter=${encodeURIComponent(receiveStation)}&searchPhone=${encodeURIComponent(phone)}&dateFilter=${encodeURIComponent(date)}&statusFilter=${currentStatus}&page=${currentPage}`;
+            window.history.pushState({path:newUrl},'',newUrl);
         }
 
         function resetFilters() {
@@ -244,6 +282,7 @@
                 cancelButtonText: 'Hủy'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    isProcessingSelf = true; // Đánh dấu mình đang thao tác
                     const token = $('input[name="__RequestVerificationToken"]').val();
                     $.ajax({
                         url: '@Url.Action("Deliver", "Order")',
@@ -264,14 +303,16 @@
                                     if (res.tripId) {
                                         window.location.href = '@Url.Action("ViewGoods", "Trip")/' + res.tripId;
                                     } else {
-                                        location.reload(); 
+                                        refreshDashboard(true); // Cập nhật lại dashboard bằng AJAX thay vì reload
                                     }
                                 });
                             } else {
+                                isProcessingSelf = false;
                                 Swal.fire('Lỗi', res.message, 'error');
                             }
                         },
                         error: function (xhr) {
+                            isProcessingSelf = false;
                             console.error(xhr.responseText);
                             Swal.fire('Lỗi', 'Không thể kết nối đến máy chủ hoặc lỗi xác thực.', 'error');
                         }
@@ -280,4 +321,5 @@
             });
         }
     </script>
+
 }
