@@ -113,9 +113,62 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
     <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/deliveryHub")
+            .withAutomaticReconnect()
+            .build();
+
+        let isProcessingSelf = false;
+
+        connection.on("UpdateOrderList", function () {
+            // Khi có đơn hàng thay đổi, số lượng hàng trên xe cũng thay đổi nên cần refresh
+            refreshDashboard(isProcessingSelf);
+            isProcessingSelf = false;
+        });
+
+        connection.start().then(() => {
+            // Dùng Station ID thay cho Name để đảm bảo tính chính xác
+            const userStationId = '@Delivery_System.Helpers.UserExtensions.GetStationId(User)';
+            const userRole = '@(User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value)';
+            connection.invoke("JoinStationGroup", userStationId, userRole);
+        }).catch(err => console.error(err.toString()));
+
         let searchTimeout;
         let currentPage = @(ViewBag.CurrentPage ?? 1);
+
+        function refreshDashboard(skipToast = false) {
+            const departure = document.getElementById('filterDeparture').value;
+            const destination = document.getElementById('filterDestination').value;
+            const truck = document.getElementById('filterTruck').value;
+
+            const url = `@Url.Action("List", "Trip")?departureFilter=${encodeURIComponent(departure)}&destinationFilter=${encodeURIComponent(destination)}&searchTruck=${encodeURIComponent(truck)}&page=${currentPage}`;
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+                success: function (data) {
+                    $('#tripTableBody').html(data);
+                    
+                    // Cập nhật text tổng ở header
+                    const cAll = $('#ajaxCountAll').val();
+                    $('#tripCount').text(`Tổng: ${cAll} chuyến`);
+
+                    if (!skipToast) {
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true
+                        });
+                        Toast.fire({ icon: 'info', title: 'Danh sách chuyến xe vừa được cập nhật!' });
+                    }
+                }
+            });
+        }
 
         document.getElementById('filterDeparture').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
         document.getElementById('filterDestination').addEventListener('change', () => { currentPage = 1; triggerSearch(); });
@@ -130,12 +183,13 @@
         }
 
         function triggerSearch() {
+            refreshDashboard(true);
+            
             const departure = document.getElementById('filterDeparture').value;
             const destination = document.getElementById('filterDestination').value;
             const truck = document.getElementById('filterTruck').value;
-
-            const url = `@Url.Action("List", "Trip")?departureFilter=${encodeURIComponent(departure)}&destinationFilter=${encodeURIComponent(destination)}&searchTruck=${encodeURIComponent(truck)}&page=${currentPage}`;
-            window.location.href = url;
+            const newUrl = `@Url.Action("List", "Trip")?departureFilter=${encodeURIComponent(departure)}&destinationFilter=${encodeURIComponent(destination)}&searchTruck=${encodeURIComponent(truck)}&page=${currentPage}`;
+            window.history.pushState({path:newUrl},'',newUrl);
         }
 
         function resetFilters() {
@@ -143,3 +197,4 @@
         }
     </script>
 }
+

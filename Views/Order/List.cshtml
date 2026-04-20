@@ -135,7 +135,12 @@
             isProcessingSelf = false; // Reset sau khi dùng
         });
 
-        connection.start().catch(err => console.error(err.toString()));
+        connection.start().then(() => {
+            // Dùng Station ID thay cho Name để đảm bảo tính chính xác
+            const userStationId = '@Delivery_System.Helpers.UserExtensions.GetStationId(User)';
+            const userRole = '@(User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value)';
+            connection.invoke("JoinStationGroup", userStationId, userRole);
+        }).catch(err => console.error(err.toString()));
 
         let searchTimeout;
         let currentStatus = '@(ViewBag.CurrentStatus ?? "all")';

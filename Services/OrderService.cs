@@ -81,7 +81,28 @@ namespace Delivery_System.Services
                 _context.TblOrders.Add(order);
                 await _context.SaveChangesAsync();
 
-                await _hubContext.Clients.All.SendAsync("UpdateOrderList");
+                // SIGNALR: Tìm ID của trạm dựa trên tên để gửi thông báo chính xác 100%
+                var groups = new List<string> { "AdminGroup" };
+                var stationNames = new List<string>();
+                if (!string.IsNullOrEmpty(order.SendStation)) stationNames.Add(order.SendStation);
+                if (!string.IsNullOrEmpty(order.ReceiveStation)) stationNames.Add(order.ReceiveStation);
+
+                if (stationNames.Any())
+                {
+                    var stationIds = await _context.TblStations
+                        .AsNoTracking()
+                        .Where(s => stationNames.Contains(s.StationName))
+                        .Select(s => s.StationId)
+                        .ToListAsync();
+                    
+                    foreach (var sid in stationIds)
+                    {
+                        groups.Add("Station_" + sid);
+                    }
+                }
+
+                await _hubContext.Clients.Groups(groups).SendAsync("UpdateOrderList");
+
                 return (true, "Thêm đơn hàng thành công!", order);
             }
             catch (Exception ex)

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.SignalR;
 using Delivery_System.Models;
 using Delivery_System.Helpers;
 
@@ -10,11 +11,13 @@ namespace Delivery_System.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IMemoryCache _cache;
+        private readonly Microsoft.AspNetCore.SignalR.IHubContext<Delivery_System.Hubs.DeliveryHub> _hubContext;
 
-        public TripController(AppDbContext context, IMemoryCache cache)
+        public TripController(AppDbContext context, IMemoryCache cache, Microsoft.AspNetCore.SignalR.IHubContext<Delivery_System.Hubs.DeliveryHub> hubContext)
         {
             _context = context;
             _cache = cache;
+            _hubContext = hubContext;
         }
 
         private async Task<List<TblStation>> GetCachedStationsAsync()
@@ -56,6 +59,16 @@ namespace Delivery_System.Controllers
             int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
             var list = await query.OrderByDescending(t => t.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             
+            // Tính toán số lượng cho Badge Dashboard
+            var countsRaw = await _context.TblTrips.AsNoTracking()
+                .GroupBy(t => t.Status)
+                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            ViewBag.CountDeparting = countsRaw.Where(c => c.Status == "Đang đi").Sum(c => c.Count);
+            ViewBag.CountArrived = countsRaw.Where(c => c.Status == "Đã đến").Sum(c => c.Count);
+            ViewBag.CountAll = countsRaw.Sum(c => c.Count);
+
             var tripIds = list.Select(t => t.TripId).ToList();
             var orderCounts = await _context.TblOrders.AsNoTracking()
                 .Where(o => tripIds.Contains(o.TripId ?? ""))
@@ -86,6 +99,16 @@ namespace Delivery_System.Controllers
             int totalRecords = await query.CountAsync();
             int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
             var list = await query.OrderByDescending(t => t.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            // Tính toán số lượng cho Badge Dashboard
+            var countsRaw = await _context.TblTrips.AsNoTracking()
+                .GroupBy(t => t.Status)
+                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            ViewBag.CountDeparting = countsRaw.Where(c => c.Status == "Đang đi").Sum(c => c.Count);
+            ViewBag.CountArrived = countsRaw.Where(c => c.Status == "Đã đến").Sum(c => c.Count);
+            ViewBag.CountAll = countsRaw.Sum(c => c.Count);
 
             var tripIds = list.Select(t => t.TripId).ToList();
             var orderCounts = await _context.TblOrders.AsNoTracking()
@@ -191,6 +214,29 @@ namespace Delivery_System.Controllers
 
                 _context.TblTrips.Add(trip);
                 await _context.SaveChangesAsync();
+
+                // SIGNALR: Tìm ID của trạm đi và trạm đến để gửi thông báo chính xác
+                var groups = new List<string> { "AdminGroup" };
+                var stationNames = new List<string>();
+                if (!string.IsNullOrEmpty(trip.Departure)) stationNames.Add(trip.Departure);
+                if (!string.IsNullOrEmpty(trip.Destination)) stationNames.Add(trip.Destination);
+
+                if (stationNames.Any())
+                {
+                    var stationIds = await _context.TblStations
+                        .AsNoTracking()
+                        .Where(s => stationNames.Contains(s.StationName))
+                        .Select(s => s.StationId)
+                        .ToListAsync();
+                    
+                    foreach (var sid in stationIds)
+                    {
+                        groups.Add("Station_" + sid);
+                    }
+                }
+
+                await _hubContext.Clients.Groups(groups).SendAsync("UpdateOrderList");
+
                 TempData["SuccessMessage"] = "Tạo chuyến xe mới thành công!";
                 return RedirectToAction("List");
             }
@@ -299,6 +345,29 @@ namespace Delivery_System.Controllers
                 }
                 
                 await _context.SaveChangesAsync();
+
+                // SIGNALR: Tìm ID của trạm đi và trạm đến để gửi thông báo chính xác
+                var groups = new List<string> { "AdminGroup" };
+                var stationNames = new List<string>();
+                if (!string.IsNullOrEmpty(trip.Departure)) stationNames.Add(trip.Departure);
+                if (!string.IsNullOrEmpty(trip.Destination)) stationNames.Add(trip.Destination);
+
+                if (stationNames.Any())
+                {
+                    var stationIds = await _context.TblStations
+                        .AsNoTracking()
+                        .Where(s => stationNames.Contains(s.StationName))
+                        .Select(s => s.StationId)
+                        .ToListAsync();
+                    
+                    foreach (var sid in stationIds)
+                    {
+                        groups.Add("Station_" + sid);
+                    }
+                }
+
+                await _hubContext.Clients.Groups(groups).SendAsync("UpdateOrderList");
+
                 TempData["SuccessMessage"] = $"Đã xác nhận chuyến {id} cập bến. {orders.Count} đơn hàng đã chuyển trạng thái thành công!";
             }
             return RedirectToAction("ArrivalList");
