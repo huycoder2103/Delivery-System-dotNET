@@ -36,3 +36,4 @@ wwwroot/js/*.br
 .vscode/
 .idea/
 *.log
+/Logs
