@@ -443,6 +443,21 @@ entity.HasOne(d => d.Role).WithMany(p => p.TblUsers)
                 .HasMaxLength(20)
                 .HasDefaultValueSql("'ACTIVE'")
                 .HasColumnName("status");
+            
+            entity.Property(e => e.TotalPrepaid)
+                .HasColumnType("decimal(18, 2)")
+                .HasDefaultValueSql("'0.00'")
+                .HasColumnName("totalPrepaid");
+            
+            entity.Property(e => e.TotalCod)
+                .HasColumnType("decimal(18, 2)")
+                .HasDefaultValueSql("'0.00'")
+                .HasColumnName("totalCod");
+            
+            entity.Property(e => e.OrderCount)
+                .HasColumnType("int")
+                .HasDefaultValueSql("'0'")
+                .HasColumnName("orderCount");
 
             entity.HasOne(d => d.Staff).WithMany(p => p.TblWorkShifts)
                 .HasForeignKey(d => d.StaffId)

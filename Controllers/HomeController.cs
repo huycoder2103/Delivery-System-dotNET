@@ -28,19 +28,46 @@ namespace Delivery_System.Controllers
             // Lấy thống kê sơ bộ cho ca làm việc (Nếu có)
             if (currentShift != null)
             {
-                // Chỉ lấy thống kê phát sinh trong Ca làm việc này
-                var stats = await _context.TblOrders
-                    .AsNoTracking()
-                    .Where(o => o.ShiftId == currentShift.ShiftId && o.ShipStatus == "Đã giao")
-                    .GroupBy(o => 1)
-                    .Select(g => new { 
-                        Count = g.Count(), 
-                        Revenue = g.Sum(o => (o.Tr ?? 0) + (o.Ct ?? 0)) 
-                    })
-                    .FirstOrDefaultAsync();
+                // Đối với ca đang hoạt động, tính toán trực tiếp từ các đơn hàng
+                // 1. Tiền cước gửi (TR) - Thu khi nhập đơn (Dựa vào ShiftId đã gắn sẵn khi tạo đơn)
+                var prepaidStats = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.ShiftId == currentShift.ShiftId && (o.IsDeleted == false || o.IsDeleted == null))
+                    .SumAsync(o => o.Tr ?? 0);
+
+                // 2. Tiền COD (CT) - Thu khi giao đơn (Dựa vào StaffReceive và thời gian giao)
+                // Lấy tất cả đơn đã giao bởi nhân viên này
+                var deliveredOrders = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.StaffReceive == userId && o.ShipStatus == "Đã giao" && (o.IsDeleted == false || o.IsDeleted == null))
+                    .Select(o => new { o.Ct, o.ReceiveDate })
+                    .ToListAsync();
+
+                decimal totalCod = 0;
+                int deliveredCount = 0;
+                var now = TimeHelper.NowVni();
+
+                foreach (var o in deliveredOrders)
+                {
+                    if (DateTime.TryParseExact(o.ReceiveDate, "dd/MM/yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dDate))
+                    {
+                        // Kiểm tra nếu thời gian giao nằm trong ca làm việc (từ StartTime đến hiện tại)
+                        if (dDate >= currentShift.StartTime.AddMinutes(-1))
+                        {
+                            totalCod += o.Ct ?? 0;
+                            deliveredCount++;
+                        }
+                    }
+                }
+
+                // Số lượng đơn đã nhập (Prepaid)
+                var inputCount = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.ShiftId == currentShift.ShiftId && (o.IsDeleted == false || o.IsDeleted == null))
+                    .CountAsync();
                 
-                ViewBag.DeliveredCount = stats?.Count ?? 0;
-                ViewBag.TotalRevenue = stats?.Revenue ?? 0;
+                ViewBag.DeliveredCount = deliveredCount; // Số đơn đã giao trong ca
+                ViewBag.InputCount = inputCount;         // Số đơn đã nhập trong ca
+                ViewBag.TotalPrepaid = prepaidStats;
+                ViewBag.TotalCod = totalCod;
+                ViewBag.TotalRevenue = prepaidStats + totalCod;
             }
 
             return View();
@@ -67,7 +94,10 @@ namespace Delivery_System.Controllers
                 {
                     StaffId = userId,
                     StartTime = TimeHelper.NowVni(),
-                    Status = "ACTIVE"
+                    Status = "ACTIVE",
+                    TotalPrepaid = 0,
+                    TotalCod = 0,
+                    OrderCount = 0
                 };
                 _context.TblWorkShifts.Add(newShift);
                 await _context.SaveChangesAsync();
@@ -88,10 +118,46 @@ namespace Delivery_System.Controllers
 
             if (activeShift != null)
             {
+                var endTime = TimeHelper.NowVni();
+                
+                // TÍNH TOÁN CÁC CHỈ SỐ TRƯỚC KHI ĐÓNG CA
+                // 1. Tổng TR (Cước gửi) từ các đơn đã nhập trong ca
+                var totalPrepaid = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.ShiftId == activeShift.ShiftId && (o.IsDeleted == false || o.IsDeleted == null))
+                    .SumAsync(o => o.Tr ?? 0);
+
+                // 2. Tổng CT (COD/Cước thu khi giao) từ các đơn đã giao trong ca
+                var deliveredOrders = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.StaffReceive == userId && o.ShipStatus == "Đã giao" && (o.IsDeleted == false || o.IsDeleted == null))
+                    .Select(o => new { o.Ct, o.ReceiveDate })
+                    .ToListAsync();
+
+                decimal totalCod = 0;
+                foreach (var o in deliveredOrders)
+                {
+                    if (DateTime.TryParseExact(o.ReceiveDate, "dd/MM/yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dDate))
+                    {
+                        if (dDate >= activeShift.StartTime.AddMinutes(-1) && dDate <= endTime.AddMinutes(1))
+                        {
+                            totalCod += o.Ct ?? 0;
+                        }
+                    }
+                }
+
+                // 3. Tổng số đơn hàng đã nhập trong ca
+                var orderCount = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.ShiftId == activeShift.ShiftId && (o.IsDeleted == false || o.IsDeleted == null))
+                    .CountAsync();
+
+                // Lưu thông tin vào ca làm việc
                 activeShift.Status = "ENDED";
-                activeShift.EndTime = TimeHelper.NowVni();
+                activeShift.EndTime = endTime;
+                activeShift.TotalPrepaid = totalPrepaid;
+                activeShift.TotalCod = totalCod;
+                activeShift.OrderCount = orderCount;
+
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Đã kết thúc ca làm việc!";
+                TempData["SuccessMessage"] = "Đã kết thúc ca làm việc và lưu thống kê!";
             }
             return RedirectToAction("Index");
         }

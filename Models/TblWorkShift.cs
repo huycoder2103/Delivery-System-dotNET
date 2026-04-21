@@ -15,5 +15,11 @@ public partial class TblWorkShift
 
     public string? Status { get; set; }
 
+    public decimal TotalPrepaid { get; set; }
+
+    public decimal TotalCod { get; set; }
+
+    public int OrderCount { get; set; }
+
     public virtual TblUser Staff { get; set; } = null!;
 }
