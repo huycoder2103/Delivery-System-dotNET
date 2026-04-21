@@ -129,30 +129,41 @@ namespace Delivery_System.Controllers
             var existingUser = await _context.TblUsers.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == newUserID || u.Username == newUsername);
             if (existingUser != null)
             {
-                TempData["ErrorMessage"] = (existingUser.UserId == newUserID) ? $"Mã NV '{newUserID}' đã tồn tại!" : $"Tên đăng nhập '{newUsername}' đã tồn tại!";
-                return RedirectToAction("Index");
+                return Json(new { success = false, message = (existingUser.UserId == newUserID) ? $"Mã NV '{newUserID}' đã tồn tại!" : $"Tên đăng nhập '{newUsername}' đã tồn tại!" });
             }
-            var user = new TblUser { UserId = newUserID, Username = newUsername, FullName = newFullName, Password = HashSha256(newPassword), Phone = newPhone, Email = newEmail, RoleId = "US", StationId = newStationID, Status = true, CreatedAt = DateTime.Now };
+            var user = new TblUser { UserId = newUserID, Username = newUsername, FullName = newFullName, Password = HashSha256(newPassword), Phone = newPhone, Email = newEmail, RoleId = "US", StationId = newStationID, Status = true, CreatedAt = TimeHelper.NowVni() };
             _context.TblUsers.Add(user);
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Thêm nhân viên thành công!";
-            return RedirectToAction("Index");
+            return Json(new { success = true, message = "Thêm nhân viên thành công!" });
         }
 
         [HttpPost]
         public async Task<IActionResult> ChangePassword(string cpUserID, string cpNewPassword)
         {
             var user = await _context.TblUsers.FindAsync(cpUserID);
-            if (user != null) { user.Password = HashSha256(cpNewPassword); await _context.SaveChangesAsync(); }
-            return RedirectToAction("Index");
+            if (user != null) 
+            { 
+                user.Password = HashSha256(cpNewPassword); 
+                await _context.SaveChangesAsync(); 
+                return Json(new { success = true, message = "Đổi mật khẩu thành công!" });
+            }
+            return Json(new { success = false, message = "Không tìm thấy người dùng." });
         }
 
         [HttpPost]
         public async Task<IActionResult> UpdateUser(string userId, string fullName, string phone, string email, int? stationId)
         {
             var user = await _context.TblUsers.FindAsync(userId);
-            if (user != null) { user.FullName = fullName; user.Phone = phone; user.Email = email; user.StationId = stationId; await _context.SaveChangesAsync(); }
-            return RedirectToAction("Index");
+            if (user != null) 
+            { 
+                user.FullName = fullName; 
+                user.Phone = phone; 
+                user.Email = email; 
+                user.StationId = stationId; 
+                await _context.SaveChangesAsync(); 
+                return Json(new { success = true, message = "Cập nhật thông tin thành công!" });
+            }
+            return Json(new { success = false, message = "Không tìm thấy nhân viên." });
         }
 
         [HttpPost]
@@ -161,14 +172,23 @@ namespace Delivery_System.Controllers
             if (stationId.HasValue && stationId.Value > 0)
             {
                 var existing = await _context.TblStations.FindAsync(stationId.Value);
-                if (existing != null) { existing.StationName = stationName; existing.Address = address; existing.Phone = phone; await _context.SaveChangesAsync(); }
+                if (existing != null) 
+                { 
+                    existing.StationName = stationName; 
+                    existing.Address = address; 
+                    existing.Phone = phone; 
+                    await _context.SaveChangesAsync(); 
+                    return Json(new { success = true, message = "Cập nhật trạm thành công!" });
+                }
             }
             else
             {
                 var station = new TblStation { StationName = stationName, Address = address, Phone = phone, IsActive = true };
-                _context.TblStations.Add(station); await _context.SaveChangesAsync();
+                _context.TblStations.Add(station); 
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Thêm trạm mới thành công!" });
             }
-            return RedirectToAction("Index");
+            return Json(new { success = false, message = "Có lỗi xảy ra." });
         }
 
         [HttpGet]

@@ -430,57 +430,162 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        let currentAdminTab = sessionStorage.getItem('activeAdminTab') || 'staff';
+        // Sử dụng Toast đã được định nghĩa trong _Layout.cshtml
 
-        window.onload = function() {
-            showTab(currentAdminTab);
-        };
+        // Hàm hỗ trợ AJAX dùng chung
+        async function submitAjaxForm(url, formData, successCallback) {
+            try {
+                const response = await fetch(url, { method: 'POST', body: formData });
+                const result = await response.json();
+                if (result.success) {
+                    if (typeof Toast !== 'undefined') {
+                        Toast.fire({ icon: 'success', title: result.message });
+                    } else {
+                        Swal.fire('Thành công', result.message, 'success');
+                    }
+                    if (successCallback) successCallback(result);
+                } else {
+                    Swal.fire('Lỗi', result.message, 'error');
+                }
+            } catch (err) {
+                console.error('AJAX Error:', err);
+                Swal.fire('Lỗi', 'Không thể kết nối đến máy chủ.', 'error');
+            }
+        }
 
+        // Đảm bảo DOM đã sẵn sàng
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Quản lý Tabs
+            try {
+                let currentAdminTab = sessionStorage.getItem('activeAdminTab') || 'staff';
+                showTab(currentAdminTab);
+            } catch (e) { console.warn("Tab management error:", e); }
+
+            // 2. Khởi tạo SignalR
+            try {
+                const connection = new signalR.HubConnectionBuilder()
+                    .withUrl("/deliveryHub")
+                    .withAutomaticReconnect()
+                    .build();
+
+                connection.on("UpdateOrderList", function () {
+                    location.reload(); 
+                });
+
+                connection.start().catch(err => console.warn("SignalR Connection Error:", err));
+            } catch (e) { console.warn("SignalR not loaded:", e); }
+
+            // 3. Khởi tạo Biểu đồ (nếu có)
+            const chartCanvas = document.getElementById('revenueChart');
+            if (chartCanvas) {
+                try {
+                    const ctx = chartCanvas.getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: @Html.Raw(Json.Serialize(ViewBag.ChartLabels ?? new List<string>())),
+                            datasets: [{
+                                data: @Html.Raw(Json.Serialize(ViewBag.ChartData ?? new List<decimal>())),
+                                borderColor: '#4f46e5', backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                                borderWidth: 3, fill: true, tension: 0.4, pointRadius: 0
+                            }]
+                        },
+                        options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
+                    });
+                } catch (e) { console.error("Chart.js Error:", e); }
+            }
+
+            // 4. Đăng ký sự kiện Forms
+            const addForm = document.querySelector('#addModal form');
+            if (addForm) {
+                addForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    if (!validateAddForm()) return;
+                    submitAjaxForm(this.action, new FormData(this), () => {
+                        hideAddModal();
+                        setTimeout(() => location.reload(), 1500);
+                    });
+                });
+            }
+
+            const cpForm = document.querySelector('#changePassModal form');
+            if (cpForm) {
+                cpForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    if (!validateChangePassForm()) return;
+                    submitAjaxForm(this.action, new FormData(this), () => {
+                        hideChangePassModal();
+                        this.reset();
+                    });
+                });
+            }
+
+            const detForm = document.querySelector('#detailsModal form');
+            if (detForm) {
+                detForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    submitAjaxForm(this.action, formData, () => {
+                        hideDetailsModal();
+                        updateRowData(formData);
+                    });
+                });
+            }
+
+            const stationForm = document.querySelector('#stationModal form');
+            if (stationForm) {
+                stationForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    submitAjaxForm(this.action, new FormData(this), () => {
+                        hideStationModal();
+                        setTimeout(() => location.reload(), 1500);
+                    });
+                });
+            }
+        });
+
+        // Cập nhật dòng dữ liệu sau khi sửa nhân viên
+        function updateRowData(formData) {
+            const userId = formData.get('userId');
+            const row = document.querySelector(`.admin-staff-row[data-id="${userId.toLowerCase()}"]`);
+            if (row) {
+                row.querySelector('.admin-font-bold').textContent = formData.get('fullName');
+                row.cells[3].textContent = formData.get('phone') || '—';
+                const stationSelect = document.getElementById('detStationId');
+                if (stationSelect && stationSelect.selectedIndex >= 0) {
+                    const stationName = stationSelect.options[stationSelect.selectedIndex].text.split(' (')[0];
+                    const stationBadge = row.querySelector('.admin-station-badge, .admin-station-badge-empty');
+                    if (formData.get('stationId')) {
+                        stationBadge.className = 'admin-badge admin-station-badge';
+                        stationBadge.textContent = '📍 ' + stationName;
+                    } else {
+                        stationBadge.className = 'admin-badge admin-station-badge-empty';
+                        stationBadge.textContent = 'Chưa có trạm';
+                    }
+                }
+            }
+        }
+
+        // CÁC HÀM GIAO DIỆN
         function showTab(tabName) {
             document.querySelectorAll('.admin-tab-content').forEach(t => t.classList.add('admin-display-none'));
             document.querySelectorAll('.admin-btn-tab').forEach(b => b.classList.remove('active'));
-
-            if (tabName === 'staff') {
-                document.getElementById('tabStaff').classList.remove('admin-display-none');
-                document.getElementById('tabStaff').classList.add('active');
-                document.getElementById('btnTabStaff').classList.add('active');
-            } else {
-                document.getElementById('tabStation').classList.remove('admin-display-none');
-                document.getElementById('tabStation').classList.add('active');
-                document.getElementById('btnTabStation').classList.add('active');
-            }
+            const tab = document.getElementById(tabName === 'staff' ? 'tabStaff' : 'tabStation');
+            const btn = document.getElementById(tabName === 'staff' ? 'btnTabStaff' : 'btnTabStation');
+            if (tab) tab.classList.remove('admin-display-none');
+            if (btn) btn.classList.add('active');
             sessionStorage.setItem('activeAdminTab', tabName);
         }
 
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/deliveryHub")
-            .withAutomaticReconnect()
-            .build();
-
-        connection.on("UpdateOrderList", function () {
-            location.reload(); 
-        });
-
-        connection.start().catch(err => console.error(err.toString()));
-
-        const ctx = document.getElementById('revenueChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: @Html.Raw(Json.Serialize(ViewBag.ChartLabels)),
-                datasets: [{
-                    data: @Html.Raw(Json.Serialize(ViewBag.ChartData)),
-                    borderColor: '#4f46e5', backgroundColor: 'rgba(79, 70, 229, 0.1)',
-                    borderWidth: 3, fill: true, tension: 0.4, pointRadius: 0
-                }]
-            },
-            options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
-        });
-
         function showAddModal() { document.getElementById('addModal').style.display = 'flex'; }
         function hideAddModal() { document.getElementById('addModal').style.display = 'none'; }
-        function showChangePassModal(id, name) { document.getElementById('cpUserID').value = id; document.getElementById('cpUserLabel').textContent = name; document.getElementById('changePassModal').style.display = 'flex'; }
+        function showChangePassModal(id, name) { 
+            document.getElementById('cpUserID').value = id; 
+            document.getElementById('cpUserLabel').textContent = name; 
+            document.getElementById('changePassModal').style.display = 'flex'; 
+        }
         function hideChangePassModal() { document.getElementById('changePassModal').style.display = 'none'; }
+        
         function showDetailsModal(id, user, name, role, phone, email, status, created, stationId) {
             document.getElementById('detUserId').textContent = id;
             document.getElementById('detUserIdInp').value = id;
@@ -491,23 +596,12 @@
             document.getElementById('detEmail').value = email === '—' ? '' : email;
             document.getElementById('detStationId').value = stationId || '';
             document.getElementById('detCreatedAt').textContent = created;
-            
             document.getElementById('detStatus').innerHTML = (status.toLowerCase() === 'true') 
                 ? '<span style="color:#10b981; font-weight:700;">● Hoạt động</span>' 
                 : '<span style="color:#ef4444; font-weight:700;">● Đã khóa</span>';
-            
             document.getElementById('detailsModal').style.display = 'flex';
         }
         function hideDetailsModal() { document.getElementById('detailsModal').style.display = 'none'; }
-
-        function validateAddForm() {
-            const p1 = document.getElementById('newPassword').value; const p2 = document.getElementById('newConfirmPassword').value;
-            if (p1 !== p2) { document.getElementById('addPassErr').classList.remove('admin-display-none'); return false; } return true;
-        }
-        function validateChangePassForm() {
-            const p1 = document.getElementById('cpNewPassword').value; const p2 = document.getElementById('cpConfirmPassword').value;
-            if (p1 !== p2) { document.getElementById('cpPassErr').classList.remove('admin-display-none'); return false; } return true;
-        }
 
         function showStationModal(id = 0, name = '', addr = '', phone = '') {
             document.getElementById('stationId').value = id;
@@ -519,87 +613,6 @@
         }
         function hideStationModal() { document.getElementById('stationModal').style.display = 'none'; }
 
-        let hasStaffChanges = false;
-        async function showStaffStationModal(stationId, stationName) {
-            hasStaffChanges = false;
-            document.getElementById('currentStationId').value = stationId;
-            document.getElementById('staffStationModalTitle').textContent = '👥 Nhân Sự Tại: ' + stationName;
-            await refreshStaffLists(stationId);
-            document.getElementById('staffStationModal').style.display = 'flex';
-        }
-        function hideStaffStationModal() {
-            document.getElementById('staffStationModal').style.display = 'none';
-            if (hasStaffChanges) location.reload();
-        }
-
-        async function refreshStaffLists(stationId) {
-            const response = await fetch(`/Admin/GetStaffByStation?stationId=${stationId}`);
-            const data = await response.json();
-            const inList = document.getElementById('inStationList');
-            const avList = document.getElementById('availableList');
-            inList.innerHTML = data.inStation.length > 0 ? '' : '<p class="admin-text-center" style="font-size:0.8rem; color:#94a3b8;">Trạm chưa có nhân sự</p>';
-            avList.innerHTML = data.available.length > 0 ? '' : '<p class="admin-text-center" style="font-size:0.8rem; color:#94a3b8;">Không có nhân viên trống</p>';
-            data.inStation.forEach(u => {
-                inList.innerHTML += `
-                    <div class="admin-staff-item-row">
-                        <div>
-                            <div style="font-weight:700; font-size:0.85rem;">${u.fullName}</div>
-                            <div style="font-size:0.75rem; color:#64748b;">ID: ${u.userId}</div>
-                        </div>
-                        <button onclick="removeStaff('${u.userId}')" class="admin-btn-remove-staff">✖ Gỡ</button>
-                    </div>`;
-            });
-            data.available.forEach(u => {
-                avList.innerHTML += `
-                    <div class="admin-staff-item-row">
-                        <div>
-                            <div style="font-weight:700; font-size:0.85rem;">${u.fullName}</div>
-                            <div style="font-size:0.75rem; color:#64748b;">ID: ${u.userId}</div>
-                        </div>
-                        <button onclick="addStaff('${u.userId}')" class="admin-btn-add-staff">✚ Thêm</button>
-                    </div>`;
-            });
-        }
-
-        async function addStaff(userId) {
-            const stationId = document.getElementById('currentStationId').value;
-            const formData = new FormData();
-            formData.append('userId', userId); formData.append('stationId', stationId);
-            const response = await fetch('/Admin/AddStaffToStation', { method: 'POST', body: formData });
-            const data = await response.json();
-            if (data.success) { hasStaffChanges = true; await refreshStaffLists(stationId); }
-            else alert(data.message);
-        }
-
-        async function removeStaff(userId) {
-            const stationId = document.getElementById('currentStationId').value;
-            const formData = new FormData();
-            formData.append('userId', userId);
-            const response = await fetch('/Admin/RemoveStaffFromStation', { method: 'POST', body: formData });
-            const data = await response.json();
-            if (data.success) { hasStaffChanges = true; await refreshStaffLists(stationId); }
-            else alert(data.message);
-        }
-
-        function showAssignStationModal(userId, fullName) {
-            document.getElementById('asUserId').value = userId;
-            document.getElementById('asUserLabel').textContent = 'Nhân viên: ' + fullName;
-            document.getElementById('asStationId').value = '';
-            document.getElementById('assignStationModal').style.display = 'flex';
-        }
-        function hideAssignStationModal() { document.getElementById('assignStationModal').style.display = 'none'; }
-
-        async function submitAssignStation() {
-            const userId = document.getElementById('asUserId').value;
-            const stationId = document.getElementById('asStationId').value;
-            if (!stationId) { Swal.fire('Chú ý', 'Vui lòng chọn một trạm!', 'warning'); return; }
-            const formData = new FormData();
-            formData.append('userId', userId); formData.append('stationId', stationId);
-            const response = await fetch('/Admin/AddStaffToStation', { method: 'POST', body: formData });
-            const data = await response.json();
-            if (data.success) location.reload(); else Swal.fire('Lỗi', data.message, 'error');
-        }
-
         async function adminEndShiftDirect(userId, fullName) {
             const { isConfirmed } = await Swal.fire({
                 title: 'Kết thúc ca hộ?', text: `Bạn muốn kết thúc ca làm việc của nhân viên: ${fullName}?`,
@@ -607,23 +620,38 @@
             });
             if (isConfirmed) {
                 const formData = new FormData(); formData.append('userId', userId);
-                try {
-                    const resp = await fetch('/Admin/AdminEndShift', { method: 'POST', body: formData });
-                    const result = await resp.json();
-                    if (result.success) { Toast.fire({ icon: 'success', title: result.message }); setTimeout(() => location.reload(), 1000); }
-                    else Swal.fire('Lỗi', result.message, 'error');
-                } catch (err) { Swal.fire('Lỗi', 'Lỗi kết nối', 'error'); }
+                submitAjaxForm('/Admin/AdminEndShift', formData, () => {
+                    const row = document.querySelector(`.admin-staff-row[data-id="${userId.toLowerCase()}"]`);
+                    if (row) {
+                        row.cells[6].innerHTML = '<span class="admin-badge" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca;">● Ngoài ca</span>';
+                        row.setAttribute('data-shift', 'out');
+                        const endShiftBtn = row.querySelector('.admin-btn-red[onclick*="adminEndShiftDirect"]');
+                        if (endShiftBtn) endShiftBtn.remove();
+                    }
+                });
             }
         }
 
         async function toggleUserDirect(userId) {
             const formData = new FormData(); formData.append('userID', userId);
-            try {
-                const resp = await fetch('/Admin/ToggleUser', { method: 'POST', body: formData });
-                const result = await resp.json();
-                if (result.success) { Toast.fire({ icon: 'success', title: result.message }); setTimeout(() => location.reload(), 800); }
-                else Swal.fire('Lỗi', result.message, 'error');
-            } catch (err) { Swal.fire('Lỗi', 'Lỗi kết nối', 'error'); }
+            submitAjaxForm('/Admin/ToggleUser', formData, (result) => {
+                const row = document.querySelector(`.admin-staff-row[data-id="${userId.toLowerCase()}"]`);
+                if (row) {
+                    const statusBadge = row.cells[5].querySelector('.admin-badge');
+                    const toggleBtn = row.querySelector('button[onclick*="toggleUserDirect"]');
+                    if (result.message.includes("mở khóa")) {
+                        statusBadge.className = 'admin-badge admin-badge-active';
+                        statusBadge.textContent = '● Hoạt động';
+                        toggleBtn.className = 'admin-btn-small admin-btn-orange';
+                        toggleBtn.textContent = 'Khóa';
+                    } else {
+                        statusBadge.className = 'admin-badge admin-badge-locked';
+                        statusBadge.textContent = '● Đã khóa';
+                        toggleBtn.className = 'admin-btn-small admin-btn-green';
+                        toggleBtn.textContent = 'Mở';
+                    }
+                }
+            });
         }
 
         async function deleteUserDirect(userId, fullName) {
@@ -633,23 +661,33 @@
             });
             if (isConfirmed) {
                 const formData = new FormData(); formData.append('userID', userId);
-                try {
-                    const resp = await fetch('/Admin/DeleteUser', { method: 'POST', body: formData });
-                    const result = await resp.json();
-                    if (result.success) { Toast.fire({ icon: 'success', title: result.message }); setTimeout(() => location.reload(), 800); }
-                    else Swal.fire('Lỗi', result.message, 'error');
-                } catch (err) { Swal.fire('Lỗi', 'Lỗi kết nối', 'error'); }
+                submitAjaxForm('/Admin/DeleteUser', formData, () => {
+                    const row = document.querySelector(`.admin-staff-row[data-id="${userId.toLowerCase()}"]`);
+                    if (row) row.remove();
+                });
             }
         }
 
         async function toggleStationDirect(stationId) {
             const formData = new FormData(); formData.append('stationId', stationId);
-            try {
-                const resp = await fetch('/Admin/ToggleStation', { method: 'POST', body: formData });
-                const result = await resp.json();
-                if (result.success) { Toast.fire({ icon: 'success', title: result.message }); setTimeout(() => location.reload(), 800); }
-                else Swal.fire('Lỗi', result.message, 'error');
-            } catch (err) { Swal.fire('Lỗi', 'Lỗi kết nối', 'error'); }
+            submitAjaxForm('/Admin/ToggleStation', formData, (result) => {
+                const row = document.querySelector(`.admin-station-row[data-id="${stationId}"]`);
+                if (row) {
+                    const statusBadge = row.cells[4].querySelector('.admin-badge');
+                    const toggleBtn = row.querySelector('button[onclick*="toggleStationDirect"]');
+                    if (result.message.includes("kích hoạt")) {
+                        statusBadge.className = 'admin-badge admin-badge-active';
+                        statusBadge.textContent = '● Hoạt động';
+                        toggleBtn.className = 'admin-btn-small admin-btn-orange';
+                        toggleBtn.textContent = 'Tạm dừng';
+                    } else {
+                        statusBadge.className = 'admin-badge admin-badge-locked';
+                        statusBadge.textContent = '● Tạm dừng';
+                        toggleBtn.className = 'admin-btn-small admin-btn-green';
+                        toggleBtn.textContent = 'Kích hoạt';
+                    }
+                }
+            });
         }
 
         async function deleteStationDirect(stationId, name) {
@@ -659,47 +697,137 @@
             });
             if (isConfirmed) {
                 const formData = new FormData(); formData.append('stationId', stationId);
-                try {
-                    const resp = await fetch('/Admin/DeleteStation', { method: 'POST', body: formData });
-                    const result = await resp.json();
-                    if (result.success) { Toast.fire({ icon: 'success', title: result.message }); setTimeout(() => location.reload(), 800); }
-                    else Swal.fire('Lỗi', result.message, 'error');
-                } catch (err) { Swal.fire('Lỗi', 'Lỗi kết nối', 'error'); }
+                submitAjaxForm('/Admin/DeleteStation', formData, () => {
+                    const row = document.querySelector(`.admin-station-row[data-id="${stationId}"]`);
+                    if (row) row.remove();
+                });
             }
         }
 
-        function filterStaff() {
-            const kw = document.getElementById('staffSearch').value.toLowerCase();
-            const stationId = document.getElementById('stationFilter').value;
-            const shiftStatus = document.getElementById('shiftFilter').value; // 'in' hoặc 'out'
+        function validateAddForm() {
+            const p1 = document.getElementById('newPassword').value; 
+            const p2 = document.getElementById('newConfirmPassword').value;
+            if (p1 !== p2) { 
+                const err = document.getElementById('addPassErr');
+                if (err) err.classList.remove('admin-display-none'); 
+                return false; 
+            } 
+            return true;
+        }
 
+        function validateChangePassForm() {
+            const p1 = document.getElementById('cpNewPassword').value; 
+            const p2 = document.getElementById('cpConfirmPassword').value;
+            if (p1 !== p2) { 
+                const err = document.getElementById('cpPassErr');
+                if (err) err.classList.remove('admin-display-none'); 
+                return false; 
+            } 
+            return true;
+        }
+
+        function filterStaff() {
+            const kw = document.getElementById('staffSearch')?.value?.toLowerCase() || '';
+            const stationId = document.getElementById('stationFilter')?.value || '';
+            const shiftStatus = document.getElementById('shiftFilter')?.value || '';
             document.querySelectorAll('.admin-staff-row').forEach(r => {
                 const id = r.getAttribute('data-id') || '';
                 const name = r.getAttribute('data-name') || '';
                 const phone = r.getAttribute('data-phone') || '';
                 const station = r.getAttribute('data-station') || '';
                 const shift = r.getAttribute('data-shift') || '';
-                
                 const matchesSearch = id.includes(kw) || name.includes(kw) || phone.includes(kw);
                 const matchesStation = stationId === "" || station === stationId;
                 const matchesShift = shiftStatus === "" || shift === shiftStatus;
-                
                 r.style.display = (matchesSearch && matchesStation && matchesShift) ? '' : 'none';
             });
         }
 
         function filterStation() {
-            const kw = document.getElementById('stationSearch').value.toLowerCase();
+            const kw = document.getElementById('stationSearch')?.value?.toLowerCase() || '';
             document.querySelectorAll('.admin-station-row').forEach(r => {
                 const id = r.getAttribute('data-id') || '';
                 const name = r.getAttribute('data-name') || '';
-                const matches = id.includes(kw) || name.includes(kw);
-                r.style.display = matches ? '' : 'none';
+                r.style.display = (id.includes(kw) || name.includes(kw)) ? '' : 'none';
+            });
+        }
+
+        async function showStaffStationModal(stationId, stationName) {
+            const sid = document.getElementById('currentStationId');
+            const title = document.getElementById('staffStationModalTitle');
+            if (sid) sid.value = stationId;
+            if (title) title.textContent = '👥 Nhân Sự Tại: ' + stationName;
+            await refreshStaffLists(stationId);
+            const modal = document.getElementById('staffStationModal');
+            if (modal) modal.style.display = 'flex';
+        }
+        function hideStaffStationModal() { 
+            const modal = document.getElementById('staffStationModal');
+            if (modal) modal.style.display = 'none'; 
+        }
+
+        async function refreshStaffLists(stationId) {
+            try {
+                const response = await fetch(`/Admin/GetStaffByStation?stationId=${stationId}`);
+                const data = await response.json();
+                const inList = document.getElementById('inStationList');
+                const avList = document.getElementById('availableList');
+                if (!inList || !avList) return;
+
+                inList.innerHTML = data.inStation.length > 0 ? '' : '<p class="admin-text-center" style="font-size:0.8rem; color:#94a3b8;">Trạm chưa có nhân sự</p>';
+                avList.innerHTML = data.available.length > 0 ? '' : '<p class="admin-text-center" style="font-size:0.8rem; color:#94a3b8;">Không có nhân viên trống</p>';
+                
+                data.inStation.forEach(u => {
+                    inList.innerHTML += `<div class="admin-staff-item-row"><div><b>${u.fullName}</b><br><small>ID: ${u.userId}</small></div><button onclick="removeStaff('${u.userId}')" class="admin-btn-remove-staff">✖ Gỡ</button></div>`;
+                });
+                data.available.forEach(u => {
+                    avList.innerHTML += `<div class="admin-staff-item-row"><div><b>${u.fullName}</b><br><small>ID: ${u.userId}</small></div><button onclick="addStaff('${u.userId}')" class="admin-btn-add-staff">✚ Thêm</button></div>`;
+                });
+            } catch (e) { console.error("Refresh list error:", e); }
+        }
+
+        async function addStaff(userId) {
+            const stationId = document.getElementById('currentStationId').value;
+            const formData = new FormData(); formData.append('userId', userId); formData.append('stationId', stationId);
+            const response = await fetch('/Admin/AddStaffToStation', { method: 'POST', body: formData });
+            const data = await response.json();
+            if (data.success) { await refreshStaffLists(stationId); }
+        }
+
+        async function removeStaff(userId) {
+            const stationId = document.getElementById('currentStationId').value;
+            const formData = new FormData(); formData.append('userId', userId);
+            const response = await fetch('/Admin/RemoveStaffFromStation', { method: 'POST', body: formData });
+            const data = await response.json();
+            if (data.success) { await refreshStaffLists(stationId); }
+        }
+
+        function showAssignStationModal(userId, fullName) {
+            const uid = document.getElementById('asUserId');
+            const label = document.getElementById('asUserLabel');
+            if (uid) uid.value = userId;
+            if (label) label.textContent = 'Nhân viên: ' + fullName;
+            const modal = document.getElementById('assignStationModal');
+            if (modal) modal.style.display = 'flex';
+        }
+        function hideAssignStationModal() { 
+            const modal = document.getElementById('assignStationModal');
+            if (modal) modal.style.display = 'none'; 
+        }
+
+        async function submitAssignStation() {
+            const userId = document.getElementById('asUserId').value;
+            const stationId = document.getElementById('asStationId').value;
+            if (!stationId) { Swal.fire('Chú ý', 'Vui lòng chọn một trạm!', 'warning'); return; }
+            const formData = new FormData(); formData.append('userId', userId); formData.append('stationId', stationId);
+            submitAjaxForm('/Admin/AddStaffToStation', formData, () => {
+                hideAssignStationModal();
+                setTimeout(() => location.reload(), 1000);
             });
         }
 
         window.onclick = (e) => { 
-            if (e.target.className.includes('admin-modal')) { 
+            if (e && e.target && e.target.className && typeof e.target.className === 'string' && e.target.className.includes('admin-modal')) { 
                 hideAddModal(); hideChangePassModal(); hideDetailsModal(); hideStationModal(); hideStaffStationModal(); hideAssignStationModal();
             } 
         };
