@@ -150,38 +150,51 @@ namespace Delivery_System.Controllers
             var shiftIds = shifts.Select(s => s.ShiftId).ToList();
             var staffIds = shifts.Select(s => s.StaffId).Distinct().ToList();
 
-            // 1. LẤY BATCH TẤT CẢ ĐƠN HÀNG CÓ LIÊN QUAN ĐẾN NHÂN VIÊN TRONG DANH SÁCH
-            var allOrdersInPeriod = await _context.TblOrders.AsNoTracking()
-                .Where(o => (staffIds.Contains(o.StaffInput!) || staffIds.Contains(o.StaffReceive!)) && (o.IsDeleted == false || o.IsDeleted == null))
-                .Select(o => new { o.StaffInput, o.StaffReceive, o.CreatedAt, o.ReceiveDate, o.Tr, o.Ct, o.ShipStatus })
-                .ToListAsync();
+            // 1. TÍNH TOÁN DOANH THU CHO CÁC CA ĐANG HOẠT ĐỘNG (Dùng SQL GroupBy để tối ưu)
+            var activeShiftIds = shifts.Where(s => s.Status != "ENDED").Select(s => s.ShiftId).ToList();
+            var activeShiftStats = new Dictionary<int, decimal>();
 
-            // 2. PHÂN BỔ DỮ LIỆU TRONG BỘ NHỚ
-            foreach (var s in shifts) {
-                if (s.Status == "ENDED")
+            if (activeShiftIds.Any())
+            {
+                // Tiền cước gửi (TR) của các ca đang ACTIVE
+                var prepaidStats = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.ShiftId.HasValue && activeShiftIds.Contains(o.ShiftId.Value) && (o.IsDeleted == false || o.IsDeleted == null))
+                    .GroupBy(o => o.ShiftId!.Value)
+                    .Select(g => new { ShiftId = g.Key, Total = g.Sum(o => o.Tr ?? 0) })
+                    .ToListAsync();
+
+                // Tiền COD (CT) của các ca đang ACTIVE (Dựa trên StaffReceive và thời gian giao)
+                // Lưu ý: Phần này vẫn phải xử lý cẩn thận vì ReceiveDate là string
+                // Chúng ta sẽ lấy dữ liệu gộp theo Staff để giảm tải
+                foreach (var s in shifts.Where(s => s.Status != "ENDED"))
                 {
-                    s.Revenue = s.TotalPrepaid + s.TotalCod;
-                    continue;
-                }
+                    var sEndTime = s.EndTime ?? TimeHelper.NowVni();
+                    var prepaid = prepaidStats.FirstOrDefault(x => x.ShiftId == s.ShiftId)?.Total ?? 0;
+                    
+                    // Chỉ lấy COD của nhân viên này trong khoảng thời gian ca
+                    var cod = await _context.TblOrders.AsNoTracking()
+                        .Where(o => o.StaffReceive == s.StaffId && o.ShipStatus == "Đã giao" && (o.IsDeleted == false || o.IsDeleted == null))
+                        .Where(o => o.ReceiveDate != null)
+                        .Select(o => new { o.Ct, o.ReceiveDate })
+                        .ToListAsync();
 
-                var sEndTime = s.EndTime ?? TimeHelper.NowVni();
-                
-                // Tiền cước gửi (TR) - Thu khi nhập đơn
-                decimal prepaid = allOrdersInPeriod
-                    .Where(o => o.StaffInput == s.StaffId && o.CreatedAt >= s.StartTime.AddMinutes(-1) && o.CreatedAt <= sEndTime.AddMinutes(1))
-                    .Sum(o => o.Tr ?? 0);
-
-                // Tiền COD (CT) - Thu khi giao đơn
-                decimal cod = allOrdersInPeriod
-                    .Where(o => o.StaffReceive == s.StaffId && o.ShipStatus == "Đã giao")
-                    .Where(o => {
+                    decimal totalCod = 0;
+                    foreach (var o in cod)
+                    {
                         if (DateTime.TryParseExact(o.ReceiveDate, "dd/MM/yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dDate))
-                            return dDate >= s.StartTime.AddMinutes(-1) && dDate <= sEndTime.AddMinutes(1);
-                        return false;
-                    })
-                    .Sum(o => o.Ct ?? 0);
+                        {
+                            if (dDate >= s.StartTime.AddMinutes(-1) && dDate <= sEndTime.AddMinutes(1))
+                                totalCod += o.Ct ?? 0;
+                        }
+                    }
+                    s.Revenue = prepaid + totalCod;
+                }
+            }
 
-                s.Revenue = prepaid + cod;
+            // 2. GÁN DOANH THU CHO CÁC CA ĐÃ KẾT THÚC (Dùng dữ liệu đã chốt)
+            foreach (var s in shifts.Where(s => s.Status == "ENDED"))
+            {
+                s.Revenue = s.TotalPrepaid + s.TotalCod;
             }
             
             ViewBag.FromDate = fromDate; ViewBag.ToDate = toDate;
@@ -271,11 +284,17 @@ namespace Delivery_System.Controllers
 
             var stations = await _context.TblStations.AsNoTracking().Where(s => s.IsActive == true).ToListAsync();
             
-            // 1. Lấy tất cả đơn hàng có khả năng liên quan trong khoảng thời gian
+            // 1. Lọc đơn hàng có khả năng liên quan (Dùng SQL lọc sơ bộ để giảm tải RAM)
+            // Tạo danh sách các chuỗi ngày (dd/MM/yyyy) trong khoảng từ start đến end
+            var datePatterns = new List<string>();
+            for (var dt = start; dt <= end; dt = dt.AddDays(1)) {
+                datePatterns.Add(dt.ToString("dd/MM/yyyy"));
+            }
+
             var orders = await _context.TblOrders.AsNoTracking()
                 .Where(o => (o.IsDeleted == false || o.IsDeleted == null))
                 .Where(o => (o.CreatedAt >= start && o.CreatedAt < tomorrow) || 
-                            (o.ShipStatus == "Đã giao" && o.ReceiveDate != null))
+                            (o.ShipStatus == "Đã giao" && o.ReceiveDate != null && datePatterns.Any(p => o.ReceiveDate.StartsWith(p))))
                 .Select(o => new { o.SendStation, o.ReceiveStation, o.CreatedAt, o.ReceiveDate, o.Tr, o.Ct, o.ShipStatus })
                 .ToListAsync();
 

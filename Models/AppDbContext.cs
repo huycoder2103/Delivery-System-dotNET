@@ -132,8 +132,10 @@ public partial class AppDbContext : DbContext
             entity.HasIndex(e => e.SenderPhone, "idx_orders_senderPhone");
             entity.HasIndex(e => e.ReceiverPhone, "idx_orders_receiverPhone");
 
-            entity.HasIndex(e => e.TripId, "idx_orders_tripID");
-            entity.HasIndex(e => e.IsDeleted, "idx_orders_isDeleted");
+            entity.HasIndex(e => e.StaffReceive, "idx_orders_staffReceive");
+            entity.HasIndex(e => e.StaffInput, "idx_orders_staffInput");
+            entity.HasIndex(e => e.ReceiveDate, "idx_orders_receiveDate");
+            entity.HasIndex(e => new { e.StaffReceive, e.ShipStatus, e.IsDeleted }, "idx_orders_delivery_tracking");
 
             entity.Property(e => e.OrderId)
                 .HasMaxLength(20)
