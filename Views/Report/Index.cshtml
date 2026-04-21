@@ -10,12 +10,34 @@
 
 <div class="rp-container">
     <!-- NÚT CHUYỂN TAB -->
-    <div class="rp-tabs" id="reportTabs">
-        <button class="rp-tab-btn" data-tab="summary" onclick="switchTab('summary')">📋 Tổng Quan</button>
-        <button class="rp-tab-btn" data-tab="activity" onclick="switchTab('activity')">📦 Lịch sử Hoạt Động</button>
+    <div class="rp-tabs-container rp-d-flex rp-justify-between rp-align-center">
+        <div class="rp-tabs" id="reportTabs">
+            <button class="rp-tab-btn" data-tab="summary" onclick="switchTab('summary')">📋 Tổng Quan</button>
+            <button class="rp-tab-btn" data-tab="activity" onclick="switchTab('activity')">📦 Lịch sử Hoạt Động</button>
+            @if (role == "AD")
+            {
+                <button class="rp-tab-btn" data-tab="station-summary" onclick="switchTab('station-summary')">🏪 Doanh Thu Trạm</button>
+            }
+        </div>
         @if (role == "AD")
         {
-            <button class="rp-tab-btn" data-tab="station-summary" onclick="switchTab('station-summary')">🏪 Doanh Thu Trạm</button>
+            <div class="rp-export-actions rp-d-flex rp-align-center rp-gap-1">
+                <span class="rp-small rp-text-muted rp-font-bold">Xuất Excel:</span>
+                <select id="excelExportStation" class="rp-filter-input" style="width: 180px; padding: 6px 10px;">
+                    <option value="">-- Tất cả các trạm --</option>
+                    @if (ViewBag.StationList != null)
+                    {
+                        foreach (var s in (IEnumerable<Delivery_System.Models.TblStation>)ViewBag.StationList)
+                        {
+                            <option value="@s.StationId">@s.StationName</option>
+                        }
+                    }
+                </select>
+                <input type="date" id="excelExportDate" value="@defaultDate" class="rp-filter-input" style="width: 150px; padding: 6px 10px;">
+                <button onclick="exportToExcel()" class="rp-btn rp-btn-success">
+                    Excel 📥 Chi Tiết Ca Làm
+                </button>
+            </div>
         }
     </div>
 
@@ -122,6 +144,21 @@
             body.innerHTML = '<div class="rp-loading-box"><div class="rp-spinner"></div><p>Đang tải...</p></div>';
             const resp = await fetch(`/Report/Details/${id}`);
             body.innerHTML = await resp.text();
+        }
+
+        async function openDeliveredOrders(date) {
+            const modal = document.getElementById('shiftDetailsModal');
+            const body = document.getElementById('shiftModalBody');
+            modal.style.display = 'flex';
+            body.innerHTML = '<div class="rp-loading-box"><div class="rp-spinner"></div><p>Đang tải...</p></div>';
+            const resp = await fetch(`/Report/GetDeliveredOrders?reportDate=${date}`);
+            body.innerHTML = await resp.text();
+        }
+
+        function exportToExcel() {
+            const date = document.getElementById('excelExportDate').value;
+            const stationId = document.getElementById('excelExportStation').value;
+            window.location.href = `/Report/ExportExcel?reportDate=${date}&stationId=${stationId}`;
         }
 
         function closeShiftDetails() {

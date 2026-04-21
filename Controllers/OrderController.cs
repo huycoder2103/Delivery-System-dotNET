@@ -38,65 +38,78 @@ namespace Delivery_System.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> List(string? sendStationFilter, string? receiveStationFilter, string? searchPhone, string? searchStaff, string? dateFilter, string statusFilter = "all", int page = 1, bool isCashFlow = false)
+        public async Task<IActionResult> List(string? sendStationFilter, string? receiveStationFilter, string? searchPhone, string? searchStaff, string? dateFilter, string statusFilter = "all", int page = 1, bool isCashFlow = false, string? deliveredByStaff = null)
         {
             const int pageSize = 10;
             if (page < 1) page = 1;
 
             ViewBag.StationList = await GetCachedStationsAsync();
             var query = _context.TblOrders.AsNoTracking().Where(o => o.IsDeleted == false || o.IsDeleted == null);
-
-            // BỘ LỌC THEO TRẠM CỦA NHÂN VIÊN
-            var role = User.GetRole();
-            int? myStationId = User.GetStationId();
             string? myStationName = null;
 
-            if (role != "AD" && myStationId.HasValue)
+            // 1. Lọc theo nhân viên GIAO HÀNG (Dùng cho báo cáo drill-down)
+            if (!string.IsNullOrEmpty(deliveredByStaff))
             {
-                // Lấy tên trạm trực tiếp từ Database dựa trên ID (int?)
-                var station = await _context.TblStations.AsNoTracking()
-                    .FirstOrDefaultAsync(s => s.StationId == myStationId.Value);
-                
-                myStationName = station?.StationName;
-
-                if (!string.IsNullOrEmpty(myStationName))
+                query = query.Where(o => o.StaffReceive == deliveredByStaff && o.ShipStatus == "Đã giao");
+                if (!string.IsNullOrEmpty(dateFilter) && DateTime.TryParse(dateFilter, out DateTime dt))
                 {
-                    query = query.Where(o => o.SendStation == myStationName || o.ReceiveStation == myStationName);
+                    string dateStr = dt.ToString("dd/MM/yyyy");
+                    query = query.Where(o => o.ReceiveDate != null && o.ReceiveDate.StartsWith(dateStr));
                 }
             }
-
-            if (!string.IsNullOrEmpty(searchStaff)) query = query.Where(o => o.StaffInput == searchStaff);
-
-            if (!string.IsNullOrEmpty(dateFilter) && DateTime.TryParse(dateFilter, out DateTime dt))
+            else
             {
-                var nextDay = dt.AddDays(1);
-                string dateStr = dt.ToString("dd/MM/yyyy");
-                if (isCashFlow)
+                // BỘ LỌC THEO TRẠM CỦA NHÂN VIÊN
+                var role = User.GetRole();
+                int? myStationId = User.GetStationId();
+
+                if (role != "AD" && myStationId.HasValue)
                 {
-                    query = query.Where(o => ((o.CreatedAt >= dt && o.CreatedAt < nextDay) && (o.Tr > 0)) || (o.ShipStatus == "Đã giao" && o.ReceiveDate != null && o.ReceiveDate.StartsWith(dateStr) && (o.Ct > 0)));
+                    // Lấy tên trạm trực tiếp từ Database dựa trên ID (int?)
+                    var station = await _context.TblStations.AsNoTracking()
+                        .FirstOrDefaultAsync(s => s.StationId == myStationId.Value);
+                    
+                    myStationName = station?.StationName;
+
+                    if (!string.IsNullOrEmpty(myStationName))
+                    {
+                        query = query.Where(o => o.SendStation == myStationName || o.ReceiveStation == myStationName);
+                    }
                 }
-                else
+
+                if (!string.IsNullOrEmpty(searchStaff)) query = query.Where(o => o.StaffInput == searchStaff);
+
+                if (!string.IsNullOrEmpty(dateFilter) && DateTime.TryParse(dateFilter, out DateTime dt))
                 {
-                    query = query.Where(o => o.CreatedAt >= dt && o.CreatedAt < nextDay);
+                    var nextDay = dt.AddDays(1);
+                    string dateStr = dt.ToString("dd/MM/yyyy");
+                    if (isCashFlow)
+                    {
+                        query = query.Where(o => ((o.CreatedAt >= dt && o.CreatedAt < nextDay) && (o.Tr > 0)) || (o.ShipStatus == "Đã giao" && o.ReceiveDate != null && o.ReceiveDate.StartsWith(dateStr) && (o.Ct > 0)));
+                    }
+                    else
+                    {
+                        query = query.Where(o => o.CreatedAt >= dt && o.CreatedAt < nextDay);
+                    }
                 }
+
+                if (!isCashFlow)
+                {
+                    if (statusFilter == "waiting") query = query.Where(o => string.IsNullOrEmpty(o.TripId) && o.ShipStatus != "Đã giao");
+                    else if (statusFilter == "shipping") query = query.Where(o => o.ShipStatus == "Đang chuyển");
+                    else if (statusFilter == "arrived") 
+                    {
+                        var arrivedTripIds = await _context.TblTrips.AsNoTracking().Where(t => t.Status == "Đã đến").Select(t => t.TripId).ToListAsync();
+                        query = query.Where(o => arrivedTripIds.Contains(o.TripId ?? "") && o.ShipStatus != "Đã giao");
+                    }
+                    else if (statusFilter == "delivered") query = query.Where(o => o.ShipStatus == "Đã giao");
+                }
+
+                if (!string.IsNullOrEmpty(sendStationFilter)) query = query.Where(o => o.SendStation == sendStationFilter);
+                if (!string.IsNullOrEmpty(receiveStationFilter)) query = query.Where(o => o.ReceiveStation == receiveStationFilter);
+                if (!string.IsNullOrEmpty(searchPhone)) query = query.Where(o => o.SenderPhone != null && o.OrderId != null && o.ReceiverPhone != null && (o.SenderPhone.Contains(searchPhone) || o.ReceiverPhone.Contains(searchPhone) || o.OrderId.Contains(searchPhone)));
             }
 
-            if (!isCashFlow)
-            {
-                if (statusFilter == "waiting") query = query.Where(o => string.IsNullOrEmpty(o.TripId) && o.ShipStatus != "Đã giao");
-                else if (statusFilter == "shipping") query = query.Where(o => o.ShipStatus == "Đang chuyển");
-                else if (statusFilter == "arrived") 
-                {
-                    var arrivedTripIds = await _context.TblTrips.AsNoTracking().Where(t => t.Status == "Đã đến").Select(t => t.TripId).ToListAsync();
-                    query = query.Where(o => arrivedTripIds.Contains(o.TripId ?? "") && o.ShipStatus != "Đã giao");
-                }
-                else if (statusFilter == "delivered") query = query.Where(o => o.ShipStatus == "Đã giao");
-            }
-
-            if (!string.IsNullOrEmpty(sendStationFilter)) query = query.Where(o => o.SendStation == sendStationFilter);
-            if (!string.IsNullOrEmpty(receiveStationFilter)) query = query.Where(o => o.ReceiveStation == receiveStationFilter);
-            if (!string.IsNullOrEmpty(searchPhone)) query = query.Where(o => o.SenderPhone != null && o.OrderId != null && o.ReceiverPhone != null && (o.SenderPhone.Contains(searchPhone) || o.ReceiverPhone.Contains(searchPhone) || o.OrderId.Contains(searchPhone)));
-            
             int totalRecords = await query.CountAsync();
             int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
             

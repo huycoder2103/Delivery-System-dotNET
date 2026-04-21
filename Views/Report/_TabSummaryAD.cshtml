@@ -15,16 +15,16 @@
             <p>Tổng tiền thu ngày lọc</p>
             <span class="rp-btn-access rp-bg-blue-alt">Ngày chọn</span>
         </a>
-        <div class="rp-goods-card rp-goods-card-compact">
+        <a href="@Url.Action("List", "Order", new { dateFilter = ViewBag.SelectedDate, isCashFlow = true })" class="rp-goods-card rp-goods-card-compact rp-card-link">
             <h3 class="text-success">@ViewBag.TotalPrepaidAD.ToString("N0") K</h3>
             <p>Tổng cước gửi (TR)</p>
             <span class="rp-btn-access rp-bg-green-alt">Phí gửi</span>
-        </div>
-        <div class="rp-goods-card rp-goods-card-compact">
+        </a>
+        <a href="@Url.Action("List", "Order", new { dateFilter = ViewBag.SelectedDate, statusFilter = "delivered" })" class="rp-goods-card rp-goods-card-compact rp-card-link">
             <h3 class="text-warning">@ViewBag.TotalCODAD.ToString("N0") K</h3>
             <p>Tổng tiền COD (CT)</p>
             <span class="rp-btn-access rp-bg-yellow-alt">Tiền thu hộ</span>
-        </div>
+        </a>
         <a href="@Url.Action("List", "Order", new { dateFilter = ViewBag.SelectedDate })" class="rp-goods-card rp-goods-card-compact rp-card-link">
             <h3>@ViewBag.OrdersDateVal</h3>
             <p>Đơn hàng nhập mới</p>

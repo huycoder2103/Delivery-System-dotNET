@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Delivery_System.Models;
 using Delivery_System.Helpers;
+using ClosedXML.Excel;
+using System.IO;
 
 namespace Delivery_System.Controllers
 {
@@ -14,10 +16,191 @@ namespace Delivery_System.Controllers
             _context = context;
         }
 
+        // --- ACTION XUẤT EXCEL CHI TIẾT ---
+        [HttpGet]
+        public async Task<IActionResult> ExportExcel(string? reportDate, int? stationId)
+        {
+            var vniNow = TimeHelper.NowVni();
+            DateTime selectedDate;
+            if (string.IsNullOrEmpty(reportDate)) selectedDate = vniNow.Date;
+            else if (!DateTime.TryParse(reportDate, out selectedDate)) selectedDate = vniNow.Date;
+            
+            DateTime tomorrow = selectedDate.AddDays(1);
+            string dateStr = selectedDate.ToString("dd/MM/yyyy");
+
+            // 1. Lấy danh sách trạm cần xuất
+            var stationsQuery = _context.TblStations.AsNoTracking().Where(s => s.IsActive == true);
+            if (stationId.HasValue) stationsQuery = stationsQuery.Where(s => s.StationId == stationId.Value);
+            var stations = await stationsQuery.ToListAsync();
+
+            // 2. Lấy tất cả đơn hàng có liên quan đến ngày này (Nhập hoặc Giao)
+            var orders = await _context.TblOrders.AsNoTracking()
+                .Where(o => (o.IsDeleted == false || o.IsDeleted == null))
+                .Where(o => (o.CreatedAt >= selectedDate && o.CreatedAt < tomorrow) || 
+                            (o.ShipStatus == "Đã giao" && o.ReceiveDate != null && o.ReceiveDate.StartsWith(dateStr)))
+                .ToListAsync();
+
+            // 3. Lấy tất cả nhân viên có hoạt động (Shift) trong ngày này
+            var shiftsQuery = _context.TblWorkShifts.AsNoTracking()
+                .Include(s => s.Staff)
+                .Where(s => s.StartTime >= selectedDate && s.StartTime < tomorrow);
+            
+            if (stationId.HasValue) shiftsQuery = shiftsQuery.Where(s => s.Staff.StationId == stationId.Value);
+            var shifts = await shiftsQuery.ToListAsync();
+
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("BaoCaoChiTiet");
+                int currentRow = 1;
+
+                // STYLE CHUNG
+                worksheet.Column(1).Width = 15; // Mã đơn
+                worksheet.Column(2).Width = 25; // Tên hàng
+                worksheet.Column(3).Width = 15; // Loại thao tác
+                worksheet.Column(4).Width = 15; // Trạng thái
+                worksheet.Column(5).Width = 12; // Cước TR
+                worksheet.Column(6).Width = 12; // Thu hộ CT
+                worksheet.Column(7).Width = 15; // Mã Chuyến
+                worksheet.Column(8).Width = 20; // Thời gian
+
+                // TIÊU ĐỀ CHÍNH
+                var titleCell = worksheet.Cell(currentRow, 1);
+                titleCell.Value = "BÁO CÁO CHI TIẾT HOẠT ĐỘNG CA LÀM VIỆC - NGÀY " + selectedDate.ToString("dd/MM/yyyy");
+                titleCell.Style.Font.Bold = true;
+                titleCell.Style.Font.FontSize = 16;
+                worksheet.Range(currentRow, 1, currentRow, 8).Merge().Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                currentRow += 2;
+
+                foreach (var st in stations)
+                {
+                    // Lấy tất cả các ca làm việc thuộc trạm này trong ngày
+                    var shiftsInStation = shifts.Where(s => s.Staff.StationId == st.StationId)
+                                                .OrderBy(s => s.StartTime)
+                                                .ToList();
+                    
+                    if (!shiftsInStation.Any()) continue;
+
+                    // HEADER TRẠM
+                    var stationRange = worksheet.Range(currentRow, 1, currentRow, 8);
+                    stationRange.Merge().Value = "🏪 TRẠM: " + st.StationName.ToUpper() + " (ID: " + st.StationId + ")";
+                    stationRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#1e293b");
+                    stationRange.Style.Font.FontColor = XLColor.White;
+                    stationRange.Style.Font.Bold = true;
+                    currentRow++;
+
+                    foreach (var shift in shiftsInStation)
+                    {
+                        var staff = shift.Staff;
+                        var sStart = shift.StartTime;
+                        var sEnd = shift.EndTime ?? vniNow;
+
+                        // HEADER CA LÀM VIỆC (Có Mã ca)
+                        var shiftRange = worksheet.Range(currentRow, 1, currentRow, 8);
+                        string shiftTimeStr = $"{sStart:HH:mm} - {(shift.EndTime.HasValue ? shift.EndTime.Value.ToString("HH:mm") : "Đang trực")}";
+                        shiftRange.Merge().Value = $"👤 NV: {staff.FullName} ({staff.UserId}) | 🆔 MÃ CA: #{shift.ShiftId} | ⏱️ {shiftTimeStr}";
+                        shiftRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#f1f5f9");
+                        shiftRange.Style.Font.Bold = true;
+                        shiftRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        currentRow++;
+
+                        // HEADER BẢNG DỮ LIỆU
+                        string[] headers = { "Mã Đơn", "Tên Hàng", "Thao Tác", "Trạng Thái", "Cước TR", "Thu Hộ CT", "Mã Chuyến", "Thời Gian" };
+                        for (int i = 0; i < headers.Length; i++)
+                        {
+                            var cell = worksheet.Cell(currentRow, i + 1);
+                            cell.Value = headers[i];
+                            cell.Style.Font.Bold = true;
+                            cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#e2e8f0");
+                            cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        }
+                        currentRow++;
+
+                        // LẤY DỮ LIỆU ĐƠN HÀNG THUỘC CA NÀY
+                        // 1. Đơn nhập mới gắn với ShiftId này
+                        var staffOrdersInput = orders.Where(o => o.ShiftId == shift.ShiftId).ToList();
+                        
+                        // 2. Đơn giao khách bởi nhân viên này trong khung giờ của ca
+                        var staffOrdersDeliver = orders.Where(o => o.StaffReceive == staff.UserId && o.ShipStatus == "Đã giao" && o.ReceiveDate != null)
+                            .Where(o => {
+                                if (DateTime.TryParseExact(o.ReceiveDate, "dd/MM/yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dDate))
+                                    return dDate >= sStart.AddMinutes(-1) && dDate <= sEnd.AddMinutes(1);
+                                return false;
+                            }).ToList();
+
+                        var allStaffActions = new List<dynamic>();
+                        foreach(var o in staffOrdersInput) allStaffActions.Add(new { OrderId = o.OrderId, Item = o.ItemName, Type = "NHẬP ĐƠN", Status = o.ShipStatus, Tr = o.Tr ?? 0, Ct = 0m, Trip = o.TripId ?? "-", Time = o.CreatedAt?.ToString("HH:mm") });
+                        foreach(var o in staffOrdersDeliver) allStaffActions.Add(new { OrderId = o.OrderId, Item = o.ItemName, Type = "GIAO HÀNG", Status = "Đã giao", Tr = 0m, Ct = o.Ct ?? 0, Trip = o.TripId ?? "-", Time = o.ReceiveDate?.Split(' ')[1] ?? "-" });
+
+                        decimal sumTr = 0; decimal sumCt = 0;
+                        foreach (var action in allStaffActions.OrderBy(a => a.Time))
+                        {
+                            worksheet.Cell(currentRow, 1).Value = action.OrderId;
+                            worksheet.Cell(currentRow, 2).Value = action.Item;
+                            worksheet.Cell(currentRow, 3).Value = action.Type;
+                            worksheet.Cell(currentRow, 4).Value = action.Status;
+                            worksheet.Cell(currentRow, 5).Value = action.Tr;
+                            worksheet.Cell(currentRow, 6).Value = action.Ct;
+                            worksheet.Cell(currentRow, 7).Value = action.Trip;
+                            worksheet.Cell(currentRow, 8).Value = action.Time;
+                            
+                            worksheet.Cell(currentRow, 5).Style.NumberFormat.Format = "#,##0";
+                            worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "#,##0";
+                            
+                            if (action.Type == "GIAO HÀNG") worksheet.Cell(currentRow, 3).Style.Font.FontColor = XLColor.Green;
+                            else worksheet.Cell(currentRow, 3).Style.Font.FontColor = XLColor.Blue;
+
+                            sumTr += action.Tr; sumCt += action.Ct;
+                            currentRow++;
+                        }
+
+                        // TỔNG CỘNG CA LÀM VIỆC
+                        var footerRange = worksheet.Range(currentRow, 1, currentRow, 4);
+                        footerRange.Merge().Value = "TỔNG CỘNG CA #" + shift.ShiftId + ":";
+                        footerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                        footerRange.Style.Font.Bold = true;
+                        
+                        worksheet.Cell(currentRow, 5).Value = sumTr;
+                        worksheet.Cell(currentRow, 5).Style.Font.Bold = true;
+                        worksheet.Cell(currentRow, 5).Style.NumberFormat.Format = "#,##0";
+                        
+                        worksheet.Cell(currentRow, 6).Value = sumCt;
+                        worksheet.Cell(currentRow, 6).Style.Font.Bold = true;
+                        worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "#,##0";
+
+                        // DÒNG TỔNG CỘNG CUỐI CÙNG (TR + CT)
+                        currentRow++;
+                        var remitRange = worksheet.Range(currentRow, 1, currentRow, 4);
+                        remitRange.Merge().Value = "💰 SỐ TIỀN NHÂN VIÊN PHẢI NỘP CA #" + shift.ShiftId + ":";
+                        remitRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                        remitRange.Style.Font.Bold = true;
+                        remitRange.Style.Font.FontColor = XLColor.Red;
+
+                        var totalCell = worksheet.Cell(currentRow, 5);
+                        totalCell.Value = sumTr + sumCt;
+                        totalCell.Style.Font.Bold = true;
+                        totalCell.Style.Font.FontSize = 12;
+                        totalCell.Style.Font.FontColor = XLColor.Red;
+                        totalCell.Style.NumberFormat.Format = "#,##0";
+                        worksheet.Range(currentRow, 5, currentRow, 6).Merge(); // Gộp 2 cột TR và CT cho con số tổng cuối
+
+                        currentRow += 2;
+                    }
+                }
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    var content = stream.ToArray();
+                    return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"BaoCao_ChiTiet_{selectedDate:ddMMyyyy}.xlsx");
+                }
+            }
+        }
+
         // 1. CHỈ TRẢ VỀ KHUNG TRANG (SHELL)
-        public IActionResult Index(string? reportDate)
+        public async Task<IActionResult> Index(string? reportDate)
         {
             ViewBag.ReportDate = reportDate ?? TimeHelper.NowVni().ToString("yyyy-MM-dd");
+            ViewBag.StationList = await _context.TblStations.AsNoTracking().Where(s => s.IsActive == true).ToListAsync();
             return View();
         }
 
@@ -122,6 +305,31 @@ namespace Delivery_System.Controllers
                 
                 return PartialView("_TabSummaryStaff");
             }
+        }
+
+        // 3. ACTION: LẤY DANH SÁCH ĐƠN HÀNG ĐÃ GIAO TRONG NGÀY (CỦA NHÂN VIÊN)
+        public async Task<IActionResult> GetDeliveredOrders(string? reportDate)
+        {
+            var userId = User.GetUserId();
+            var vniNow = TimeHelper.NowVni();
+            
+            DateTime selectedDate;
+            if (string.IsNullOrEmpty(reportDate)) {
+                selectedDate = vniNow.Date;
+            } else {
+                try { selectedDate = DateTime.Parse(reportDate).Date; }
+                catch { selectedDate = vniNow.Date; }
+            }
+            
+            string dateStr = selectedDate.ToString("dd/MM/yyyy");
+
+            var deliveredOrders = await _context.TblOrders.AsNoTracking()
+                .Where(o => o.StaffReceive == userId && o.ShipStatus == "Đã giao" && (o.IsDeleted == false || o.IsDeleted == null) && o.ReceiveDate != null && o.ReceiveDate.StartsWith(dateStr))
+                .OrderByDescending(o => o.ReceiveDate)
+                .ToListAsync();
+
+            ViewBag.SelectedDate = dateStr;
+            return PartialView("_DeliveredOrdersModal", deliveredOrders);
         }
 
         // 4. ACTION: LẤY DỮ LIỆU TAB HOẠT ĐỘNG
@@ -375,8 +583,19 @@ namespace Delivery_System.Controllers
                 shift.TotalCod = totalCod;
                 shift.OrderCount = orderCount;
 
+                // TỰ ĐỘNG ĐỔ DATA VÀO BẢNG KẾ TOÁN (tblShiftAccounting)
+                var accounting = new TblShiftAccounting
+                {
+                    ShiftId = shift.ShiftId,
+                    SystemPrepaid = totalPrepaid,
+                    SystemCod = totalCod,
+                    TotalSystem = totalPrepaid + totalCod,
+                    Status = 0 // Pending: Chờ kế toán xác nhận
+                };
+                _context.TblShiftAccountings.Add(accounting);
+
                 await _context.SaveChangesAsync();
-                return Json(new { success = true, message = "Đã kết thúc ca làm việc và lưu thống kê!" });
+                return Json(new { success = true, message = "Đã kết thúc ca làm việc và chuyển dữ liệu kế toán!" });
             }
             return Json(new { success = false, message = "Không tìm thấy ca làm việc hoặc ca đã kết thúc." });
         }

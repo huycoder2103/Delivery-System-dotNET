@@ -57,10 +57,56 @@ namespace Delivery_System.Controllers
 
             if (activeShift != null)
             {
+                var endTime = TimeHelper.NowVni();
+                
+                // TÍNH TOÁN CÁC CHỈ SỐ TRƯỚC KHI ĐÓNG CA
+                // 1. Tổng TR (Cước gửi) từ các đơn đã nhập trong ca
+                var totalPrepaid = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.ShiftId == activeShift.ShiftId && (o.IsDeleted == false || o.IsDeleted == null))
+                    .SumAsync(o => o.Tr ?? 0);
+
+                // 2. Tổng CT (COD/Cước thu khi giao) từ các đơn đã giao trong ca
+                var deliveredOrders = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.StaffReceive == userId && o.ShipStatus == "Đã giao" && (o.IsDeleted == false || o.IsDeleted == null))
+                    .Select(o => new { o.Ct, o.ReceiveDate })
+                    .ToListAsync();
+
+                decimal totalCod = 0;
+                foreach (var o in deliveredOrders)
+                {
+                    if (DateTime.TryParseExact(o.ReceiveDate, "dd/MM/yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dDate))
+                    {
+                        if (dDate >= activeShift.StartTime.AddMinutes(-1) && dDate <= endTime.AddMinutes(1))
+                        {
+                            totalCod += o.Ct ?? 0;
+                        }
+                    }
+                }
+
+                // 3. Tổng số đơn hàng đã nhập trong ca
+                var orderCount = await _context.TblOrders.AsNoTracking()
+                    .Where(o => o.ShiftId == activeShift.ShiftId && (o.IsDeleted == false || o.IsDeleted == null))
+                    .CountAsync();
+
                 activeShift.Status = "ENDED";
-                activeShift.EndTime = TimeHelper.NowVni();
+                activeShift.EndTime = endTime;
+                activeShift.TotalPrepaid = totalPrepaid;
+                activeShift.TotalCod = totalCod;
+                activeShift.OrderCount = orderCount;
+
+                // TỰ ĐỘNG ĐỔ DATA VÀO BẢNG KẾ TOÁN (tblShiftAccounting)
+                var accounting = new TblShiftAccounting
+                {
+                    ShiftId = activeShift.ShiftId,
+                    SystemPrepaid = totalPrepaid,
+                    SystemCod = totalCod,
+                    TotalSystem = totalPrepaid + totalCod,
+                    Status = 0 // Pending: Chờ kế toán xác nhận
+                };
+                _context.TblShiftAccountings.Add(accounting);
+
                 await _context.SaveChangesAsync();
-                return Json(new { success = true, message = $"Đã kết thúc ca làm việc của nhân viên {userId}!" });
+                return Json(new { success = true, message = $"Đã kết thúc ca làm việc của nhân viên {userId} và chuyển dữ liệu kế toán!" });
             }
             return Json(new { success = false, message = "Không tìm thấy ca làm việc đang hoạt động." });
         }

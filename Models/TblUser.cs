@@ -40,4 +40,6 @@ public partial class TblUser
     public virtual ICollection<TblTrip> TblTrips { get; set; } = new List<TblTrip>();
 
     public virtual ICollection<TblWorkShift> TblWorkShifts { get; set; } = new List<TblWorkShift>();
+
+    public virtual ICollection<TblShiftAccounting> TblShiftAccountings { get; set; } = new List<TblShiftAccounting>();
 }

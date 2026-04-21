@@ -22,4 +22,6 @@ public partial class TblWorkShift
     public int OrderCount { get; set; }
 
     public virtual TblUser Staff { get; set; } = null!;
+
+    public virtual TblShiftAccounting? TblShiftAccounting { get; set; }
 }

@@ -156,8 +156,19 @@ namespace Delivery_System.Controllers
                 activeShift.TotalCod = totalCod;
                 activeShift.OrderCount = orderCount;
 
+                // TỰ ĐỘNG ĐỔ DATA VÀO BẢNG KẾ TOÁN (tblShiftAccounting)
+                var accounting = new TblShiftAccounting
+                {
+                    ShiftId = activeShift.ShiftId,
+                    SystemPrepaid = totalPrepaid,
+                    SystemCod = totalCod,
+                    TotalSystem = totalPrepaid + totalCod,
+                    Status = 0 // Pending: Chờ kế toán xác nhận
+                };
+                _context.TblShiftAccountings.Add(accounting);
+
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Đã kết thúc ca làm việc và lưu thống kê!";
+                TempData["SuccessMessage"] = "Đã kết thúc ca làm việc và chuyển dữ liệu sang bộ phận kế toán!";
             }
             return RedirectToAction("Index");
         }

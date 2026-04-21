@@ -33,11 +33,11 @@
             <p>Cước thu từ người gửi (TR)</p>
             <span class="rp-btn-access rp-bg-yellow-alt">Tiền cước gửi</span>
         </div>
-        <div class="rp-goods-card">
+        <a href="@Url.Action("List", "Order", new { deliveredByStaff = User.GetUserId(), dateFilter = ViewBag.SelectedDate, statusFilter = "delivered" })" class="rp-goods-card rp-card-link">
             <h3>@ViewBag.TotalCOD.ToString("N0") K</h3>
             <p>Tiền COD thu khách (CT)</p>
             <span class="rp-btn-access rp-bg-green-alt">Tiền thu hộ</span>
-        </div>
+        </a>
         <div class="rp-goods-card rp-highlight-card">
             <h2 class="text-danger">@ViewBag.CashHolding.ToString("N0") K</h2>
             <p class="font-weight-bold">TỔNG TIỀN MẶT ĐANG CẦM</p>

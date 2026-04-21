@@ -1,0 +1,54 @@
+@model IEnumerable<Delivery_System.Models.TblOrder>
+
+<div class="rp-modal-header">
+    <h3 class="rp-modal-title">📦 Danh sách đơn hàng đã giao</h3>
+    <p>Ngày: <strong>@ViewBag.SelectedDate</strong></p>
+</div>
+
+<div class="rp-table-responsive rp-mt-3" style="max-height: 400px; overflow-y: auto;">
+    <table class="rp-table">
+        <thead>
+            <tr>
+                <th>Mã đơn</th>
+                <th>Người nhận</th>
+                <th>Trạm gửi</th>
+                <th class="rp-text-right">Tiền COD (CT)</th>
+                <th>Thời gian giao</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="rp-font-mono rp-font-bold">@item.OrderId</td>
+                        <td>
+                            <div class="rp-font-bold">@item.ReceiverName</div>
+                            <div class="rp-text-muted rp-small">@item.ReceiverPhone</div>
+                        </td>
+                        <td>@item.SendStation</td>
+                        <td class="rp-text-right rp-font-bold rp-text-success">@((item.Ct ?? 0).ToString("N0"))</td>
+                        <td class="rp-small">@item.ReceiveDate</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="rp-text-center rp-p-4">Không có dữ liệu đơn hàng đã giao trong ngày này.</td>
+                </tr>
+            }
+        </tbody>
+        @if (Model != null && Model.Any())
+        {
+            <tfoot>
+                <tr class="rp-font-bold rp-bg-light">
+                    <td colspan="3" class="rp-text-right">TỔNG CỘNG:</td>
+                    <td class="rp-text-right rp-text-success">@(Model.Sum(o => o.Ct ?? 0).ToString("N0"))</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        }
+    </table>
+</div>

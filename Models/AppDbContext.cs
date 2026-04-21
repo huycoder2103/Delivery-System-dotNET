@@ -36,6 +36,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<TblWorkShift> TblWorkShifts { get; set; }
 
+    public virtual DbSet<TblShiftAccounting> TblShiftAccountings { get; set; }
+
     public virtual DbSet<VwOrderList> VwOrderLists { get; set; }
 
     public virtual DbSet<VwTripList> VwTripLists { get; set; }
@@ -595,6 +597,56 @@ entity.HasOne(d => d.Role).WithMany(p => p.TblUsers)
             entity.Property(e => e.TruckId)
                 .HasMaxLength(20)
                 .HasColumnName("truckID");
+        });
+
+        modelBuilder.Entity<TblShiftAccounting>(entity =>
+        {
+            entity.HasKey(e => e.ShiftId).HasName("PRIMARY");
+
+            entity.ToTable("tblShiftAccounting");
+
+            entity.Property(e => e.ShiftId)
+                .ValueGeneratedNever()
+                .HasColumnName("shiftID");
+            entity.Property(e => e.AccountingNote)
+                .HasMaxLength(500)
+                .HasColumnName("accountingNote");
+            entity.Property(e => e.ActualCash)
+                .HasPrecision(18, 2)
+                .HasColumnName("actualCash");
+            entity.Property(e => e.Discrepancy)
+                .HasPrecision(18, 2)
+                .HasColumnName("discrepancy");
+            entity.Property(e => e.Status)
+                .HasDefaultValueSql("'0'")
+                .HasColumnName("status");
+            entity.Property(e => e.SystemCod)
+                .HasPrecision(18, 2)
+                .HasDefaultValueSql("'0.00'")
+                .HasColumnName("systemCod");
+            entity.Property(e => e.SystemPrepaid)
+                .HasPrecision(18, 2)
+                .HasDefaultValueSql("'0.00'")
+                .HasColumnName("systemPrepaid");
+            entity.Property(e => e.TotalSystem)
+                .HasPrecision(18, 2)
+                .HasDefaultValueSql("'0.00'")
+                .HasColumnName("totalSystem");
+            entity.Property(e => e.VerifiedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("verifiedAt");
+            entity.Property(e => e.VerifiedBy)
+                .HasMaxLength(50)
+                .HasColumnName("verifiedBy");
+
+            entity.HasOne(d => d.Shift).WithOne(p => p.TblShiftAccounting)
+                .HasForeignKey<TblShiftAccounting>(d => d.ShiftId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Accounting_Shift");
+
+            entity.HasOne(d => d.VerifiedByNavigation).WithMany(p => p.TblShiftAccountings)
+                .HasForeignKey(d => d.VerifiedBy)
+                .HasConstraintName("FK_Accounting_Verifier");
         });
 
         OnModelCreatingPartial(modelBuilder);
