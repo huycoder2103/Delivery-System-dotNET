@@ -562,3 +562,13 @@ body {
     .footer-row { padding: 25px 20px; }
     .quick-links-grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* User Dropdown Info Pills */
+.d-info-pills { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.d-role-pill, .d-station-pill { font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.3px; text-transform: uppercase; display: inline-flex; align-items: center; }
+.d-role-pill { background: #e8f0fe; color: #1a73e8; border: 1px solid #d2e3fc; }
+.d-station-pill { background: #f1f3f4; color: #5f6368; border: 1px solid #dadce0; }
+.dropdown-header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; flex-direction: column; }
+.d-name { font-size: 1.1rem; font-weight: 700; color: #202124; line-height: 1.2; }
+.d-email { font-size: 0.85rem; color: #70757a; margin-top: 4px; }
+

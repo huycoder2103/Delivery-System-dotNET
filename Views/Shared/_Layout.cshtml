@@ -1,9 +1,14 @@
 @using System.Security.Claims
+@using Delivery_System.Helpers
 
 @{
-    var fullName = User.Identity?.Name ?? "Người dùng";
+    var fullName = User.GetFullName();
     var email = User.FindFirst("Email")?.Value ?? "Chưa cập nhật email";
-    var role = User.FindFirst(ClaimTypes.Role)?.Value;
+    var roleCode = User.GetRole();
+    var stationName = User.GetStationName();
+    var stationId = User.GetStationId();
+    
+    var roleName = roleCode == "AD" ? "Quản trị viên" : "Nhân viên";
     var initial = !string.IsNullOrEmpty(fullName) ? fullName.Substring(0, 1).ToUpper() : "U";
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 }
@@ -36,7 +41,7 @@
                     <li><a asp-controller="Home" asp-action="Index" class="@(currentController == "Home" ? "active" : "")">Trang chủ</a></li>
                     <li><a asp-controller="Goods" asp-action="Index" class="@(currentController == "Goods" ? "active" : "")">Hàng hóa</a></li>
                     <li><a asp-controller="Report" asp-action="Index" class="@(currentController == "Report" ? "active" : "")">Báo cáo</a></li>
-                    @if (role == "AD")
+                    @if (roleCode == "AD")
                     {
                         <li><a asp-controller="Admin" asp-action="Index" class="@(currentController == "Admin" || currentController == "Shift" ? "active" : "")">Quản trị</a></li>
                     }
@@ -89,6 +94,13 @@
                 <div class="dropdown-menu" id="userDropdown">
                     <div class="dropdown-header">
                         <span class="d-name">@fullName</span>
+                        <div class="d-info-pills">
+                            <span class="d-role-pill">@roleName</span>
+                            @if (!string.IsNullOrEmpty(stationName))
+                            {
+                                <span class="d-station-pill">📍 @stationName (@stationId)</span>
+                            }
+                        </div>
                         <span class="d-email">@email</span>
                     </div>
                     <div class="dropdown-body">
