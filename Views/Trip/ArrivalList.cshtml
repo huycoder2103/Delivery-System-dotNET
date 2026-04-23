@@ -14,7 +14,7 @@
     <div class="tr-page-header tr-page-header-Arival">
         <div>
             <h2>📥 DANH SÁCH CHUYẾN XE ĐẾN</h2>
-            <div id="tripCount" class="tr-header-meta tr-btn-sum tr-btn-header">Tổng: @(Model?.Count() ?? 0) chuyến</div>
+            @* <div id="tripCount" class="tr-header-meta tr-btn-sum tr-btn-header">Tổng: @(Model?.Count() ?? 0) chuyến</div> *@
         </div>
         
         <div class="tr-header-actions">
@@ -84,7 +84,7 @@
     </div>
 
     <!-- Pagination Controls -->
-    <div class="tr-pagination">
+    <div class="tr-pagination" id="paginationControls">
         @if (ViewBag.TotalPages > 1)
         {
             var currentPage = (int)ViewBag.CurrentPage;
@@ -153,6 +153,10 @@
                     const cAll = $('#ajaxCountAll').val();
                     $('#tripCount').text(`Tổng: ${cAll} chuyến`);
 
+                    // CẬP NHẬT PHÂN TRANG
+                    const totalPages = parseInt($('#ajaxTotalPages').val()) || 1;
+                    updatePagination(currentPage, totalPages);
+
                     if (!skipToast) {
                         const Toast = Swal.mixin({
                             toast: true,
@@ -165,6 +169,27 @@
                     }
                 }
             });
+        }
+
+        function updatePagination(page, total) {
+            const container = document.getElementById('paginationControls');
+            if (total <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = `
+                <button class="tr-btn tr-btn-secondary" onclick="changePage(${page - 1})" ${page === 1 ? 'disabled' : ''}>
+                    « Trang trước
+                </button>
+                <div class="tr-page-info px-3">
+                    Trang ${page} / ${total}
+                </div>
+                <button class="tr-btn tr-btn-secondary" onclick="changePage(${page + 1})" ${page === total ? 'disabled' : ''}>
+                    Trang sau »
+                </button>
+            `;
+            container.innerHTML = html;
         }
 
         document.getElementById('filterDeparture').addEventListener('change', () => { currentPage = 1; triggerSearch(); });

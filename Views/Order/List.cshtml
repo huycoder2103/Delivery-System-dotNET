@@ -17,7 +17,7 @@
     <div class="od-page-header">
         <div>
             <h3>📦 Quản Lý Đơn Hàng</h3>
-            <div id="orderCount" class="od-header-meta">Tổng: @(Model?.Count() ?? 0) đơn</div>
+            @* <div id="orderCount" class="od-header-meta">Tổng: @(Model?.Count() ?? 0) đơn</div> *@
         </div>
         
         <div class="od-header-actions">
@@ -98,7 +98,7 @@
     </div>
 
     <!-- Pagination Controls -->
-    <div class="od-pagination">
+    <div class="od-pagination" id="paginationControls">
         @if (ViewBag.TotalPages > 1)
         {
             var currentPage = (int)ViewBag.CurrentPage;
@@ -164,6 +164,10 @@
                     // CẬP NHẬT CÁC CON SỐ THỐNG KÊ (Giải pháp 2)
                     updateCounts();
 
+                    // CẬP NHẬT PHÂN TRANG
+                    const totalPages = parseInt($('#ajaxTotalPages').val()) || 1;
+                    updatePagination(currentPage, totalPages);
+
                     if (!skipToast) {
                         const Toast = Swal.mixin({
                             toast: true,
@@ -176,6 +180,27 @@
                     }
                 }
             });
+        }
+
+        function updatePagination(page, total) {
+            const container = document.getElementById('paginationControls');
+            if (total <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = `
+                <button class="od-btn od-btn-secondary" onclick="changePage(${page - 1})" ${page === 1 ? 'disabled' : ''}>
+                    « Trang trước
+                </button>
+                <div class="od-page-info od-page-info-box">
+                    Trang ${page} / ${total}
+                </div>
+                <button class="od-btn od-btn-secondary" onclick="changePage(${page + 1})" ${page === total ? 'disabled' : ''}>
+                    Trang sau »
+                </button>
+            `;
+            container.innerHTML = html;
         }
 
         function updateCounts() {

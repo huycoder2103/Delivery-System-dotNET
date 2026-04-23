@@ -12,7 +12,7 @@
     --tr-warning: #f9ab00;
     --tr-info: #1a73e8;
     --tr-text-main: #3c4043;
-    --tr-text-muted: #5f6368;
+    --tr-text-muted: #4064C7;
     --tr-border: #dadce0;
     --tr-bg: #f8f9fa;
     --tr-card-shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -178,7 +178,7 @@
 
 /* --- 2. List Section --- */
 .tr-sticky-filter {
-    position: sticky; top: 135px; z-index: 800; background: rgba(255, 255, 255, 0.98) !important;
+    position: sticky; top: 115px; z-index: 800; background: rgba(255, 255, 255, 0.98) !important;
     backdrop-filter: blur(10px); 
     margin-top: -20px; border-radius: 0 0 15px 15px !important; padding: 15px 20px !important;
 }
@@ -200,7 +200,11 @@
 .tr-search-wrapper { flex: 1; position: relative; }
 .tr-search-input { min-width: 120px; width: 250px; padding: 8px 40px 8px 12px; border-radius: 8px; border: 1px solid #ddd; }
 
-.tr-id-text { font-weight: 600; font-size: 14px; }
+.tr-id-text {
+    font-weight: 600;
+    font-size: 14px;
+    color: #6689E5
+}
 .tr-col-id, .tr-col-route, .tr-col-staff, .tr-col-time, .tr-col-status, .tr-col-plate { width: 130px; max-width: 130px; text-align: center; }
 .tr-col-act { width: 150px; max-width: 220px; text-align: center; }
 .tr-route-box { display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; font-size: 0.8rem; }

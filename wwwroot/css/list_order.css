@@ -12,7 +12,7 @@
     --od-warning: #f9ab00;
     --od-info: #1a73e8;
     --od-text-main: #3c4043;
-    --od-text-muted: #5f6368;
+    --od-text-muted: #4A73E0;
     --od-border: #dadce0;
     --od-bg: #f8f9fa;
     --od-card-shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -149,7 +149,7 @@
 /* --- Sticky Filter Bar --- */
 .od-sticky-filter {
     position: sticky;
-    top: 135px;
+    top: 115px;
     z-index: 800;
     background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: blur(12px);
