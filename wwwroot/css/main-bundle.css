@@ -523,38 +523,65 @@ body {
 
 @media (max-width: 1024px) {
     .navbar {
-        flex-direction: column;
+        flex-direction: row; /* Chuyển về row để dùng wrap */
+        flex-wrap: wrap;     /* Cho phép xuống hàng */
+        justify-content: space-between;
         height: auto;
         padding: 10px 15px;
         gap: 10px;
+        position: fixed;
     }
 
-    .nav-brand { align-self: flex-start; }
-
-    .nav-menu-container {
-        width: 100%;
-        overflow-x: auto;
-        border-radius: 15px;
-    }
-
-    .nav-indicator { display: none !important; }
-
-    .nav-links li a {
-        padding: 8px 15px;
-        font-size: 0.85rem;
-        min-width: unset;
+    .nav-brand { 
+        order: 1;
+        flex: 1; /* Chiếm không gian còn lại để đẩy user zone về bên phải */
     }
 
     .nav-user-zone {
-        position: absolute;
-        top: 10px;
-        right: 15px;
+        order: 2;
+        position: static; /* Bỏ absolute để không đè lên logo */
+        gap: 8px;
     }
+
+    .nav-menu-container {
+        order: 3;
+        width: 100%; /* Ép thanh menu xuống hàng riêng */
+        overflow: hidden; /* Bỏ cuộn ngang nếu không cần thiết */
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-links {
+        width: 100%;
+        display: flex;
+        justify-content: space-around; /* Chia đều các mục menu */
+        padding: 2px 0;
+    }
+
+    .nav-links li {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+    }
+
+    .nav-links li a {
+        padding: 8px 4px;
+        font-size: 0.75rem; /* Chữ nhỏ hơn cho mobile */
+        min-width: unset;
+        white-space: nowrap;
+        text-align: center;
+        width: 100%;
+    }
+
+    .nav-indicator { display: none !important; }
 
     .user-trigger-name { display: none; }
 }
 
 @media (max-width: 768px) {
+    body {
+        padding-top: 145px !important;
+    }
     .contact-info-large {
         flex-direction: column;
         gap: 15px;

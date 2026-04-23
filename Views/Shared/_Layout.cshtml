@@ -169,6 +169,12 @@
             else moveIndicator(navLinks[0]);
         });
 
+        // Tự động cập nhật vị trí thanh chạy khi co giãn màn hình
+        window.addEventListener('resize', () => {
+            const activeLink = document.querySelector('.nav-links li a.active');
+            if (activeLink) moveIndicator(activeLink);
+        });
+
         navLinks.forEach(link => {
             link.addEventListener('mouseenter', (e) => moveIndicator(e.target));
         });
