@@ -68,8 +68,10 @@
                        value="@(string.IsNullOrEmpty(ViewBag.SearchStaff) ? ViewBag.SearchPhone : ViewBag.SearchStaff)" class="od-search-input">
             </div>
 
-            <a asp-action="Create" class="od-btn od-btn-success">➕ Nhập Hàng</a>
-            <button onclick="resetFilters()" class="od-btn od-btn-secondary">🔄 Làm mới</button>
+            <div class="od-filter-actions">
+                <a asp-action="Create" class="od-btn od-btn-success">➕ Nhập Hàng</a>
+                <button onclick="resetFilters()" class="od-btn od-btn-secondary">🔄 Làm mới</button>
+            </div>
         </div>
     </div>
 

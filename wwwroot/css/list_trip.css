@@ -187,8 +187,8 @@
     border-left: 2px solid #27ae60;
 }
 .tr-sticky-filter-Arival {
-    border-bottom: 2px solid #d93025;
-    border-left: 2px solid #d93025;
+    border-bottom: 2px solid #F39C12;
+    border-left: 2px solid #F39C12;
 }
 .tr-filter-group {
     display: flex;
@@ -383,7 +383,7 @@
     .tr-page-header { flex-direction: column; text-align: center; gap: 15px; position: relative !important; top: 0 !important; }
     .tr-sticky-filter { position: relative !important; top: 0 !important; border: none !important; margin-top: 10px !important; }
     .tr-filter-group { flex-direction: column; align-items: flex-start; gap: 12px !important; }
-    .tr-filter-select, .tr-search-wrapper, .tr-search-input { width: 100% !important; flex: none !important; }
+    .tr-filter-select, .tr-search-wrapper, .tr-search-input { width: 80% !important; flex: none !important; }
     .tr-form-row { flex-direction: column; gap: 15px; }
     .tr-time-picker { padding: 10px; justify-content: center; }
 }
