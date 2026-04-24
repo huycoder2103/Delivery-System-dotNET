@@ -30,8 +30,12 @@ namespace Delivery_System.Controllers
             const string stationCacheKey = "StationList";
             if (!_cache.TryGetValue(stationCacheKey, out List<TblStation>? stations))
             {
-                stations = await _context.TblStations.AsNoTracking().Where(s => s.IsActive == true).ToListAsync();
-                var cacheOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(60));
+                stations = await _context.TblStations.AsNoTracking()
+                    .Where(s => s.IsActive == true)
+                    .ToListAsync();
+                
+                // Giảm xuống 1 phút để dễ test trên máy local
+                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(1));
                 _cache.Set(stationCacheKey, stations, cacheOptions);
             }
             return stations ?? new List<TblStation>();
@@ -42,6 +46,7 @@ namespace Delivery_System.Controllers
         {
             const int pageSize = 10;
             if (page < 1) page = 1;
+            DateTime dt; // Khai báo một lần ở đây
 
             ViewBag.StationList = await GetCachedStationsAsync();
             var query = _context.TblOrders.AsNoTracking().Where(o => o.IsDeleted == false || o.IsDeleted == null);
@@ -51,10 +56,11 @@ namespace Delivery_System.Controllers
             if (!string.IsNullOrEmpty(deliveredByStaff))
             {
                 query = query.Where(o => o.StaffReceive == deliveredByStaff && o.ShipStatus == "Đã giao");
-                if (!string.IsNullOrEmpty(dateFilter) && DateTime.TryParse(dateFilter, out DateTime dt))
+                if (!string.IsNullOrEmpty(dateFilter) && DateTime.TryParse(dateFilter, out dt))
                 {
+                    // Đảm bảo so sánh chính xác chuỗi ngày dd/MM/yyyy
                     string dateStr = dt.ToString("dd/MM/yyyy");
-                    query = query.Where(o => o.ReceiveDate != null && o.ReceiveDate.StartsWith(dateStr));
+                    query = query.Where(o => o.ReceiveDate != null && o.ReceiveDate.Contains(dateStr));
                 }
             }
             else
@@ -79,11 +85,17 @@ namespace Delivery_System.Controllers
 
                 if (!string.IsNullOrEmpty(searchStaff)) query = query.Where(o => o.StaffInput == searchStaff);
 
-                if (!string.IsNullOrEmpty(dateFilter) && DateTime.TryParse(dateFilter, out DateTime dt))
+                if (!string.IsNullOrEmpty(dateFilter) && DateTime.TryParse(dateFilter, out dt))
                 {
                     var nextDay = dt.AddDays(1);
                     string dateStr = dt.ToString("dd/MM/yyyy");
-                    if (isCashFlow)
+
+                    // Ưu tiên lọc theo ngày giao nếu chọn xem đơn ĐÃ GIAO
+                    if (statusFilter == "delivered")
+                    {
+                        query = query.Where(o => o.ShipStatus == "Đã giao" && o.ReceiveDate != null && o.ReceiveDate.Contains(dateStr));
+                    }
+                    else if (isCashFlow)
                     {
                         query = query.Where(o => ((o.CreatedAt >= dt && o.CreatedAt < nextDay) && (o.Tr > 0)) || (o.ShipStatus == "Đã giao" && o.ReceiveDate != null && o.ReceiveDate.StartsWith(dateStr) && (o.Ct > 0)));
                     }
@@ -102,7 +114,7 @@ namespace Delivery_System.Controllers
                         var arrivedTripIds = await _context.TblTrips.AsNoTracking().Where(t => t.Status == "Đã đến").Select(t => t.TripId).ToListAsync();
                         query = query.Where(o => arrivedTripIds.Contains(o.TripId ?? "") && o.ShipStatus != "Đã giao");
                     }
-                    else if (statusFilter == "delivered") query = query.Where(o => o.ShipStatus == "Đã giao");
+                    // Bỏ block else if (statusFilter == "delivered") cũ ở đây vì đã xử lý ở trên
                 }
 
                 if (!string.IsNullOrEmpty(sendStationFilter)) query = query.Where(o => o.SendStation == sendStationFilter);
