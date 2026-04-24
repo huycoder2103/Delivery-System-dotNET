@@ -106,6 +106,8 @@
                     @if (canEdit && string.IsNullOrEmpty(o.TripId))
                     {
                         <a asp-action="Edit" asp-route-id="@o.OrderId" class="od-btn od-btn-s od-btn-s-edit">Sửa</a>
+                        @* <button type="button" onclick="confirmDeleteOrder('@o.OrderId')" class="od-btn od-btn-s od-btn-s-delete">Xóa</button>
+                        <form id="deleteOrderForm-@o.OrderId" asp-action="Delete" asp-route-id="@o.OrderId" method="POST" style="display:none;"></form> *@
                     }
                     else
                     {

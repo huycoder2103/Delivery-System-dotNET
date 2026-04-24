@@ -137,7 +137,119 @@ namespace Delivery_System.Controllers
         [HttpPost] public async Task<IActionResult> AssignToTrip(List<string> orderIds, string? orderId, string tripId, string source) { var userId = User.GetUserId(); var role = User.GetRole(); if (orderIds == null) orderIds = new List<string>(); if (!string.IsNullOrEmpty(orderId)) orderIds.Add(orderId); if (!orderIds.Any()) { TempData["ErrorMessage"] = "Vui lòng chọn ít nhất một đơn hàng!"; return (source == "ship") ? RedirectToAction("List") : RedirectToAction("List", "Trip"); } var userStationName = User.GetStationName(); var result = await _orderService.AssignOrdersToTripAsync(orderIds, tripId, userId, role, userStationName); if (result.SuccessCount > 0) TempData["SuccessMessage"] = result.Message; else TempData["ErrorMessage"] = result.Message; return (source == "ship") ? RedirectToAction("List") : RedirectToAction("AssignGoods", "Trip", new { id = tripId }); }
         [HttpGet] public async Task<IActionResult> Create() { var userId = User.GetUserId(); var role = User.GetRole(); ViewBag.UserStationName = User.GetStationName(); var activeShift = await _context.TblWorkShifts.AsNoTracking().FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE"); ViewBag.HasActiveShift = (role == "AD" || activeShift != null); ViewBag.StationList = await GetCachedStationsAsync(); return View(); }
         [HttpPost] public async Task<IActionResult> Create(TblOrder order) { var userId = User.GetUserId(); var role = User.GetRole(); var userStationName = User.GetStationName(); ModelState.Remove("OrderId"); if (!ModelState.IsValid) { var activeShift = await _context.TblWorkShifts.AsNoTracking().FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE"); ViewBag.HasActiveShift = (role == "AD" || activeShift != null); ViewBag.StationList = await GetCachedStationsAsync(); ViewBag.UserStationName = userStationName; return View(order); } var result = await _orderService.CreateOrderAsync(order, userId, role, userStationName); if (result.Success) { TempData["SuccessMessage"] = result.Message; return RedirectToAction("List"); } else { if (result.Message.Contains("ca làm việc")) { TempData["ErrorMessage"] = result.Message; ViewBag.HasActiveShift = false; } else { ModelState.AddModelError("", result.Message); } ViewBag.StationList = await GetCachedStationsAsync(); ViewBag.UserStationName = userStationName; return View(order); } }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(string id)
+        {
+            var order = await _context.TblOrders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == id);
+            if (order == null) return NotFound();
+
+            var userId = User.GetUserId();
+            var role = User.GetRole();
+
+            // Quyền: Admin hoặc người tạo
+            if (role != "AD" && order.StaffInput != userId)
+            {
+                TempData["ErrorMessage"] = "Bạn không có quyền chỉnh sửa đơn hàng này!";
+                return RedirectToAction("List");
+            }
+
+            // Trạng thái: Chưa lên xe
+            if (!string.IsNullOrEmpty(order.TripId))
+            {
+                TempData["ErrorMessage"] = "Đơn hàng đã lên xe, không thể chỉnh sửa!";
+                return RedirectToAction("List");
+            }
+
+            ViewBag.StationList = await GetCachedStationsAsync();
+            return View(order);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(TblOrder order)
+        {
+            var userId = User.GetUserId();
+            var role = User.GetRole();
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.StationList = await GetCachedStationsAsync();
+                return View(order);
+            }
+
+            var result = await _orderService.UpdateOrderAsync(order, userId, role);
+            if (result.Success)
+            {
+                TempData["SuccessMessage"] = result.Message;
+                return RedirectToAction("List");
+            }
+
+            ModelState.AddModelError("", result.Message);
+            ViewBag.StationList = await GetCachedStationsAsync();
+            return View(order);
+        }
+
         [HttpPost] public async Task<IActionResult> Deliver(string id) { var userId = User.GetUserId(); var role = User.GetRole(); var userStation = User.GetStationName(); var activeShift = await _context.TblWorkShifts.FirstOrDefaultAsync(s => s.StaffId == userId && s.Status == "ACTIVE"); if (role != "AD" && activeShift == null) return Json(new { success = false, message = "Bạn chưa bắt đầu ca làm việc!" }); var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == id); if (order == null) return Json(new { success = false, message = "Không tìm thấy đơn hàng." }); if (role != "AD" && order.ReceiveStation != userStation) return Json(new { success = false, message = $"Bạn không có quyền giao đơn hàng này. Trạm đích: {order.ReceiveStation}" }); order.ShipStatus = "Đã giao"; order.StaffReceive = userId; order.ReceiveDate = TimeHelper.NowVni().ToString("dd/MM/yyyy HH:mm"); await _context.SaveChangesAsync(); return Json(new { success = true, message = $"Đơn hàng {id} thành công!", tripId = order.TripId }); }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == id);
+            if (order != null)
+            {
+                if (!string.IsNullOrEmpty(order.TripId))
+                {
+                    TempData["ErrorMessage"] = "Không thể xóa đơn hàng đã lên xe!";
+                    return RedirectToAction("List");
+                }
+                order.IsDeleted = true;
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"Đã xóa đơn hàng {id} vào thùng rác.";
+            }
+            return RedirectToAction("List");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Trash()
+        {
+            var list = await _context.TblOrders.Where(o => o.IsDeleted == true).OrderByDescending(o => o.CreatedAt).ToListAsync();
+            return View(list);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Restore(string id)
+        {
+            var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == id);
+            if (order != null)
+            {
+                order.IsDeleted = false;
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"Đã khôi phục đơn hàng {id}.";
+            }
+            return RedirectToAction("Trash");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> HardDelete(string id)
+        {
+            var order = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == id);
+            if (order != null)
+            {
+                _context.TblOrders.Remove(order);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"Đã xóa vĩnh viễn đơn hàng {id}.";
+            }
+            return RedirectToAction("Trash");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PrintReceipt(string id)
+        {
+            var order = await _context.TblOrders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == id);
+            if (order == null) return NotFound();
+            ViewBag.PrintTime = TimeHelper.NowVni().ToString("dd/MM/yyyy HH:mm:ss");
+            return View(order);
+        }
 
         [HttpPost]
         public async Task<IActionResult> RemoveFromTrip(string orderId, string tripId)

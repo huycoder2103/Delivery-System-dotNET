@@ -47,7 +47,7 @@ body {
     background: linear-gradient(135deg, #53A6D8, #88CDF6);
     backdrop-filter: blur(20px) saturate(160%);
     -webkit-backdrop-filter: blur(20px) saturate(160%);
-    height: 75px;
+    height: 70px;
     display: flex;
     justify-content: space-between;
     align-items: center;

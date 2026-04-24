@@ -111,6 +111,69 @@ namespace Delivery_System.Services
             }
         }
 
+        public async Task<(bool Success, string Message)> UpdateOrderAsync(TblOrder order, string userId, string role)
+        {
+            var existing = await _context.TblOrders.FirstOrDefaultAsync(o => o.OrderId == order.OrderId);
+            if (existing == null) return (false, "Không tìm thấy đơn hàng!");
+
+            // Kiểm tra quyền: Admin hoặc người tạo đơn
+            if (role != "AD" && existing.StaffInput != userId)
+                return (false, "Bạn không có quyền chỉnh sửa đơn hàng này!");
+
+            // Kiểm tra trạng thái: Chỉ cho phép sửa nếu chưa lên xe
+            if (!string.IsNullOrEmpty(existing.TripId))
+                return (false, "Đơn hàng đã lên xe, không thể chỉnh sửa!");
+
+            try
+            {
+                existing.ItemName = order.ItemName;
+                existing.ReceiverName = order.ReceiverName;
+                existing.ReceiverPhone = order.ReceiverPhone;
+                existing.SenderName = order.SenderName;
+                existing.SenderPhone = order.SenderPhone;
+                existing.ReceiveStation = order.ReceiveStation;
+                existing.Note = order.Note;
+                existing.Tr = order.Tr ?? 0;
+                existing.Ct = order.Ct ?? 0;
+                existing.Amount = (existing.Tr ?? 0) + (existing.Ct ?? 0);
+                
+                // Trạm gửi chỉ Admin mới được đổi
+                if (role == "AD")
+                {
+                    existing.SendStation = order.SendStation;
+                }
+
+                await _context.SaveChangesAsync();
+
+                // SignalR: Thông báo cập nhật
+                var groups = new List<string> { "AdminGroup" };
+                var stationNames = new List<string>();
+                if (!string.IsNullOrEmpty(existing.SendStation)) stationNames.Add(existing.SendStation);
+                if (!string.IsNullOrEmpty(existing.ReceiveStation)) stationNames.Add(existing.ReceiveStation);
+
+                if (stationNames.Any())
+                {
+                    var stationIds = await _context.TblStations
+                        .AsNoTracking()
+                        .Where(s => stationNames.Contains(s.StationName))
+                        .Select(s => s.StationId)
+                        .ToListAsync();
+                    
+                    foreach (var sid in stationIds)
+                    {
+                        groups.Add("Station_" + sid);
+                    }
+                }
+                await _hubContext.Clients.Groups(groups).SendAsync("UpdateOrderList");
+
+                return (true, "Cập nhật đơn hàng thành công!");
+            }
+            catch (Exception ex)
+            {
+                return (false, "Lỗi khi cập nhật: " + ex.Message);
+            }
+        }
+
         public async Task<(int SuccessCount, string Message)> AssignOrdersToTripAsync(List<string> orderIds, string tripId, string userId, string role, string? userStationName)
         {
             var trip = await _context.VwTripLists.AsNoTracking().FirstOrDefaultAsync(t => t.TripId == tripId);
