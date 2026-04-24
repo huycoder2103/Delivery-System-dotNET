@@ -37,3 +37,4 @@ wwwroot/js/*.br
 .idea/
 *.log
 /Logs
+/delivery_system_db.sql
