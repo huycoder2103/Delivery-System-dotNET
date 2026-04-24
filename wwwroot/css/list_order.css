@@ -254,6 +254,11 @@
     color: #3f51b5;
 }
 
+.od-btn-s-print-a5 {
+    background: #fce4ec;
+    color: #c2185b;
+}
+
 .od-btn-s-ship {
     background: #e8f0fe;
     color: #1a73e8;
@@ -1085,6 +1090,34 @@
     .od-btn-success {
         background: var(--od-success) !important;
         box-shadow: 0 4px 12px rgba(52, 168, 83, 0.2);
+    }
+
+    /* Tối ưu hóa form Nhập/Sửa cho Mobile */
+    .od-form-row, .od-form-row-2, .od-form-row-3 {
+        flex-direction: column !important;
+        display: flex !important;
+        gap: 10px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .od-form-group {
+        width: 100% !important;
+        margin-bottom: 5px !important;
+    }
+
+    .od-form-control {
+        height: 48px !important; /* Ô nhập to hơn cho dễ chạm */
+        font-size: 1rem !important;
+    }
+
+    .od-container-small, .od-container-edit {
+        margin: 10px auto !important;
+        padding: 0 10px !important;
+    }
+
+    .od-card {
+        padding: 15px !important;
+        border-radius: 12px !important;
     }
 
     .od-table {
