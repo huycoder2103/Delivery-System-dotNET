@@ -62,7 +62,8 @@
 
 .tr-page-wrap { max-width: 1750px; margin: 16px auto 30px; background: #fff; border-radius: 6px; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
 .tr-hdr {
-    background: linear-gradient(135deg, #27ae60, #063125);
+/*    background: linear-gradient(135deg, #27ae60, #063125);*/
+    background: linear-gradient(135deg, var(--od-primary), var(--od-primary-dark));
     color: #fff;
     padding: 13px 20px;
     border-radius: 6px 6px 0 0;
@@ -272,6 +273,35 @@
 /* Create specific extras */
 .tr-form-row-top { align-items: flex-start; gap: 60px; }
 .tr-time-picker-col { flex: 0 0 auto; width: 300px; }
+
+.tr-driver-save-wrapper {
+    display: flex;
+    gap: 60px;
+    align-items: flex-end;
+    flex: 1;
+    max-width: 700px;
+}
+
+.tr-driver-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex: 1;
+}
+
+.tr-save-action {
+    flex: 0 0 auto;
+}
+
+.tr-btn-save-trip-inline {
+/*    height: 105px;*/
+    width: 220px;
+    white-space: nowrap;
+    line-height: 1.4;
+    padding: 12px 25px;
+    font-size: 1.1rem;
+}
+
 .tr-driver-info-col { gap: 15px; max-width: 400px; flex: 1; display: flex; flex-direction: column; }
 .tr-input-group-vertical { display: flex; flex-direction: column; }
 .tr-full-width-input { width: 100%; }

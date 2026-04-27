@@ -102,15 +102,23 @@
                     </div>
                 </div>
 
-                <!-- Cột phải: Tài xế (trên) và Phụ xe (dưới) -->
-                <div class="tr-form-group tr-driver-info-col">
-                    <div class="tr-input-group-vertical mb-3">
-                        <label class="form-label">Tài Xế Phụ Trách</label>
-                        <input asp-for="DriverName" type="text" placeholder="Họ tên tài xế..." class="form-control tr-form-control tr-full-width-input">
+                <!-- Cột phải: Khối chứa Tài xế/Phụ xe (dọc) và Nút Lưu (bên phải) -->
+                <div class="tr-driver-save-wrapper">
+                    <!-- Khối nhập liệu dọc -->
+                    <div class="tr-driver-inputs">
+                        <div class="tr-input-group-vertical">
+                            <label class="form-label">Tài Xế Phụ Trách</label>
+                            <input asp-for="DriverName" type="text" placeholder="Họ tên tài xế..." class="form-control tr-form-control tr-full-width-input">
+                        </div>
+                        <div class="tr-input-group-vertical">
+                            <label class="form-label">Nhân Viên Phụ Xe</label>
+                            <input asp-for="AssistantName" type="text" placeholder="Họ tên phụ xe..." class="form-control tr-form-control tr-full-width-input">
+                        </div>
                     </div>
-                    <div class="tr-input-group-vertical">
-                        <label class="form-label">Nhân Viên Phụ Xe</label>
-                        <input asp-for="AssistantName" type="text" placeholder="Họ tên phụ xe..." class="form-control tr-form-control tr-full-width-input">
+                    
+                    <!-- Khối nút Lưu bên phải -->
+                    <div class="tr-save-action">
+                        <input type="submit" form="tripForm" value="💾 Lưu Chuyến Xe" class="tr-btn tr-btn-success tr-btn-save-trip-inline" @(ViewBag.HasActiveShift == false ? "disabled" : "")>
                     </div>
                 </div>
             </div>
@@ -119,7 +127,6 @@
 
     <div class="tr-form-actions-row mt-4">
         <a asp-action="List" class="tr-btn tr-btn-secondary">⬅ Quay lại danh sách</a>
-        <input type="submit" form="tripForm" value="💾 Lưu Chuyến Xe" class="tr-btn tr-btn-success tr-btn-save-trip" @(ViewBag.HasActiveShift == false ? "disabled" : "")>
     </div>
 </div>
 
