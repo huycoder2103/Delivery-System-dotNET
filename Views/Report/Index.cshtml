@@ -12,11 +12,11 @@
     <!-- NÚT CHUYỂN TAB -->
     <div class="rp-tabs-container rp-d-flex rp-justify-between rp-align-center">
         <div class="rp-tabs" id="reportTabs">
-            <button class="rp-tab-btn" data-tab="summary" onclick="switchTab('summary')">📋 Tổng Quan</button>
-            <button class="rp-tab-btn" data-tab="activity" onclick="switchTab('activity')">📦 Lịch sử Hoạt Động</button>
+            <button class="rp-tab-btn" data-tab="summary" onclick="switchTab('summary')">Tổng Quan</button>
+            <button class="rp-tab-btn" data-tab="activity" onclick="switchTab('activity')">Lịch sử Hoạt Động</button>
             @if (role == "AD")
             {
-                <button class="rp-tab-btn" data-tab="station-summary" onclick="switchTab('station-summary')">🏪 Doanh Thu Trạm</button>
+                <button class="rp-tab-btn" data-tab="station-summary" onclick="switchTab('station-summary')">Doanh Thu Trạm</button>
             }
         </div>
         @if (role == "AD")
@@ -35,7 +35,7 @@
                 </select>
                 <input type="date" id="excelExportDate" value="@defaultDate" class="rp-filter-input" style="width: 150px; padding: 6px 10px;">
                 <button onclick="exportToExcel()" class="rp-btn rp-btn-success">
-                    Excel 📥 Chi Tiết Ca Làm
+                    Chi Tiết Ca Làm
                 </button>
             </div>
         }

@@ -53,6 +53,7 @@
     top: 70px;
     z-index: 900;
     background: linear-gradient(135deg, var(--od-primary), var(--od-primary-dark));
+/*    background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);*/
     color: #fff;
     padding: 10px 30px;
     border-radius: 15px;
@@ -204,7 +205,7 @@
     }
 
 .od-btn-success {
-    background: var(--od-success);
+    background: #4971DC;
     color: #fff;
 }
 

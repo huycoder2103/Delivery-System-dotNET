@@ -11,28 +11,28 @@
 <div class="admin-wrapper">
     <div class="admin-page-header">
         <div>
-            <h3>🛡️ Quản Lý Hệ Thống</h3>
+            <h3>Quản Lý Hệ Thống</h3>
             <div class="admin-page-header-meta">
                 Chào mừng quản trị viên. Hiện có <strong class="admin-text-success">@ViewBag.ActiveStaffCount</strong> nhân viên đang trong ca làm việc.
             </div>
         </div>
     
         <div class="admin-header-actions">
-            <a asp-controller="Report" asp-action="Index" class="admin-btn-header-action">
+            @* <a asp-controller="Report" asp-action="Index" class="admin-btn-header-action">
                 ⏰ Ca Làm Việc
-            </a>
+            </a> *@
             <button class="admin-btn-modern admin-btn-add" onclick="showAddModal()">
                 ➕ Thêm Nhân Viên Mới
             </button>
             <button class="admin-btn-modern admin-btn-add" onclick="showStationModal()">
-                🏢 Thêm Trạm Mới
+                    📍 Thêm Trạm Mới
             </button>
         </div>
     </div>
 
     <div class="admin-tabs-container">
         <button id="btnTabStaff" class="admin-btn-tab active" onclick="showTab('staff')">👥 Quản Lý Nhân Viên</button>
-        <button id="btnTabStation" class="admin-btn-tab" onclick="showTab('station')">🏢 Quản Lý Trạm</button>
+            <button id="btnTabStation" class="admin-btn-tab" onclick="showTab('station')">📍 Quản Lý Trạm</button>
     </div>
 
     <main id="tabStaff" class="admin-content-card admin-tab-content active">
@@ -233,7 +233,7 @@
 
 <div id="stationModal" class="admin-modal">
     <div class="admin-modal-content">
-        <div class="admin-modal-header"><h3 id="stationModalTitle">🏢 Thêm Trạm Mới</h3></div>
+        <div class="admin-modal-header"><h3 id="stationModalTitle">Thêm Trạm Mới</h3></div>
         <form asp-action="SaveStation" method="POST">
             <input type="hidden" name="stationId" id="stationId">
             <div class="admin-form-group"><label>Tên Trạm</label><input type="text" name="stationName" id="stationName" class="admin-form-control" required></div>

@@ -16,16 +16,16 @@
     
     <div class="od-page-header">
         <div>
-            <h3>📦 Quản Lý Đơn Hàng</h3>
+            <h3>Quản Lý Đơn Hàng</h3>
             @* <div id="orderCount" class="od-header-meta">Tổng: @(Model?.Count() ?? 0) đơn</div> *@
         </div>
         
         <div class="od-header-actions">
             <a asp-controller="Trip" asp-action="List" class="od-btn od-btn-header">
-                📤 Chuyến Xe Đi
+                Chuyến Xe Đi
             </a>
             <a asp-controller="Trip" asp-action="ArrivalList" class="od-btn od-btn-header">
-                📥 Chuyến Xe Đến
+                Chuyến Xe Đến
             </a>
         </div>
     </div>
@@ -33,7 +33,7 @@
     <div class="od-card od-sticky-filter">
         <div class="od-filter-group">
             <select id="statusFilter" class="od-filter-input od-select-status" onchange="changeStatus(this.value)">
-                <option value="all" selected="@(ViewBag.CurrentStatus == "all" ? "selected" : null)">🌐 Tất cả đơn (@ViewBag.CountAll)</option>
+                <option value="all" selected="@(ViewBag.CurrentStatus == "all" ? "selected" : null)">Tất cả đơn (@ViewBag.CountAll)</option>
                 <option value="waiting" selected="@(ViewBag.CurrentStatus == "waiting" ? "selected" : null)">⏳ Chờ xe (@ViewBag.CountWaiting)</option>
                 <option value="shipping" selected="@(ViewBag.CurrentStatus == "shipping" ? "selected" : null)">🚛 Đang chuyển (@ViewBag.CountShipping)</option>
                 <option value="arrived" selected="@(ViewBag.CurrentStatus == "arrived" ? "selected" : null)">📥 Chờ giao (@ViewBag.CountArrived)</option>
@@ -69,8 +69,8 @@
             </div>
 
             <div class="od-filter-actions">
-                <a asp-action="Create" class="od-btn od-btn-success">➕ Nhập Hàng</a>
-                <button onclick="resetFilters()" class="od-btn od-btn-secondary">🔄 Làm mới</button>
+                <a asp-action="Create" class="od-btn od-btn-success">Nhập Hàng</a>
+                <button onclick="resetFilters()" class="od-btn od-btn-secondary">Làm mới</button>
             </div>
         </div>
     </div>

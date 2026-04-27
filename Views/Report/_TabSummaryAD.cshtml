@@ -4,11 +4,11 @@
             <div class="rp-filter-group">
                 <input type="date" name="reportDate" value="@ViewBag.SelectedDate" class="rp-filter-input" onchange="this.form.requestSubmit()">
             </div>
-            <button type="submit" class="rp-btn rp-btn-primary">Tiềm kiếm</button>
+            <button type="submit" class="rp-btn rp-btn-primary">Tìm kiếm</button>
         </form>
     </div>
 
-    <h4 class="rp-summary-title">📈 Tổng Kết Doanh Thu Toàn Hệ Thống</h4>
+    <h4 class="rp-summary-title">Tổng Kết Doanh Thu</h4>
     <div class="rp-goods-grid rp-goods-grid-4">
         <a href="@Url.Action("List", "Order", new { dateFilter = ViewBag.SelectedDate, isCashFlow = true })" class="rp-goods-card rp-goods-card-compact rp-card-link">
             <h3>@ViewBag.RevenueDateVal.ToString("N0") K</h3>
@@ -18,21 +18,21 @@
         <a href="@Url.Action("List", "Order", new { dateFilter = ViewBag.SelectedDate, isCashFlow = true })" class="rp-goods-card rp-goods-card-compact rp-card-link">
             <h3 class="text-success">@ViewBag.TotalPrepaidAD.ToString("N0") K</h3>
             <p>Tổng cước gửi (TR)</p>
-            <span class="rp-btn-access rp-bg-green-alt">Phí gửi</span>
+            <span class="rp-btn-access rp-bg-blue-alt">Phí gửi</span>
         </a>
         <a href="@Url.Action("List", "Order", new { dateFilter = ViewBag.SelectedDate, statusFilter = "delivered" })" class="rp-goods-card rp-goods-card-compact rp-card-link">
             <h3 class="text-warning">@ViewBag.TotalCODAD.ToString("N0") K</h3>
             <p>Tổng tiền COD (CT)</p>
-            <span class="rp-btn-access rp-bg-yellow-alt">Tiền thu hộ</span>
+            <span class="rp-btn-access rp-bg-blue-alt">Tiền thu hộ</span>
         </a>
         <a href="@Url.Action("List", "Order", new { dateFilter = ViewBag.SelectedDate })" class="rp-goods-card rp-goods-card-compact rp-card-link">
             <h3>@ViewBag.OrdersDateVal</h3>
             <p>Đơn hàng nhập mới</p>
-            <span class="rp-btn-access rp-bg-red-alt">Đơn mới</span>
+            <span class="rp-btn-access rp-bg-blue-alt">Đơn mới</span>
         </a>
     </div>
 
-    <h5 class="rp-card-title rp-text-center mt-4">📊 Doanh Thu Tích Lũy</h5>
+    <h4 class="rp-summary-title">Doanh Thu Hệ Thống</h4>
     <div class="rp-goods-grid rp-goods-grid-4">
         <div class="rp-goods-card rp-goods-card-compact">
             <h3>@ViewBag.RevenueWeekly.ToString("N0") K</h3>
@@ -48,7 +48,7 @@
         </div>
     </div>
 
-    <h5 class="rp-card-title rp-text-center">🚀 Biểu Đồ Tăng Trưởng (7 Ngày)</h5>
+    <h4 class="rp-summary-title">Biểu Đồ Tăng Trưởng (7 Ngày)</h4>
     <div class="rp-chart-box">
         <!-- Lưu dữ liệu vào data attributes để JS bên ngoài đọc -->
         <canvas id="realRevenueChart" 

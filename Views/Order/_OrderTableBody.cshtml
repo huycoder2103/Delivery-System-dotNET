@@ -74,7 +74,7 @@
                     @if (o.ShipStatus == "Đã giao")
                     {
                         <span class="od-btn od-btn-s od-badge-delivered od-delivery-status-box">Đã giao</span>
-                        <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="od-btn od-btn-s od-btn-view-trip">🚛 Xem Xe</a>
+                        <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="od-btn od-btn-s od-btn-view-trip">Xem Xe</a>
                     }
                     else if (o.ShipStatus == "Đã đến")
                     {
@@ -89,7 +89,7 @@
                     {
                         if (canShip)
                         {
-                            <a asp-action="Ship" asp-route-id="@o.OrderId" class="od-btn od-btn-s od-btn-s-ship od-btn-full">🚚 Chuyển</a>
+                            <a asp-action="Ship" asp-route-id="@o.OrderId" class="od-btn od-btn-s od-btn-s-ship od-btn-full">Chuyển</a>
                         }
                         else
                         {

@@ -2,7 +2,7 @@
 
 <main class="rp-card">
     <div class="rp-card-title">
-        <h2>📦 @(User.IsInRole("AD") ? "Lịch Sử Hoạt Động Hệ Thống" : "Lịch Sử Ca Làm Việc Của Tôi")</h2>
+        <h2>@(User.IsInRole("AD") ? "Lịch Sử Hoạt Động Hệ Thống" : "Lịch Sử Ca Làm Việc Của Tôi")</h2>
     </div>
 
     <div class="rp-card rp-card-highlight">
@@ -30,7 +30,7 @@
                 <label class="rp-filter-label">Đến Ngày</label>
                 <input type="date" name="toDate" class="rp-filter-input" value="@ViewBag.ToDate" />
             </div>
-            <button type="submit" class="rp-btn rp-btn-primary">🔍 TRUY VẤN</button>
+            <button type="submit" class="rp-btn rp-btn-primary">Tìm kiếm</button>
         </form>
     </div>
 
@@ -64,7 +64,7 @@
                             <td class="rp-text-right rp-font-bold rp-text-primary">@s.Revenue.ToString("N0") K</td>
                             <td class="rp-text-center">
                                 <button type="button" class="rp-btn-s rp-btn-s-blue" onclick="openShiftDetails(@s.ShiftId)">
-                                    📋 Chi tiết
+                                    Chi tiết
                                 </button>
                             </td>
                         </tr>

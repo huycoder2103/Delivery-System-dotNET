@@ -13,16 +13,16 @@
     
     <div class="tr-page-header tr-page-header-Departure">
         <div>
-            <h2>📤 DANH SÁCH CHUYẾN XE ĐI</h2>
+            <h2>sDANH SÁCH CHUYẾN XE ĐI</h2>
             @* <div id="tripCount" class="tr-header-meta tr-btn-sum tr-btn-header">Tổng: @(Model?.Count() ?? 0) chuyến</div> *@
         </div>
         
         <div class="tr-header-actions">
             <a asp-controller="Order" asp-action="List" class="tr-btn tr-btn-header">
-                📦 Quản Lý Đơn Hàng
+                Quản Lý Đơn Hàng
             </a>
             <a asp-controller="Trip" asp-action="ArrivalList" class="tr-btn tr-btn-header">
-                📥 Chuyến Xe Đến
+                Chuyến Xe Đến
             </a>
         </div>
     </div>
@@ -54,13 +54,10 @@
                 <input type="text" id="filterTruck" placeholder="Tìm biển số, ID chuyến" 
                        value="@ViewBag.SearchTruck" class="tr-search-input">
             </div>
-
-
-            <button onclick="resetFilters()" class="tr-btn tr-btn-secondary">🔄 Làm mới</button>
-            
             <a asp-action="Create" class="tr-btn tr-btn-success">
-                ➕ Thêm Chuyến Xe
+               Thêm Chuyến Xe
             </a>
+            <button onclick="resetFilters()" class="tr-btn tr-btn-secondary">🔄 Làm mới</button>
         </div>
     </div>
 

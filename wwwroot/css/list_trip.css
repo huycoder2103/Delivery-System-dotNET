@@ -6,7 +6,9 @@
 :root {
     --tr-primary: #1a73e8;
     --tr-primary-dark: #0d47a1;
-    --tr-success: #34a853;
+    --od-primary: #1a73e8;
+    --od-primary-dark: #0d47a1;
+    --tr-success: #4971DC;
     --tr-success-dark: #1b5e20;
     --tr-danger: #d93025;
     --tr-warning: #f9ab00;
@@ -27,6 +29,7 @@
     top: 70px;
     z-index: 900;
     color: #fff;
+    background: linear-gradient(135deg, var(--od-primary), var(--od-primary-dark));
     padding: 10px 30px;
     border-radius: 15px;
     margin-bottom: 20px;
@@ -37,12 +40,12 @@
     border-bottom-right-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
 }
-.tr-page-header-Departure {
-    background: linear-gradient(135deg, #27ae60, #063125);
+/*.tr-page-header-Departure {
+        background: linear-gradient(135deg, #27ae60, #063125);
 }
 .tr-page-header-Arival {
     background: linear-gradient(135deg, #F39C12, #873600);
-}
+}*/
 
 .tr-page-header h2 {
     margin: 0;
@@ -94,7 +97,10 @@
 .tr-btn-primary { background: var(--tr-primary); color: #fff; }
 .tr-btn-success { background: var(--tr-success); color: #fff; }
 .tr-btn-danger { background: var(--tr-danger); color: #fff; }
-.tr-btn-secondary { background: var(--tr-text-muted); color: #fff; }
+.tr-btn-secondary {
+    background: #e8eaed;
+    color: #4A73E0;
+}
 .tr-btn-header { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); }
 
 .tr-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); filter: brightness(.9); }
@@ -178,18 +184,25 @@
 
 /* --- 2. List Section --- */
 .tr-sticky-filter {
-    position: sticky; top: 115px; z-index: 800; background: rgba(255, 255, 255, 0.98) !important;
-    backdrop-filter: blur(10px); 
-    margin-top: -20px; border-radius: 0 0 15px 15px !important; padding: 15px 20px !important;
+    position: sticky;
+    top: 115px;
+    z-index: 800;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(10px);
+    margin-top: -20px;
+    border-radius: 0 0 15px 15px !important;
+    padding: 15px 20px !important;
+    border-bottom: 2px solid var(--od-primary);
+    border-left: 2px solid var(--od-primary);
 }
-.tr-sticky-filter-Departure {
+/*.tr-sticky-filter-Departure {
     border-bottom: 2px solid #27ae60;
     border-left: 2px solid #27ae60;
 }
 .tr-sticky-filter-Arival {
     border-bottom: 2px solid #F39C12;
     border-left: 2px solid #F39C12;
-}
+}*/
 .tr-filter-group {
     display: flex;
     align-items: center;
