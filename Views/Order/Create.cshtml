@@ -139,8 +139,21 @@
 
 <script>
     function calculateTotal() {
-        var tr = parseFloat(document.getElementById("trField").value) || 0;
-        var ct = parseFloat(document.getElementById("ctField").value) || 0;
+        var trInp = document.getElementById("trField");
+        var ctInp = document.getElementById("ctField");
+        
+        var tr = parseFloat(trInp.value) || 0;
+        var ct = parseFloat(ctInp.value) || 0;
+
+        // Nếu đang nhập Tr > 0 thì reset Ct và ngược lại (Ràng buộc không nhập cả 2)
+        if (document.activeElement.id === "trField" && tr > 0) {
+            ctInp.value = "";
+            ct = 0;
+        } else if (document.activeElement.id === "ctField" && ct > 0) {
+            trInp.value = "";
+            tr = 0;
+        }
+
         document.getElementById("totalAmount").value = tr + ct;
     }
 
@@ -149,6 +162,21 @@
         var rPhone = document.getElementById("receiverPhone").value.trim();
         var send = document.getElementById("sendStation").value;
         var receive = document.getElementById("receiveStation").value;
+        
+        var tr = parseFloat(document.getElementById("trField").value) || 0;
+        var ct = parseFloat(document.getElementById("ctField").value) || 0;
+
+        // Ràng buộc 1 trong 2 phải có giá trị > 0
+        if (tr <= 0 && ct <= 0) {
+            Swal.fire({ icon: 'error', title: 'Thiếu thông tin phí', text: 'Bạn phải nhập số tiền vào ô Đã trả hoặc Chưa trả!' });
+            return false;
+        }
+
+        // Ràng buộc không được cả 2 cùng > 0
+        if (tr > 0 && ct > 0) {
+            Swal.fire({ icon: 'error', title: 'Lỗi nhập phí', text: 'Không được phép nhập cả hai ô Đã trả và Chưa trả cùng lúc!' });
+            return false;
+        }
 
         if (send === receive && send !== "") {
             Swal.fire({ icon: 'error', title: 'Trùng trạm', text: 'Trạm gửi và trạm nhận không được trùng nhau!' });

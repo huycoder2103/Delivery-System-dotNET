@@ -26,7 +26,9 @@ namespace Delivery_System.Validators
                 .Matches(@"^\d{10,11}$").WithMessage("Số điện thoại phải có 10-11 chữ số");
 
             RuleFor(x => x.Tr)
-                .GreaterThanOrEqualTo(0).WithMessage("Phí TR không được nhỏ hơn 0");
+                .GreaterThanOrEqualTo(0).WithMessage("Phí TR không được nhỏ hơn 0")
+                .Must((order, tr) => (tr > 0 && (order.Ct == 0 || order.Ct == null)) || (order.Ct > 0 && (tr == 0 || tr == null)))
+                .WithMessage("Bạn phải nhập một trong hai ô 'Đã trả' hoặc 'Chưa trả' lớn hơn 0, và không được nhập cả hai cùng lúc.");
 
             RuleFor(x => x.Ct)
                 .GreaterThanOrEqualTo(0).WithMessage("Phí CT không được nhỏ hơn 0");
