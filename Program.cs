@@ -104,17 +104,16 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseRouting();
-app.UseOutputCache();
 
 app.UseAuthentication(); 
 app.UseAuthorization();
+app.UseOutputCache();
 
 app.MapHub<DeliveryHub>("/deliveryHub");
 app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Login}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();

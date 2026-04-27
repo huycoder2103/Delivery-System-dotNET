@@ -38,6 +38,13 @@ namespace Delivery_System.Middlewares
                 else
                 {
                     // 3. Nếu là yêu cầu trang web thông thường, chuyển hướng về trang Error
+                    // TRÁNH VÒNG LẶP: Nếu đang ở trang Error mà vẫn lỗi thì không redirect nữa
+                    if (context.Request.Path.Value?.Contains("/Home/Error", StringComparison.OrdinalIgnoreCase) == true)
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                        await context.Response.WriteAsync("A critical error occurred. Please try again later.");
+                        return;
+                    }
                     context.Response.Redirect("/Home/Error");
                 }
             }

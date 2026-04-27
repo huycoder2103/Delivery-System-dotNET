@@ -75,7 +75,7 @@ namespace Delivery_System.Controllers
 
         public IActionResult Error()
         {
-            return View();
+            return View(new ErrorViewModel { RequestId = System.Diagnostics.Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
         // 2. BẮT ĐẦU CA LÀM VIỆC

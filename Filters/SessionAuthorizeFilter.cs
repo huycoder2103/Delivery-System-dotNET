@@ -11,8 +11,10 @@ namespace Delivery_System.Filters
             var actionName = context.RouteData.Values["action"]?.ToString();
 
             // 1. NGOẠI LỆ: Cho phép truy cập trang Login và các trang công khai mà không cần Login
-            if (string.Equals(controllerName, "Account", StringComparison.OrdinalIgnoreCase) && 
-                string.Equals(actionName, "Login", StringComparison.OrdinalIgnoreCase))
+            var path = context.HttpContext.Request.Path.Value?.ToLower() ?? "";
+            if (path.Contains("/account/login") || 
+                (string.Equals(controllerName, "Account", StringComparison.OrdinalIgnoreCase) && 
+                 string.Equals(actionName, "Login", StringComparison.OrdinalIgnoreCase)))
             {
                 return;
             }
