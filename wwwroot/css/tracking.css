@@ -1,0 +1,21 @@
+body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+.tracking-card { max-width: 500px; margin: 20px auto; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden; }
+.tracking-header { background: #1a73e8; color: white; padding: 20px; text-align: center; }
+.tracking-body { padding: 20px; }
+.status-badge { padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; display: inline-block; margin-bottom: 15px; }
+.status-waiting { background: #fff3cd; color: #856404; }
+.status-shipping { background: #cfe2ff; color: #084298; }
+.status-arrived { background: #d1e7dd; color: #0f5132; }
+.status-delivered { background: #d4edda; color: #155724; }
+
+.info-group { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+.info-label { color: #666; font-size: 0.85rem; margin-bottom: 2px; }
+.info-value { font-weight: 600; color: #333; }
+
+.timeline { position: relative; padding-left: 30px; margin-top: 20px; }
+.timeline::before { content: ''; position: absolute; left: 10px; top: 5px; bottom: 5px; width: 2px; background: #e0e0e0; }
+.timeline-item { position: relative; margin-bottom: 20px; }
+.timeline-dot { position: absolute; left: -25px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: #1a73e8; border: 2px solid white; }
+.timeline-dot-success { background: #28a745 !important; }
+.timeline-content { font-size: 0.9rem; }
+.timeline-time { color: #888; font-size: 0.8rem; }
