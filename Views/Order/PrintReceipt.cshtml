@@ -15,22 +15,22 @@
 
     <div class="od-print-toolbar no-print">
         <button class="od-print-btn od-print-btn-main" onclick="window.print()">🖨️ XÁC NHẬN IN BIÊN LAI</button>
-        <button class="od-print-btn od-print-btn-close" style="background:#666;" onclick="window.close()">ĐÓNG</button>
+        <button class="od-print-btn od-print-btn-close" onclick="window.close()">ĐÓNG</button>
     </div>
 
     <div class="od-k80-ticket">
         <div class="od-k80-header">
-            <div style="font-size: 14px; text-transform: uppercase;">Delivery System</div>
-            <div style="font-size: 14px; text-transform: uppercase;">(@Model.SendStation)</div>
+            <div class="od-k80-station-tag">Delivery System</div>
+            <div class="od-k80-station-tag">(@Model.SendStation)</div>
             <h2>BIÊN LAI HÀNG HÓA</h2>
-            <div style="font-size: 14px; margin-bottom: 10px;">@ViewBag.PrintTime</div>
+            <div class="od-k80-print-time">@ViewBag.PrintTime</div>
         </div>
 
         <div class="od-k80-item-name">
             @Model.ItemName
         </div>
 
-        <div style="margin: 15px 0;">
+        <div class="od-k80-info-section">
             <div class="od-k80-info-row"><span class="od-k80-label">NG.GỬI:</span> <span class="od-k80-value">@Model.SenderName</span></div>
             <div class="od-k80-info-row"><span class="od-k80-label">NG.NHẬN:</span> <span class="od-k80-value">@Model.ReceiverName</span></div>
             <div class="od-k80-info-row"><span class="od-k80-label">SĐT GỬI:</span> <span class="od-k80-value">@Model.SenderPhone</span></div>
@@ -54,9 +54,9 @@
             @payInfo
         </div>
 
-        <div style="font-size: 14px; margin-top: 10px;">
-            <div>NV: <span style="font-weight: bold;">@Model.StaffInput</span></div>
-            <div style="font-size: 16px; font-weight: bold; margin-top: 2px;">@Model.OrderId</div>
+        <div class="od-k80-staff-info">
+            <div>NV: <span class="od-k80-staff-name">@Model.StaffInput</span></div>
+            <div class="od-k80-order-status">@Model.OrderId</div>
         </div>
 
         <div class="od-k80-footer">

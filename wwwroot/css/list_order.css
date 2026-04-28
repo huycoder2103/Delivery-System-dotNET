@@ -837,6 +837,7 @@
     border: 1px solid #555;
 }
 
+/* K80 Ticket */
 .od-k80-ticket {
     width: 80mm;
     min-height: 100mm;
@@ -854,12 +855,22 @@
     margin-bottom: 10px;
 }
 
-    .od-k80-header h2 {
-        margin: 5px 0;
-        font-size: 20px;
-        font-weight: bold;
-        text-transform: uppercase;
-    }
+.od-k80-station-tag {
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.od-k80-header h2 {
+    margin: 5px 0;
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.od-k80-print-time {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
 
 .od-k80-item-name {
     font-size: 17px;
@@ -868,6 +879,10 @@
     text-transform: uppercase;
     margin: 10px 0;
     line-height: 1.3;
+}
+
+.od-k80-info-section {
+    margin: 15px 0;
 }
 
 .od-k80-info-row {
@@ -901,6 +916,21 @@
     margin: 10px 0;
 }
 
+.od-k80-staff-info {
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.od-k80-staff-name {
+    font-weight: bold;
+}
+
+.od-k80-order-status {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 2px;
+}
+
 .od-k80-footer {
     font-size: 11px;
     margin-top: 15px;
@@ -910,6 +940,12 @@
     padding-top: 8px;
 }
 
+.od-k80-signature-section {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* A5 Ticket */
 .od-a5-ticket {
     width: 210mm;
     height: 148mm;
@@ -941,6 +977,17 @@
     text-transform: uppercase;
 }
 
+.od-a5-main-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 15px;
+}
+
+.od-a5-details {
+    flex: 1;
+}
+
 .od-a5-info-row {
     font-size: 20px;
     margin-bottom: 6px;
@@ -960,17 +1007,22 @@
     margin-top: 15px;
 }
 
-.od-a5-barcode {
-    position: absolute;
-    bottom: 30px;
-    right: 40px;
-    text-align: center;
+.od-a5-staff-line {
+    font-size: 15px;
+    margin-top: 5px;
 }
 
-.od-a5-barcode-img {
-    width: 130px;
-    height: 45px;
-    background: repeating-linear-gradient(90deg, #000, #000 3px, #ffc0cb 3px, #ffc0cb 6px);
+.od-a5-barcode {
+    text-align: center;
+    margin-left: 20px;
+    padding: 10px;
+    border: 1px dashed #000;
+    border-radius: 10px;
+}
+
+.od-a5-qr-wrapper img {
+    width: 100px;
+    height: 100px;
 }
 
 @media print {
