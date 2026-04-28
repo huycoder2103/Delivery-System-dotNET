@@ -133,9 +133,6 @@ namespace Delivery_System.Services
                 existing.SenderPhone = order.SenderPhone;
                 existing.ReceiveStation = order.ReceiveStation;
                 existing.Note = order.Note;
-                existing.Tr = order.Tr ?? 0;
-                existing.Ct = order.Ct ?? 0;
-                existing.Amount = (existing.Tr ?? 0) + (existing.Ct ?? 0);
                 
                 // Trạm gửi chỉ Admin mới được đổi
                 if (role == "AD")
