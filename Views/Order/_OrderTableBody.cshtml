@@ -73,17 +73,17 @@
                 <div class="od-action-grid">
                     @if (o.ShipStatus == "Đã giao")
                     {
-                        <span class="od-btn od-btn-s od-badge-delivered od-delivery-status-box">Đã giao</span>
+                        <span class="od-btn od-btn-s od-btn-s-ship od-delivery-status-box">Đã giao</span>
                         <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="od-btn od-btn-s od-btn-view-trip">Xem Xe</a>
                     }
                     else if (o.ShipStatus == "Đã đến")
                     {
                         if (canDeliver) {
-                            <button type="button" onclick="deliverOrderDirect('@o.OrderId')" class="od-btn od-btn-s od-btn-s-pick">✅ Giao</button>
+                            <button type="button" onclick="deliverOrderDirect('@o.OrderId')" class="od-btn od-btn-s od-btn-s-deli">Giao</button>
                         } else {
-                            <button type="button" class="od-btn od-btn-s od-btn-disabled" title="Chỉ nhân viên tại trạm @o.ReceiveStation mới được giao đơn này">✅ Giao</button>
+                            <button type="button" class="od-btn od-btn-s od-btn-disabled" title="Chỉ nhân viên tại trạm @o.ReceiveStation mới được giao đơn này">Giao</button>
                         }
-                        <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="od-btn od-btn-s od-btn-view-trip">🚛 Xem Xe</a>
+                        <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="od-btn od-btn-s od-btn-view-trip">Xem Xe</a>
                     }
                     else if (!isShipped)
                     {
@@ -98,7 +98,7 @@
                     }
                     else
                     {
-                        <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="od-btn od-btn-s od-btn-full od-btn-view-trip">🚛 Xem Xe</a>
+                        <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="od-btn od-btn-s od-btn-full od-btn-view-trip">Xem Xe</a>
                     }
 
                     @if (string.IsNullOrEmpty(o.TripId) || o.ShipStatus == "Đã giao")

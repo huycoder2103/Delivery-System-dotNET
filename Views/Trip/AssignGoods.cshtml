@@ -12,7 +12,7 @@
 <div class="tr-container">
     <div class="tr-page-wrap tr-assign-mode">
         <div class="tr-hdr tr-hdr-assign">
-            <h3>📦 GÁN HÀNG LÊN CHUYẾN XE</h3><br>   
+            <h3><i class="bi bi-box-seam"></i> GÁN HÀNG LÊN CHUYẾN XE</h3><br>   
             @if (trip != null)
             {
                 <div class="tr-header-meta">
@@ -40,7 +40,7 @@
                             <input type="checkbox" id="selectAll" class="tr-checkbox-all"> <span class="ms-2">Chọn tất cả</span>
                         </label>
                         <button type="button" class="tr-btn tr-btn-success" onclick="confirmBulkAssign()">
-                            🚛 Gán các đơn đã chọn lên xe
+                            Gán các đơn đã chọn lên xe
                         </button>
                     </div>
 
@@ -64,10 +64,10 @@
                                     <td class="text-center">
                                         <input type="checkbox" name="orderIds" value="@o.OrderId" class="order-checkbox tr-order-checkbox">
                                     </td>
-                                    <td><strong class="text-primary">@o.OrderId</strong></td>
-                                    <td><strong>@o.ItemName</strong></td>
-                                    <td>@o.SenderName <br><small class="text-muted">@o.SenderPhone</small></td>
-                                    <td>@o.ReceiverName <br><small class="text-muted">@o.ReceiverPhone</small></td>
+                                    <td><strong class="tr-id-text">@o.OrderId</strong></td>
+                                    <td>@o.ItemName</td>
+                                    <td>@o.SenderName <br>@o.SenderPhone</td>
+                                    <td>@o.ReceiverName <br>@o.ReceiverPhone</td>
                                     <td>@o.SendStation</td>
                                     <td>@o.ReceiveStation</td>
                                     <td>
@@ -86,7 +86,7 @@
                     <p>Không có đơn hàng chưa chuyển từ trạm <strong>"@trip?.Departure"</strong> đến trạm <strong>"@trip?.Destination"</strong>.</p>
                 </div>
             }
-
+            <br>
             <div class="mt-4">
                 <a asp-controller="Trip" asp-action="List" class="tr-btn tr-btn-secondary">⬅ Quay lại DS Chuyến Xe</a>
             </div>
@@ -114,7 +114,7 @@
             showCancelButton: true,
             confirmButtonColor: '#27ae60',
             cancelButtonColor: '#d33',
-            confirmButtonText: '🚀 Gán ngay',
+            confirmButtonText: ' Gán ngay',
             cancelButtonText: 'Hủy'
         }).then((result) => {
             if (result.isConfirmed) {

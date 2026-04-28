@@ -55,10 +55,11 @@
                 <input type="text" id="filterTruck" placeholder="Tìm biển số, ID chuyến" 
                        value="@ViewBag.TruckFilter" class="tr-search-input">
             </div>
-            <a asp-action="Create" class="tr-btn tr-btn-success">
-               Thêm Chuyến Xe
+            
+            <button onclick="resetFilters()" class="tr-btn tr-btn-secondary"><i class="bi bi-arrow-repeat"></i> Làm mới</button>
+            <a asp-action="Create" class="tr-btn tr-btn-success tr-btn-s-view">
+                Thêm Chuyến Xe
             </a>
-            <button onclick="resetFilters()" class="tr-btn tr-btn-secondary">🔄 Làm mới</button>
         </div>
     </div>
 

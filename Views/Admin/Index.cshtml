@@ -4,9 +4,7 @@
     ViewData["Title"] = "Hệ Thống Quản Trị - Delivery System";
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/admin.css">
-}
+
 
 <div class="admin-wrapper">
     <div class="admin-page-header">
@@ -22,17 +20,17 @@
                 ⏰ Ca Làm Việc
             </a> *@
             <button class="admin-btn-modern admin-btn-add" onclick="showAddModal()">
-                ➕ Thêm Nhân Viên Mới
+                <i class="bi bi-person-plus"></i>Thêm Nhân Viên Mới
             </button>
             <button class="admin-btn-modern admin-btn-add" onclick="showStationModal()">
-                    ➕ Thêm Trạm Mới
+                <i class="bi bi-building-add"></i>Thêm Trạm Mới
             </button>
         </div>
     </div>
 
     <div class="admin-tabs-container">
-        <button id="btnTabStaff" class="admin-btn-tab active" onclick="showTab('staff')">👥 Quản Lý Nhân Viên</button>
-            <button id="btnTabStation" class="admin-btn-tab" onclick="showTab('station')">📍 Quản Lý Trạm</button>
+        <button id="btnTabStaff" class="admin-btn-tab active" onclick="showTab('staff')"><i class="bi bi-people"></i>  Quản Lý Nhân Viên</button>
+        <button id="btnTabStation" class="admin-btn-tab" onclick="showTab('station')"><i class="bi bi-building"></i>  Quản Lý Trạm</button>
     </div>
 
     <main id="tabStaff" class="admin-content-card admin-tab-content active">
@@ -116,7 +114,7 @@
                             <td>@(string.IsNullOrEmpty(user.Phone) ? "—" : user.Phone)</td>
                             <td>
                                 <span class="admin-badge @(user.RoleId == "AD" ? "admin-badge-role-admin" : "admin-badge-user")">
-                                    @(user.RoleId == "AD" ? "🛡️ Admin" : "👤 Nhân Viên")
+                                    @(user.RoleId == "AD" ? Html.Raw("<i class='bi bi-shield'></i> Admin") : Html.Raw("<i class='bi bi-person'></i> Nhân Viên"))
                                 </span>
                             </td>
                             <td>
@@ -213,7 +211,7 @@
                                     <div class="admin-action-group">
                                         <button class="admin-btn-small admin-btn-blue" onclick="showStationModal(@s.StationId, '@s.StationName', '@s.Address', '@s.Phone')">Sửa</button>
                                     
-                                        <button class="admin-btn-small admin-btn-cyan" onclick="showStaffStationModal(@s.StationId, '@s.StationName')">👥 Nhân sự</button>
+                                        <button class="admin-btn-small admin-btn-cyan" onclick="showStaffStationModal(@s.StationId, '@s.StationName')"> <i class="bi bi-people"></i> Nhân sự</button>
 
                                         <button type="button" class="admin-btn-small @(s.IsActive == true ? "admin-btn-orange" : "admin-btn-green")" onclick="toggleStationDirect(@s.StationId)">
                                             @(s.IsActive == true ? "Tạm dừng" : "Kích hoạt")

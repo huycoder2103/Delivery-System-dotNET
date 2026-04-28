@@ -2,9 +2,7 @@
     ViewData["Title"] = "Quản Lý Hàng Hóa - Delivery System";
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/goods.css?v=@DateTime.Now.Ticks">
-}
+
 
 <div class="goods-inner-wrapper">
     @* <div class="goods-page-header">
@@ -15,7 +13,7 @@
     <div class="goods-menu-grid">
         <!-- 1. Tạo Đơn Hàng -->
         <a asp-controller="Order" asp-action="Create" class="goods-menu-card">
-            <div class="goods-card-icon">✍️</div>
+            <div class="goods-card-icon"><i class="bi bi-pencil-square"></i></div>
             <h3>Nhập Hàng Gửi</h3>
             <p>Tạo mới đơn hàng khi khách đến gửi hàng tại trạm.</p>
             <button type="button" class="goods-btn-access">Nhập hàng</button>
@@ -23,7 +21,7 @@
 
         <!-- 2. Danh Sách Đơn Hàng -->
         <a asp-controller="Order" asp-action="List" class="goods-menu-card">
-            <div class="goods-card-icon">📋</div>
+            <div class="goods-card-icon"><i class="bi bi-list-check"></i></div>
             <h3>Danh Sách Đơn</h3>
             <p>Xem, sửa, xóa và quản lý trạng thái các đơn hàng hiện có.</p>
             <button type="button" class="goods-btn-access">Xem danh sách</button>
@@ -31,7 +29,7 @@
 
         <!-- 3. Chuyến Xe Đi -->
         <a asp-controller="Trip" asp-action="List" class="goods-menu-card">
-            <div class="goods-card-icon">🚛</div>
+            <div class="goods-card-icon"><i class="bi bi-box-arrow-up-right"></i></div>
             <h3>Chuyến Xe Đi</h3>
             <p>Quản lý các chuyến xe xuất phát từ trạm hiện tại.</p>
             <button type="button" class="goods-btn-access">Xem chuyến xe</button>
@@ -39,7 +37,7 @@
 
         <!-- 4. Chuyến Xe Đến -->
         <a asp-controller="Trip" asp-action="ArrivalList" class="goods-menu-card">
-            <div class="goods-card-icon">🏁</div>
+            <div class="goods-card-icon scaleX-1"><i class="bi bi-box-arrow-in-down-right"></i></div>
             <h3>Chuyến Xe Đến</h3>
             <p>Theo dõi và xác nhận các chuyến xe đang về trạm.</p>
             <button type="button" class="goods-btn-access">Xem chuyến xe</button>

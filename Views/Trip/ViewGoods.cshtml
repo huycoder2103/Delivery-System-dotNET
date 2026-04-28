@@ -14,11 +14,11 @@
     @Html.AntiForgeryToken()
     <div class="tr-page-wrap">
         <div class="tr-hdr tr-hdr-view">
-            <h3>📋 DANH SÁCH HÀNG TRÊN CHUYẾN XE</h3>
+            <h3>  DANH SÁCH HÀNG TRÊN CHUYẾN XE</h3>
             <div class="tr-hdr-btn-wrap">
                 <a href="@Url.Action("PrintGoodsList", "Trip", new { id = trip?.TripId })" target="_blank" 
                            class="tr-btn tr-btn-print tr-btn-header">
-                    🖨️ IN DANH SÁCH HÀNG
+                    <i class="bi bi-printer"></i> IN DANH SÁCH HÀNG
                 </a>
             </div>
             
@@ -93,8 +93,8 @@
                                     }
                                 </td>
                                 <td>@o.ItemName</td>
-                                <td class="tr-col-name-std">@o.SenderName <br><small class="text-muted">@o.SenderPhone</small></td>
-                                <td class="tr-col-name-std">@o.ReceiverName <br><small class="text-muted">@o.ReceiverPhone</small></td>
+                                <td class="tr-col-name-std">@o.SenderName <br>@o.SenderPhone</td>
+                                <td class="tr-col-name-std">@o.ReceiverName <br>@o.ReceiverPhone</td>
                                 <td>
                                     <span class="tr-station-container">
                                         <span class="tr-station-send" onclick="showStationInfo('@o.SendStation', '@(sendStationId?.ToString() ?? "??")')">@(sendStationId?.ToString() ?? "??")</span>
@@ -105,15 +105,15 @@
                                 <td>
                                     @if (o.ShipStatus == "Đã giao")
                                     {
-                                        <span class="tr-badge tr-badge-delivered">✅ Đã giao</span>
+                                        <span class="tr-badge tr-badge-delivered"> Đã giao</span>
                                     }
                                     else if (o.ShipStatus == "Đã đến")
                                     {
-                                        <span class="tr-badge tr-badge-arrived-new">📥 Đã đến</span>
+                                        <span class="tr-badge tr-badge-arrived-new"> Đã đến</span>
                                     }
                                     else
                                     {
-                                        <span class="tr-badge tr-badge-going">🚛 @o.ShipStatus</span>
+                                        <span class="tr-badge tr-badge-going"> @o.ShipStatus</span>
                                     }
                                 </td>
                                 <td>
@@ -149,7 +149,7 @@
                     <p>Hiện chưa có đơn hàng nào trên chuyến xe này.</p>
                 </div>
             }
-
+            <br />
             <div class="mt-4">
                 <a asp-controller="Trip" asp-action="List" class="tr-btn tr-btn-secondary">⬅ Quay lại DS Chuyến Xe</a>
             </div>

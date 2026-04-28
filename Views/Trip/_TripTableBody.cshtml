@@ -31,7 +31,7 @@
             <td>
                 @if (t.Status == "Đang đi")
                 {
-                    <span class="tr-badge tr-badge-going">🚛 Đang đi</span>
+                    <span class="tr-badge tr-badge-going">Đang đi</span>
                 }
                 else
                 {
@@ -69,8 +69,7 @@
                     @* Nút xác nhận đến (Dùng SweetAlert2) *@
                     @if (ViewBag.IsArrivalPage == true && t.Status == "Đang đi")
                     {
-                        <button type="button" class="tr-btn-s tr-btn-s-arrived"
-                                onclick="confirmArrive('@t.TripId')">🏁 Đã đến</button>
+                        <button type="button" class="tr-btn-s tr-btn-s-arrived" onclick="confirmArrive('@t.TripId')"> <i class="bi bi-check-circle"></i> Đã đến</button>
                         
                         <form id="arriveForm-@t.TripId" asp-action="Arrive" method="POST" class="hidden-form">
                             <input type="hidden" name="id" value="@t.TripId" />
@@ -79,10 +78,10 @@
 
                     @if (t.Status == "Đang đi" && ViewBag.IsArrivalPage != true)
                     {
-                        <a asp-action="AssignGoods" asp-route-id="@t.TripId" class="tr-btn-s tr-btn-s-assign">📦 Thêm hàng</a>
+                        <a asp-action="AssignGoods" asp-route-id="@t.TripId" class="tr-btn-s tr-btn-s-assign"><i class="bi bi-box-seam"></i> Thêm hàng</a>
                     }
-                    <a asp-action="ViewGoods" asp-route-id="@t.TripId" class="tr-btn-s tr-btn-s-view">
-                        📋 Xem hàng (@count)
+                    <a asp-action="ViewGoods" asp-route-id="@t.TripId" class="tr-btn-s tr-btn-s-view"> <i class="bi bi-card-list"></i>
+                        Xem hàng (@count)
                     </a>
                 </div>
             </td>

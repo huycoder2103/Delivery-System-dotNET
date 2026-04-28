@@ -1,4 +1,4 @@
-:root {
+/*:root {
     --goods-primary: #3498db;
     --goods-primary-dark: #2980b9;
     --goods-bg: #f0f2f5;
@@ -11,7 +11,7 @@
     margin: 0 auto;
     padding: 40px 20px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+}*/
 
 /* --- Header phong cách hiện đại --- */
 /*.goods-page-header {
@@ -24,7 +24,7 @@
     box-shadow: 0 10px 25px rgba(52, 152, 219, 0.2);
 }*/
 
-    .goods-page-header h2 {
+    /*.goods-page-header h2 {
         font-size: 2.2rem;
         margin: 0;
         text-transform: uppercase;
@@ -34,10 +34,10 @@
     .goods-page-header p {
         opacity: 0.9;
         margin-top: 10px;
-    }
+    }*/
 
 /* --- Grid Menu --- */
-.goods-menu-grid {
+/*.goods-menu-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 30px;
@@ -61,11 +61,11 @@
     color: inherit;
 }
 
-    .goods-menu-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 25px rgba(0,0,0,0.1);
-        border-color: var(--goods-primary);
-    }
+.goods-menu-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+    border-color: var(--goods-primary);
+}
 
 .goods-card-icon {
     font-size: 3.5rem;
@@ -99,10 +99,10 @@
 
 .goods-menu-card:hover .goods-btn-access {
     background: var(--goods-primary-dark);
-}
+}*/
 
 /* --- Back Button --- */
-.goods-back-btn-container {
+/*.goods-back-btn-container {
     text-align: center;
     margin-top: 30px;
 }
@@ -128,11 +128,11 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 12px rgba(26, 115, 232, 0.3);
         color: white;
-    }
+    }*/
 
 /* --- Responsive --- */
-@media (max-width: 600px) {
+/*@media (max-width: 600px) {
     .goods-menu-grid {
         grid-template-columns: 1fr;
     }
-}
+}*/

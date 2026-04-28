@@ -96,7 +96,7 @@
     text-decoration: none;
 }
 .tr-btn-primary { background: var(--tr-primary); color: #fff; }
-.tr-btn-success { background: var(--tr-success); color: #fff; }
+.tr-btn-success { background: var(--tr-success); color: #fff;}
 .tr-btn-danger { background: var(--tr-danger); color: #fff; }
 .tr-btn-secondary {
     background: #e8eaed;
@@ -227,7 +227,7 @@
     pointer-events: none;
 }
 .tr-search-input { 
-    width: 70%; 
+    width: 80%; 
     padding: 8px 12px 8px 35px; 
     border-radius: 8px; 
     border: 1px solid #ddd; 
@@ -344,10 +344,31 @@
     flex-direction: column;
 }
 
-.tr-page-wrap.tr-assign-mode th { background: #27ae60; }
-.tr-info-box { background: #eafaf1; border: 1px solid #a9dfbf; border-left: 4px solid #27ae60; padding: 9px 14px; border-radius: 4px; margin-bottom: 14px; font-size: .85rem; color: #1a6b3a; }
+.tr-page-wrap.tr-assign-mode th {
+    background: #F7F8F9;
+}
+.tr-info-box {
+    background: #eaf4fb;
+    color: #1a5276;
+    border-color: #b8daf0;
+    border-left: 4px solid #3498db;
+    padding: 9px 14px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    font-size: .85rem;
+    color: #1a73e8;
+}
 .tr-money { color: #27ae60; font-weight: 700; }
-.tr-btn-assign { background: #3498db; color: #fff; border: none; padding: 5px 14px; border-radius: 4px; font-weight: 700; font-size: .8rem; cursor: pointer; }
+.tr-btn-assign {
+    background: #e8f0fe;
+    color: #1a73e8;
+    border: none;
+    padding: 5px 14px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: .8rem;
+    cursor: pointer;
+}
 .tr-bulk-actions { margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
 .tr-select-all { font-weight: 700; cursor: pointer; }
 .tr-checkbox-all { transform: scale(1.2); margin-right: 8px; }

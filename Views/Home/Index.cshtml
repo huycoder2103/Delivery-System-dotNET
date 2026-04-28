@@ -38,13 +38,13 @@
             @if (currentShift == null)
             {
                 <form asp-controller="Home" asp-action="StartShift" method="POST">
-                    <button type="submit" class="home-btn-shift home-btn-start">🚀 BẮT ĐẦU CA</button>
+                    <button type="submit" class="home-btn-shift home-btn-start">BẮT ĐẦU CA</button>
                 </form>
             }
             else
             {
                 <form asp-controller="Home" asp-action="EndShift" method="POST" id="endShiftForm">
-                    <button type="button" class="home-btn-shift home-btn-end" onclick="confirmEndShift()">🛑 KẾT THÚC CA</button>
+                    <button type="button" class="home-btn-shift home-btn-end" onclick="confirmEndShift()">KẾT THÚC CA</button>
                 </form>
             }
         </div>
@@ -62,7 +62,7 @@
     <div class="home-menu-grid">
         <!-- 1. Quản lý hàng hóa -->
         <a asp-controller="Goods" asp-action="Index" class="home-menu-card no-decoration color-inherit">
-            <div class="home-card-icon">📦</div>
+            <div class="home-card-icon"><i class="bi bi-box-seam"></i></div>
             <h3>Quản lý hàng hóa</h3>
             <p>Nhập đơn hàng, bộ phận hàng, quản lý đơn hàng.</p>
             <span class="home-btn-card-action">Truy cập</span>
@@ -70,7 +70,7 @@
 
         <!-- 2. Báo cáo & Thống kê -->
         <a asp-controller="Report" asp-action="Index" class="home-menu-card no-decoration color-inherit">
-            <div class="home-card-icon">📊</div>
+            <div class="home-card-icon"><i class="bi bi-bar-chart-line"></i></div>
             <h3>Báo cáo & Thống kê</h3>
             <p>Xem doanh thu, số lượng đơn theo ngày/tháng.</p>
             <span class="home-btn-card-action">Xem báo cáo</span>
@@ -80,7 +80,7 @@
         @if (role == "AD")
         {
             <a asp-controller="Admin" asp-action="Index" class="home-menu-card no-decoration color-inherit">
-                <div class="home-card-icon">🛡️</div>
+                <div class="home-card-icon"><i class="bi bi-shield-check"></i></div>
                 <h3>Hệ thống quản trị</h3>
                 <p>Quản lý nhân viên, cấu hình trạm xe, bảo mật.</p>
                 <span class="home-btn-card-action">Vào quản trị</span>
@@ -89,7 +89,7 @@
         else
         {
             <div class="home-menu-card home-disabled">
-                <div class="home-card-icon">🔒</div>
+                <div class="home-card-icon"><i class="bi bi-ban"></i></div>
                 <h3>Hệ thống quản trị</h3>
                 <p>Chức năng dành riêng cho Quản trị viên hệ thống.</p>
                 <button type="button" class="home-btn-card-action" disabled>Bị khóa</button>
