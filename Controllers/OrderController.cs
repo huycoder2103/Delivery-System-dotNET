@@ -269,6 +269,24 @@ namespace Delivery_System.Controllers
             return View(order);
         }
 
+        [HttpGet]
+        [Microsoft.AspNetCore.Authorization.AllowAnonymous]
+        public async Task<IActionResult> Tracking(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return NotFound();
+            
+            var order = await _context.TblOrders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == id);
+            if (order == null) return NotFound();
+            
+            // Lấy thông tin chuyến xe nếu có
+            if (!string.IsNullOrEmpty(order.TripId))
+            {
+                ViewBag.TripInfo = await _context.TblTrips.AsNoTracking().FirstOrDefaultAsync(t => t.TripId == order.TripId);
+            }
+            
+            return View(order);
+        }
+
         [HttpPost]
         public async Task<IActionResult> RemoveFromTrip(string orderId, string tripId)
         {

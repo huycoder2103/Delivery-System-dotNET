@@ -81,6 +81,19 @@ var app = builder.Build();
 // Sử dụng Middleware xử lý lỗi tập trung ngay đầu Pipeline
 app.UseMiddleware<Delivery_System.Middlewares.ExceptionMiddleware>();
 
+// Cấu hình định dạng số và ngày tháng theo tiếng Việt (dùng dấu chấm cho hàng nghìn)
+var supportedCultures = new[] { "vi-VN" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture(supportedCultures[0])
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
+app.UseRequestLocalization(localizationOptions);
+
+// Đảm bảo các luồng chạy nền cũng sử dụng Culture vi-VN
+System.Globalization.CultureInfo.DefaultThreadCurrentCulture = new System.Globalization.CultureInfo("vi-VN");
+System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = new System.Globalization.CultureInfo("vi-VN");
+
 // 1. TỐI ƯU NETWORK: Sử dụng nén phản hồi
 app.UseResponseCompression();
 

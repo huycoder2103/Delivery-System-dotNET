@@ -43,11 +43,11 @@
         <div class="od-k80-payment">
             @{
                 string payInfo = "";
-                if (Model.Tr.HasValue && Model.Tr != 0) payInfo += $"Đã Thanh Toán: {Model.Tr.Value.ToString("N0")}k";
+                if (Model.Tr.HasValue && Model.Tr != 0) payInfo += $"Đã Thanh Toán: {Model.Tr.Value.ToString("N0")}.000 VNĐ";
                 if (Model.Ct.HasValue && Model.Ct != 0) 
                 {
                     if (payInfo != "") payInfo += " - ";
-                    payInfo += $"Phí chưa thu: {Model.Ct.Value.ToString("N0")}k";
+                    payInfo += $"Phí chưa thu: {Model.Ct.Value.ToString("N0")}.000 VNĐ";
                 }
                 if (string.IsNullOrEmpty(payInfo)) payInfo = "Chưa có thông tin phí";
             }
