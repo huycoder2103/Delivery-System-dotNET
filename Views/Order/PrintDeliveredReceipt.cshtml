@@ -1,0 +1,68 @@
+@model Delivery_System.Models.TblOrder
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Biên Lai Giao Hàng K80 - @Model.OrderId</title>
+    <link rel="stylesheet" href="~/css/list_order.css?v=@DateTime.Now.Ticks" />
+</head>
+<body class="od-print-body">
+
+    <div class="od-print-toolbar no-print">
+        <button class="od-print-btn od-print-btn-main" onclick="window.print()">🖨️ XÁC NHẬN IN BIÊN LAI GIAO HÀNG</button>
+        <button class="od-print-btn od-print-btn-close" style="background:#666;" onclick="window.close()">ĐÓNG</button>
+    </div>
+
+    <div class="od-k80-ticket">
+        <div class="od-k80-header">
+            <div style="font-size: 14px; text-transform: uppercase;">Delivery System</div>
+            <div style="font-size: 14px; text-transform: uppercase;">(@Model.ReceiveStation)</div>
+            <h2>BIÊN LAI GIAO HÀNG</h2>
+            <div style="font-size: 14px; margin-bottom: 10px;">@ViewBag.PrintTime</div>
+        </div>
+
+        <div class="od-k80-item-name">
+            @Model.ItemName
+        </div>
+
+        <div style="margin: 15px 0;">
+            <div class="od-k80-info-row"><span class="od-k80-label">Ng. Gửi:</span> <span class="od-k80-value">@Model.SenderName</span></div>
+            <div class="od-k80-info-row"><span class="od-k80-label">SĐT:</span> <span class="od-k80-value">@Model.SenderPhone</span></div>
+
+            <div class="od-k80-info-row"><span class="od-k80-label">Ng. Nhận:</span> <span class="od-k80-value">@Model.ReceiverName</span></div>
+            <div class="od-k80-info-row"><span class="od-k80-label">SĐT:</span> <span class="od-k80-value">@Model.ReceiverPhone</span></div>
+            
+            @* <div class="od-k80-info-row"><span class="od-k80-label">NGÀY GIAO:</span> <span class="od-k80-value">@Model.ReceiveDate</span></div> *@
+        </div>
+
+        <div class="od-k80-route">
+            @Model.SendStation &lt;&gt; @Model.ReceiveStation
+        </div>
+
+        <div class="od-k80-payment">
+            @{
+                decimal total = (Model.Tr ?? 0) + (Model.Ct ?? 0);
+                string payInfo = $"TỔNG TIỀN: {total.ToString("N0")}.000 VNĐ";
+            }
+            @payInfo
+        </div>
+
+        <div style="font-size: 14px; margin-top: 10px;">
+            <div>NV GIAO: <span style="font-weight: bold;">@Model.StaffReceive</span></div>
+            <div style="font-size: 16px; font-weight: bold; margin-top: 2px;">@Model.OrderId - ĐÃ ĐƯỢC GIAO</div>
+        </div>
+
+        <div class="od-k80-footer" style="text-align: center; margin-top: 20px;">
+            -------------------------------- <br>
+            <strong>XÁC NHẬN CỦA KHÁCH HÀNG</strong> <br><br><br><br>
+            ................................
+        </div>
+    </div>
+
+</body>
+</html>

@@ -101,7 +101,14 @@
                         <a asp-controller="Trip" asp-action="ViewGoods" asp-route-id="@o.TripId" class="od-btn od-btn-s od-btn-full od-btn-view-trip">🚛 Xem Xe</a>
                     }
 
-                    <button type="button" onclick="showPrintOptions('@o.OrderId')" class="od-btn od-btn-s od-btn-s-print">In</button>
+                    @if (string.IsNullOrEmpty(o.TripId) || o.ShipStatus == "Đã giao")
+                    {
+                        <button type="button" onclick="showPrintOptions('@o.OrderId', '@o.ShipStatus')" class="od-btn od-btn-s od-btn-s-print">In</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="od-btn od-btn-s od-btn-disabled" title="Hàng đã lên xe, không thể in lại">Khóa In</button>
+                    }
 
                     @if (canEdit && string.IsNullOrEmpty(o.TripId))
                     {

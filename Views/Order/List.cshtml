@@ -264,7 +264,12 @@
             triggerSearch();
         }
 
-        function showPrintOptions(orderId) {
+        function showPrintOptions(orderId, status) {
+            if (status === 'Đã giao') {
+                window.open('/Order/PrintReceipt/' + orderId + '?type=delivered', '_blank');
+                return;
+            }
+
             Swal.fire({
                 title: 'CHỌN LOẠI IN',
                 html: `Chọn định dạng in cho đơn hàng <b>${orderId}</b>`,

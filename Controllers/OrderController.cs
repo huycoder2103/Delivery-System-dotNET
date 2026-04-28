@@ -259,11 +259,23 @@ namespace Delivery_System.Controllers
         {
             var order = await _context.TblOrders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == id);
             if (order == null) return NotFound();
+
+            // Nếu hàng đã lên xe nhưng CHƯA giao thì mới cấm in
+            if (!string.IsNullOrEmpty(order.TripId) && order.ShipStatus != "Đã giao")
+            {
+                return Content("Hàng đã lên xe, không thể in lại biên lai!");
+            }
+
             ViewBag.PrintTime = TimeHelper.NowVni().ToString("dd/MM/yyyy HH:mm:ss");
 
             if (type == "delivery")
             {
                 return View("PrintDeliverySheet", order);
+            }
+            
+            if (type == "delivered")
+            {
+                return View("PrintDeliveredReceipt", order);
             }
 
             return View(order);
