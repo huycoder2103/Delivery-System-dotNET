@@ -20,7 +20,7 @@
             <p>Tổng cước gửi (TR)</p>
             <span class="rp-btn-access rp-bg-blue-alt">Phí gửi</span>
         </a>
-        <a href="@Url.Action("List", "Order", new { dateFilter = ViewBag.SelectedDate, statusFilter = "delivered" })" class="rp-goods-card rp-goods-card-compact rp-card-link">
+        <a href="@Url.Action("List", "Order", new { dateFilter = ViewBag.SelectedDate, statusFilter = "delivered", onlyCod = true })" class="rp-goods-card rp-goods-card-compact rp-card-link">
             <h3 class="text-warning">@ViewBag.TotalCODAD.ToString("N0") K</h3>
             <p>Tổng tiền COD (CT)</p>
             <span class="rp-btn-access rp-bg-blue-alt">Tiền thu hộ</span>

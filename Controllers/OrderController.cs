@@ -42,11 +42,11 @@ namespace Delivery_System.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> List(string? sendStationFilter, string? receiveStationFilter, string? searchPhone, string? searchStaff, string? dateFilter, string statusFilter = "all", int page = 1, bool isCashFlow = false, string? deliveredByStaff = null)
+        public async Task<IActionResult> List(string? sendStationFilter, string? receiveStationFilter, string? searchPhone, string? searchStaff, string? dateFilter, string statusFilter = "all", int page = 1, bool isCashFlow = false, string? deliveredByStaff = null, bool onlyCod = false)
         {
             const int pageSize = 10;
             if (page < 1) page = 1;
-            DateTime dt; // Khai báo một lần ở đây
+            DateTime dt; 
 
             ViewBag.StationList = await GetCachedStationsAsync();
             var query = _context.TblOrders.AsNoTracking().Where(o => o.IsDeleted == false || o.IsDeleted == null);
@@ -56,22 +56,21 @@ namespace Delivery_System.Controllers
             if (!string.IsNullOrEmpty(deliveredByStaff))
             {
                 query = query.Where(o => o.StaffReceive == deliveredByStaff && o.ShipStatus == "Đã giao");
+                if (onlyCod) query = query.Where(o => o.Ct > 0);
+
                 if (!string.IsNullOrEmpty(dateFilter) && DateTime.TryParse(dateFilter, out dt))
                 {
-                    // Đảm bảo so sánh chính xác chuỗi ngày dd/MM/yyyy
                     string dateStr = dt.ToString("dd/MM/yyyy");
                     query = query.Where(o => o.ReceiveDate != null && o.ReceiveDate.Contains(dateStr));
                 }
             }
             else
             {
-                // BỘ LỌC THEO TRẠM CỦA NHÂN VIÊN
                 var role = User.GetRole();
                 int? myStationId = User.GetStationId();
 
                 if (role != "AD" && myStationId.HasValue)
                 {
-                    // Lấy tên trạm trực tiếp từ Database dựa trên ID (int?)
                     var station = await _context.TblStations.AsNoTracking()
                         .FirstOrDefaultAsync(s => s.StationId == myStationId.Value);
                     
@@ -90,10 +89,10 @@ namespace Delivery_System.Controllers
                     var nextDay = dt.AddDays(1);
                     string dateStr = dt.ToString("dd/MM/yyyy");
 
-                    // Ưu tiên lọc theo ngày giao nếu chọn xem đơn ĐÃ GIAO
                     if (statusFilter == "delivered")
                     {
                         query = query.Where(o => o.ShipStatus == "Đã giao" && o.ReceiveDate != null && o.ReceiveDate.Contains(dateStr));
+                        if (onlyCod) query = query.Where(o => o.Ct > 0);
                     }
                     else if (isCashFlow)
                     {
@@ -117,8 +116,8 @@ namespace Delivery_System.Controllers
                     else if (statusFilter == "delivered")
                     {
                         query = query.Where(o => o.ShipStatus == "Đã giao");
+                        if (onlyCod) query = query.Where(o => o.Ct > 0);
                         
-                        // Nếu có lọc ngày, áp dụng thêm lọc ngày vào kết quả Đã giao
                         if (!string.IsNullOrEmpty(dateFilter) && DateTime.TryParse(dateFilter, out dt))
                         {
                             string dateStr = dt.ToString("dd/MM/yyyy");
@@ -142,7 +141,6 @@ namespace Delivery_System.Controllers
             
             var list = await query.OrderByDescending(o => o.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             
-            // Tính Badge - Lọc theo trạm nếu có
             var badgeQuery = _context.TblOrders.AsNoTracking().Where(o => o.IsDeleted == false || o.IsDeleted == null);
             if (!string.IsNullOrEmpty(myStationName)) badgeQuery = badgeQuery.Where(o => o.SendStation == myStationName || o.ReceiveStation == myStationName);
 
@@ -155,6 +153,7 @@ namespace Delivery_System.Controllers
             ViewBag.CountAll = countsRaw.Sum(c => c.Count);
             
             ViewBag.CurrentPage = page; ViewBag.TotalPages = totalPages; ViewBag.SearchPhone = searchPhone; ViewBag.SearchStaff = searchStaff; ViewBag.CurrentStatus = statusFilter; ViewBag.SendStationFilter = sendStationFilter; ViewBag.ReceiveStationFilter = receiveStationFilter; ViewBag.DateFilter = dateFilter; ViewBag.IsCashFlow = isCashFlow;
+            ViewBag.OnlyCod = onlyCod;
 
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest") return PartialView("_OrderTableBody", list);
             return View(list);
@@ -174,14 +173,12 @@ namespace Delivery_System.Controllers
             var userId = User.GetUserId();
             var role = User.GetRole();
 
-            // Quyền: Admin hoặc người tạo
             if (role != "AD" && order.StaffInput != userId)
             {
                 TempData["ErrorMessage"] = "Bạn không có quyền chỉnh sửa đơn hàng này!";
                 return RedirectToAction("List");
             }
 
-            // Trạng thái: Chưa lên xe
             if (!string.IsNullOrEmpty(order.TripId))
             {
                 TempData["ErrorMessage"] = "Đơn hàng đã lên xe, không thể chỉnh sửa!";
@@ -275,7 +272,6 @@ namespace Delivery_System.Controllers
             var order = await _context.TblOrders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == id);
             if (order == null) return NotFound();
 
-            // Nếu hàng đã lên xe nhưng CHƯA giao thì mới cấm in
             if (!string.IsNullOrEmpty(order.TripId) && order.ShipStatus != "Đã giao")
             {
                 return Content("Hàng đã lên xe, không thể in lại biên lai!");
@@ -305,7 +301,6 @@ namespace Delivery_System.Controllers
             var order = await _context.TblOrders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == id);
             if (order == null) return NotFound();
             
-            // Lấy thông tin chuyến xe nếu có
             if (!string.IsNullOrEmpty(order.TripId))
             {
                 ViewBag.TripInfo = await _context.TblTrips.AsNoTracking().FirstOrDefaultAsync(t => t.TripId == order.TripId);

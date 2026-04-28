@@ -147,6 +147,7 @@
         let searchTimeout;
         let currentStatus = '@(ViewBag.CurrentStatus ?? "all")';
         let currentPage = @(ViewBag.CurrentPage ?? 1);
+        let onlyCod = '@(ViewBag.OnlyCod?.ToString().ToLower() ?? "false")' === 'true';
 
         function refreshDashboard(skipToast = false) {
             const sendStation = document.getElementById('filterSendStation').value;
@@ -154,7 +155,7 @@
             const date = document.getElementById('filterDate').value;
             const phone = document.getElementById('filterSearchPhone').value;
 
-            const url = `@Url.Action("List", "Order")?sendStationFilter=${encodeURIComponent(sendStation)}&receiveStationFilter=${encodeURIComponent(receiveStation)}&searchPhone=${encodeURIComponent(phone)}&dateFilter=${encodeURIComponent(date)}&statusFilter=${currentStatus}&page=${currentPage}`;
+            const url = `@Url.Action("List", "Order")?sendStationFilter=${encodeURIComponent(sendStation)}&receiveStationFilter=${encodeURIComponent(receiveStation)}&searchPhone=${encodeURIComponent(phone)}&dateFilter=${encodeURIComponent(date)}&statusFilter=${currentStatus}&page=${currentPage}&onlyCod=${onlyCod}`;
 
             $.ajax({
                 url: url,
@@ -304,7 +305,7 @@
             const receiveStation = document.getElementById('filterReceiveStation').value;
             const date = document.getElementById('filterDate').value;
             const phone = document.getElementById('filterSearchPhone').value;
-            const newUrl = `@Url.Action("List", "Order")?sendStationFilter=${encodeURIComponent(sendStation)}&receiveStationFilter=${encodeURIComponent(receiveStation)}&searchPhone=${encodeURIComponent(phone)}&dateFilter=${encodeURIComponent(date)}&statusFilter=${currentStatus}&page=${currentPage}`;
+            const newUrl = `@Url.Action("List", "Order")?sendStationFilter=${encodeURIComponent(sendStation)}&receiveStationFilter=${encodeURIComponent(receiveStation)}&searchPhone=${encodeURIComponent(phone)}&dateFilter=${encodeURIComponent(date)}&statusFilter=${currentStatus}&page=${currentPage}&onlyCod=${onlyCod}`;
             window.history.pushState({path:newUrl},'',newUrl);
         }
 
