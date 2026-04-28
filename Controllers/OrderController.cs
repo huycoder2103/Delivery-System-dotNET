@@ -112,14 +112,29 @@ namespace Delivery_System.Controllers
                     else if (statusFilter == "arrived") 
                     {
                         var arrivedTripIds = await _context.TblTrips.AsNoTracking().Where(t => t.Status == "Đã đến").Select(t => t.TripId).ToListAsync();
-                        query = query.Where(o => arrivedTripIds.Contains(o.TripId ?? "") && o.ShipStatus != "Đã giao");
+                        query = query.Where(o => (o.ShipStatus == "Đã đến" || arrivedTripIds.Contains(o.TripId ?? "")) && o.ShipStatus != "Đã giao");
                     }
-                    // Bỏ block else if (statusFilter == "delivered") cũ ở đây vì đã xử lý ở trên
+                    else if (statusFilter == "delivered")
+                    {
+                        query = query.Where(o => o.ShipStatus == "Đã giao");
+                        
+                        // Nếu có lọc ngày, áp dụng thêm lọc ngày vào kết quả Đã giao
+                        if (!string.IsNullOrEmpty(dateFilter) && DateTime.TryParse(dateFilter, out dt))
+                        {
+                            string dateStr = dt.ToString("dd/MM/yyyy");
+                            query = query.Where(o => o.ReceiveDate != null && o.ReceiveDate.Contains(dateStr));
+                        }
+                    }
                 }
 
                 if (!string.IsNullOrEmpty(sendStationFilter)) query = query.Where(o => o.SendStation == sendStationFilter);
                 if (!string.IsNullOrEmpty(receiveStationFilter)) query = query.Where(o => o.ReceiveStation == receiveStationFilter);
-                if (!string.IsNullOrEmpty(searchPhone)) query = query.Where(o => o.SenderPhone != null && o.OrderId != null && o.ReceiverPhone != null && (o.SenderPhone.Contains(searchPhone) || o.ReceiverPhone.Contains(searchPhone) || o.OrderId.Contains(searchPhone)));
+                if (!string.IsNullOrEmpty(searchPhone))
+                {
+                    query = query.Where(o => (o.SenderPhone != null && o.SenderPhone.Contains(searchPhone)) || 
+                                             (o.ReceiverPhone != null && o.ReceiverPhone.Contains(searchPhone)) || 
+                                             (o.OrderId != null && o.OrderId.Contains(searchPhone)));
+                }
             }
 
             int totalRecords = await query.CountAsync();
