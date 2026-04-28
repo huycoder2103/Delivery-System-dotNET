@@ -7,6 +7,13 @@ namespace Delivery_System.Filters
     {
         public void OnActionExecuting(ActionExecutingContext context)
         {
+            // 0. KIỂM TRA NGOẠI LỆ [AllowAnonymous]
+            var endpoint = context.HttpContext.GetEndpoint();
+            if (endpoint?.Metadata?.GetMetadata<Microsoft.AspNetCore.Authorization.IAllowAnonymous>() != null)
+            {
+                return;
+            }
+
             var controllerName = context.RouteData.Values["controller"]?.ToString();
             var actionName = context.RouteData.Values["action"]?.ToString();
 
