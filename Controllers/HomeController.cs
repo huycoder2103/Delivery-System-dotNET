@@ -7,14 +7,7 @@ namespace Delivery_System.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly AppDbContext _context;
-
-        public HomeController(AppDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index([FromServices] AppDbContext _context)
         {
             var userId = User.GetUserId();
 
@@ -80,7 +73,7 @@ namespace Delivery_System.Controllers
 
         // 2. BẮT ĐẦU CA LÀM VIỆC
         [HttpPost]
-        public async Task<IActionResult> StartShift()
+        public async Task<IActionResult> StartShift([FromServices] AppDbContext _context)
         {
             var userId = User.GetUserId();
             if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
@@ -108,7 +101,7 @@ namespace Delivery_System.Controllers
 
         // 3. KẾT THÚC CA LÀM VIỆC
         [HttpPost]
-        public async Task<IActionResult> EndShift()
+        public async Task<IActionResult> EndShift([FromServices] AppDbContext _context)
         {
             var userId = User.GetUserId();
             if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
