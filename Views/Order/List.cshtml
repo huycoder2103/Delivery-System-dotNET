@@ -64,6 +64,7 @@
             <input type="date" id="filterDate" class="od-filter-input" value="@ViewBag.DateFilter">
             
             <div class="od-search-wrapper">
+                <i class="bi bi-search"></i>
                 <input type="text" id="filterSearchPhone" placeholder="Tìm id, sđt..." 
                        value="@(string.IsNullOrEmpty(ViewBag.SearchStaff) ? ViewBag.SearchPhone : ViewBag.SearchStaff)" class="od-search-input">
             </div>
@@ -215,7 +216,7 @@
             const cDelivered = $('#ajaxCountDelivered').val();
             
             // Cập nhật text trong Select Status
-            $("#statusFilter option[value='all']").text(`🌐 Tất cả đơn (${cAll})`);
+            $("#statusFilter option[value='all']").text(`Tất cả đơn (${cAll})`);
             $("#statusFilter option[value='waiting']").text(`⏳ Chờ xe (${cWaiting})`);
             $("#statusFilter option[value='shipping']").text(`🚛 Đang chuyển (${cShipping})`);
             $("#statusFilter option[value='arrived']").text(`📥 Chờ giao (${cArrived})`);

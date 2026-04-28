@@ -25,6 +25,9 @@
     <!-- Nạp SweetAlert2 ở đầu để các trang con dùng được ngay -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
+    <!-- Nạp Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
     @RenderSection("Styles", required: false)
 </head>
 <body>
@@ -53,12 +56,12 @@
                 <!-- TÌM KIẾM NHANH (XỔ XUỐNG) -->
                 <div class="nav-search-wrapper">
                     <div class="search-trigger" onclick="toggleSearchDropdown(event)">
-                        🔍
+                        <i class="bi bi-search"></i>
                     </div>
                     <div class="search-dropdown" id="searchDropdown">
                         <form asp-controller="Order" asp-action="List" method="GET" class="search-inner-form">
                             <input type="text" name="searchPhone" placeholder="Nhập mã đơn / SĐT..." class="search-inner-input" id="quickSearchInput">
-                            <button type="submit" class="search-inner-btn">TÌM KIẾM</button>
+                            <button type="submit" class="search-inner-btn"><i class="bi bi-search"></i> TÌM KIẾM</button>
                         </form>
                     </div>
                 </div>
