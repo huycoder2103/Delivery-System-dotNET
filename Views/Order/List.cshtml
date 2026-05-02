@@ -322,7 +322,7 @@
                 showCancelButton: true,
                 confirmButtonColor: '#28a745',
                 cancelButtonColor: '#6c757d',
-                confirmButtonText: '✅ Đúng, đã giao!',
+                confirmButtonText: 'Đúng, đã giao!',
                 cancelButtonText: 'Hủy'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -337,19 +337,10 @@
                         },
                         success: function (res) {
                             if (res.success) {
-                                Swal.fire({
-                                    title: 'Thành công!',
-                                    text: res.message,
-                                    icon: 'success',
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                }).then(() => {
-                                    if (res.tripId) {
-                                        window.location.href = '@Url.Action("ViewGoods", "Trip")/' + res.tripId;
-                                    } else {
-                                        refreshDashboard(true); // Cập nhật lại dashboard bằng AJAX thay vì reload
-                                    }
-                                });
+                                // Mở tab in mới
+                                window.open('/Order/PrintReceipt/' + orderId + '?type=delivered', '_blank');
+                                // Cập nhật lại danh sách tại chỗ
+                                refreshDashboard(true);
                             } else {
                                 isProcessingSelf = false;
                                 Swal.fire('Lỗi', res.message, 'error');

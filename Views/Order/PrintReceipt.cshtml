@@ -59,11 +59,24 @@
             <div class="od-k80-order-status">@Model.OrderId</div>
         </div>
 
+        <div class="od-k80-qr-section">
+            @{
+                var trackingUrl = $"{Context.Request.Scheme}://{Context.Request.Host}/Order/Tracking/{Model.OrderId}";
+                var qrUrl = $"https://quickchart.io/qr?text={Uri.EscapeDataString(trackingUrl)}&size=150&margin=0";
+            }
+            <img src="@qrUrl" alt="QR Code" />
+        </div>
+
         <div class="od-k80-footer">
             - Trường hợp xảy ra mất hoặc thất lạc, công ty bồi thường tối đa 50% giá trị hàng. Đối với hàng lúc gửi không khai báo trị giá bồi thường gấp 10 lần tiền cước phí. <br>
             <strong>Lưu ý:</strong> Biên nhận này có giá trị trong 15 ngày
         </div>
     </div>
 
+    <script>
+        window.onload = function() {
+            window.print();
+        };
+    </script>
 </body>
 </html>

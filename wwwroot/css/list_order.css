@@ -953,6 +953,17 @@
     margin-top: 2px;
 }
 
+.od-k80-qr-section {
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.od-k80-qr-section img {
+    width: 130px;
+    height: 130px;
+}
+
 .od-k80-footer {
     font-size: 11px;
     margin-top: 15px;
