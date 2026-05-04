@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# Sao chép file dự án và restore các thư viện (để tận dụng cache của Docker)
+# Sao chép file dự án và restore trước để tận dụng cache
 COPY ["Delivery-System.csproj", "./"]
 RUN dotnet restore "Delivery-System.csproj"
 
@@ -15,9 +15,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 
-# Cấu hình cổng cho Render
-ENV ASPNETCORE_URLS=http://+:8080
-EXPOSE 8080
+# Cấu hình môi trường mặc định
+ENV ASPNETCORE_URLS=http://+:80
+ENV ASPNETCORE_ENVIRONMENT=Production
+EXPOSE 80
 
 # Lệnh khởi chạy ứng dụng
 ENTRYPOINT ["dotnet", "Delivery-System.dll"]

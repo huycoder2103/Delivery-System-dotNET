@@ -207,7 +207,7 @@
                 <td class="tr-label">Biển số xe:</td>
                 <td class="tr-value">@trip?.LicensePlate</td>
                 <td class="tr-label">Tổng đơn:</td>
-                <td class="tr-value">@Model.Count() đơn</td>
+                <td class="tr-value">@(Model?.Count() ?? 0) đơn</td>
             </tr>
             <tr>
                 <td class="tr-label">Lái xe:</td>
@@ -232,23 +232,26 @@
                     decimal totalTr = 0;
                     decimal totalCt = 0;
                 }
-                @foreach (var o in Model)
+                @if (Model != null)
                 {
-                    totalTr += o.Tr ?? 0;
-                    totalCt += o.Ct ?? 0;
-                    <tr>
-                        <td class="text-center">@(i++)</td>
-                        <td class="tr-order-id">@o.OrderId</td>
-                        <td>@o.ItemName</td>
-                        <td>
-                            <div class="tr-delivery-info">
-                                <span class="fw-bold">Gửi:</span> @o.SenderName - @o.SenderPhone<br />
-                                <span class="fw-bold">Nhận:</span> @o.ReceiverName - @o.ReceiverPhone
-                            </div>
-                        </td>
-                        <td class="text-right">@(o.Tr?.ToString("N0") ?? "0")</td>
-                        <td class="text-right">@(o.Ct?.ToString("N0") ?? "0")</td>
-                    </tr>
+                    foreach (var o in Model)
+                    {
+                        totalTr += o.Tr ?? 0;
+                        totalCt += o.Ct ?? 0;
+                        <tr>
+                            <td class="text-center">@(i++)</td>
+                            <td class="tr-order-id">@o.OrderId</td>
+                            <td>@o.ItemName</td>
+                            <td>
+                                <div class="tr-delivery-info">
+                                    <span class="fw-bold">Gửi:</span> @o.SenderName - @o.SenderPhone<br />
+                                    <span class="fw-bold">Nhận:</span> @o.ReceiverName - @o.ReceiverPhone
+                                </div>
+                            </td>
+                            <td class="text-right">@(o.Tr?.ToString("N0") ?? "0")</td>
+                            <td class="text-right">@(o.Ct?.ToString("N0") ?? "0")</td>
+                        </tr>
+                    }
                 }
             </tbody>
         </table>

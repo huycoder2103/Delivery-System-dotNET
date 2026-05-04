@@ -4,9 +4,9 @@
     Layout = null;
     var currentUserID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
     
-    string MaskPhone(string phone) 
+    string MaskPhone(string? phone) 
     {
-        if (string.IsNullOrEmpty(phone) || phone.Length < 4) return phone;
+        if (string.IsNullOrEmpty(phone) || phone.Length < 4) return phone ?? "";
         return "******" + phone.Substring(phone.Length - 4);
     }
 }

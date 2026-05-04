@@ -55,12 +55,13 @@ public partial class AppDbContext : DbContext
 
         // 1. GLOBAL QUERY FILTER: Tự động loại bỏ các bản ghi đã xóa (Soft Delete)
         modelBuilder.Entity<TblOrder>().HasQueryFilter(o => o.IsDeleted == false || o.IsDeleted == null);
+        modelBuilder.Entity<TblOrderTrip>().HasQueryFilter(ot => ot.Order.IsDeleted == false || ot.Order.IsDeleted == null);
 
         modelBuilder.Entity<TblAnnouncement>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("tblAnnouncements");
+            entity.ToTable("tblannouncements");
 
             entity.HasIndex(e => e.CreatedBy, "createdBy");
 
@@ -91,7 +92,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.FeedbackId).HasName("PRIMARY");
 
-            entity.ToTable("tblFeedbacks");
+            entity.ToTable("tblfeedbacks");
 
             entity.HasIndex(e => e.UserId, "FK_Feedback_User");
 
@@ -116,7 +117,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.OrderId).HasName("PRIMARY");
 
-            entity.ToTable("tblOrders");
+            entity.ToTable("tblorders");
 
             entity.HasIndex(e => e.CreatedAt, "idx_orders_createdAt");
 
@@ -216,7 +217,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("tblOrderTrip");
+            entity.ToTable("tblordertrip");
 
             entity.HasIndex(e => e.OrderId, "orderID");
 
@@ -245,7 +246,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.RoleId).HasName("PRIMARY");
 
-            entity.ToTable("tblRoles");
+            entity.ToTable("tblroles");
 
             entity.Property(e => e.RoleId)
                 .HasMaxLength(5)
@@ -259,7 +260,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.StationId).HasName("PRIMARY");
 
-            entity.ToTable("tblStations");
+            entity.ToTable("tblstations");
 
             entity.Property(e => e.StationId).HasColumnName("stationID");
             entity.Property(e => e.Address)
@@ -280,7 +281,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.TripId).HasName("PRIMARY");
 
-            entity.ToTable("tblTrips");
+            entity.ToTable("tbltrips");
 
             entity.HasIndex(e => e.Status, "idx_trips_status");
 
@@ -348,7 +349,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.TruckId).HasName("PRIMARY");
 
-            entity.ToTable("tblTrucks");
+            entity.ToTable("tbltrucks");
 
             entity.Property(e => e.TruckId)
                 .HasMaxLength(20)
@@ -375,7 +376,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.UserId).HasName("PRIMARY");
 
-            entity.ToTable("tblUsers");
+            entity.ToTable("tblusers");
 
             entity.HasIndex(e => e.RoleId, "roleID");
 
@@ -429,7 +430,7 @@ entity.HasOne(d => d.Role).WithMany(p => p.TblUsers)
         {
             entity.HasKey(e => e.ShiftId).HasName("PRIMARY");
 
-            entity.ToTable("tblWorkShifts");
+            entity.ToTable("tblworkshifts");
 
             entity.HasIndex(e => new { e.StaffId, e.Status }, "idx_shift_staff_status");
 
@@ -473,7 +474,7 @@ entity.HasOne(d => d.Role).WithMany(p => p.TblUsers)
         {
             entity
                 .HasNoKey()
-                .ToView("vw_OrderList");
+                .ToView("vw_orderlist");
 
             entity.Property(e => e.Amount)
                 .HasPrecision(15, 2)
@@ -546,7 +547,7 @@ entity.HasOne(d => d.Role).WithMany(p => p.TblUsers)
         {
             entity
                 .HasNoKey()
-                .ToView("vw_TripList");
+                .ToView("vw_triplist");
 
             entity.Property(e => e.AssistantName)
                 .HasMaxLength(100)
@@ -603,7 +604,7 @@ entity.HasOne(d => d.Role).WithMany(p => p.TblUsers)
         {
             entity.HasKey(e => e.ShiftId).HasName("PRIMARY");
 
-            entity.ToTable("tblShiftAccounting");
+            entity.ToTable("tblshiftaccounting");
 
             entity.Property(e => e.ShiftId)
                 .ValueGeneratedNever()

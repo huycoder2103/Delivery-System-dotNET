@@ -37,9 +37,9 @@
         <div class="admin-section-title">
             <h2>Danh Sách Đội Ngũ Nhân Viên</h2>
             <div class="admin-staff-meta-badges">
-                <span class="admin-badge admin-badge-user">Tổng: @Model.Count()</span>
-                <span class="admin-badge admin-badge-active">Mở: @Model.Count(u => u.Status == true)</span>
-                <span class="admin-badge admin-badge-locked">Khóa: @Model.Count(u => u.Status != true)</span>
+                <span class="admin-badge admin-badge-user">Tổng: @(Model?.Count() ?? 0)</span>
+                <span class="admin-badge admin-badge-active">Mở: @(Model?.Count(u => u.Status == true) ?? 0)</span>
+                <span class="admin-badge admin-badge-locked">Khóa: @(Model?.Count(u => u.Status != true) ?? 0)</span>
             </div>
         </div>
 
@@ -58,11 +58,14 @@
             <div class="admin-filter-box">
                 <select id="stationFilter" onchange="filterStaff()" class="admin-form-control">
                     <option value="">-- Tất cả các trạm --</option>
-                    @if (ViewBag.StationList != null)
+                    @if (ViewBag.StationList is IEnumerable<Delivery_System.Models.TblStation> stations)
                     {
-                        foreach (var s in ViewBag.StationList as IEnumerable<Delivery_System.Models.TblStation>)
+                        foreach (var s in stations)
                         {
-                            <option value="@s.StationId">@s.StationName (@s.StationId)</option>
+                            if (s != null)
+                            {
+                                <option value="@s.StationId">@s.StationName (@s.StationId)</option>
+                            }
                         }
                     }
                 </select>
@@ -84,15 +87,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var user in Model)
+                    @if (Model != null)
                     {
-                        bool isInShift = user.TblWorkShifts.Any(s => s.Status == "ACTIVE");
-                        <tr class="admin-staff-row" 
-                            data-id="@user.UserId.ToLower()" 
-                            data-name="@user.FullName.ToLower()" 
-                            data-phone="@user.Phone" 
-                            data-station="@user.StationId"
-                            data-shift="@(isInShift ? "in" : "out")">
+                        foreach (var user in Model)
+                        {
+                            bool isInShift = user.TblWorkShifts.Any(s => s.Status == "ACTIVE");
+                            <tr class="admin-staff-row" 
+                                data-id="@user.UserId.ToLower()" 
+                                data-name="@user.FullName.ToLower()" 
+                                data-phone="@user.Phone" 
+                                data-station="@user.StationId"
+                                data-shift="@(isInShift ? "in" : "out")">
                             <td><strong class="admin-text-primary">@user.UserId</strong></td>
                             <td>
                                 <div class="admin-font-bold">@user.FullName</div>
@@ -156,6 +161,7 @@
                                 </div>
                             </td>
                         </tr>
+                        }
                     }
                 </tbody>
             </table>
@@ -197,30 +203,33 @@
                     {
                         foreach (var s in stationList)
                         {
-                            <tr class="admin-station-row" data-id="@s.StationId" data-name="@s.StationName.ToLower()">
-                                <td><strong class="admin-text-primary">@s.StationId</strong></td>
-                                <td><div class="admin-font-bold">@s.StationName</div></td>
-                                <td>@s.Address</td>
-                                <td>@s.Phone</td>
-                                <td>
-                                    <span class="admin-badge @(s.IsActive == true ? "admin-badge-active" : "admin-badge-locked")">
-                                        @(s.IsActive == true ? "● Hoạt động" : "● Tạm dừng")
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="admin-action-group">
-                                        <button class="admin-btn-small admin-btn-blue" onclick="showStationModal(@s.StationId, '@s.StationName', '@s.Address', '@s.Phone')">Sửa</button>
-                                    
-                                        <button class="admin-btn-small admin-btn-cyan" onclick="showStaffStationModal(@s.StationId, '@s.StationName')"> <i class="bi bi-people"></i> Nhân sự</button>
+                            if (s != null)
+                            {
+                                <tr class="admin-station-row" data-id="@s.StationId" data-name="@s.StationName.ToLower()">
+                                    <td><strong class="admin-text-primary">@s.StationId</strong></td>
+                                    <td><div class="admin-font-bold">@s.StationName</div></td>
+                                    <td>@s.Address</td>
+                                    <td>@s.Phone</td>
+                                    <td>
+                                        <span class="admin-badge @(s.IsActive == true ? "admin-badge-active" : "admin-badge-locked")">
+                                            @(s.IsActive == true ? "● Hoạt động" : "● Tạm dừng")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="admin-action-group">
+                                            <button class="admin-btn-small admin-btn-blue" onclick="showStationModal(@s.StationId, '@s.StationName', '@s.Address', '@s.Phone')">Sửa</button>
+                                        
+                                            <button class="admin-btn-small admin-btn-cyan" onclick="showStaffStationModal(@s.StationId, '@s.StationName')"> <i class="bi bi-people"></i> Nhân sự</button>
 
-                                        <button type="button" class="admin-btn-small @(s.IsActive == true ? "admin-btn-orange" : "admin-btn-green")" onclick="toggleStationDirect(@s.StationId)">
-                                            @(s.IsActive == true ? "Tạm dừng" : "Kích hoạt")
-                                        </button>
+                                            <button type="button" class="admin-btn-small @(s.IsActive == true ? "admin-btn-orange" : "admin-btn-green")" onclick="toggleStationDirect(@s.StationId)">
+                                                @(s.IsActive == true ? "Tạm dừng" : "Kích hoạt")
+                                            </button>
 
-                                        <button type="button" class="admin-btn-small admin-btn-red" onclick="deleteStationDirect(@s.StationId, '@s.StationName')">Xóa</button>
-                                    </div>
-                                </td>
-                            </tr>
+                                            <button type="button" class="admin-btn-small admin-btn-red" onclick="deleteStationDirect(@s.StationId, '@s.StationName')">Xóa</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
                         }
                     }
                 </tbody>

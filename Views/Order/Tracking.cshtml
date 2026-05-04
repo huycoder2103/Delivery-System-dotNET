@@ -4,13 +4,13 @@
     var trip = ViewBag.TripInfo as Delivery_System.Models.TblTrip;
     
     // Hàm che số điện thoại: 036****978
-    string MaskPhone(string phone) 
+    string MaskPhone(string? phone) 
     {
-        if (string.IsNullOrEmpty(phone) || phone.Length < 7) return phone;
+        if (string.IsNullOrEmpty(phone) || phone.Length < 7) return phone ?? "";
         return phone.Substring(0, 3) + "****" + phone.Substring(phone.Length - 3);
     }
 
-    string GetStatusClass(string status) {
+    string GetStatusClass(string? status) {
         return status switch {
             "Chưa Chuyển" => "status-waiting",
             "Đang chuyển" => "status-shipping",

@@ -1,6 +1,6 @@
 @{
     ViewData["Title"] = "Trang Chủ";
-    var fullName = User.Identity.Name ?? "Nhân viên";
+    var fullName = User.Identity?.Name ?? "Nhân viên";
     var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
     var currentShift = ViewBag.CurrentShift as Delivery_System.Models.TblWorkShift;
 }

@@ -54,8 +54,8 @@
                             <td><code>#@s.ShiftId</code></td>
                             <td>
                                 <div class="rp-avatar-wrap">
-                                    <div class="rp-avatar rp-avatar-blue">@s.Staff.FullName.Substring(0,1).ToUpper()</div>
-                                    <div class="rp-staff-name rp-link-staff" onclick="openShiftDetails(@s.ShiftId)">@s.Staff.FullName</div>
+                                    <div class="rp-avatar rp-avatar-blue">@(s.Staff?.FullName?.Substring(0,1).ToUpper() ?? "U")</div>
+                                    <div class="rp-staff-name rp-link-staff" onclick="openShiftDetails(@s.ShiftId)">@(s.Staff?.FullName ?? "Unknown")</div>
                                 </div>
                             </td>
                             <td>@(s.Staff?.Station?.StationName ?? "N/A")</td>
